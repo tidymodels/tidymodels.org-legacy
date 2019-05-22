@@ -1,0 +1,23 @@
+# Navigation Bar Links
+#   The weight parameter defines the order that the links will appear in.
+
+[[main]]
+    name = "Packages"
+    url = "/packages/"
+    weight = 1
+[[main]]
+    name = "Articles"
+    url = "https://www.tidyverse.org/articles/"
+    weight = 2
+[[main]]
+    name = "Learn"
+    url = "https://www.tidyverse.org/learn/"
+    weight = 3
+[[main]]
+    name = "Help"
+    url = "https://www.tidyverse.org/help/"
+    weight = 4
+[[main]]
+    name = "Contribute"
+    url = "https://www.tidyverse.org/contribute/"
+    weight = 5
