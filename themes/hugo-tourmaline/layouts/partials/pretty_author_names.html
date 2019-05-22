@@ -1,0 +1,42 @@
+                <!-- based on author field being used in YAML frontmatter -->
+                      <!-- this sequence takes the author field and smartly deals with it! -->
+                      {{ $taxo := "author" }}
+                      {{ $authors :=  slice }}
+                      {{ $authors_list :=  slice }}
+                      {{ with .Params.author }}
+                          {{ if in (printf "%T" . ) "[]" }}
+                          <!-- checks if the value is list type -->
+                            {{ $authors_list = . }}
+                          {{ else }}
+                          <!-- else single value -->
+                            {{ $authors = $authors | append . }}
+                          {{ end }}
+
+                        <!-- if nice list to start with, now create nicer list -->
+                        {{ with $authors_list }}
+                            {{ $author_count := (len .) }}
+                            {{ range $index, $val := . }}
+                              {{ $author := $val | title }}
+                              <!-- this pulls matching taxonomyTerm -->
+                              {{- with $.Site.GetPage (printf "%s/%s" $taxo (urlize .)) }}
+                                  <a href="{{ .Permalink }}">{{ .Params.name }}</a>{{ if eq (add $index 1) $author_count }}{{ else if eq 2 $author_count }} & {{ else if and (eq (add $index 2) $author_count) }}, & {{ else }}, {{ end }}
+                              {{ else }}
+                                  {{ $author }}{{ if eq (add $index 1) $author_count }}{{ else if eq 2 $author_count }} & {{ else if eq (add $index 2) $author_count }}, & {{ else }}, {{ end }}
+                              {{ end }}
+                            {{ end }}
+                        {{ end }}
+
+                        <!-- if not nice list to start with, now create nice list -->
+                        {{ with $authors }}
+                          {{ range $index, $val := . }}
+                            {{ $split_authors := (split . ",") }}
+                              {{ with $split_authors }}
+                                {{ $author_count := len . }}
+                                  {{ if eq 1 $author_count }}{{ . }}
+                                  {{ else if eq 2 $author_count }}{{ delimit . ", " " & " }}
+                                  {{ else }}{{ delimit . ", " ", & " }}
+                                  {{ end }}
+                              {{ end }}
+                          {{ end }}
+                        {{ end }}
+                      {{ end }}
