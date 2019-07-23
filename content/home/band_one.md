@@ -10,4 +10,4 @@ col2:
 title: tidymodels
 ---
 
-The tidyverse is an opinionated collection of R packages designed for data science. All packages share an underlying design philosophy, grammar, and data structures. 
+The tidymodels repository is a collection of modeling packages that work with the [tidyverse](https://www.tidyverse.org/) and are designed in the same way.

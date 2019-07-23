@@ -1,15 +1,15 @@
 ---
+title: 'purrr 0.3.0'
 author: Lionel Henry, Jenny Bryan, Hadley Wickham, Greg
-categories:
-- package
-date: "2019-02-06"
-description: |
-  purrr 0.3.0 is now on CRAN.
-photo:
-  author: Mikhail Vasilyev
-  url: https://unsplash.com/photos/NodtnCsLdTE
 slug: purrr-0-3-0
-title: purrr 0.3.0
+date: '2019-02-06'
+description: >
+  purrr 0.3.0 is now on CRAN.
+categories:
+  - package
+photo:
+  url: https://unsplash.com/photos/NodtnCsLdTE
+  author: Mikhail Vasilyev
 ---
 
 
@@ -208,14 +208,14 @@ Another rate limiting function is `slowly()`. While `insistently()` loops by its
 f <- function(...) print(Sys.time())
 
 walk(1:3, f)
-#> [1] "2019-03-06 12:50:03 PST"
-#> [1] "2019-03-06 12:50:03 PST"
-#> [1] "2019-03-06 12:50:03 PST"
+#> [1] "2019-05-23 15:02:11 EDT"
+#> [1] "2019-05-23 15:02:11 EDT"
+#> [1] "2019-05-23 15:02:11 EDT"
 
 walk(1:3, slowly(f))
-#> [1] "2019-03-06 12:50:03 PST"
-#> [1] "2019-03-06 12:50:04 PST"
-#> [1] "2019-03-06 12:50:05 PST"
+#> [1] "2019-05-23 15:02:11 EDT"
+#> [1] "2019-05-23 15:02:12 EDT"
+#> [1] "2019-05-23 15:02:13 EDT"
 ```
 
 `slowly()` uses a constant rate by default while `insistently()` uses a backoff rate. The rate limiting can be configured with optional jitter via `rate_backoff()` and `rate_delay()`, which implement exponential backoff rate and constant rate respectively.
@@ -225,9 +225,9 @@ walk(1:3, slowly(f))
 
 ```r
 walk(1:3, slowly(f, rate_backoff(2, max_times = Inf)))
-#> [1] "2019-03-06 12:50:05 PST"
-#> [1] "2019-03-06 12:50:07 PST"
-#> [1] "2019-03-06 12:50:10 PST"
+#> [1] "2019-05-23 15:02:13 EDT"
+#> [1] "2019-05-23 15:02:15 EDT"
+#> [1] "2019-05-23 15:02:17 EDT"
 ```
 
 ## Map and reduce improvements
@@ -336,7 +336,8 @@ purrr now checks the results of your predicate functions, which must now consist
 
 ```r
 keep(c(1, NA, 3), ~ . %% 2 == 0)
-#> Error: Predicate functions must return a single `TRUE` or `FALSE`, not a missing value
+#> Predicate functions must return a single `TRUE` or `FALSE`, not a missing
+#> value
 ```
 
 

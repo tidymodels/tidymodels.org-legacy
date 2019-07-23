@@ -1,18 +1,15 @@
 ---
-author:
-- mine
-- mara Averick
-- Alison
-categories:
-- learn
-date: "2019-02-21"
-description: |
-  stringr 1.4.0 is now on CRAN!
-photo:
-  author: Maranda Vandergriff
-  url: https://unsplash.com/photos/o-d37kiKqqc
-slug: stringr-1-4-0
 title: stringr 1.4.0
+author: [mine, mara Averick, Alison]
+slug: stringr-1-4-0
+date: '2019-02-21'
+description: >
+    stringr 1.4.0 is now on CRAN!
+categories:
+  - learn
+photo:
+  url: https://unsplash.com/photos/o-d37kiKqqc
+  author: Maranda Vandergriff
 ---
 
 

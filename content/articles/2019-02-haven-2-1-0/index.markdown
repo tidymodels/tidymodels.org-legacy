@@ -1,17 +1,17 @@
 ---
-author:
-- carl
-- Garrett
-categories:
-- other
-date: "2019-02-19"
-description: |
-  haven 2.1.0 is now on CRAN!
-photo:
-  author: Skitterphoto
-  url: https://www.pexels.com/photo/beach-lighthouse-3491/
-slug: haven-2-1-0
 title: haven 2.1.0
+author: 
+  - carl
+  - Garrett
+slug: haven-2-1-0
+date: '2019-02-19'
+description: > 
+  haven 2.1.0 is now on CRAN!
+categories:
+  - other
+photo:
+  url: https://www.pexels.com/photo/beach-lighthouse-3491/
+  author: Skitterphoto
 ---
 
 
