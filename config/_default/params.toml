@@ -2,8 +2,8 @@ description = "The tidyverse is an integrated collection of R packages designed 
 
 # Link custom CSS and JS assets
 #   (relative to /static/css and /static/js respectively)
-custom_css = ["tm.css", "fonts.css"]
-
+custom_css = ["tm.css", "tidyverse-site.css"]
+    
 # Define "news" as both articles and events
 mainSections = ["articles", "events"]
 
