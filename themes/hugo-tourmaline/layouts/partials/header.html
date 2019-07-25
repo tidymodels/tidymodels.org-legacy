@@ -12,12 +12,14 @@
           <div class="band">
             <div class="innards bandContent">
               <div>
-                  <a href="{{ "/" | relURL }}" class="nav-logo">
-                      <img src="{{ print "images/" .Site.Params.logo.url | relURL }}"
+                  {{ with .Site.Params.logo.url }}
+                      <a href="{{ "/" | relURL }}" class="nav-logo">
+                      <img src="{{ print "images/" . | relURL }}"
                       width="{{ .Site.Params.logo.width }}"
                       height="{{ .Site.Params.logo.height }}"
                       alt="{{ .Site.Params.logo.alt }}">
-                  </a>
+                      </a>
+                  {{ end }}
                 {{ if not .Site.Params.logo.url }}
                 <a class="productName" href="{{ "/" | relLangURL }}">{{- .Site.Title -}}</a>
                 {{ end }}
