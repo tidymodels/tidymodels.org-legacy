@@ -2,17 +2,28 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="og:image" content="https://www.tidyverse.org/images/tidyverse-default.png" >
-{{ .Hugo.Generator }}
+{{ $og_image := "" }}
+{{ $og_image = printf "images/%s" .Site.Params.sharing_image | absURL }}
+{{- with $og_image -}}
+  <meta name="og:image" content="{{ . }}" >
+{{- end -}}
+{{ hugo.Generator }}
 
-{{ if eq .URL "/" -}}
+{{- if .IsHome -}}
 <title>{{ .Site.Title }}</title>
 <meta property="og:title" content="{{ .Site.Title }}">
 <meta property="og:type" content="website">
 <meta property="description" content="{{ .Site.Params.description }}">
 <meta property="og:description" content="{{ .Site.Params.description }}">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://www.tidyverse.org/images/hex-tidyverse.png" >
+{{ $twitter_card := "summary_large_image" }}
+  <meta property="twitter:card" content="{{ $twitter_card }}">
+{{ $twitter_image := "" }}
+{{ $twitter_image = printf "images/%s" .Site.Params.twitter_image | absURL }}
+{{- with $twitter_image -}}
+  <meta name="twitter:image" content="{{ . }}" >
+{{- end -}}
+
+
 {{- else -}}
 <title>{{ .Title }}{{ with .Params.subtitle }} - {{ . }} {{ end }} - {{ .Site.Title }}</title>
 <meta property="og:title" content="{{ .Title }} - {{ .Site.Title }}">

@@ -27,6 +27,7 @@ preserveTaxonomyNames = true
 [taxonomies]
   author = "author"
   category = "categories"
+  tag = "tags"
 
 # Configure BlackFriday Markdown rendering.
 #   See: https://gohugo.io/getting-started/configuration/#configure-blackfriday

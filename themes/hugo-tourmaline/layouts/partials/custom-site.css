@@ -77,3 +77,7 @@ table tbody tr:nth-child(even){
 table tbody tr:nth-child(odd){
   background-color: {{ .Param "colors.table_row_odd" }};
 }
+
+.latest {
+  border-top: .5em solid {{ .Param "colors.latest_border" }};
+}
