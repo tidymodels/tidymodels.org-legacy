@@ -3,6 +3,9 @@ description = "The tidyverse is an integrated collection of R packages designed 
 # Link custom CSS and JS assets
 #   (relative to /static/css and /static/js respectively)
 custom_css = ["tm.css"]
+
+# Define base hex url for index page (where the stickers link out to)
+hex_base_url = "tidymodels.github.io/"
     
 # Define "news" as both articles and events
 mainSections = ["articles", "events"]
