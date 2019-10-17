@@ -1,4 +1,9 @@
-description = "The tidyverse is an integrated collection of R packages designed to make data science fast, fluid, and fun."
+# Description for social sharing and search engines.
+description = "RStudio Education helps people achieve data literacy using the R language, tools, and content."
+
+# Default image for social sharing and search engines. Place image in `static/images/` folder and specify image name here.
+sharing_image = "01.rstudio.flowers-sharing.jpg"
+twitter_image = "01.rstudio.flowers-sharing.jpg"
 
 # Link custom CSS and JS assets
 #   (relative to /static/css and /static/js respectively)
