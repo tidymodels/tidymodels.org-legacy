@@ -29,10 +29,10 @@ Both [`labelled()`](https://haven.tidyverse.org/reference/labelled.html) and [`l
 ```r
 tibble::tibble(s = haven::labelled(c(1, 10), labels = c("A" = 1, "B" = 10)))
 #> # A tibble: 2 x 1
-#>   s        
+#>           s
 #>   <dbl+lbl>
-#> 1  1       
-#> 2 10
+#> 1     1 [A]
+#> 2    10 [B]
 ```
 
 

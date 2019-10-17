@@ -208,14 +208,14 @@ Another rate limiting function is `slowly()`. While `insistently()` loops by its
 f <- function(...) print(Sys.time())
 
 walk(1:3, f)
-#> [1] "2019-05-23 15:02:11 EDT"
-#> [1] "2019-05-23 15:02:11 EDT"
-#> [1] "2019-05-23 15:02:11 EDT"
+#> [1] "2019-10-17 08:57:59 EDT"
+#> [1] "2019-10-17 08:57:59 EDT"
+#> [1] "2019-10-17 08:57:59 EDT"
 
 walk(1:3, slowly(f))
-#> [1] "2019-05-23 15:02:11 EDT"
-#> [1] "2019-05-23 15:02:12 EDT"
-#> [1] "2019-05-23 15:02:13 EDT"
+#> [1] "2019-10-17 08:57:59 EDT"
+#> [1] "2019-10-17 08:58:00 EDT"
+#> [1] "2019-10-17 08:58:01 EDT"
 ```
 
 `slowly()` uses a constant rate by default while `insistently()` uses a backoff rate. The rate limiting can be configured with optional jitter via `rate_backoff()` and `rate_delay()`, which implement exponential backoff rate and constant rate respectively.
@@ -225,9 +225,9 @@ walk(1:3, slowly(f))
 
 ```r
 walk(1:3, slowly(f, rate_backoff(2, max_times = Inf)))
-#> [1] "2019-05-23 15:02:13 EDT"
-#> [1] "2019-05-23 15:02:15 EDT"
-#> [1] "2019-05-23 15:02:17 EDT"
+#> [1] "2019-10-17 08:58:01 EDT"
+#> [1] "2019-10-17 08:58:03 EDT"
+#> [1] "2019-10-17 08:58:05 EDT"
 ```
 
 ## Map and reduce improvements
