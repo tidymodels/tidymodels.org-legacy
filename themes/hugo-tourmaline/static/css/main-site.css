@@ -816,6 +816,8 @@ table.contentListing {
     background-image: url(images/tidyCategoryLearn.svg); }
   .articleCategory.other {
     background-image: url(images/tidyCategoryOther.svg); }
+  .articleCategory.deep-dive {
+    background-image: url(images/tidyCategoryDeepDive.svg); }
 
 .article-title {
   margin-top: 0px; }
@@ -854,6 +856,11 @@ table.contentListing {
     border: none; }
   .package-section .packages .package .package-info {
     margin: 20px 0 0 210px; }
+    
+.package-info h3 {
+	padding-top: 72px;
+	margin-top: -72px;
+}
 
 /* CSS for centering images in blog posts */
 
@@ -1009,9 +1016,20 @@ em {
   display: block;
   height: 0;
   clear: both; }
-
-.bookCover {
+  
+#homeContent .bookCover {
   width: 320px;
+  height: auto;
+  -moz-box-shadow: 0 1px 5px 0px rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: 0 1px 5px 0px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 5px 0px rgba(0, 0, 0, 0.1);
+  -webkit-transform: rotate(359deg);
+  transform: rotate(359deg);
+  float: left;
+  margin: 20px 50px 40px 0; }
+
+.article-content img.bookCover {
+  width: 200px;
   height: auto;
   -moz-box-shadow: 0 1px 5px 0px rgba(0, 0, 0, 0.1);
   -webkit-box-shadow: 0 1px 5px 0px rgba(0, 0, 0, 0.1);
