@@ -5,7 +5,7 @@ col0:
   row3: yardstick
 col2:
   row2: parsnip
-  row3: tidyposterior
+  row3: tune
   row4: recipes
 title: tidymodels
 ---

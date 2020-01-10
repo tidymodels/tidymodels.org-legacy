@@ -49,17 +49,24 @@ These package are guided by our [principles for creating modeling packages](http
     </div>
   </div>
   <div class="package">
-    <img class="package-image" src="/images/yardstick.png" alt=""></img>
-    <div class="package-info">
-      <h3><a href="https://tidymodels.github.io/yardstick/"> yardstick </a></h3>
-      <p>The effectiveness of a model can be measured using various performance metrics in yardstick <a href="https://tidymodels.github.io/yardstick/" aria-hidden="true">Learn more ...</a></p>
-    </div>
-  </div>
-  <div class="package">
     <img class="package-image" src="/images/parsnip.png" alt=""></img>
     <div class="package-info">
       <h3><a href="https://tidymodels.github.io/parsnip/"> parsnip </a></h3>
       <p>parsnip is a tidy, unified interface to models that can be used to try a range of models without getting bogged down in the syntactical minutiae of the underlying package. <a href="https://tidymodels.github.io/parsnip/" aria-hidden="true">Learn more ...</a></p>
+    </div>
+  </div>  
+  <div class="package">
+    <img class="package-image" src="/images/tune.png" alt=""></img>
+    <div class="package-info">
+      <h3><a href="https://tidymodels.github.io/tune/"> tune </a></h3>
+      <p> tune helps optimize your the hyper-parameters of your model and pre-processing steps. <a href="https://tidymodels.github.io/tune/" aria-hidden="true">Learn more ...</a></p>
+    </div>
+  </div>  
+  <div class="package">
+    <img class="package-image" src="/images/yardstick.png" alt=""></img>
+    <div class="package-info">
+      <h3><a href="https://tidymodels.github.io/yardstick/"> yardstick </a></h3>
+      <p>The effectiveness of a model can be measured using various performance metrics in yardstick <a href="https://tidymodels.github.io/yardstick/" aria-hidden="true">Learn more ...</a></p>
     </div>
   </div>
   <div class="package">
@@ -71,11 +78,19 @@ These package are guided by our [principles for creating modeling packages](http
     </div>
   </div>
   <div class="package">
+    <img class="package-image" src="/images/dials.png" alt=""></img>
+    <div class="package-info">
+      <h3><a href="https://dials.tidyverse.org/"> dials </a></h3>
+      <p>dials works with tuning parameters and can create parameter grids. 
+      <a href="https://tidymodels.github.io/dials/" aria-hidden="true">Learn more ...</a></p>
+    </div>
+  </div>  
+  <div class="package">
     <img class="package-image" src="/images/tidymodels.png" alt=""></img>
     <div class="package-info">
       <h3><a href="https://tidymodels.tidymodels.org/"> tidymodels </a></h3>
       <p>tidymodels is a meta-package that installs and load the packages that you will need.  
-      <a href="https://tidymodels.tidymodels.org/" aria-hidden="true">Learn more ...</a></p>
+      <a href="https://tidymodels.github.io/tidymodels/" aria-hidden="true">Learn more ...</a></p>
     </div>
   </div>
 </div>
