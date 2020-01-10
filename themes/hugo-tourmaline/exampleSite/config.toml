@@ -22,11 +22,12 @@ preserveTaxonomyNames = true
 # disableKinds = ["taxonomyTerm"]
 
 [permalinks]
-  articles = "news/:year/:month/:slug/"
+  blog = "blog/:year/:month/:slug/"
 
 [taxonomies]
   author = "author"
   category = "categories"
+  tag = "tags"
 
 # Configure BlackFriday Markdown rendering.
 #   See: https://gohugo.io/getting-started/configuration/#configure-blackfriday

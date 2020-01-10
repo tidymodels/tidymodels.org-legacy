@@ -1,8 +1,16 @@
-description = "The tidyverse is an integrated collection of R packages designed to make data science fast, fluid, and fun."
+# Description for social sharing and search engines.
+description = "RStudio Education helps people achieve data literacy using the R language, tools, and content."
+
+# Default image for social sharing and search engines. Place image in `static/images/` folder and specify image name here.
+sharing_image = "01.rstudio.flowers-sharing.jpg"
+twitter_image = "01.rstudio.flowers-sharing.jpg"
 
 # Link custom CSS and JS assets
 #   (relative to /static/css and /static/js respectively)
-custom_css = ["tm.css", "tidyverse-site.css"]
+custom_css = ["tm.css"]
+
+# Define base hex url for index page (where the stickers link out to)
+hex_base_url = "tidymodels.github.io/"
     
 # Define "news" as both articles and events
 mainSections = ["articles", "events"]
@@ -15,7 +23,6 @@ highlightjsTheme = "github"
 
 MathJaxCDN = "//cdn.bootcss.com"
 MathJaxVersion = "2.7.1"
-
 
 [footer]
     github_url = "https://github.com/tidymodels"
@@ -50,12 +57,12 @@ MathJaxVersion = "2.7.1"
     # Backgrounds
     background = "white"
     home_section_odd = "white"
-    home_section_even = "#f0eee9"
+    home_section_even = "#fdeba4"
     # Menu
     menu_primary = "#1a162d" # same as tidyverse.org
     menu_text = "#fff"
     menu_text_active = "#fff"
-    menu_text_current = "##1a162d" # same as tidyverse.org
+    menu_text_current = "#1a162d" # same as tidyverse.org
     menu_decorate_current = "none"
     menu_title = "#fff"
     menu_title_active = "#fdeba4" # same as tidyverse.org
