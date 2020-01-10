@@ -35,3 +35,6 @@ preserveTaxonomyNames = true
 	angledQuotes = false
 	latexDashes = true
   extensions = ["backslashLineBreak"]
+
+[markup.goldmark.renderer]
+  unsafe = true
