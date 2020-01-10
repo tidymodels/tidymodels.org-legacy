@@ -34,13 +34,7 @@ These package are guided by our [principles for creating modeling packages](http
 </div>
 
 <div class="packages">
-  <div class="package">
-    <img class="package-image" src="/images/rsample.png" alt=""></img>
-    <div class="package-info">
-      <h3><a href="https://tidymodels.github.io/rsample/">rsample</a></h3>
-      <p>rsample provides infrastructure for data splitting and resampling <a href="https://tidymodels.github.io/rsample/" aria-hidden="true">Learn more ...</a></p>
-    </div>
-  </div>
+
   <div class="package">
     <img class="package-image" src="/images/recipes.png" alt=""></img>
     <div class="package-info">
@@ -62,6 +56,13 @@ These package are guided by our [principles for creating modeling packages](http
       <p> tune helps optimize your the hyper-parameters of your model and pre-processing steps. <a href="https://tidymodels.github.io/tune/" aria-hidden="true">Learn more ...</a></p>
     </div>
   </div>  
+    <div class="package">
+    <img class="package-image" src="/images/rsample.png" alt=""></img>
+    <div class="package-info">
+      <h3><a href="https://tidymodels.github.io/rsample/">rsample</a></h3>
+      <p>rsample provides infrastructure for data splitting and resampling <a href="https://tidymodels.github.io/rsample/" aria-hidden="true">Learn more ...</a></p>
+    </div>
+  </div>
   <div class="package">
     <img class="package-image" src="/images/yardstick.png" alt=""></img>
     <div class="package-info">
@@ -96,7 +97,34 @@ These package are guided by our [principles for creating modeling packages](http
 </div>
 </div>
 
-The tidymodels also includes many other packages with more specialized usage. They are not loaded automatically with `library(tidymodels)`, so you'll need to load each one with its own call to `library()`. 
+These packages can be installed and loaded _en mass_ using the `tidymodels` package. 
+
+## Non-Core Packages
+
+The tidymodels organization has a variety of other packages to facilitate data analysis and modeling. They are not loaded automatically with `library(tidymodels)`, so you'll need to load each one with its own call to `library()`. 
+
+These packages include: 
+
+* [`infer`](http://infer.netlify.com/) is a high-level API for for tidyverse-friendly statistical inference.
+
+* [`tidypredict`](https://tidymodels.github.io/tidypredict/) and [`modeldb`](https://tidymodels.github.io/modeldb/) can convert prediction equations to different languages (e.g. SQL) and fit some models in-database. 
+
+* [`hardhat`](https://tidymodels.github.io/hardhat/) helps beginners setup high-quality R packages for modeling. 
+
+* There are several add-on packages for creating recipes. [`embed`](https://tidymodels.github.io/embed/) contains steps to create embeddings or projections of predictors. [`textrecipes`](https://tidymodels.github.io/textrecipes/) has extra steps for text processing, and [`themis`](https://tidymodels.github.io/themis/) can help alleviate class imbalances using sampling methods. 
+
+* `parsnip` also has additional packages that contain model definitions. [`discrim`](https://tidymodels.github.io/discrim/) contains definitions for discriminant analysis models and [`rules`](https://tidymodels.github.io/rules/) does the same for rule-based classification and regression models. 
+
+* Some R objects become abnormally large when saved to disk. The [`butcher`](https://tidymodels.github.io/butcher/) package can reduce the size of those objects by removing the sub-components. 
+
+* To know whether the data that you are predicting are _extrapolations_ from the training set, [`applicable`](https://tidymodels.github.io/applicable/) can produce metrics the measure extrapolation. 
+
+* The [`corrr`](https://tidymodels.github.io/corrr/) package has tidy interfaces for working with correlation matrices. 
+
+* [`probably`](https://tidymodels.github.io/probably/) has tools for post-processing class probability estimates.
+
+* The [`tidyposterior`](https://tidymodels.github.io/tidyposterior/) package can let users make formal statistical comparisons between models using resampling and Bayesian methods. 
+
 
 
 ## Get help
