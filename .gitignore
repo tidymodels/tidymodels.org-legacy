@@ -4,3 +4,4 @@
 .Ruserdata
 .DS_Store
 public/
+static/rmarkdown-libs
