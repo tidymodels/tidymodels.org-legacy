@@ -1,5 +1,5 @@
 ---
-title: List of recipe steps
+title: List of Recipe Steps
 ---
 
 ```{r ex_setup, include=FALSE}
