@@ -1,0 +1,105 @@
+---
+title: "Multivariate Analysis using Partial Least Squares"
+---
+
+<script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
+<script src="/rmarkdown-libs/elevate-section-attrs/elevate-section-attrs.js"></script>
+
+
+<p>In addition to the <code>tidymodels</code> package, this example uses the <code>pls</code> and <code>modeldata</code> packages.</p>
+<p><em>Multivariate Analysis</em> usually refers to the situation where multiple <em>outcomes</em> are being modeled, analyzed, and/or predicted. There are multivariate versions of many common statistical tools. For example, suppose there was a data set with columns <code>y1</code> and <code>y2</code> containing two outcomes to be predicted. The <code>lm</code> function would look something like:</p>
+<pre class="r"><code>lm(cbind(y1, y2) ~ ., data = dat)</code></pre>
+<p>The <code>cbind</code> is pretty awkward and is a consequence of how the traditional formula infrastructure works. <code>recipes</code> is a lot easter to work with and this document shows an example to illustrate how to use multiple outcomes.</p>
+<p>The data that we’ll use has three outcomes. From <code>?meats</code>:</p>
+<blockquote>
+<p>"These data are recorded on a Tecator Infratec Food and Feed Analyzer working in the wavelength range 850 - 1050 nm by the Near Infrared Transmission (NIT) principle. Each sample contains finely chopped pure meat with different moisture, fat and protein contents.</p>
+</blockquote>
+<blockquote>
+<p>“For each meat sample the data consists of a 100 channel spectrum of absorbances and the contents of moisture (water), fat and protein. The absorbance is <code>-log10</code> of the transmittance measured by the spectrometer. The three contents, measured in percent, are determined by analytic chemistry.”</p>
+</blockquote>
+<p>The goal would be to be able to predict the proportion of the three substances using the chemistry test. For the predictors, there is usually a very high degree of between-variable correlations in the data and that is certainly the case here.</p>
+<p>To start, let’s take the two data matrices (called <code>endpoints</code> and <code>absorp</code>) and bind them together in a data frame:</p>
+<pre class="r"><code>library(modeldata)
+data(meats)</code></pre>
+<p>The three outcomes have fairly high correlations also. If the outcomes can be predicted using a linear model, partial least squares (PLS) is an idea method. PLS models the data as a function of a set of unobserved <em>latent</em> variables that are derived in a manner similar to principal component analysis (PCA).</p>
+<p>PLS, unlike PCA, also incorporates the outcome data when creating the PLS components. Like PCA it tries to maximize the variance of the predictors that are explained by the components but also tries to simultaneously maximize the correlation between those components and the outcomes. In this way, PLS <em>chases</em> variation of the predictors and outcomes.</p>
+<p>Since we are working with variances and covariances, it makes sense to standardize the data. The recipe will center and scale all of the variables.</p>
+<p>Many base R functions that deal with multivariate outcomes using the formula require the use of <code>cbind</code> on the left-hand side of the formula to work with the traditional formula methods. <code>recipes</code> do not; the outcomes can be symbolically “added” together on the left-hand side:</p>
+<pre class="r"><code>norm_rec &lt;- 
+  recipe(water + fat + protein ~ ., data = meats) %&gt;%
+  step_normalize(everything()) </code></pre>
+<p>Before we can finalize the PLS model, the number of PLS components to retain must be determined. This can be done using performance metrics such as the root mean squared error. However, we can also calculate the proportion of variance explained by the components for the <em>predictors and each of the outcomes</em>. This allows an informed choice to be made based on the level of evidence that the situation requires.</p>
+<p>Since the data set isn’t large, resampling will be used to measure these proportions. Ten repeats of 10-fold cross-validation will be used to build the PLS model on 90% of the data. For each of the 100 models, the proportions will be extracted and saved.</p>
+<p>The folds can be created using the <a href="https://tidymodels.github.io/rsample/"><code>rsample</code> package</a> and the recipe can be estimated for each resample using the <a href="https://tidymodels.github.io/rsample/reference/prepper.html"><code>prepper</code> function</a>:</p>
+<pre class="r"><code>set.seed(57343)
+folds &lt;- vfold_cv(meats, repeats = 10)
+
+folds &lt;- 
+  folds %&gt;%
+  mutate(recipes = map(splits, prepper, recipe = norm_rec))</code></pre>
+<p>The complicated part here is:</p>
+<ol style="list-style-type: decimal">
+<li>Formatting the predictors and outcomes into the format that the <code>pls</code> package requires, and</li>
+<li>Estimating the proportions.</li>
+</ol>
+<p>For the first part, the standardized outcomes and predictors will need to be formatted into two separate matrices. Since we used <code>retain = TRUE</code> when prepping the recipes, the <code>juice</code> function can be used. To save the data as a matrix, the option <code>composition = "matrix"</code> will avoid saving the data as tibbles and use the required format.</p>
+<p>The <code>pls</code> wants to use a simple formula to specify the model but each side of the formula should <em>represent a matrix</em>. In other words, we need a data from with two columns and each column is a matrix. The secret to doing this is to “protect” the two matrices using <code>I()</code> when adding them to the data frame.</p>
+<p>The calculation for the proportion of variance explained is simple for the predictors; the function <code>pls::explvar</code> will compute that. For the outcomes, the process is more complicated. I didn’t see a ready-made function to compute these but there is some code inside of the summary function to do the computation (see below).</p>
+<p>The function <code>get_var_explained</code> will do these computations and return a data frame with columns <code>components</code>, <code>source</code> (for the predictors, water, etc) and the <code>proportion</code> of variance that is explained by the components.</p>
+<pre class="r"><code>library(pls)
+
+get_var_explained &lt;- function(recipe, ...) {
+  
+  # Extract the predictors and outcomes into their own matrices
+  y_mat &lt;- juice(recipe, composition = &quot;matrix&quot;, all_outcomes())
+  x_mat &lt;- juice(recipe, composition = &quot;matrix&quot;, all_predictors())
+  
+  # The pls package prefers the data in a data frame where the outcome
+  # and predictors are in _matrices_. To make sure this is formatted
+  # properly, use the `I` function to inhibit `data.frame` from making
+  # all the individual columns. `pls_format` should have two columns.
+  pls_format &lt;- data.frame(
+    endpoints = I(y_mat),
+    measurements = I(x_mat)
+  )
+  # Fit the model
+  mod &lt;- plsr(endpoints ~ measurements, data = pls_format)
+  
+  # Get the proportion of the predictor variance that is explained
+  # by the model for different number of components. 
+  xve &lt;- explvar(mod)/100 
+
+  # To do the same for the outcome, it is more complex. This code 
+  # was extracted from pls:::summary.mvr. 
+  explained &lt;- 
+    drop(pls::R2(mod, estimate = &quot;train&quot;, intercept = FALSE)$val) %&gt;% 
+    # transpose so that components are in rows
+    t() %&gt;% 
+    as_tibble() %&gt;%
+    # Add the predictor proportions
+    mutate(predictors = cumsum(xve) %&gt;% as.vector(),
+           components = seq_along(xve)) %&gt;%
+    # Put into a tidy format that is tall
+    pivot_longer(
+      cols = c(-components),
+      names_to = &quot;source&quot;,
+      values_to = &quot;proportion&quot;
+    )
+}</code></pre>
+<p>We compute this data frame for each resample and save the results in different columns.</p>
+<pre class="r"><code>folds &lt;- 
+  folds %&gt;%
+  mutate(var = map(recipes, get_var_explained))</code></pre>
+<p>To extract and aggregate these data, simple row binding can be used to stack the data vertically. Most of the action happens in the first 15 components so the data are filtered and the <em>average</em> proportion is computed.</p>
+<pre class="r"><code>variance_data &lt;- 
+  bind_rows(folds[[&quot;var&quot;]]) %&gt;%
+  filter(components &lt;= 15) %&gt;%
+  group_by(components, source) %&gt;%
+  summarize(proportion = mean(proportion))</code></pre>
+<p>The plot below shows that, if the protein measurement is important, you might require 10 or so components to achieve a good representation of that outcome. Note that the predictor variance is captured extremely well using a single component. This is due to the high degree of correlation in those data.</p>
+<pre class="r"><code>ggplot(variance_data, aes(x = components, y = proportion, col = source)) + 
+  geom_line() + 
+  geom_point() + 
+  theme_bw() + 
+  theme(legend.position = &quot;top&quot;)</code></pre>
+<p><img src="/examples/multivariate-pls/index_files/figure-html/plot-1.png" width="100%" /></p>

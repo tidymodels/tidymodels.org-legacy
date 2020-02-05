@@ -1,0 +1,251 @@
+---
+title: "Survival Analysis Example"
+---
+
+<script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
+<script src="/rmarkdown-libs/elevate-section-attrs/elevate-section-attrs.js"></script>
+
+
+<p>In this article, a parametric analysis of censored data is conducted and <code>rsample</code> is used to measure the importance of predictors in the model. The data that will be used is the NCCTG lung cancer data contained in the <code>survival</code> package:</p>
+<pre class="r"><code>library(survival)
+str(lung)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    228 obs. of  10 variables:
+##  $ inst     : num  3 3 3 5 1 12 7 11 1 7 ...
+##  $ time     : num  306 455 1010 210 883 ...
+##  $ status   : num  2 2 1 2 2 1 2 2 2 2 ...
+##  $ age      : num  74 68 56 57 60 74 68 71 53 61 ...
+##  $ sex      : num  1 1 1 1 1 1 2 2 1 1 ...
+##  $ ph.ecog  : num  1 0 0 1 0 1 2 2 1 2 ...
+##  $ ph.karno : num  90 90 90 90 100 50 70 60 70 70 ...
+##  $ pat.karno: num  100 90 90 60 90 80 60 80 80 70 ...
+##  $ meal.cal : num  1175 1225 NA 1150 NA ...
+##  $ wt.loss  : num  NA 15 15 11 0 0 10 1 16 34 ...</code></pre>
+<p><code>status</code> is an indicator for which patients are censored (<code>status = 1</code>) or an actual event (<code>status = 2</code>). The help file <code>?survreg</code> has the following model fit:</p>
+<pre class="r"><code>lung_mod &lt;- survreg(Surv(time, status) ~ ph.ecog + age + strata(sex), data = lung)
+summary(lung_mod)</code></pre>
+<pre><code>## 
+## Call:
+## survreg(formula = Surv(time, status) ~ ph.ecog + age + strata(sex), 
+##     data = lung)
+##                Value Std. Error     z       p
+## (Intercept)  6.73235    0.42396 15.88 &lt; 2e-16
+## ph.ecog     -0.32443    0.08649 -3.75 0.00018
+## age         -0.00581    0.00693 -0.84 0.40193
+## sex=1       -0.24408    0.07920 -3.08 0.00206
+## sex=2       -0.42345    0.10669 -3.97 7.2e-05
+## 
+## Scale:
+## sex=1 sex=2 
+## 0.783 0.655 
+## 
+## Weibull distribution
+## Loglik(model)= -1137   Loglik(intercept only)= -1146
+##  Chisq= 17.8 on 2 degrees of freedom, p= 0.00014 
+## Number of Newton-Raphson Iterations: 5 
+## n=227 (1 observation deleted due to missingness)</code></pre>
+<p>Note that the stratification on gender only affects the scale parameter; the estimates above are from a log-linear model for the scale parameter even though they are listed with the regression variables for the other parameter. <code>coef</code> gives results that are more clear:</p>
+<pre class="r"><code>coef(lung_mod)</code></pre>
+<pre><code>## (Intercept)     ph.ecog         age 
+##     6.73235    -0.32443    -0.00581</code></pre>
+<p>To resample these data, it would be a good idea to try to maintain the same censoring rate across the splits. To do this, stratified resampling can be used where each analysis/assessment split is conducted within each value of the status indicator. To demonstrate, Monte Carlo resampling is used where 75% of the data are in the analysis set. A total of 100 splits are created.</p>
+<pre class="r"><code>library(rsample)
+set.seed(9666)
+mc_samp &lt;- mc_cv(lung, strata = &quot;status&quot;, times = 100)
+
+library(purrr)
+cens_rate &lt;- function(x) mean(analysis(x)$status == 1)
+summary(map_dbl(mc_samp$splits, cens_rate))</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   0.279   0.279   0.279   0.279   0.279   0.279</code></pre>
+<p>To demonstrate the use of resampling with censored data, the parametric model shown above will be fit with different variable sets to characterize how important each predictor is to the outcome.</p>
+<p>To do this, a set of formulas are created for the different variable sets:</p>
+<pre class="r"><code>three_fact &lt;- as.formula(Surv(time, status) ~ ph.ecog + age + strata(sex))
+rm_ph.ecog &lt;- as.formula(Surv(time, status) ~           age + strata(sex))
+rm_age     &lt;- as.formula(Surv(time, status) ~ ph.ecog +       strata(sex))
+rm_sex     &lt;- as.formula(Surv(time, status) ~ ph.ecog + age              )</code></pre>
+<p>The model fitting function will take the formula as an argument:</p>
+<pre class="r"><code>mod_fit &lt;- function(x, form, ...) 
+  survreg(form, data = analysis(x), ...)</code></pre>
+<p>To calculate the efficacy of the model, the concordance statistic is used (see <code>?survConcordance</code>):</p>
+<pre class="r"><code>get_concord &lt;- function(split, mod, ...) {
+  pred_dat &lt;- assessment(split)
+  pred_dat$pred &lt;- predict(mod, newdata = pred_dat)
+  concordance(Surv(time, status) ~ pred, pred_dat, ...)$concordance
+}</code></pre>
+<p>With these functions, a series of models are created for each variable set.</p>
+<pre class="r"><code>mc_samp$mod_full    &lt;- map(mc_samp$splits, mod_fit, form = three_fact)
+mc_samp$mod_ph.ecog &lt;- map(mc_samp$splits, mod_fit, form = rm_ph.ecog)
+mc_samp$mod_age     &lt;- map(mc_samp$splits, mod_fit, form = rm_age)
+mc_samp$mod_sex     &lt;- map(mc_samp$splits, mod_fit, form = rm_sex)</code></pre>
+<p>Similarly, the concordance values are computed for each model:</p>
+<pre class="r"><code>mc_samp$full    &lt;- map2_dbl(mc_samp$splits, mc_samp$mod_full, get_concord)
+mc_samp$ph.ecog &lt;- map2_dbl(mc_samp$splits, mc_samp$mod_ph.ecog, get_concord)
+mc_samp$age     &lt;- map2_dbl(mc_samp$splits, mc_samp$mod_age, get_concord)
+mc_samp$sex     &lt;- map2_dbl(mc_samp$splits, mc_samp$mod_sex, get_concord)</code></pre>
+<p>The distributions of the resampling estimates</p>
+<pre class="r"><code>library(dplyr)
+concord_est &lt;- mc_samp %&gt;%
+  dplyr::select(-matches(&quot;^mod&quot;))
+
+library(tidyr)
+library(ggplot2)
+concord_est %&gt;%
+  gather() %&gt;%
+  ggplot(aes(x = statistic, col = model)) + 
+  geom_line(stat = &quot;density&quot;) + 
+  theme_bw() + 
+  theme(legend.position = &quot;top&quot;)</code></pre>
+<p><img src="/examples/survivial-analysis/index_files/figure-html/concord-df-1.png" width="672" /></p>
+<p>It looks as though the model missing <code>ph.ecog</code> has larger concordance values than the other models. As one might expect, the full model and the model absent <code>sex</code> are very similar; the difference in these models should only be the scale parameters estimates.</p>
+<p>To more formally test this, the <code>tidyposterior</code> package is used to create a Bayesian model for the concordance statistics.</p>
+<pre class="r"><code>library(tidyposterior)
+concord_est &lt;- perf_mod(concord_est, seed = 6507, iter = 5000)</code></pre>
+<pre><code>## 
+## SAMPLING FOR MODEL &#39;continuous&#39; NOW (CHAIN 1).
+## Chain 1: 
+## Chain 1: Gradient evaluation took 0.000106 seconds
+## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 1.06 seconds.
+## Chain 1: Adjust your expectations accordingly!
+## Chain 1: 
+## Chain 1: 
+## Chain 1: Iteration:    1 / 5000 [  0%]  (Warmup)
+## Chain 1: Iteration:  500 / 5000 [ 10%]  (Warmup)
+## Chain 1: Iteration: 1000 / 5000 [ 20%]  (Warmup)
+## Chain 1: Iteration: 1500 / 5000 [ 30%]  (Warmup)
+## Chain 1: Iteration: 2000 / 5000 [ 40%]  (Warmup)
+## Chain 1: Iteration: 2500 / 5000 [ 50%]  (Warmup)
+## Chain 1: Iteration: 2501 / 5000 [ 50%]  (Sampling)
+## Chain 1: Iteration: 3000 / 5000 [ 60%]  (Sampling)
+## Chain 1: Iteration: 3500 / 5000 [ 70%]  (Sampling)
+## Chain 1: Iteration: 4000 / 5000 [ 80%]  (Sampling)
+## Chain 1: Iteration: 4500 / 5000 [ 90%]  (Sampling)
+## Chain 1: Iteration: 5000 / 5000 [100%]  (Sampling)
+## Chain 1: 
+## Chain 1:  Elapsed Time: 4.96524 seconds (Warm-up)
+## Chain 1:                1.731 seconds (Sampling)
+## Chain 1:                6.69624 seconds (Total)
+## Chain 1: 
+## 
+## SAMPLING FOR MODEL &#39;continuous&#39; NOW (CHAIN 2).
+## Chain 2: 
+## Chain 2: Gradient evaluation took 2.9e-05 seconds
+## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.29 seconds.
+## Chain 2: Adjust your expectations accordingly!
+## Chain 2: 
+## Chain 2: 
+## Chain 2: Iteration:    1 / 5000 [  0%]  (Warmup)
+## Chain 2: Iteration:  500 / 5000 [ 10%]  (Warmup)
+## Chain 2: Iteration: 1000 / 5000 [ 20%]  (Warmup)
+## Chain 2: Iteration: 1500 / 5000 [ 30%]  (Warmup)
+## Chain 2: Iteration: 2000 / 5000 [ 40%]  (Warmup)
+## Chain 2: Iteration: 2500 / 5000 [ 50%]  (Warmup)
+## Chain 2: Iteration: 2501 / 5000 [ 50%]  (Sampling)
+## Chain 2: Iteration: 3000 / 5000 [ 60%]  (Sampling)
+## Chain 2: Iteration: 3500 / 5000 [ 70%]  (Sampling)
+## Chain 2: Iteration: 4000 / 5000 [ 80%]  (Sampling)
+## Chain 2: Iteration: 4500 / 5000 [ 90%]  (Sampling)
+## Chain 2: Iteration: 5000 / 5000 [100%]  (Sampling)
+## Chain 2: 
+## Chain 2:  Elapsed Time: 5.31405 seconds (Warm-up)
+## Chain 2:                1.31413 seconds (Sampling)
+## Chain 2:                6.62818 seconds (Total)
+## Chain 2: 
+## 
+## SAMPLING FOR MODEL &#39;continuous&#39; NOW (CHAIN 3).
+## Chain 3: 
+## Chain 3: Gradient evaluation took 3.6e-05 seconds
+## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.36 seconds.
+## Chain 3: Adjust your expectations accordingly!
+## Chain 3: 
+## Chain 3: 
+## Chain 3: Iteration:    1 / 5000 [  0%]  (Warmup)
+## Chain 3: Iteration:  500 / 5000 [ 10%]  (Warmup)
+## Chain 3: Iteration: 1000 / 5000 [ 20%]  (Warmup)
+## Chain 3: Iteration: 1500 / 5000 [ 30%]  (Warmup)
+## Chain 3: Iteration: 2000 / 5000 [ 40%]  (Warmup)
+## Chain 3: Iteration: 2500 / 5000 [ 50%]  (Warmup)
+## Chain 3: Iteration: 2501 / 5000 [ 50%]  (Sampling)
+## Chain 3: Iteration: 3000 / 5000 [ 60%]  (Sampling)
+## Chain 3: Iteration: 3500 / 5000 [ 70%]  (Sampling)
+## Chain 3: Iteration: 4000 / 5000 [ 80%]  (Sampling)
+## Chain 3: Iteration: 4500 / 5000 [ 90%]  (Sampling)
+## Chain 3: Iteration: 5000 / 5000 [100%]  (Sampling)
+## Chain 3: 
+## Chain 3:  Elapsed Time: 5.14797 seconds (Warm-up)
+## Chain 3:                1.15877 seconds (Sampling)
+## Chain 3:                6.30675 seconds (Total)
+## Chain 3: 
+## 
+## SAMPLING FOR MODEL &#39;continuous&#39; NOW (CHAIN 4).
+## Chain 4: 
+## Chain 4: Gradient evaluation took 3.3e-05 seconds
+## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.33 seconds.
+## Chain 4: Adjust your expectations accordingly!
+## Chain 4: 
+## Chain 4: 
+## Chain 4: Iteration:    1 / 5000 [  0%]  (Warmup)
+## Chain 4: Iteration:  500 / 5000 [ 10%]  (Warmup)
+## Chain 4: Iteration: 1000 / 5000 [ 20%]  (Warmup)
+## Chain 4: Iteration: 1500 / 5000 [ 30%]  (Warmup)
+## Chain 4: Iteration: 2000 / 5000 [ 40%]  (Warmup)
+## Chain 4: Iteration: 2500 / 5000 [ 50%]  (Warmup)
+## Chain 4: Iteration: 2501 / 5000 [ 50%]  (Sampling)
+## Chain 4: Iteration: 3000 / 5000 [ 60%]  (Sampling)
+## Chain 4: Iteration: 3500 / 5000 [ 70%]  (Sampling)
+## Chain 4: Iteration: 4000 / 5000 [ 80%]  (Sampling)
+## Chain 4: Iteration: 4500 / 5000 [ 90%]  (Sampling)
+## Chain 4: Iteration: 5000 / 5000 [100%]  (Sampling)
+## Chain 4: 
+## Chain 4:  Elapsed Time: 5.63117 seconds (Warm-up)
+## Chain 4:                1.03275 seconds (Sampling)
+## Chain 4:                6.66392 seconds (Total)
+## Chain 4:</code></pre>
+<pre class="r"><code>concord_est$stan</code></pre>
+<pre><code>## stan_glmer
+##  family:       gaussian [identity]
+##  formula:      statistic ~ model + (1 | id)
+##  observations: 400
+## ------
+##              Median MAD_SD
+## (Intercept)   0.6    0.0  
+## modelph.ecog -0.1    0.0  
+## modelage      0.0    0.0  
+## modelsex      0.0    0.0  
+## 
+## Auxiliary parameter(s):
+##       Median MAD_SD
+## sigma 0.0    0.0   
+## 
+## Error terms:
+##  Groups   Name        Std.Dev.
+##  id       (Intercept) 0.033   
+##  Residual             0.030   
+## Num. levels: id 100 
+## 
+## ------
+## * For help interpreting the printed output see ?print.stanreg
+## * For info on the priors used see ?prior_summary.stanreg</code></pre>
+<p>To summarize the posteriors for each model:</p>
+<pre class="r"><code>ggplot(tidy(concord_est)) + 
+  theme_bw()</code></pre>
+<p><img src="/examples/survivial-analysis/index_files/figure-html/post-1.png" width="672" /></p>
+<p>While this seems clear-cut, let’s assume that a difference in the concordance statistic of 0.1 is a real effect. To compute the posteriors for the difference in models, the full model will be contrasted with the others:</p>
+<pre class="r"><code>comparisons &lt;- contrast_models(
+  concord_est, 
+  list_1 = rep(&quot;full&quot;, 3),
+  list_2 = c(&quot;ph.ecog&quot;, &quot;age&quot;, &quot;sex&quot;),
+  seed = 4654
+  )</code></pre>
+<p>The posterior distributions show that, statistically, <code>ph.ecog</code> has real importance ot the model. However, since these distributions are mostly with +/- 0.05, they are unlikely to be real differences.</p>
+<pre class="r"><code>ggplot(comparisons, size = 0.05) + 
+  theme_bw()</code></pre>
+<p><img src="/examples/survivial-analysis/index_files/figure-html/diff-post-1.png" width="672" /></p>
+<p>The ROPE statistics quantify the practical effects:</p>
+<pre class="r"><code>summary(comparisons, size = 0.05) %&gt;%
+  dplyr::select(contrast, starts_with(&quot;pract&quot;))</code></pre>
+<pre><code>## # A tibble: 3 x 4
+##   contrast        pract_neg pract_equiv pract_pos
+##   &lt;chr&gt;               &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;
+## 1 full vs age             0       1         0    
+## 2 full vs ph.ecog         0       0.281     0.719
+## 3 full vs sex             0       1         0</code></pre>

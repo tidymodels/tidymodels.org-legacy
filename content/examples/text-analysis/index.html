@@ -1,0 +1,542 @@
+---
+title: "Tuning a Supervised Text Model"
+---
+
+<script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
+<script src="/rmarkdown-libs/elevate-section-attrs/elevate-section-attrs.js"></script>
+
+
+<p>This advanced example shows how to process text data with recipes and use them in a predictive model. It also has an example of extracting information from each model fit for later use.</p>
+<p>The data are from Amazon:</p>
+<blockquote>
+<p>“This dataset consists of reviews of fine foods from amazon. The data span a period of more than 10 years, including all ~500,000 reviews up to October 2012. Reviews include product and user information, ratings, and a plaintext review.”</p>
+</blockquote>
+<p>A small subset of the data are contained here; we sampled a single review from 5,000 random products and 80% of these data were used as the training set. The remaining 1,000 were used as the test set.</p>
+<p>There is a column for the product, a column for the text of the review, and a factor column for a class variable. The outcome is whether the reviewer game the product a five-star rating or not.</p>
+<pre class="r"><code>library(tidymodels)
+library(tune)
+library(modeldata)
+
+data(&quot;small_fine_foods&quot;)
+training_data
+#&gt; # A tibble: 4,000 x 3
+#&gt;    product    review                                                       score
+#&gt;    &lt;chr&gt;      &lt;chr&gt;                                                        &lt;fct&gt;
+#&gt;  1 B000J0LSBG &quot;this stuff is  not stuffing  its  not good at all  save yo… other
+#&gt;  2 B000EYLDYE &quot;I absolutely LOVE this dried fruit.  LOVE IT.  Whenever I … great
+#&gt;  3 B0026LIO9A &quot;GREAT DEAL, CONVENIENT TOO.  Much cheaper than WalMart and… great
+#&gt;  4 B00473P8SK &quot;Great flavor, we go through a ton of this sauce! I discove… great
+#&gt;  5 B001SAWTNM &quot;This is excellent salsa/hot sauce, but you can get it for … great
+#&gt;  6 B000FAG90U &quot;Again, this is the best dogfood out there.  One suggestion… great
+#&gt;  7 B006BXTCEK &quot;The box I received was filled with teas, hot chocolates, a… other
+#&gt;  8 B002GWH5OY &quot;This is delicious coffee which compares favorably with muc… great
+#&gt;  9 B003R0MFYY &quot;Don&#39;t let these little tiny cans fool you.  They pack a lo… great
+#&gt; 10 B001EO5ZXI &quot;One of the nicest, smoothest cup of chai I&#39;ve made. Nice m… great
+#&gt; # … with 3,990 more rows</code></pre>
+<p>The idea is to process the text data into features and use these features to predict whether the review was five-star or not.</p>
+<div id="recipe-and-model-specifications" class="section level2">
+<h2>Recipe and Model Specifications</h2>
+<p>The data processing steps are:</p>
+<ul>
+<li><p>create an initial set of features based on simple word/character scores, such as the number of words, URLs and so on; The <a href="https://github.com/mkearney/textfeatures"><code>textfeatures</code></a> will be used for this</p></li>
+<li><p>the text is tokenized (i.e. broken into smaller components such as words)</p></li>
+<li><p>stop words (such as “the”, “an”, etc.) are removed</p></li>
+<li><p>tokens are stemmed to a common root where possible</p></li>
+<li><p>tokens are converted to dummy variables via a <a href="https://bookdown.org/max/FES/encoding-predictors-with-many-categories.html">signed, binary hash function</a></p></li>
+<li><p>non-token features are optionally transformed to a more symmetric state using a <a href="https://bookdown.org/max/FES/numeric-one-to-one.html">Yeo-Johnson transformation</a></p></li>
+<li><p>predictors with a single distinct value are removed</p></li>
+<li><p>all predictors are centered and scaled.</p></li>
+</ul>
+<p>Some of these steps may or may not be good ideas (such as stemming). In this process, the main tuning parameter will be the number of feature hash features to use.</p>
+<p>A recipe will be used to implement this. We’ll also need some helper objects. For example, for the Yeo-Johnson transformation, we need to know the initial feature set:</p>
+<pre class="r"><code>library(textfeatures)
+
+basics &lt;- names(textfeatures:::count_functions)
+head(basics)
+#&gt; [1] &quot;n_words&quot;    &quot;n_uq_words&quot; &quot;n_charS&quot;    &quot;n_uq_charS&quot; &quot;n_digits&quot;  
+#&gt; [6] &quot;n_hashtags&quot;</code></pre>
+<p>Also, the implementation of feature hashes does not produce binary values. This small function will help convert the scores to values of -1, 0, or 1:</p>
+<pre class="r"><code>binary_hash &lt;- function(x) {
+  x &lt;- ifelse(x &lt; 0, -1, x)
+  x &lt;- ifelse(x &gt; 0,  1, x)
+  x
+}</code></pre>
+<p>The recipe is:</p>
+<pre class="r"><code># uses the devel version of textrecipes
+# devtools::install_github(&quot;tidymodels/textrecipes&quot;)
+library(textrecipes)
+
+pre_proc &lt;-
+  recipe(score ~ product + review, data = training_data) %&gt;%
+  # Do not use the product ID as a predictor
+  update_role(product, new_role = &quot;id&quot;) %&gt;%
+  # Make a copy of the raw text
+  step_mutate(review_raw = review) %&gt;%
+  # Compute the initial features. This removes the `review_raw` column
+  step_textfeature(review_raw) %&gt;%
+  # Make the feature names shorter
+  step_rename_at(
+    starts_with(&quot;textfeature_&quot;),
+    fn = ~ gsub(&quot;textfeature_review_raw_&quot;, &quot;&quot;, .)
+  ) %&gt;%
+  step_tokenize(review)  %&gt;%
+  step_stopwords(review) %&gt;%
+  step_stem(review) %&gt;%
+  # Here is where the tuning parameter is declared
+  step_texthash(review, signed = TRUE, num_terms = tune()) %&gt;%
+  # Simplify these names
+  step_rename_at(starts_with(&quot;review_hash&quot;), fn = ~ gsub(&quot;review_&quot;, &quot;&quot;, .)) %&gt;%
+  # Convert the features from counts to values of -1, 0, or 1
+  step_mutate_at(starts_with(&quot;hash&quot;), fn = binary_hash) %&gt;%
+  # Transform the initial feature set
+  step_YeoJohnson(one_of(!!basics)) %&gt;%
+  step_zv(all_predictors()) %&gt;%
+  step_normalize(all_predictors())</code></pre>
+<p>Note that, when objects from the global environment are used, they are injected into the step objects via <code>!!</code>. For some parallel processing technologies, these objects may not be found by the worker processes.</p>
+<p>To model these data, a regularized logistic regression model will be used:</p>
+<pre class="r"><code>lr_mod &lt;-
+  logistic_reg(penalty = tune(), mixture = tune()) %&gt;%
+  set_engine(&quot;glmnet&quot;)</code></pre>
+<p>Three tuning parameters should be trained for this data analysis.</p>
+</div>
+<div id="resampling" class="section level2">
+<h2>Resampling</h2>
+<p>There are enough data here such that 10-fold resampling would hold out 400 reviews at a time to estimate performance. Performance estimates using this many observations have sufficiently low noise to measure and tune models.</p>
+<pre class="r"><code>set.seed(8935)
+folds &lt;- vfold_cv(training_data)</code></pre>
+</div>
+<div id="grid-search" class="section level2">
+<h2>Grid Search</h2>
+<p>A regular grid is used. For <code>glmnet</code> models, evaluating penalty values is fairly cheap due to the use of the “submodel-trick”. The grid will use 20 penalty values, 5 mixture values, and 3 values for the number of hash features.</p>
+<pre class="r"><code>five_star_grid &lt;- 
+  expand.grid(
+    penalty = 10^seq(-3, 0, length = 20),
+    mixture = seq(0, 1, length = 5),
+    num_terms = 2^c(8, 10, 12)
+  )</code></pre>
+<p>Note that, for each resample, the text processing recipe is only prepped 6 times. This increases the computational efficiency of the analysis by avoiding redundant work.</p>
+<p>For illustration, we will save information on the number of predictors by penalty value for each <code>glmnet</code> model. This might help use understand how many features were used across the penalty values. An extraction function is used to do this:</p>
+<pre class="r"><code>glmnet_vars &lt;- function(x) {
+  # `x` will be a workflow object
+  mod &lt;- extract_model(x)
+  # `df` is the number of model terms for each penalty value
+  tibble(penalty = mod$lambda, num_vars = mod$df)
+}
+
+ctrl &lt;- control_grid(extract = glmnet_vars)</code></pre>
+<p>Finally, let’s run the grid search:</p>
+<pre class="r"><code>roc_scores &lt;- metric_set(roc_auc)
+
+set.seed(1559)
+five_star_glmnet &lt;- 
+  tune_grid(pre_proc, lr_mod, resamples = folds, grid = five_star_grid, 
+            metrics = roc_scores, control = ctrl)</code></pre>
+<p>This took a while to complete. What did the results look like? Let’s get the resampling estimates of the area under the ROC curve for each tuning parameter:</p>
+<pre class="r"><code>grid_roc &lt;- 
+  collect_metrics(five_star_glmnet) %&gt;% 
+  arrange(desc(mean))
+grid_roc
+#&gt; # A tibble: 300 x 8
+#&gt;    penalty mixture num_terms .metric .estimator  mean     n std_err
+#&gt;      &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
+#&gt;  1 0.0379     0.25      4096 roc_auc binary     0.816    10 0.00753
+#&gt;  2 0.0183     0.5       4096 roc_auc binary     0.814    10 0.00776
+#&gt;  3 0.0127     0.75      4096 roc_auc binary     0.814    10 0.00781
+#&gt;  4 0.00886    1         4096 roc_auc binary     0.813    10 0.00795
+#&gt;  5 0.0264     0.25      4096 roc_auc binary     0.813    10 0.00791
+#&gt;  6 0.0546     0.25      4096 roc_auc binary     0.811    10 0.00805
+#&gt;  7 0.0127     0.5       4096 roc_auc binary     0.811    10 0.00810
+#&gt;  8 0.00886    0.75      4096 roc_auc binary     0.810    10 0.00803
+#&gt;  9 0.0264     0.5       4096 roc_auc binary     0.810    10 0.00813
+#&gt; 10 0.0127     1         4096 roc_auc binary     0.810    10 0.00808
+#&gt; # … with 290 more rows</code></pre>
+<p>The best results had a fairly high penalty value and focused on the ridge penalty (i.e. no feature selection via the lasso’s L1 penalty). The best solutions also used the largest number of hashing features.</p>
+<p>What was the relationship between performance and the tuning parameters?</p>
+<pre class="r"><code>ggplot(grid_roc, aes(x = penalty, y = mean, col = factor(mixture), group = factor(mixture))) +
+  facet_wrap(~ num_terms) +
+  geom_point(cex = 1) + 
+  geom_line() +
+  scale_x_log10() + 
+  theme(legend.position = &quot;top&quot;)</code></pre>
+<p><img src="/examples/text-analysis/index_files/figure-html/grid-plot-1.png" width="672" /></p>
+<p>There is definitely an effect due to the number of features used<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>. The profiles with mixture values greater than zero had steep drop-offs in performance. What’s that about? Those are cases where the lasso penalty is removing too many (and perhaps all) features from the model<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>.</p>
+<p>It’s clear from the panels at least 4096 features that there are several parameter combinations that have roughly equivalent performance. A case could be made to choose a larger mixture value and less of a penalty to select a more simplistic model that contains fewer predictors. If more experimentation were conducted, a largest set of features should also be considered.</p>
+<p>We’ll come back to the extracted <code>glmnet</code> components at the end of this example.</p>
+</div>
+<div id="directed-search" class="section level2">
+<h2>Directed Search</h2>
+<p>What if we had started with Bayesian optimization? Would a good set of conditions have been found more efficiently?</p>
+<p>Let’s pretend that we haven’t seen the grid search results. We’ll initialize the Gaussian process model with five tuning parameter combinations chosen with a space-filling design.</p>
+<p>It might be good to use a custom <code>dials</code> object for the number of hash terms. The default object, <code>num_terms()</code>, uses a linear range and tries to set the upper bound of the parameter using the data. Instead, let’s create a parameter set, change the scale to be log2, and define the same range as was used in grid search.</p>
+<pre class="r"><code>hash_range &lt;- num_terms(c(8, 12), trans = log2_trans())</code></pre>
+<p>To use this, we have to merge the recipe and <code>parsnip</code> model object into a workflow:</p>
+<pre class="r"><code>library(workflows)
+five_star_wflow &lt;-
+  workflow() %&gt;%
+  add_recipe(pre_proc) %&gt;%
+  add_model(lr_mod)</code></pre>
+<p>Then we can extract and manipulate the corresponding parameter set:</p>
+<pre class="r"><code>five_star_set &lt;-
+  five_star_wflow %&gt;%
+  parameters() %&gt;%
+  update(num_terms = hash_range, penalty = penalty(c(-3, 0)))</code></pre>
+<p>This is passed to the search function via the <code>param_info</code> argument.</p>
+<p>Finally, the initial rounds of search can be biased more towards exploration of the parameter space (as opposed to staying near the current best results). If expected improvement is used as the acquisition function, the trade-off value can be slowly moved from exploration to exploitation over iterations<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a>. <code>tune</code> has a built-in function called <code>expo_decay()</code> that can help accomplish this:</p>
+<pre class="r"><code>trade_off_decay &lt;- function(iter) {
+  expo_decay(iter, start_val = .01, limit_val = 0, slope = 1/4)
+}</code></pre>
+<p>Using these values, let’s run the search:</p>
+<pre class="r"><code>set.seed(12)
+five_star_search &lt;-
+  tune_bayes(
+    five_star_wflow, 
+    resamples = folds,
+    param_info = five_star_set,
+    initial = 5,
+    iter = 30,
+    metrics = roc_scores,
+    objective = exp_improve(trade_off_decay),
+    control = control_bayes(verbose = TRUE)
+  )
+#&gt; 
+#&gt; &gt;  Generating a set of 5 initial parameter results
+#&gt; ✓ Initialization complete
+#&gt; 
+#&gt; Optimizing roc_auc using the expected improvement with variable trade-off values.
+#&gt; 
+#&gt; ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#&gt; 
+#&gt; i Current best:      roc_auc=0.7559 (@iter 0)
+#&gt; i Gaussian process model
+#&gt; ✓ Gaussian process model
+#&gt; i Generating 5000 candidates
+#&gt; i Predicted candidates
+#&gt; i Trade-off value: 0.01
+#&gt; i penalty=0.992, mixture=0.732, num_terms=298
+#&gt; i Estimating performance
+#&gt; ✓ Estimating performance
+#&gt; ⓧ Newest results:    roc_auc=0.5
+#&gt; 
+#&gt; ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#&gt; 
+#&gt; i Current best:      roc_auc=0.7559 (@iter 0)
+#&gt; i Gaussian process model
+#&gt; ✓ Gaussian process model
+#&gt; i Generating 5000 candidates
+#&gt; i Predicted candidates
+#&gt; i Trade-off value: 0.007788
+#&gt; i penalty=0.00276, mixture=0.0931, num_terms=257
+#&gt; i Estimating performance
+#&gt; ✓ Estimating performance
+#&gt; ⓧ Newest results:    roc_auc=0.7457 (+/-0.00814)
+#&gt; 
+#&gt; ── Iteration 3 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#&gt; 
+#&gt; i Current best:      roc_auc=0.7559 (@iter 0)
+#&gt; i Gaussian process model
+#&gt; ✓ Gaussian process model
+#&gt; i Generating 5000 candidates
+#&gt; i Predicted candidates
+#&gt; i Trade-off value: 0.006065
+#&gt; i penalty=0.00697, mixture=0.18, num_terms=4090
+#&gt; i Estimating performance
+#&gt; ✓ Estimating performance
+#&gt; ♥ Newest results:    roc_auc=0.7945 (+/-0.00494)
+#&gt; 
+#&gt; ── Iteration 4 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#&gt; 
+#&gt; i Current best:      roc_auc=0.7945 (@iter 3)
+#&gt; i Gaussian process model
+#&gt; ✓ Gaussian process model
+#&gt; i Generating 5000 candidates
+#&gt; i Predicted candidates
+#&gt; i Trade-off value: 0.004724
+#&gt; i penalty=0.00325, mixture=1, num_terms=2939
+#&gt; i Estimating performance
+#&gt; ✓ Estimating performance
+#&gt; ♥ Newest results:    roc_auc=0.8015 (+/-0.00618)
+#&gt; 
+#&gt; ── Iteration 5 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#&gt; 
+#&gt; i Current best:      roc_auc=0.8015 (@iter 4)
+#&gt; i Gaussian process model
+#&gt; ✓ Gaussian process model
+#&gt; i Generating 5000 candidates
+#&gt; i Predicted candidates
+#&gt; i Trade-off value: 0.003679
+#&gt; i penalty=0.269, mixture=0.666, num_terms=258
+#&gt; i Estimating performance
+#&gt; ✓ Estimating performance
+#&gt; ⓧ Newest results:    roc_auc=0.5
+#&gt; 
+#&gt; ── Iteration 6 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#&gt; 
+#&gt; i Current best:      roc_auc=0.8015 (@iter 4)
+#&gt; i Gaussian process model
+#&gt; ✓ Gaussian process model
+#&gt; i Generating 5000 candidates
+#&gt; i Predicted candidates
+#&gt; i Trade-off value: 0.002865
+#&gt; i penalty=0.0317, mixture=0.151, num_terms=4091
+#&gt; i Estimating performance
+#&gt; ✓ Estimating performance
+#&gt; ♥ Newest results:    roc_auc=0.8132 (+/-0.00563)
+#&gt; 
+#&gt; ── Iteration 7 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#&gt; 
+#&gt; i Current best:      roc_auc=0.8132 (@iter 6)
+#&gt; i Gaussian process model
+#&gt; ✓ Gaussian process model
+#&gt; i Generating 5000 candidates
+#&gt; i Predicted candidates
+#&gt; i Trade-off value: 0.002231
+#&gt; i penalty=0.0218, mixture=0.687, num_terms=4089
+#&gt; i Estimating performance
+#&gt; ✓ Estimating performance
+#&gt; ♥ Newest results:    roc_auc=0.8134 (+/-0.00997)
+#&gt; 
+#&gt; ── Iteration 8 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#&gt; 
+#&gt; i Current best:      roc_auc=0.8134 (@iter 7)
+#&gt; i Gaussian process model
+#&gt; ✓ Gaussian process model
+#&gt; i Generating 5000 candidates
+#&gt; i Predicted candidates
+#&gt; i Trade-off value: 0.001738
+#&gt; i penalty=0.00102, mixture=0.538, num_terms=334
+#&gt; i Estimating performance
+#&gt; ✓ Estimating performance
+#&gt; ⓧ Newest results:    roc_auc=0.7548 (+/-0.00495)
+#&gt; 
+#&gt; ── Iteration 9 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#&gt; 
+#&gt; i Current best:      roc_auc=0.8134 (@iter 7)
+#&gt; i Gaussian process model
+#&gt; ✓ Gaussian process model
+#&gt; i Generating 5000 candidates
+#&gt; i Predicted candidates
+#&gt; i Trade-off value: 0.001353
+#&gt; i penalty=0.00102, mixture=0.202, num_terms=3964
+#&gt; i Estimating performance
+#&gt; ✓ Estimating performance
+#&gt; ⓧ Newest results:    roc_auc=0.7785 (+/-0.00569)
+#&gt; 
+#&gt; ── Iteration 10 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#&gt; 
+#&gt; i Current best:      roc_auc=0.8134 (@iter 7)
+#&gt; i Gaussian process model
+#&gt; ✓ Gaussian process model
+#&gt; i Generating 5000 candidates
+#&gt; i Predicted candidates
+#&gt; i Trade-off value: 0.001054
+#&gt; i penalty=0.242, mixture=0.682, num_terms=4063
+#&gt; i Estimating performance
+#&gt; ✓ Estimating performance
+#&gt; ⓧ Newest results:    roc_auc=0.5
+#&gt; 
+#&gt; ── Iteration 11 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#&gt; 
+#&gt; i Current best:      roc_auc=0.8134 (@iter 7)
+#&gt; i Gaussian process model
+#&gt; ✓ Gaussian process model
+#&gt; i Generating 5000 candidates
+#&gt; i Predicted candidates
+#&gt; i Trade-off value: 0.0008208
+#&gt; i penalty=0.989, mixture=0.885, num_terms=4057
+#&gt; i Estimating performance
+#&gt; ✓ Estimating performance
+#&gt; ⓧ Newest results:    roc_auc=0.5
+#&gt; 
+#&gt; ── Iteration 12 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#&gt; 
+#&gt; i Current best:      roc_auc=0.8134 (@iter 7)
+#&gt; i Gaussian process model
+#&gt; ✓ Gaussian process model
+#&gt; i Generating 5000 candidates
+#&gt; i Predicted candidates
+#&gt; i Trade-off value: 0.0006393
+#&gt; i penalty=0.0693, mixture=0.302, num_terms=4088
+#&gt; i Estimating performance
+#&gt; ✓ Estimating performance
+#&gt; ⓧ Newest results:    roc_auc=0.797 (+/-0.00783)
+#&gt; 
+#&gt; ── Iteration 13 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#&gt; 
+#&gt; i Current best:      roc_auc=0.8134 (@iter 7)
+#&gt; i Gaussian process model
+#&gt; ✓ Gaussian process model
+#&gt; i Generating 5000 candidates
+#&gt; i Predicted candidates
+#&gt; i Trade-off value: 0.0004979
+#&gt; i penalty=0.0537, mixture=0.0652, num_terms=491
+#&gt; i Estimating performance
+#&gt; ✓ Estimating performance
+#&gt; ⓧ Newest results:    roc_auc=0.7694 (+/-0.00752)
+#&gt; 
+#&gt; ── Iteration 14 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#&gt; 
+#&gt; i Current best:      roc_auc=0.8134 (@iter 7)
+#&gt; i Gaussian process model
+#&gt; ✓ Gaussian process model
+#&gt; i Generating 5000 candidates
+#&gt; i Predicted candidates
+#&gt; i Trade-off value: 0.0003877
+#&gt; i penalty=0.036, mixture=0.415, num_terms=2450
+#&gt; i Estimating performance
+#&gt; ✓ Estimating performance
+#&gt; ⓧ Newest results:    roc_auc=0.7931 (+/-0.00965)
+#&gt; 
+#&gt; ── Iteration 15 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#&gt; 
+#&gt; i Current best:      roc_auc=0.8134 (@iter 7)
+#&gt; i Gaussian process model
+#&gt; ✓ Gaussian process model
+#&gt; i Generating 5000 candidates
+#&gt; i Predicted candidates
+#&gt; i Trade-off value: 0.000302
+#&gt; i penalty=0.0123, mixture=0.991, num_terms=785
+#&gt; i Estimating performance
+#&gt; ✓ Estimating performance
+#&gt; ⓧ Newest results:    roc_auc=0.7818 (+/-0.00833)
+#&gt; 
+#&gt; ── Iteration 16 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#&gt; 
+#&gt; i Current best:      roc_auc=0.8134 (@iter 7)
+#&gt; i Gaussian process model
+#&gt; ✓ Gaussian process model
+#&gt; i Generating 5000 candidates
+#&gt; i Predicted candidates
+#&gt; i Trade-off value: 0.0002352
+#&gt; i penalty=0.0457, mixture=0.054, num_terms=4075
+#&gt; i Estimating performance
+#&gt; ✓ Estimating performance
+#&gt; ⓧ Newest results:    roc_auc=0.8072 (+/-0.00654)
+#&gt; 
+#&gt; ── Iteration 17 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#&gt; 
+#&gt; i Current best:      roc_auc=0.8134 (@iter 7)
+#&gt; i Gaussian process model
+#&gt; ✓ Gaussian process model
+#&gt; i Generating 5000 candidates
+#&gt; i Predicted candidates
+#&gt; i Trade-off value: 0.0001832
+#&gt; i penalty=0.0049, mixture=0.965, num_terms=1973
+#&gt; i Estimating performance
+#&gt; ✓ Estimating performance
+#&gt; ⓧ Newest results:    roc_auc=0.7962 (+/-0.0067)
+#&gt; ! No improvement for 10 iterations; returning current results.</code></pre>
+<p>The results show some improvement over the initial set. One issue is that so many settings are sub-optimal (as shown in the figure above for grid search) so there are poor results periodically. There are regions where the penalty parameter becomes too large and all of the predictors are removed from the model. These regions are also dependent on the number of terms. There is a fairly narrow ridge<a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a> where good performance can be achieved. Using more iterations would probably result in the search finding better results.</p>
+<p>A plot of model performance versus the search iterations:</p>
+<pre class="r"><code>autoplot(five_star_search, type = &quot;performance&quot;)</code></pre>
+<p><img src="/examples/text-analysis/index_files/figure-html/iter-plot-1.png" width="672" /></p>
+<p>What would we do if we knew about the grid search results? In this case, we would restrict the range for the number of hash features to be larger (especially with more data). We might also restrict the penalty and mixture parameters to have a more restricted upper bound.</p>
+</div>
+<div id="extracted-results" class="section level2">
+<h2>Extracted Results</h2>
+<p>Jumping back to the grid search results, let’s examine the results of our <code>extract</code> function. For each <em>fitted model</em>, a tibble was saved that has the relationship between the number of predictors and the penalty value. Let’s look at these results for the best model:</p>
+<pre class="r"><code>params &lt;- select_best(five_star_glmnet)
+params
+#&gt; # A tibble: 1 x 3
+#&gt;   penalty mixture num_terms
+#&gt;     &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;
+#&gt; 1  0.0379    0.25      4096</code></pre>
+<p>Recall that we saved the <code>glmnet</code> results in a tibble. The column <code>five_star_glmnet$.extracts</code> is a list of tibbles. As an example, the first element of the list is:</p>
+<pre class="r"><code>five_star_glmnet$.extracts[[1]]
+#&gt; # A tibble: 15 x 4
+#&gt;    num_terms penalty mixture .extracts         
+#&gt;        &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;list&gt;            
+#&gt;  1       256       1    0    &lt;tibble [100 × 2]&gt;
+#&gt;  2       256       1    0.25 &lt;tibble [89 × 2]&gt; 
+#&gt;  3       256       1    0.5  &lt;tibble [82 × 2]&gt; 
+#&gt;  4       256       1    0.75 &lt;tibble [79 × 2]&gt; 
+#&gt;  5       256       1    1    &lt;tibble [76 × 2]&gt; 
+#&gt;  6      1024       1    0    &lt;tibble [100 × 2]&gt;
+#&gt;  7      1024       1    0.25 &lt;tibble [100 × 2]&gt;
+#&gt;  8      1024       1    0.5  &lt;tibble [100 × 2]&gt;
+#&gt;  9      1024       1    0.75 &lt;tibble [99 × 2]&gt; 
+#&gt; 10      1024       1    1    &lt;tibble [95 × 2]&gt; 
+#&gt; 11      4096       1    0    &lt;tibble [100 × 2]&gt;
+#&gt; 12      4096       1    0.25 &lt;tibble [100 × 2]&gt;
+#&gt; 13      4096       1    0.5  &lt;tibble [100 × 2]&gt;
+#&gt; 14      4096       1    0.75 &lt;tibble [100 × 2]&gt;
+#&gt; 15      4096       1    1    &lt;tibble [100 × 2]&gt;</code></pre>
+<p>More nested tibbles! Let’s unnest <code>five_star_glmnet$.extracts</code>:</p>
+<pre class="r"><code>extracted &lt;- 
+  five_star_glmnet %&gt;% 
+  dplyr::select(id, .extracts) %&gt;% 
+  unnest(cols = .extracts)
+extracted
+#&gt; # A tibble: 150 x 5
+#&gt;    id     num_terms penalty mixture .extracts         
+#&gt;    &lt;chr&gt;      &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;list&gt;            
+#&gt;  1 Fold01       256       1    0    &lt;tibble [100 × 2]&gt;
+#&gt;  2 Fold01       256       1    0.25 &lt;tibble [89 × 2]&gt; 
+#&gt;  3 Fold01       256       1    0.5  &lt;tibble [82 × 2]&gt; 
+#&gt;  4 Fold01       256       1    0.75 &lt;tibble [79 × 2]&gt; 
+#&gt;  5 Fold01       256       1    1    &lt;tibble [76 × 2]&gt; 
+#&gt;  6 Fold01      1024       1    0    &lt;tibble [100 × 2]&gt;
+#&gt;  7 Fold01      1024       1    0.25 &lt;tibble [100 × 2]&gt;
+#&gt;  8 Fold01      1024       1    0.5  &lt;tibble [100 × 2]&gt;
+#&gt;  9 Fold01      1024       1    0.75 &lt;tibble [99 × 2]&gt; 
+#&gt; 10 Fold01      1024       1    1    &lt;tibble [95 × 2]&gt; 
+#&gt; # … with 140 more rows</code></pre>
+<p>One thing to realize here is that <code>tune_grid()</code> <a href="optimizations.html">may not fit all of the models</a> that are evaluated. In this case, for each value of <code>mixture</code> and <code>num_terms</code>, the model is fit overall <em>all</em> penalty values<a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a>. To select the best parameter set, we can exclude the <code>penalty</code> column in <code>extracted</code>:</p>
+<pre class="r"><code>extracted &lt;- 
+  extracted %&gt;% 
+  dplyr::select(-penalty) %&gt;% 
+  inner_join(params, by = c(&quot;num_terms&quot;, &quot;mixture&quot;)) %&gt;% 
+  # Now remove it from the final results
+  dplyr::select(-penalty)
+extracted
+#&gt; # A tibble: 10 x 4
+#&gt;    id     num_terms mixture .extracts         
+#&gt;    &lt;chr&gt;      &lt;dbl&gt;   &lt;dbl&gt; &lt;list&gt;            
+#&gt;  1 Fold01      4096    0.25 &lt;tibble [100 × 2]&gt;
+#&gt;  2 Fold02      4096    0.25 &lt;tibble [100 × 2]&gt;
+#&gt;  3 Fold03      4096    0.25 &lt;tibble [100 × 2]&gt;
+#&gt;  4 Fold04      4096    0.25 &lt;tibble [100 × 2]&gt;
+#&gt;  5 Fold05      4096    0.25 &lt;tibble [100 × 2]&gt;
+#&gt;  6 Fold06      4096    0.25 &lt;tibble [100 × 2]&gt;
+#&gt;  7 Fold07      4096    0.25 &lt;tibble [100 × 2]&gt;
+#&gt;  8 Fold08      4096    0.25 &lt;tibble [100 × 2]&gt;
+#&gt;  9 Fold09      4096    0.25 &lt;tibble [100 × 2]&gt;
+#&gt; 10 Fold10      4096    0.25 &lt;tibble [100 × 2]&gt;</code></pre>
+<p>Now we can get at the results that we want using another <code>unnest</code>:</p>
+<pre class="r"><code>extracted &lt;- 
+  extracted %&gt;% 
+  unnest(col = .extracts) # &lt;- these contain a `penalty` column
+extracted
+#&gt; # A tibble: 1,000 x 5
+#&gt;    id     num_terms mixture penalty num_vars
+#&gt;    &lt;chr&gt;      &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;    &lt;int&gt;
+#&gt;  1 Fold01      4096    0.25   0.360        0
+#&gt;  2 Fold01      4096    0.25   0.344        1
+#&gt;  3 Fold01      4096    0.25   0.328        2
+#&gt;  4 Fold01      4096    0.25   0.313        2
+#&gt;  5 Fold01      4096    0.25   0.299        3
+#&gt;  6 Fold01      4096    0.25   0.286        3
+#&gt;  7 Fold01      4096    0.25   0.273        4
+#&gt;  8 Fold01      4096    0.25   0.260        5
+#&gt;  9 Fold01      4096    0.25   0.248        7
+#&gt; 10 Fold01      4096    0.25   0.237        7
+#&gt; # … with 990 more rows</code></pre>
+<p>Let’s look at a plot of these results (per resample):</p>
+<pre class="r"><code>ggplot(extracted, aes(x = penalty, y = num_vars)) + 
+  geom_line(aes(group = id, col = id), alpha = .5) + 
+  ylab(&quot;Number of retained predictors&quot;) + 
+  scale_x_log10()  + 
+  ggtitle(paste(&quot;mixture = &quot;, params$mixture, &quot;and&quot;, params$num_terms, &quot;features&quot;)) + 
+  theme(legend.position = &quot;none&quot;)</code></pre>
+<p><img src="/examples/text-analysis/index_files/figure-html/var-plot-1.png" width="672" /></p>
+<p>These results might help guide the range of the <code>penalty</code> value if more optimization was conducted.</p>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>This is a small sample of the overall data set. When more data are used, a larger feature set is optimal.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>See the last section below for more details.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+<li id="fn3"><p>See the vignette on <a href="../acquisition_functions.html">acquisition functions</a> for more details.<a href="#fnref3" class="footnote-back">↩︎</a></p></li>
+<li id="fn4"><p>Sorry, pun intended.<a href="#fnref4" class="footnote-back">↩︎</a></p></li>
+<li id="fn5"><p>This is a feature of this particular model and is not generally true for other engines.<a href="#fnref5" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
