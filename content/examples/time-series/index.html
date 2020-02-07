@@ -6,24 +6,12 @@ title: "Time Series Analysis Example"
 <script src="/rmarkdown-libs/elevate-section-attrs/elevate-section-attrs.js"></script>
 
 
+<p>In addition to the <code>tidymodels</code> package, this example uses the <code>timetk</code>, <code>forecast</code>, <code>sweep</code>, <code>modeldata</code>, and <code>zoo</code> packages.</p>
 <p>“<a href="http://www.business-science.io/code-tools/2017/10/25/demo_week_sweep.html">Demo Week: Tidy Forecasting with <code>sweep</code></a>” is an excellent article that uses tidy methods with time series. This article uses their analysis with <code>rsample</code> to get performance estimates for future observations using <a href="https://robjhyndman.com/hyndsight/crossvalidation/">rolling forecast origin resampling</a>.</p>
 <p>The data are sales of alcoholic beverages originally from <a href="https://fred.stlouisfed.org/series/S4248SM144NCEN">the Federal Reserve Bank of St. Louis website</a>.</p>
-<pre class="r"><code>library(tidymodels)</code></pre>
-<pre><code>## ── Attaching packages ─────────────────────────────────────────────────────────────────────────────────────────────────── tidymodels 0.0.4 ──</code></pre>
-<pre><code>## ✓ broom     0.5.2          ✓ tibble    2.1.3     
-## ✓ dials     0.0.4          ✓ tune      0.0.1     
-## ✓ infer     0.5.1          ✓ workflows 0.1.0     
-## ✓ parsnip   0.0.4.9000     ✓ yardstick 0.0.4.9000
-## ✓ recipes   0.1.9</code></pre>
-<pre><code>## ── Conflicts ────────────────────────────────────────────────────────────────────────────────────────────────────── tidymodels_conflicts() ──
-## x yardstick::accuracy() masks forecast::accuracy()
-## x scales::discard()     masks purrr::discard()
-## x dplyr::filter()       masks stats::filter()
-## x dplyr::lag()          masks stats::lag()
-## x dials::margin()       masks ggplot2::margin()
-## x recipes::step()       masks stats::step()
-## x recipes::yj_trans()   masks scales::yj_trans()</code></pre>
-<pre class="r"><code>data(&quot;drinks&quot;)
+<pre class="r"><code>library(tidymodels)
+library(modeldata)
+data(&quot;drinks&quot;)
 str(drinks, give.att = FALSE)</code></pre>
 <pre><code>## Classes &#39;tbl_df&#39;, &#39;tbl&#39; and &#39;data.frame&#39;:    309 obs. of  2 variables:
 ##  $ date          : Date, format: &quot;1992-01-01&quot; &quot;1992-02-01&quot; ...
@@ -58,15 +46,16 @@ nrow(roll_rs)</code></pre>
 <pre class="r"><code>roll_rs$splits[[1]]</code></pre>
 <pre><code>## &lt;240/12/309&gt;</code></pre>
 <p>For plotting, let’s index each split by the first day of the assessment set:</p>
-<pre class="r"><code>get_date &lt;- function(x) 
+<pre class="r"><code>get_date &lt;- function(x) {
   min(assessment(x)$date)
+}
 
 start_date &lt;- map(roll_rs$splits, get_date)
 roll_rs$start_date &lt;- do.call(&quot;c&quot;, start_date)
 head(roll_rs$start_date)</code></pre>
 <pre><code>## [1] &quot;2012-01-01&quot; &quot;2012-02-01&quot; &quot;2012-03-01&quot; &quot;2012-04-01&quot; &quot;2012-05-01&quot;
 ## [6] &quot;2012-06-01&quot;</code></pre>
-<p>This resampling scheme has 58 splits of the data so that there will be 58 ARIMA models that are fit. To create the models, the <code>auto.arima</code> function from the <code>forecast</code> package is used. The functions <code>analysis</code> and <code>assessment</code> return the data frame, so another step converts the data in to a <code>ts</code> object called <code>mod_dat</code> using a function in the <code>timetk</code> package.</p>
+<p>This resampling scheme has 58 splits of the data so that there will be 58 ARIMA models that are fit. To create the models, the <code>auto.arima()</code> function from the <code>forecast</code> package is used. The functions <code>analysis()</code> and <code>assessment()</code> return the data frame, so another step converts the data in to a <code>ts</code> object called <code>mod_dat</code> using a function in the <code>timetk</code> package.</p>
 <pre class="r"><code>library(forecast)  # for `auto.arima`
 library(timetk)    # for `tk_ts`
 library(zoo)       # for `as.yearmon`
@@ -78,7 +67,7 @@ fit_model &lt;- function(x, ...) {
     # Since the first day changes over resamples, adjust it
     # based on the first date value in the data frame 
     tk_ts(start = .$date[[1]] %&gt;% as.yearmon(), 
-          freq = 12, 
+          frequency = 12, 
           silent = TRUE) %&gt;%
     auto.arima(...)
 }</code></pre>
@@ -139,9 +128,7 @@ summary(roll_rs$extrapolation)</code></pre>
   gather(error, MAPE, -start_date) %&gt;%
   ggplot(aes(x = start_date, y = MAPE, col = error)) + 
   geom_point() + 
-  geom_line() + 
-  theme_bw() + 
-  theme(legend.position = &quot;top&quot;)</code></pre>
+  geom_line()</code></pre>
 <p><img src="/examples/time-series/index_files/figure-html/plot-1.png" width="672" /></p>
 <p>It is likely that the interpolation error is an underestimate to some degree.</p>
 <p>It is also worth noting that <code>rolling_origin()</code> can be used over calendar periods, rather than just over a fixed window size. This is especially useful for irregular series where a fixed window size might not make sense because of missing data points, or because of calendar features like different months having a different number of days.</p>
@@ -153,15 +140,14 @@ moves forward an entire year, rather than just one month.</p>
 # which in this case is the year.
 roll_rs_annual &lt;- drinks %&gt;%
   mutate(year = as.POSIXlt(date)$year + 1900) %&gt;%
-  nest(-year) %&gt;%
+  nest(data = c(date, S4248SM144NCEN)) %&gt;%
   rolling_origin(
     initial = 20, 
     assess = 1, 
     cumulative = FALSE
-  )</code></pre>
-<pre><code>## Warning: All elements of `...` must be named.
-## Did you want `data = c(date, S4248SM144NCEN)`?</code></pre>
-<pre class="r"><code>analysis(roll_rs_annual$splits[[1]])</code></pre>
+  )
+
+analysis(roll_rs_annual$splits[[1]])</code></pre>
 <pre><code>## # A tibble: 20 x 2
 ##     year           data
 ##    &lt;dbl&gt; &lt;list&lt;df[,2]&gt;&gt;

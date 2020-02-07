@@ -1,0 +1,88 @@
+---
+title: "Using parsnip for Classification Models"
+---
+
+<script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
+<script src="/rmarkdown-libs/elevate-section-attrs/elevate-section-attrs.js"></script>
+
+
+<p>In addition to the <code>tidymodels</code> package, this example uses the <code>modeldata</code> and <code>keras</code> packages (with tensorflow installed via <code>keras::install_keras()</code>).</p>
+<p>To demonstrate <code>parsnip</code> for classification models, the credit data will be used.</p>
+<pre class="r"><code>library(tidymodels)
+library(modeldata)
+data(credit_data)
+
+set.seed(7075)
+data_split &lt;- initial_split(credit_data, strata = &quot;Status&quot;, p = 0.75)
+
+credit_train &lt;- training(data_split)
+credit_test  &lt;- testing(data_split)</code></pre>
+<p>A single hidden layer neural network will be used to predict a person’s credit status. To do so, the columns of the predictor matrix should be numeric and on a common scale. <code>recipes</code> will be used to do so.</p>
+<pre class="r"><code>credit_rec &lt;- 
+  recipe(Status ~ ., data = credit_train) %&gt;%
+  step_knnimpute(Home, Job, Marital, Income, Assets, Debt) %&gt;%
+  step_dummy(all_nominal(), -Status) %&gt;%
+  step_center(all_predictors()) %&gt;%
+  step_scale(all_predictors()) %&gt;%
+  prep(training = credit_train, retain = TRUE)
+
+# juice() will be used to get the processed training set back
+
+test_normalized &lt;- bake(credit_rec, new_data = credit_test, all_predictors())</code></pre>
+<p><code>keras</code> will be used to fit a model with 5 hidden units and uses a 10% dropout rate to regularize the model. At each training iteration (aka epoch) a random 20% of the data will be used to measure the cross-entropy of the model.</p>
+<pre class="r"><code>set.seed(57974)
+nnet_fit &lt;-
+  mlp(epochs = 100, hidden_units = 5, dropout = 0.1) %&gt;%
+  set_mode(&quot;classification&quot;) %&gt;% 
+  # Also set engine-specific arguments: 
+  set_engine(&quot;keras&quot;, verbose = 0, validation_split = .20) %&gt;%
+  fit(Status ~ ., data = juice(credit_rec))
+
+nnet_fit
+#&gt; parsnip model object
+#&gt; 
+#&gt; Fit time:  13.9s 
+#&gt; Model
+#&gt; Model: &quot;sequential&quot;
+#&gt; ________________________________________________________________________________
+#&gt; Layer (type)                        Output Shape                    Param #     
+#&gt; ================================================================================
+#&gt; dense (Dense)                       (None, 5)                       115         
+#&gt; ________________________________________________________________________________
+#&gt; dense_1 (Dense)                     (None, 5)                       30          
+#&gt; ________________________________________________________________________________
+#&gt; dropout (Dropout)                   (None, 5)                       0           
+#&gt; ________________________________________________________________________________
+#&gt; dense_2 (Dense)                     (None, 2)                       12          
+#&gt; ================================================================================
+#&gt; Total params: 157
+#&gt; Trainable params: 157
+#&gt; Non-trainable params: 0
+#&gt; ________________________________________________________________________________</code></pre>
+<p>In <code>parsnip</code>, the <code>predict()</code> function can be used:</p>
+<pre class="r"><code>test_results &lt;- 
+  credit_test %&gt;%
+  select(Status) %&gt;%
+  as_tibble() %&gt;%
+  mutate(
+    nnet_class = predict(nnet_fit, new_data = test_normalized) %&gt;% 
+      pull(.pred_class),
+    nnet_prob  = predict(nnet_fit, new_data = test_normalized, type = &quot;prob&quot;) %&gt;% 
+      pull(.pred_good)
+  )
+
+test_results %&gt;% roc_auc(truth = Status, nnet_prob)
+#&gt; # A tibble: 1 x 3
+#&gt;   .metric .estimator .estimate
+#&gt;   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+#&gt; 1 roc_auc binary         0.824
+test_results %&gt;% accuracy(truth = Status, nnet_class)
+#&gt; # A tibble: 1 x 3
+#&gt;   .metric  .estimator .estimate
+#&gt;   &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;
+#&gt; 1 accuracy binary         0.800
+test_results %&gt;% conf_mat(truth = Status, nnet_class)
+#&gt;           Truth
+#&gt; Prediction bad good
+#&gt;       bad  177   87
+#&gt;       good 136  713</code></pre>

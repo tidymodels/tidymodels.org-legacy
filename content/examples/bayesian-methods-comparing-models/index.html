@@ -1,0 +1,243 @@
+---
+title: "Comparing Models via Bayesian Analysis and Resampling"
+---
+
+<script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
+<script src="/rmarkdown-libs/elevate-section-attrs/elevate-section-attrs.js"></script>
+
+
+<p>In addition to the <code>tidymodels</code> package, this example uses the <code>tidyposterior</code>, <code>tune</code>, <code>earth</code>, <code>rpart</code>, <code>kernlab</code>, and <code>modeldata</code> packages.</p>
+<div id="predicting-compressive-strength-of-concrete" class="section level2">
+<h2>Predicting Compressive Strength of Concrete</h2>
+<p>These data are used as a case study in Kuhn and Johnson (2013). The outcome is the compressive strength of concrete samples and the predictors are the ingredients used in the mixtures. About the data:</p>
+<blockquote>
+<p>Yeh (1998) takes a different approach to modeling concrete mixture experiments. Here, separate experiments from 17 sources with common experimental factors were combined into one “meta-experiment” and the author used neural networks to create predictive models across the whole mixture space. Age was also included in the model. The public version of the data set includes 1030 data points across the different experiments, although Yeh (1998) states that some mixtures were removed from his analysis due to nonstandard conditions. There is no information regarding exactly which mixtures were removed, so the analyses here will use all available data points.</p>
+</blockquote>
+<p>The data are in the <code>modeldata</code> package:</p>
+<pre class="r"><code>library(tidymodels)
+library(modeldata)
+
+data(&quot;concrete&quot;, package = &quot;modeldata&quot;)
+names(concrete)
+#&gt; [1] &quot;cement&quot;               &quot;blast_furnace_slag&quot;   &quot;fly_ash&quot;              &quot;water&quot;               
+#&gt; [5] &quot;superplasticizer&quot;     &quot;coarse_aggregate&quot;     &quot;fine_aggregate&quot;       &quot;age&quot;                 
+#&gt; [9] &quot;compressive_strength&quot;</code></pre>
+<p>To resample the data, two repeats of 10-fold cross-validation are used:</p>
+<pre class="r"><code>set.seed(2708)
+folds &lt;- vfold_cv(concrete, repeats = 2)</code></pre>
+<p>Four models are tuned for these data: random forest, a radial basis function support vector machine, a regression tree, and a multivariate adaptive regression spline. For simplicity, the models are tuned over 20 tuning parameter combinations and the model with the smallest RMSE used used as the final settings. This analysis is cursory; in practice, a more rigorous analysis would be conducted and the models would be more extensively characterized.</p>
+<p>The <code>parsnip</code> model objects are:</p>
+<pre class="r"><code>svm_mod &lt;- 
+  svm_rbf(cost = tune(), rbf_sigma = tune()) %&gt;% 
+  set_mode(&quot;regression&quot;) %&gt;% 
+  set_engine(&quot;kernlab&quot;)
+
+rf_mod &lt;- 
+  rand_forest(mtry = tune(), trees = 1000, min_n = tune()) %&gt;% 
+  set_mode(&quot;regression&quot;) %&gt;% 
+  set_engine(&quot;ranger&quot;)
+
+cart_mod &lt;- 
+  decision_tree(cost_complexity = tune(), min_n = tune()) %&gt;% 
+  set_mode(&quot;regression&quot;) %&gt;% 
+  set_engine(&quot;rpart&quot;)
+
+mars_mod &lt;- 
+  mars(num_terms = tune(), prod_degree = tune(), prune_method = &quot;none&quot;) %&gt;% 
+  set_mode(&quot;regression&quot;) %&gt;% 
+  set_engine(&quot;earth&quot;)</code></pre>
+<p>The tuning objects are created using grid search:</p>
+<pre class="r"><code>set.seed(7053)
+svm_tune &lt;- tune_grid(compressive_strength ~ ., svm_mod, resamples = folds, grid = 20)
+show_best(svm_tune, metric = &quot;rmse&quot;, maximize = FALSE)
+#&gt; # A tibble: 5 x 7
+#&gt;    cost rbf_sigma .metric .estimator  mean     n std_err
+#&gt;   &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
+#&gt; 1  7.13   0.319   rmse    standard    5.42    20   0.153
+#&gt; 2 11.9    0.150   rmse    standard    5.45    20   0.125
+#&gt; 3  6.20   0.0560  rmse    standard    6.03    20   0.125
+#&gt; 4  1.40   0.0127  rmse    standard    8.00    20   0.153
+#&gt; 5  2.46   0.00292 rmse    standard    9.47    20   0.153
+
+set.seed(5401)
+rf_tune &lt;- tune_grid(compressive_strength ~ ., rf_mod, resamples = folds, grid = 20)
+#&gt; i Creating pre-processing data to finalize unknown parameter: mtry
+show_best(rf_tune, metric = &quot;rmse&quot;, maximize = FALSE)
+#&gt; # A tibble: 5 x 7
+#&gt;    mtry min_n .metric .estimator  mean     n std_err
+#&gt;   &lt;int&gt; &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
+#&gt; 1     3     3 rmse    standard    4.70    20   0.157
+#&gt; 2     7     7 rmse    standard    4.76    20   0.159
+#&gt; 3     3     5 rmse    standard    4.79    20   0.155
+#&gt; 4     4    11 rmse    standard    4.95    20   0.162
+#&gt; 5     5    13 rmse    standard    4.98    20   0.156
+
+set.seed(3336)
+cart_tune &lt;- tune_grid(compressive_strength ~ ., cart_mod, resamples = folds, grid = 20)
+show_best(cart_tune, metric = &quot;rmse&quot;, maximize = FALSE)
+#&gt; # A tibble: 5 x 7
+#&gt;   cost_complexity min_n .metric .estimator  mean     n std_err
+#&gt;             &lt;dbl&gt; &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
+#&gt; 1  0.0000000142       2 rmse    standard    5.97    20   0.160
+#&gt; 2  0.0000108          8 rmse    standard    6.38    20   0.174
+#&gt; 3  0.0000980          8 rmse    standard    6.40    20   0.178
+#&gt; 4  0.000000198       10 rmse    standard    6.50    20   0.172
+#&gt; 5  0.000000000252    13 rmse    standard    6.69    20   0.167
+
+mars_grid &lt;- expand.grid(num_terms = 2 * (1:10), prod_degree = 1:2)
+
+set.seed(9313)
+mars_tune &lt;- tune_grid(compressive_strength ~ ., mars_mod, resamples = folds, grid = mars_grid)
+show_best(mars_tune, metric = &quot;rmse&quot;, maximize = FALSE)
+#&gt; # A tibble: 5 x 7
+#&gt;   num_terms prod_degree .metric .estimator  mean     n std_err
+#&gt;       &lt;dbl&gt;       &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
+#&gt; 1        20           2 rmse    standard    6.13    20  0.119 
+#&gt; 2        18           1 rmse    standard    6.20    20  0.0934
+#&gt; 3        20           1 rmse    standard    6.20    20  0.0934
+#&gt; 4        18           2 rmse    standard    6.27    20  0.110 
+#&gt; 5        16           1 rmse    standard    6.38    20  0.109</code></pre>
+<p>At this point, we want to extract the individual resampling estimates of RMSE for the best model and then merge them back into the <code>rsample</code> object (<code>folds</code>). A function is used to do this for each model. These values are merged and then merged back into <code>folds</code>:</p>
+<pre class="r"><code>extract_rmse &lt;- function(x) {
+  # Pull off the name of the argument to extract the model prefix
+  cl &lt;- match.call()
+  model_name &lt;- deparse(cl[[&quot;x&quot;]])
+  model_name &lt;- gsub(&quot;_tune&quot;, &quot;&quot;, model_name)
+  
+  collect_metrics(x, summarize = FALSE) %&gt;% 
+    # Keep the numerically best results
+    inner_join(select_best(x, metric = &quot;rmse&quot;, maximize = FALSE)) %&gt;% 
+    dplyr::filter(.metric == &quot;rmse&quot;) %&gt;% 
+    dplyr::select(.estimate, id, id2) %&gt;% 
+    # Rename the RMSE column with the model prefix
+    setNames(c(model_name, &quot;id&quot;, &quot;id2&quot;))
+}
+
+rmse_values &lt;- 
+  extract_rmse(svm_tune) %&gt;% 
+  inner_join(extract_rmse(rf_tune),   by = c(&quot;id&quot;, &quot;id2&quot;)) %&gt;% 
+  inner_join(extract_rmse(cart_tune), by = c(&quot;id&quot;, &quot;id2&quot;)) %&gt;% 
+  inner_join(extract_rmse(mars_tune), by = c(&quot;id&quot;, &quot;id2&quot;)) %&gt;% 
+  arrange(id, id2) 
+
+folds &lt;- bind_cols(arrange(folds, id, id2), rmse_values %&gt;% dplyr::select(-id, -id2))</code></pre>
+<p>A tibble of the stacked resampling estimates is saved to use for plotting and diagnostics:</p>
+<pre class="r"><code>stacked_rmse &lt;- 
+  rmse_values %&gt;%
+  pivot_longer(
+    cols = c(-starts_with(&quot;id&quot;)),
+    names_to = &quot;model&quot;,
+    values_to = &quot;rmse&quot;
+  )</code></pre>
+<p>Before proceeding, do the 20 estimates appear to follow a normal distribution?</p>
+<pre class="r"><code>stacked_rmse %&gt;% 
+  ggplot(aes(sample = rmse, col = model)) + 
+  stat_qq() + 
+  stat_qq_line(alpha = .4) + 
+  facet_wrap(~model)</code></pre>
+<p><img src="/examples/bayesian-methods-comparing-models/index_files/figure-html/qq-1.png" width="672" /></p>
+<p>Not perfect but pretty indicative of normality for a sample size of 20. This basically shows the effect of the central limit theorem.</p>
+</div>
+<div id="a-first-bayesian-model" class="section level2">
+<h2>A First Bayesian Model</h2>
+<p>It might make sense to use a probability model that is consistent with the characteristics of the data (in terms of skewness). Instead of using a symmetric distribution for the summary statistics (such as Gaussian), a potentially right skewed probability model might make more theoretical sense. A Gamma distribution is a reasonable choice and can be fit using the generalized linear model embedded in <code>perf_mod()</code>. This also requires a <em>link</em> function to be chosen to model the data. The canonical link for this distribution is the inverse transformation and this will be our choice.</p>
+<p>To fit this model, the <code>family</code> argument to <code>stan_glmer()</code> can be passed in. The default link is the inverse and no extra transformation will be used.</p>
+<pre class="r"><code># Get the posterior distributions of the mean parameters:
+gamma_post &lt;- tidy(gamma_model, seed = 3750)
+gamma_mean &lt;- summary(gamma_post)
+gamma_mean
+#&gt; # A tibble: 4 x 4
+#&gt;   model  mean lower upper
+#&gt;   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1 cart   5.95  5.49  6.44
+#&gt; 2 mars   6.12  5.64  6.64
+#&gt; 3 rf     4.69  4.33  5.09
+#&gt; 4 svm    5.41  4.99  5.85</code></pre>
+<p>Are these values consistent with the data? Let’s look at the posterior distribution <em>for the mean RMSE</em> and overlay the individual RMSE resamples:</p>
+<pre class="r"><code>gamma_post %&gt;% 
+  as_tibble() %&gt;% 
+  ggplot(aes(x = posterior, fill = model)) + 
+  geom_histogram(bins = 30, col = &quot;white&quot;) + 
+  facet_wrap(~ model) + 
+  geom_rug(data = stacked_rmse, aes(x = rmse)) + 
+  ggtitle(&quot;RMSE values assumed Gamma&quot;) + 
+  theme(legend.position = &quot;none&quot;)</code></pre>
+<p><img src="/examples/bayesian-methods-comparing-models/index_files/figure-html/gamma-1.png" width="672" /></p>
+<p>The spread of the posterior is not much smaller than the range of the original values (which seems excessive).</p>
+</div>
+<div id="transforming-the-data" class="section level2">
+<h2>Transforming the Data</h2>
+<p>Another approach is to transform the RMSE values to something model symmetric and model the data on a different scale. A log transform will be used here using the built-in object <code>ln_trans</code>. In using this option, the posterior distributions are computed on the log scale and is automatically back-transformed into the original units. By not passing <code>family</code> to the function, we are using a Gaussian model.</p>
+<p>These results were:</p>
+<pre class="r"><code>log_linear_post &lt;- tidy(log_linear_model, seed = 3750)
+
+log_linear_post %&gt;% 
+  as_tibble() %&gt;% 
+  ggplot(aes(x = posterior, fill = model)) + 
+  geom_histogram(bins = 30, col = &quot;white&quot;) + 
+  facet_wrap(~ model) + 
+  geom_rug(data = stacked_rmse, aes(x = rmse)) + 
+  ggtitle(&quot;RMSE values assumed Log-Normal&quot;) + 
+  theme(legend.position = &quot;none&quot;)</code></pre>
+<p><img src="/examples/bayesian-methods-comparing-models/index_files/figure-html/log-linear-1.png" width="672" /></p>
+<p>The posteriors are a somewhat tighter than the Gamma results.</p>
+<p>One note: using the transformed values for the Bayesian analysis means that, when the posterior values are back-transformed, the posterior distributions can have different variances (despite being fit with a common variance model). The differences are subtle here but note the change in the spread of the posteriors as the change with the mean:</p>
+<pre class="r"><code>log_linear_post %&gt;% 
+  group_by(model) %&gt;% 
+  summarize(std_dev = sd(posterior), mean = mean(posterior)) %&gt;% 
+  arrange(mean)
+#&gt; # A tibble: 4 x 3
+#&gt;   model std_dev  mean
+#&gt;   &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1 rf      0.140  4.65
+#&gt; 2 svm     0.161  5.38
+#&gt; 3 cart    0.176  5.93
+#&gt; 4 mars    0.179  6.11</code></pre>
+</div>
+<div id="a-simple-gaussian-model" class="section level2">
+<h2>A Simple Gaussian Model</h2>
+<p>Let’s try the easiest model that used a linear function and assumes a Gaussian distribution for the RMSE estimates.</p>
+<pre class="r"><code>linear_post &lt;- tidy(linear_model, seed = 3750)
+
+linear_post %&gt;% 
+  as_tibble() %&gt;% 
+  ggplot(aes(x = posterior, fill = model)) + 
+  geom_histogram(bins = 30, col = &quot;white&quot;) + 
+  facet_wrap(~ model) + 
+  geom_rug(data = stacked_rmse, aes(x = rmse)) + 
+  ggtitle(&quot;RMSE values assumed Normal&quot;) + 
+  theme(legend.position = &quot;none&quot;)</code></pre>
+<p><img src="/examples/bayesian-methods-comparing-models/index_files/figure-html/linear-linear-1.png" width="672" /></p>
+<p>These don’t look too different from the log-linear model. One thing is different though: these distributions have about the same spread:</p>
+<pre class="r"><code>linear_post %&gt;% 
+  group_by(model) %&gt;% 
+  summarize(std_dev = sd(posterior), mean = mean(posterior)) %&gt;% 
+  arrange(mean)
+#&gt; # A tibble: 4 x 3
+#&gt;   model std_dev  mean
+#&gt;   &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1 rf      0.164  4.70
+#&gt; 2 svm     0.165  5.42
+#&gt; 3 cart    0.164  5.97
+#&gt; 4 mars    0.165  6.13</code></pre>
+<p>If we want to fit a model where each of the posterior distributions are allowed to have differences variances, the option <code>hetero_var = TRUE</code> can be used.</p>
+</div>
+<div id="comparing-models" class="section level2">
+<h2>Comparing Models</h2>
+<p>We can compare models using the <code>contrast_models</code> function. The function has arguments for two sets of models to compare but if these are left to their default (<code>NULL</code>), all pair-wise combinations are used. Let’s say that an RMSE difference of 1 unit is important.</p>
+<pre class="r"><code>one_contrast &lt;- contrast_models(linear_model, list_1 = &quot;rf&quot;, list_2 = &quot;svm&quot;, seed = 8967)
+ggplot(one_contrast, size = 1) + 
+  xlab(&quot;Posterior for Random Forest - SVM&quot;)</code></pre>
+<p><img src="/examples/bayesian-methods-comparing-models/index_files/figure-html/contrast-1.png" width="672" /></p>
+<pre class="r"><code>summary(one_contrast, size = 1)
+#&gt; # A tibble: 1 x 9
+#&gt;   contrast  probability   mean  lower  upper  size pract_neg pract_equiv pract_pos
+#&gt;   &lt;chr&gt;           &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;
+#&gt; 1 rf vs svm           0 -0.719 -0.924 -0.513     1    0.0145       0.986         0</code></pre>
+<p>The negative values indicate that the random forest model tended to have smaller RMSE values than the SVM model. While the probability that the SVM model is better is effectively zero (in the <code>probability</code> column), the region of practical equivalence captures most of the posterior distribution. The probability that the two models are <em>practically equivalent</em> for an effect size of one unit is 98.55%.</p>
+</div>
+<div id="one-final-note" class="section level2">
+<h2>One Final Note</h2>
+<p>The Bayesian models have population parameters for the model effects (akin to “fixed” effects in mixed models) as well as variance parameter(s) related to the resamples. The posteriors computed by this package only reflect the mean parameters and should only be used to make inferences about this data set generally. This posterior calculation could not be used to predict the level of performance for a model on a new <em>resample</em> of the data. In this case, the variance parameters come into play and the posterior would be much wider.</p>
+<p>In essence, the posteriors shown here are measuring the average performance value instead of a resample-specific value.</p>
+</div>
