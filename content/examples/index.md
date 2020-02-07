@@ -13,7 +13,7 @@ title: Examples
 
 * [`parsnip` methods for regression](./parsnip-regression-example) <img src="/images/pkg_list_5.png"  align="right"  height="39">
 
-* [Sub-sampling for class imbalances](./sub-sampling) <img src="/images/recipes.png"  align="right"  height="39">
+* [Sub-sampling for class imbalances](./sub-sampling) <img src="/images/recipes_tune.png"  align="right"  height="39">
 
 * [Multivariate analysis using partial least squares (PLS)](./multivariate-pls) <img src="/images/recipes.png"  align="right"  height="39">
 

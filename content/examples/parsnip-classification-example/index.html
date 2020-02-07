@@ -41,7 +41,7 @@ nnet_fit &lt;-
 nnet_fit
 #&gt; parsnip model object
 #&gt; 
-#&gt; Fit time:  13.9s 
+#&gt; Fit time:  13.7s 
 #&gt; Model
 #&gt; Model: &quot;sequential&quot;
 #&gt; ________________________________________________________________________________
@@ -75,14 +75,14 @@ test_results %&gt;% roc_auc(truth = Status, nnet_prob)
 #&gt; # A tibble: 1 x 3
 #&gt;   .metric .estimator .estimate
 #&gt;   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
-#&gt; 1 roc_auc binary         0.824
+#&gt; 1 roc_auc binary         0.823
 test_results %&gt;% accuracy(truth = Status, nnet_class)
 #&gt; # A tibble: 1 x 3
 #&gt;   .metric  .estimator .estimate
 #&gt;   &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;
-#&gt; 1 accuracy binary         0.800
+#&gt; 1 accuracy binary         0.802
 test_results %&gt;% conf_mat(truth = Status, nnet_class)
 #&gt;           Truth
 #&gt; Prediction bad good
-#&gt;       bad  177   87
-#&gt;       good 136  713</code></pre>
+#&gt;       bad  173   80
+#&gt;       good 140  720</code></pre>
