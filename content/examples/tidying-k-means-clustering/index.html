@@ -31,15 +31,15 @@ labelled_points &lt;-
 
 ggplot(labelled_points, aes(x1, x2, color = cluster)) +
   geom_point(alpha = 0.3)</code></pre>
-<p><img src="/examples/tidying-k-means-clustering/index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p><img src="/examples/tidying-k-means-clustering/index_files/figure-html/unnamed-chunk-1-1.svg" width="672" /></p>
 <p>This is an ideal case for k-means clustering. We’ll use the built-in <code>kmeans</code> function, which accepts a dataframe with all numeric columns as it’s primary argument.</p>
 <pre class="r"><code>points &lt;- 
   labelled_points %&gt;% 
   select(-cluster)
 
 kclust &lt;- kmeans(points, centers = 3)
-kclust
-#&gt; K-means clustering with 3 clusters of sizes 148, 51, 101
+kclust</code></pre>
+<pre><code>#&gt; K-means clustering with 3 clusters of sizes 148, 51, 101
 #&gt; 
 #&gt; Cluster means:
 #&gt;            x1        x2
@@ -65,9 +65,9 @@ kclust
 #&gt; Available components:
 #&gt; 
 #&gt; [1] &quot;cluster&quot;      &quot;centers&quot;      &quot;totss&quot;        &quot;withinss&quot;     &quot;tot.withinss&quot;
-#&gt; [6] &quot;betweenss&quot;    &quot;size&quot;         &quot;iter&quot;         &quot;ifault&quot;
-summary(kclust)
-#&gt;              Length Class  Mode   
+#&gt; [6] &quot;betweenss&quot;    &quot;size&quot;         &quot;iter&quot;         &quot;ifault&quot;</code></pre>
+<pre class="r"><code>summary(kclust)</code></pre>
+<pre><code>#&gt;              Length Class  Mode   
 #&gt; cluster      300    -none- numeric
 #&gt; centers        6    -none- numeric
 #&gt; totss          1    -none- numeric
@@ -85,8 +85,8 @@ summary(kclust)
 <li><code>totss</code>, <code>tot.withinss</code>, <code>betweenss</code>, and <code>iter</code> (1 value) contain information about the <em>full clustering</em></li>
 </ul>
 <p>Which of these do we want to extract? There is no right answer: each of them may be interesting to an analyst. Because they communicate entirely different information (not to mention there’s no straightforward way to combine them), they are extracted by separate functions. <code>augment</code> adds the point classifications to the original dataset:</p>
-<pre class="r"><code>augment(kclust, points)
-#&gt; # A tibble: 300 x 3
+<pre class="r"><code>augment(kclust, points)</code></pre>
+<pre><code>#&gt; # A tibble: 300 x 3
 #&gt;       x1     x2 .cluster
 #&gt;    &lt;dbl&gt;  &lt;dbl&gt; &lt;fct&gt;   
 #&gt;  1  6.91 -2.74  3       
@@ -101,16 +101,16 @@ summary(kclust)
 #&gt; 10  5.24 -2.42  3       
 #&gt; # … with 290 more rows</code></pre>
 <p>The <code>tidy()</code> function summarizes on a per-cluster level:</p>
-<pre class="r"><code>tidy(kclust)
-#&gt; # A tibble: 3 x 5
+<pre class="r"><code>tidy(kclust)</code></pre>
+<pre><code>#&gt; # A tibble: 3 x 5
 #&gt;        x1    x2  size withinss cluster
 #&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt;    &lt;dbl&gt; &lt;fct&gt;  
 #&gt; 1  0.0885  1.05   148     299. 1      
 #&gt; 2 -3.14   -2.00    51     109. 2      
 #&gt; 3  5.00   -1.05   101     243. 3</code></pre>
 <p>And as it always does, the <code>glance()</code> function extracts a single-row summary:</p>
-<pre class="r"><code>glance(kclust)
-#&gt; # A tibble: 1 x 4
+<pre class="r"><code>glance(kclust)</code></pre>
+<pre><code>#&gt; # A tibble: 1 x 4
 #&gt;   totss tot.withinss betweenss  iter
 #&gt;   &lt;dbl&gt;        &lt;dbl&gt;     &lt;dbl&gt; &lt;int&gt;
 #&gt; 1 3724.         651.     3073.     2</code></pre>
@@ -127,8 +127,8 @@ summary(kclust)
     augmented = map(kclust, augment, points)
   )
 
-kclusts
-#&gt; # A tibble: 9 x 5
+kclusts</code></pre>
+<pre><code>#&gt; # A tibble: 9 x 5
 #&gt;       k kclust   tidied           glanced          augmented         
 #&gt;   &lt;int&gt; &lt;list&gt;   &lt;list&gt;           &lt;list&gt;           &lt;list&gt;            
 #&gt; 1     1 &lt;kmeans&gt; &lt;tibble [1 × 5]&gt; &lt;tibble [1 × 4]&gt; &lt;tibble [300 × 3]&gt;
@@ -156,18 +156,18 @@ clusterings &lt;-
 <p>Now we can plot the original points, with each point colored according to the predicted cluster.</p>
 <pre class="r"><code>p1 &lt;- 
   ggplot(assignments, aes(x = x1, y = x2)) +
-  geom_point(aes(color = .cluster), alpha = 0.3) + 
+  geom_point(aes(color = .cluster), alpha = 0.8) + 
   facet_wrap(~ k)
 p1</code></pre>
-<p><img src="/examples/tidying-k-means-clustering/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="/examples/tidying-k-means-clustering/index_files/figure-html/unnamed-chunk-8-1.svg" width="672" /></p>
 <p>Already we get a good sense of the proper number of clusters (3), and how the k-means algorithm functions when k is too high or too low. We can then add the centers of the cluster using the data from <code>tidy()</code>:</p>
 <pre class="r"><code>p2 &lt;- p1 + geom_point(data = clusters, size = 10, shape = &quot;x&quot;)
 p2</code></pre>
-<p><img src="/examples/tidying-k-means-clustering/index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="/examples/tidying-k-means-clustering/index_files/figure-html/unnamed-chunk-9-1.svg" width="672" /></p>
 <p>The data from <code>glance()</code> fits a different but equally important purpose: it lets you view trends of some summary statistics across values of k. Of particular interest is the total within sum of squares, saved in the <code>tot.withinss</code> column.</p>
 <pre class="r"><code>ggplot(clusterings, aes(k, tot.withinss)) +
   geom_line() +
   geom_point()</code></pre>
-<p><img src="/examples/tidying-k-means-clustering/index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="/examples/tidying-k-means-clustering/index_files/figure-html/unnamed-chunk-10-1.svg" width="672" /></p>
 <p>This represents the variance within the clusters. It decreases as <code>k</code> increases, but one can notice a bend (or “elbow”) right at k=3. This bend indicates that additional clusters beyond the third have little value. (See <a href="http://web.stanford.edu/~hastie/Papers/gap.pdf">here</a> for a more mathematically rigorous interpretation and implementation of this method). Thus, all three methods of tidying data provided by broom are useful for summarizing clustering output.</p>
 </div>

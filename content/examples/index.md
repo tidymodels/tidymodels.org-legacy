@@ -29,7 +29,7 @@ title: Examples
 
 * [Tuning a text processing model](./text-analysis) <img src="/images/pkg_list_7.png"  align="right"  height="39">
 
-* [Effect encoding methods for categorical predictors](./time-series) <img src="/images/recipes.png"  align="right"  height="39">
+* [Effect encoding methods for categorical predictors](./effect-encoding-with-embed) <img src="/images/recipes.png"  align="right"  height="39">
 
 * [Feature embeddings for for categorical predictors](./feature-embedding) <img src="/images/recipes.png"  align="right"  height="39">
 

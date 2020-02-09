@@ -19,8 +19,8 @@ tags: [recipes, textrecipes, glmnet, textfeatures, textrecipes, text data, class
 library(modeldata)
 
 data(&quot;small_fine_foods&quot;)
-training_data
-#&gt; # A tibble: 4,000 x 3
+training_data</code></pre>
+<pre><code>#&gt; # A tibble: 4,000 x 3
 #&gt;    product    review                                                       score
 #&gt;    &lt;chr&gt;      &lt;chr&gt;                                                        &lt;fct&gt;
 #&gt;  1 B000J0LSBG &quot;this stuff is  not stuffing  its  not good at all  save yo… other
@@ -53,8 +53,8 @@ training_data
 <pre class="r"><code>library(textfeatures)
 
 basics &lt;- names(textfeatures:::count_functions)
-head(basics)
-#&gt; [1] &quot;n_words&quot;    &quot;n_uq_words&quot; &quot;n_charS&quot;    &quot;n_uq_charS&quot; &quot;n_digits&quot;  
+head(basics)</code></pre>
+<pre><code>#&gt; [1] &quot;n_words&quot;    &quot;n_uq_words&quot; &quot;n_charS&quot;    &quot;n_uq_charS&quot; &quot;n_digits&quot;  
 #&gt; [6] &quot;n_hashtags&quot;</code></pre>
 <p>Also, the implementation of feature hashes does not produce binary values. This small function will help convert the scores to values of -1, 0, or 1:</p>
 <pre class="r"><code>binary_hash &lt;- function(x) {
@@ -136,8 +136,8 @@ five_star_glmnet &lt;-
 <pre class="r"><code>grid_roc &lt;- 
   collect_metrics(five_star_glmnet) %&gt;% 
   arrange(desc(mean))
-grid_roc
-#&gt; # A tibble: 300 x 8
+grid_roc</code></pre>
+<pre><code>#&gt; # A tibble: 300 x 8
 #&gt;    penalty mixture num_terms .metric .estimator  mean     n std_err
 #&gt;      &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
 #&gt;  1 0.0379     0.25      4096 roc_auc binary     0.816    10 0.00753
@@ -159,7 +159,7 @@ grid_roc
   geom_line() +
   scale_x_log10() + 
   theme(legend.position = &quot;top&quot;)</code></pre>
-<p><img src="/examples/text-analysis/index_files/figure-html/grid-plot-1.png" width="672" /></p>
+<p><img src="/examples/text-analysis/index_files/figure-html/grid-plot-1.svg" width="672" /></p>
 <p>There is definitely an effect due to the number of features used<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>. The profiles with mixture values greater than zero had steep drop-offs in performance. What’s that about? Those are cases where the lasso penalty is removing too many (and perhaps all) features from the model<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>.</p>
 <p>It’s clear from the panels at least 4096 features that there are several parameter combinations that have roughly equivalent performance. A case could be made to choose a larger mixture value and less of a penalty to select a more simplistic model that contains fewer predictors. If more experimentation were conducted, a largest set of features should also be considered.</p>
 <p>We’ll come back to the extracted <code>glmnet</code> components at the end of this example.</p>
@@ -198,252 +198,252 @@ five_star_search &lt;-
     metrics = roc_scores,
     objective = exp_improve(trade_off_decay),
     control = control_bayes(verbose = TRUE)
-  )
-#&gt; 
-#&gt; &gt;  Generating a set of 5 initial parameter results
-#&gt; ✓ Initialization complete
-#&gt; 
-#&gt; Optimizing roc_auc using the expected improvement with variable trade-off values.
-#&gt; 
-#&gt; ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-#&gt; 
-#&gt; i Current best:      roc_auc=0.7559 (@iter 0)
-#&gt; i Gaussian process model
-#&gt; ✓ Gaussian process model
-#&gt; i Generating 5000 candidates
-#&gt; i Predicted candidates
-#&gt; i Trade-off value: 0.01
-#&gt; i penalty=0.992, mixture=0.732, num_terms=298
-#&gt; i Estimating performance
-#&gt; ✓ Estimating performance
-#&gt; ⓧ Newest results:    roc_auc=0.5
-#&gt; 
-#&gt; ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-#&gt; 
-#&gt; i Current best:      roc_auc=0.7559 (@iter 0)
-#&gt; i Gaussian process model
-#&gt; ✓ Gaussian process model
-#&gt; i Generating 5000 candidates
-#&gt; i Predicted candidates
-#&gt; i Trade-off value: 0.007788
-#&gt; i penalty=0.00276, mixture=0.0931, num_terms=257
-#&gt; i Estimating performance
-#&gt; ✓ Estimating performance
-#&gt; ⓧ Newest results:    roc_auc=0.7457 (+/-0.00814)
-#&gt; 
-#&gt; ── Iteration 3 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-#&gt; 
-#&gt; i Current best:      roc_auc=0.7559 (@iter 0)
-#&gt; i Gaussian process model
-#&gt; ✓ Gaussian process model
-#&gt; i Generating 5000 candidates
-#&gt; i Predicted candidates
-#&gt; i Trade-off value: 0.006065
-#&gt; i penalty=0.00697, mixture=0.18, num_terms=4090
-#&gt; i Estimating performance
-#&gt; ✓ Estimating performance
-#&gt; ♥ Newest results:    roc_auc=0.7945 (+/-0.00494)
-#&gt; 
-#&gt; ── Iteration 4 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-#&gt; 
-#&gt; i Current best:      roc_auc=0.7945 (@iter 3)
-#&gt; i Gaussian process model
-#&gt; ✓ Gaussian process model
-#&gt; i Generating 5000 candidates
-#&gt; i Predicted candidates
-#&gt; i Trade-off value: 0.004724
-#&gt; i penalty=0.00325, mixture=1, num_terms=2939
-#&gt; i Estimating performance
-#&gt; ✓ Estimating performance
-#&gt; ♥ Newest results:    roc_auc=0.8015 (+/-0.00618)
-#&gt; 
-#&gt; ── Iteration 5 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-#&gt; 
-#&gt; i Current best:      roc_auc=0.8015 (@iter 4)
-#&gt; i Gaussian process model
-#&gt; ✓ Gaussian process model
-#&gt; i Generating 5000 candidates
-#&gt; i Predicted candidates
-#&gt; i Trade-off value: 0.003679
-#&gt; i penalty=0.269, mixture=0.666, num_terms=258
-#&gt; i Estimating performance
-#&gt; ✓ Estimating performance
-#&gt; ⓧ Newest results:    roc_auc=0.5
-#&gt; 
-#&gt; ── Iteration 6 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-#&gt; 
-#&gt; i Current best:      roc_auc=0.8015 (@iter 4)
-#&gt; i Gaussian process model
-#&gt; ✓ Gaussian process model
-#&gt; i Generating 5000 candidates
-#&gt; i Predicted candidates
-#&gt; i Trade-off value: 0.002865
-#&gt; i penalty=0.0317, mixture=0.151, num_terms=4091
-#&gt; i Estimating performance
-#&gt; ✓ Estimating performance
-#&gt; ♥ Newest results:    roc_auc=0.8132 (+/-0.00563)
-#&gt; 
-#&gt; ── Iteration 7 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-#&gt; 
-#&gt; i Current best:      roc_auc=0.8132 (@iter 6)
-#&gt; i Gaussian process model
-#&gt; ✓ Gaussian process model
-#&gt; i Generating 5000 candidates
-#&gt; i Predicted candidates
-#&gt; i Trade-off value: 0.002231
-#&gt; i penalty=0.0218, mixture=0.687, num_terms=4089
-#&gt; i Estimating performance
-#&gt; ✓ Estimating performance
-#&gt; ♥ Newest results:    roc_auc=0.8134 (+/-0.00997)
-#&gt; 
-#&gt; ── Iteration 8 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-#&gt; 
-#&gt; i Current best:      roc_auc=0.8134 (@iter 7)
-#&gt; i Gaussian process model
-#&gt; ✓ Gaussian process model
-#&gt; i Generating 5000 candidates
-#&gt; i Predicted candidates
-#&gt; i Trade-off value: 0.001738
-#&gt; i penalty=0.00102, mixture=0.538, num_terms=334
-#&gt; i Estimating performance
-#&gt; ✓ Estimating performance
-#&gt; ⓧ Newest results:    roc_auc=0.7548 (+/-0.00495)
-#&gt; 
-#&gt; ── Iteration 9 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-#&gt; 
-#&gt; i Current best:      roc_auc=0.8134 (@iter 7)
-#&gt; i Gaussian process model
-#&gt; ✓ Gaussian process model
-#&gt; i Generating 5000 candidates
-#&gt; i Predicted candidates
-#&gt; i Trade-off value: 0.001353
-#&gt; i penalty=0.00102, mixture=0.202, num_terms=3964
-#&gt; i Estimating performance
-#&gt; ✓ Estimating performance
-#&gt; ⓧ Newest results:    roc_auc=0.7785 (+/-0.00569)
-#&gt; 
-#&gt; ── Iteration 10 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-#&gt; 
-#&gt; i Current best:      roc_auc=0.8134 (@iter 7)
-#&gt; i Gaussian process model
-#&gt; ✓ Gaussian process model
-#&gt; i Generating 5000 candidates
-#&gt; i Predicted candidates
-#&gt; i Trade-off value: 0.001054
-#&gt; i penalty=0.242, mixture=0.682, num_terms=4063
-#&gt; i Estimating performance
-#&gt; ✓ Estimating performance
-#&gt; ⓧ Newest results:    roc_auc=0.5
-#&gt; 
-#&gt; ── Iteration 11 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-#&gt; 
-#&gt; i Current best:      roc_auc=0.8134 (@iter 7)
-#&gt; i Gaussian process model
-#&gt; ✓ Gaussian process model
-#&gt; i Generating 5000 candidates
-#&gt; i Predicted candidates
-#&gt; i Trade-off value: 0.0008208
-#&gt; i penalty=0.989, mixture=0.885, num_terms=4057
-#&gt; i Estimating performance
-#&gt; ✓ Estimating performance
-#&gt; ⓧ Newest results:    roc_auc=0.5
-#&gt; 
-#&gt; ── Iteration 12 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-#&gt; 
-#&gt; i Current best:      roc_auc=0.8134 (@iter 7)
-#&gt; i Gaussian process model
-#&gt; ✓ Gaussian process model
-#&gt; i Generating 5000 candidates
-#&gt; i Predicted candidates
-#&gt; i Trade-off value: 0.0006393
-#&gt; i penalty=0.0693, mixture=0.302, num_terms=4088
-#&gt; i Estimating performance
-#&gt; ✓ Estimating performance
-#&gt; ⓧ Newest results:    roc_auc=0.797 (+/-0.00783)
-#&gt; 
-#&gt; ── Iteration 13 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-#&gt; 
-#&gt; i Current best:      roc_auc=0.8134 (@iter 7)
-#&gt; i Gaussian process model
-#&gt; ✓ Gaussian process model
-#&gt; i Generating 5000 candidates
-#&gt; i Predicted candidates
-#&gt; i Trade-off value: 0.0004979
-#&gt; i penalty=0.0537, mixture=0.0652, num_terms=491
-#&gt; i Estimating performance
-#&gt; ✓ Estimating performance
-#&gt; ⓧ Newest results:    roc_auc=0.7694 (+/-0.00752)
-#&gt; 
-#&gt; ── Iteration 14 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-#&gt; 
-#&gt; i Current best:      roc_auc=0.8134 (@iter 7)
-#&gt; i Gaussian process model
-#&gt; ✓ Gaussian process model
-#&gt; i Generating 5000 candidates
-#&gt; i Predicted candidates
-#&gt; i Trade-off value: 0.0003877
-#&gt; i penalty=0.036, mixture=0.415, num_terms=2450
-#&gt; i Estimating performance
-#&gt; ✓ Estimating performance
-#&gt; ⓧ Newest results:    roc_auc=0.7931 (+/-0.00965)
-#&gt; 
-#&gt; ── Iteration 15 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-#&gt; 
-#&gt; i Current best:      roc_auc=0.8134 (@iter 7)
-#&gt; i Gaussian process model
-#&gt; ✓ Gaussian process model
-#&gt; i Generating 5000 candidates
-#&gt; i Predicted candidates
-#&gt; i Trade-off value: 0.000302
-#&gt; i penalty=0.0123, mixture=0.991, num_terms=785
-#&gt; i Estimating performance
-#&gt; ✓ Estimating performance
-#&gt; ⓧ Newest results:    roc_auc=0.7818 (+/-0.00833)
-#&gt; 
-#&gt; ── Iteration 16 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-#&gt; 
-#&gt; i Current best:      roc_auc=0.8134 (@iter 7)
-#&gt; i Gaussian process model
-#&gt; ✓ Gaussian process model
-#&gt; i Generating 5000 candidates
-#&gt; i Predicted candidates
-#&gt; i Trade-off value: 0.0002352
-#&gt; i penalty=0.0457, mixture=0.054, num_terms=4075
-#&gt; i Estimating performance
-#&gt; ✓ Estimating performance
-#&gt; ⓧ Newest results:    roc_auc=0.8072 (+/-0.00654)
-#&gt; 
-#&gt; ── Iteration 17 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-#&gt; 
-#&gt; i Current best:      roc_auc=0.8134 (@iter 7)
-#&gt; i Gaussian process model
-#&gt; ✓ Gaussian process model
-#&gt; i Generating 5000 candidates
-#&gt; i Predicted candidates
-#&gt; i Trade-off value: 0.0001832
-#&gt; i penalty=0.0049, mixture=0.965, num_terms=1973
-#&gt; i Estimating performance
-#&gt; ✓ Estimating performance
-#&gt; ⓧ Newest results:    roc_auc=0.7962 (+/-0.0067)
-#&gt; ! No improvement for 10 iterations; returning current results.</code></pre>
+  )</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; &gt;  Generating a set of 5 initial parameter results</code></pre>
+<pre><code>#&gt; ✓ Initialization complete</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; Optimizing roc_auc using the expected improvement with variable trade-off values.</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; i Current best:      roc_auc=0.7559 (@iter 0)</code></pre>
+<pre><code>#&gt; i Gaussian process model</code></pre>
+<pre><code>#&gt; ✓ Gaussian process model</code></pre>
+<pre><code>#&gt; i Generating 5000 candidates</code></pre>
+<pre><code>#&gt; i Predicted candidates</code></pre>
+<pre><code>#&gt; i Trade-off value: 0.01</code></pre>
+<pre><code>#&gt; i penalty=0.992, mixture=0.732, num_terms=298</code></pre>
+<pre><code>#&gt; i Estimating performance</code></pre>
+<pre><code>#&gt; ✓ Estimating performance</code></pre>
+<pre><code>#&gt; ⓧ Newest results:    roc_auc=0.5</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; i Current best:      roc_auc=0.7559 (@iter 0)</code></pre>
+<pre><code>#&gt; i Gaussian process model</code></pre>
+<pre><code>#&gt; ✓ Gaussian process model</code></pre>
+<pre><code>#&gt; i Generating 5000 candidates</code></pre>
+<pre><code>#&gt; i Predicted candidates</code></pre>
+<pre><code>#&gt; i Trade-off value: 0.007788</code></pre>
+<pre><code>#&gt; i penalty=0.00276, mixture=0.0931, num_terms=257</code></pre>
+<pre><code>#&gt; i Estimating performance</code></pre>
+<pre><code>#&gt; ✓ Estimating performance</code></pre>
+<pre><code>#&gt; ⓧ Newest results:    roc_auc=0.7457 (+/-0.00814)</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; ── Iteration 3 ──────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; i Current best:      roc_auc=0.7559 (@iter 0)</code></pre>
+<pre><code>#&gt; i Gaussian process model</code></pre>
+<pre><code>#&gt; ✓ Gaussian process model</code></pre>
+<pre><code>#&gt; i Generating 5000 candidates</code></pre>
+<pre><code>#&gt; i Predicted candidates</code></pre>
+<pre><code>#&gt; i Trade-off value: 0.006065</code></pre>
+<pre><code>#&gt; i penalty=0.00697, mixture=0.18, num_terms=4090</code></pre>
+<pre><code>#&gt; i Estimating performance</code></pre>
+<pre><code>#&gt; ✓ Estimating performance</code></pre>
+<pre><code>#&gt; ♥ Newest results:    roc_auc=0.7945 (+/-0.00494)</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; ── Iteration 4 ──────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; i Current best:      roc_auc=0.7945 (@iter 3)</code></pre>
+<pre><code>#&gt; i Gaussian process model</code></pre>
+<pre><code>#&gt; ✓ Gaussian process model</code></pre>
+<pre><code>#&gt; i Generating 5000 candidates</code></pre>
+<pre><code>#&gt; i Predicted candidates</code></pre>
+<pre><code>#&gt; i Trade-off value: 0.004724</code></pre>
+<pre><code>#&gt; i penalty=0.00325, mixture=1, num_terms=2939</code></pre>
+<pre><code>#&gt; i Estimating performance</code></pre>
+<pre><code>#&gt; ✓ Estimating performance</code></pre>
+<pre><code>#&gt; ♥ Newest results:    roc_auc=0.8015 (+/-0.00618)</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; ── Iteration 5 ──────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; i Current best:      roc_auc=0.8015 (@iter 4)</code></pre>
+<pre><code>#&gt; i Gaussian process model</code></pre>
+<pre><code>#&gt; ✓ Gaussian process model</code></pre>
+<pre><code>#&gt; i Generating 5000 candidates</code></pre>
+<pre><code>#&gt; i Predicted candidates</code></pre>
+<pre><code>#&gt; i Trade-off value: 0.003679</code></pre>
+<pre><code>#&gt; i penalty=0.269, mixture=0.666, num_terms=258</code></pre>
+<pre><code>#&gt; i Estimating performance</code></pre>
+<pre><code>#&gt; ✓ Estimating performance</code></pre>
+<pre><code>#&gt; ⓧ Newest results:    roc_auc=0.5</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; ── Iteration 6 ──────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; i Current best:      roc_auc=0.8015 (@iter 4)</code></pre>
+<pre><code>#&gt; i Gaussian process model</code></pre>
+<pre><code>#&gt; ✓ Gaussian process model</code></pre>
+<pre><code>#&gt; i Generating 5000 candidates</code></pre>
+<pre><code>#&gt; i Predicted candidates</code></pre>
+<pre><code>#&gt; i Trade-off value: 0.002865</code></pre>
+<pre><code>#&gt; i penalty=0.0317, mixture=0.151, num_terms=4091</code></pre>
+<pre><code>#&gt; i Estimating performance</code></pre>
+<pre><code>#&gt; ✓ Estimating performance</code></pre>
+<pre><code>#&gt; ♥ Newest results:    roc_auc=0.8132 (+/-0.00563)</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; ── Iteration 7 ──────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; i Current best:      roc_auc=0.8132 (@iter 6)</code></pre>
+<pre><code>#&gt; i Gaussian process model</code></pre>
+<pre><code>#&gt; ✓ Gaussian process model</code></pre>
+<pre><code>#&gt; i Generating 5000 candidates</code></pre>
+<pre><code>#&gt; i Predicted candidates</code></pre>
+<pre><code>#&gt; i Trade-off value: 0.002231</code></pre>
+<pre><code>#&gt; i penalty=0.0218, mixture=0.687, num_terms=4089</code></pre>
+<pre><code>#&gt; i Estimating performance</code></pre>
+<pre><code>#&gt; ✓ Estimating performance</code></pre>
+<pre><code>#&gt; ♥ Newest results:    roc_auc=0.8134 (+/-0.00997)</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; ── Iteration 8 ──────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; i Current best:      roc_auc=0.8134 (@iter 7)</code></pre>
+<pre><code>#&gt; i Gaussian process model</code></pre>
+<pre><code>#&gt; ✓ Gaussian process model</code></pre>
+<pre><code>#&gt; i Generating 5000 candidates</code></pre>
+<pre><code>#&gt; i Predicted candidates</code></pre>
+<pre><code>#&gt; i Trade-off value: 0.001738</code></pre>
+<pre><code>#&gt; i penalty=0.00102, mixture=0.538, num_terms=334</code></pre>
+<pre><code>#&gt; i Estimating performance</code></pre>
+<pre><code>#&gt; ✓ Estimating performance</code></pre>
+<pre><code>#&gt; ⓧ Newest results:    roc_auc=0.7548 (+/-0.00495)</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; ── Iteration 9 ──────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; i Current best:      roc_auc=0.8134 (@iter 7)</code></pre>
+<pre><code>#&gt; i Gaussian process model</code></pre>
+<pre><code>#&gt; ✓ Gaussian process model</code></pre>
+<pre><code>#&gt; i Generating 5000 candidates</code></pre>
+<pre><code>#&gt; i Predicted candidates</code></pre>
+<pre><code>#&gt; i Trade-off value: 0.001353</code></pre>
+<pre><code>#&gt; i penalty=0.00102, mixture=0.202, num_terms=3964</code></pre>
+<pre><code>#&gt; i Estimating performance</code></pre>
+<pre><code>#&gt; ✓ Estimating performance</code></pre>
+<pre><code>#&gt; ⓧ Newest results:    roc_auc=0.7785 (+/-0.00569)</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; ── Iteration 10 ─────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; i Current best:      roc_auc=0.8134 (@iter 7)</code></pre>
+<pre><code>#&gt; i Gaussian process model</code></pre>
+<pre><code>#&gt; ✓ Gaussian process model</code></pre>
+<pre><code>#&gt; i Generating 5000 candidates</code></pre>
+<pre><code>#&gt; i Predicted candidates</code></pre>
+<pre><code>#&gt; i Trade-off value: 0.001054</code></pre>
+<pre><code>#&gt; i penalty=0.242, mixture=0.682, num_terms=4063</code></pre>
+<pre><code>#&gt; i Estimating performance</code></pre>
+<pre><code>#&gt; ✓ Estimating performance</code></pre>
+<pre><code>#&gt; ⓧ Newest results:    roc_auc=0.5</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; ── Iteration 11 ─────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; i Current best:      roc_auc=0.8134 (@iter 7)</code></pre>
+<pre><code>#&gt; i Gaussian process model</code></pre>
+<pre><code>#&gt; ✓ Gaussian process model</code></pre>
+<pre><code>#&gt; i Generating 5000 candidates</code></pre>
+<pre><code>#&gt; i Predicted candidates</code></pre>
+<pre><code>#&gt; i Trade-off value: 0.0008208</code></pre>
+<pre><code>#&gt; i penalty=0.989, mixture=0.885, num_terms=4057</code></pre>
+<pre><code>#&gt; i Estimating performance</code></pre>
+<pre><code>#&gt; ✓ Estimating performance</code></pre>
+<pre><code>#&gt; ⓧ Newest results:    roc_auc=0.5</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; ── Iteration 12 ─────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; i Current best:      roc_auc=0.8134 (@iter 7)</code></pre>
+<pre><code>#&gt; i Gaussian process model</code></pre>
+<pre><code>#&gt; ✓ Gaussian process model</code></pre>
+<pre><code>#&gt; i Generating 5000 candidates</code></pre>
+<pre><code>#&gt; i Predicted candidates</code></pre>
+<pre><code>#&gt; i Trade-off value: 0.0006393</code></pre>
+<pre><code>#&gt; i penalty=0.0693, mixture=0.302, num_terms=4088</code></pre>
+<pre><code>#&gt; i Estimating performance</code></pre>
+<pre><code>#&gt; ✓ Estimating performance</code></pre>
+<pre><code>#&gt; ⓧ Newest results:    roc_auc=0.797 (+/-0.00783)</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; ── Iteration 13 ─────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; i Current best:      roc_auc=0.8134 (@iter 7)</code></pre>
+<pre><code>#&gt; i Gaussian process model</code></pre>
+<pre><code>#&gt; ✓ Gaussian process model</code></pre>
+<pre><code>#&gt; i Generating 5000 candidates</code></pre>
+<pre><code>#&gt; i Predicted candidates</code></pre>
+<pre><code>#&gt; i Trade-off value: 0.0004979</code></pre>
+<pre><code>#&gt; i penalty=0.0537, mixture=0.0652, num_terms=491</code></pre>
+<pre><code>#&gt; i Estimating performance</code></pre>
+<pre><code>#&gt; ✓ Estimating performance</code></pre>
+<pre><code>#&gt; ⓧ Newest results:    roc_auc=0.7694 (+/-0.00752)</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; ── Iteration 14 ─────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; i Current best:      roc_auc=0.8134 (@iter 7)</code></pre>
+<pre><code>#&gt; i Gaussian process model</code></pre>
+<pre><code>#&gt; ✓ Gaussian process model</code></pre>
+<pre><code>#&gt; i Generating 5000 candidates</code></pre>
+<pre><code>#&gt; i Predicted candidates</code></pre>
+<pre><code>#&gt; i Trade-off value: 0.0003877</code></pre>
+<pre><code>#&gt; i penalty=0.036, mixture=0.415, num_terms=2450</code></pre>
+<pre><code>#&gt; i Estimating performance</code></pre>
+<pre><code>#&gt; ✓ Estimating performance</code></pre>
+<pre><code>#&gt; ⓧ Newest results:    roc_auc=0.7931 (+/-0.00965)</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; ── Iteration 15 ─────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; i Current best:      roc_auc=0.8134 (@iter 7)</code></pre>
+<pre><code>#&gt; i Gaussian process model</code></pre>
+<pre><code>#&gt; ✓ Gaussian process model</code></pre>
+<pre><code>#&gt; i Generating 5000 candidates</code></pre>
+<pre><code>#&gt; i Predicted candidates</code></pre>
+<pre><code>#&gt; i Trade-off value: 0.000302</code></pre>
+<pre><code>#&gt; i penalty=0.0123, mixture=0.991, num_terms=785</code></pre>
+<pre><code>#&gt; i Estimating performance</code></pre>
+<pre><code>#&gt; ✓ Estimating performance</code></pre>
+<pre><code>#&gt; ⓧ Newest results:    roc_auc=0.7818 (+/-0.00833)</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; ── Iteration 16 ─────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; i Current best:      roc_auc=0.8134 (@iter 7)</code></pre>
+<pre><code>#&gt; i Gaussian process model</code></pre>
+<pre><code>#&gt; ✓ Gaussian process model</code></pre>
+<pre><code>#&gt; i Generating 5000 candidates</code></pre>
+<pre><code>#&gt; i Predicted candidates</code></pre>
+<pre><code>#&gt; i Trade-off value: 0.0002352</code></pre>
+<pre><code>#&gt; i penalty=0.0457, mixture=0.054, num_terms=4075</code></pre>
+<pre><code>#&gt; i Estimating performance</code></pre>
+<pre><code>#&gt; ✓ Estimating performance</code></pre>
+<pre><code>#&gt; ⓧ Newest results:    roc_auc=0.8072 (+/-0.00654)</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; ── Iteration 17 ─────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; </code></pre>
+<pre><code>#&gt; i Current best:      roc_auc=0.8134 (@iter 7)</code></pre>
+<pre><code>#&gt; i Gaussian process model</code></pre>
+<pre><code>#&gt; ✓ Gaussian process model</code></pre>
+<pre><code>#&gt; i Generating 5000 candidates</code></pre>
+<pre><code>#&gt; i Predicted candidates</code></pre>
+<pre><code>#&gt; i Trade-off value: 0.0001832</code></pre>
+<pre><code>#&gt; i penalty=0.0049, mixture=0.965, num_terms=1973</code></pre>
+<pre><code>#&gt; i Estimating performance</code></pre>
+<pre><code>#&gt; ✓ Estimating performance</code></pre>
+<pre><code>#&gt; ⓧ Newest results:    roc_auc=0.7962 (+/-0.0067)</code></pre>
+<pre><code>#&gt; ! No improvement for 10 iterations; returning current results.</code></pre>
 <p>The results show some improvement over the initial set. One issue is that so many settings are sub-optimal (as shown in the figure above for grid search) so there are poor results periodically. There are regions where the penalty parameter becomes too large and all of the predictors are removed from the model. These regions are also dependent on the number of terms. There is a fairly narrow ridge<a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a> where good performance can be achieved. Using more iterations would probably result in the search finding better results.</p>
 <p>A plot of model performance versus the search iterations:</p>
 <pre class="r"><code>autoplot(five_star_search, type = &quot;performance&quot;)</code></pre>
-<p><img src="/examples/text-analysis/index_files/figure-html/iter-plot-1.png" width="672" /></p>
+<p><img src="/examples/text-analysis/index_files/figure-html/iter-plot-1.svg" width="672" /></p>
 <p>What would we do if we knew about the grid search results? In this case, we would restrict the range for the number of hash features to be larger (especially with more data). We might also restrict the penalty and mixture parameters to have a more restricted upper bound.</p>
 </div>
 <div id="extracted-results" class="section level2">
 <h2>Extracted Results</h2>
 <p>Jumping back to the grid search results, let’s examine the results of our <code>extract</code> function. For each <em>fitted model</em>, a tibble was saved that has the relationship between the number of predictors and the penalty value. Let’s look at these results for the best model:</p>
 <pre class="r"><code>params &lt;- select_best(five_star_glmnet)
-params
-#&gt; # A tibble: 1 x 3
+params</code></pre>
+<pre><code>#&gt; # A tibble: 1 x 3
 #&gt;   penalty mixture num_terms
 #&gt;     &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;
 #&gt; 1  0.0379    0.25      4096</code></pre>
 <p>Recall that we saved the <code>glmnet</code> results in a tibble. The column <code>five_star_glmnet$.extracts</code> is a list of tibbles. As an example, the first element of the list is:</p>
-<pre class="r"><code>five_star_glmnet$.extracts[[1]]
-#&gt; # A tibble: 15 x 4
+<pre class="r"><code>five_star_glmnet$.extracts[[1]]</code></pre>
+<pre><code>#&gt; # A tibble: 15 x 4
 #&gt;    num_terms penalty mixture .extracts         
 #&gt;        &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;list&gt;            
 #&gt;  1       256       1    0    &lt;tibble [100 × 2]&gt;
@@ -466,8 +466,8 @@ params
   five_star_glmnet %&gt;% 
   dplyr::select(id, .extracts) %&gt;% 
   unnest(cols = .extracts)
-extracted
-#&gt; # A tibble: 150 x 5
+extracted</code></pre>
+<pre><code>#&gt; # A tibble: 150 x 5
 #&gt;    id     num_terms penalty mixture .extracts         
 #&gt;    &lt;chr&gt;      &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;list&gt;            
 #&gt;  1 Fold01       256       1    0    &lt;tibble [100 × 2]&gt;
@@ -488,8 +488,8 @@ extracted
   inner_join(params, by = c(&quot;num_terms&quot;, &quot;mixture&quot;)) %&gt;% 
   # Now remove it from the final results
   dplyr::select(-penalty)
-extracted
-#&gt; # A tibble: 10 x 4
+extracted</code></pre>
+<pre><code>#&gt; # A tibble: 10 x 4
 #&gt;    id     num_terms mixture .extracts         
 #&gt;    &lt;chr&gt;      &lt;dbl&gt;   &lt;dbl&gt; &lt;list&gt;            
 #&gt;  1 Fold01      4096    0.25 &lt;tibble [100 × 2]&gt;
@@ -506,8 +506,8 @@ extracted
 <pre class="r"><code>extracted &lt;- 
   extracted %&gt;% 
   unnest(col = .extracts) # &lt;- these contain a `penalty` column
-extracted
-#&gt; # A tibble: 1,000 x 5
+extracted</code></pre>
+<pre><code>#&gt; # A tibble: 1,000 x 5
 #&gt;    id     num_terms mixture penalty num_vars
 #&gt;    &lt;chr&gt;      &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;    &lt;int&gt;
 #&gt;  1 Fold01      4096    0.25   0.360        0
@@ -528,7 +528,7 @@ extracted
   scale_x_log10()  + 
   ggtitle(paste(&quot;mixture = &quot;, params$mixture, &quot;and&quot;, params$num_terms, &quot;features&quot;)) + 
   theme(legend.position = &quot;none&quot;)</code></pre>
-<p><img src="/examples/text-analysis/index_files/figure-html/var-plot-1.png" width="672" /></p>
+<p><img src="/examples/text-analysis/index_files/figure-html/var-plot-1.svg" width="672" /></p>
 <p>These results might help guide the range of the <code>penalty</code> value if more optimization was conducted.</p>
 </div>
 <div class="footnotes">

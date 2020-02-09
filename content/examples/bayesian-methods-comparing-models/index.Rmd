@@ -8,8 +8,9 @@ tags: [tune, tidyposterior, earth, rpart, kernlab, Bayesian analysis, regression
 ```{r load, include = FALSE, message = FALSE, warning = FALSE}
 knitr::opts_chunk$set(
   digits = 3,
-  collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  dev = 'svg', 
+  dev.args = list(bg = "transparent")
 )
 
 library(tidyposterior)

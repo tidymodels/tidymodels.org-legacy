@@ -6,8 +6,9 @@ tags: [parsnip, keras, classification models]
 ```{r ex_setup, include=FALSE}
 knitr::opts_chunk$set(
   digits = 3,
-  collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  dev = 'svg', 
+  dev.args = list(bg = "transparent")
 )
 options(digits = 3)
 library(tidymodels)

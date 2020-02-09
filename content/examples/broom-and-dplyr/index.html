@@ -16,8 +16,8 @@ tags: [broom, dplyr, regression models]
 data(Orange)
 
 Orange &lt;- as_tibble(Orange)
-Orange
-#&gt; # A tibble: 35 x 3
+Orange</code></pre>
+<pre><code>#&gt; # A tibble: 35 x 3
 #&gt;    Tree    age circumference
 #&gt;    &lt;ord&gt; &lt;dbl&gt;         &lt;dbl&gt;
 #&gt;  1 1       118            30
@@ -32,19 +32,18 @@ Orange
 #&gt; 10 2       664           111
 #&gt; # … with 25 more rows</code></pre>
 <p>This contains 35 observations of three variables: <code>Tree</code>, <code>age</code>, and <code>circumference</code>. <code>Tree</code> is a factor with five levels describing five trees. As might be expected, age and circumference are correlated:</p>
-<pre class="r"><code>cor(Orange$age, Orange$circumference)
-#&gt; [1] 0.914
-
-library(ggplot2)
+<pre class="r"><code>cor(Orange$age, Orange$circumference)</code></pre>
+<pre><code>#&gt; [1] 0.914</code></pre>
+<pre class="r"><code>library(ggplot2)
 
 ggplot(Orange, aes(age, circumference, color = Tree)) +
   geom_line()</code></pre>
-<p><img src="/examples/broom-and-dplyr/index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p><img src="/examples/broom-and-dplyr/index_files/figure-html/unnamed-chunk-2-1.svg" width="672" /></p>
 <p>Suppose you want to test for correlations individually <em>within</em> each tree. You can do this with dplyr’s <code>group_by</code>:</p>
 <pre class="r"><code>Orange %&gt;% 
   group_by(Tree) %&gt;%
-  summarize(correlation = cor(age, circumference))
-#&gt; # A tibble: 5 x 2
+  summarize(correlation = cor(age, circumference))</code></pre>
+<pre><code>#&gt; # A tibble: 5 x 2
 #&gt;   Tree  correlation
 #&gt;   &lt;ord&gt;       &lt;dbl&gt;
 #&gt; 1 3           0.988
@@ -55,8 +54,8 @@ ggplot(Orange, aes(age, circumference, color = Tree)) +
 <p>(Note that the correlations are much higher than the aggregated one, and furthermore we can now see it is similar across trees).</p>
 <p>Suppose that instead of simply estimating a correlation, we want to perform a hypothesis test with <code>cor.test()</code>:</p>
 <pre class="r"><code>ct &lt;- cor.test(Orange$age, Orange$circumference)
-ct
-#&gt; 
+ct</code></pre>
+<pre><code>#&gt; 
 #&gt;  Pearson&#39;s product-moment correlation
 #&gt; 
 #&gt; data:  Orange$age and Orange$circumference
@@ -68,8 +67,8 @@ ct
 #&gt;   cor 
 #&gt; 0.914</code></pre>
 <p>This contains multiple values we could want in our output. Some are vectors of length 1, such as the p-value and the estimate, and some are longer, such as the confidence interval. We can get this into a nicely organized tibble using the <code>tidy()</code> function:</p>
-<pre class="r"><code>tidy(ct)
-#&gt; # A tibble: 1 x 8
+<pre class="r"><code>tidy(ct)</code></pre>
+<pre><code>#&gt; # A tibble: 1 x 8
 #&gt;   estimate statistic  p.value parameter conf.low conf.high method    alternative
 #&gt;      &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;int&gt;    &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;      
 #&gt; 1    0.914      12.9 1.93e-14        33    0.834     0.956 Pearson&#39;… two.sided</code></pre>
@@ -79,8 +78,8 @@ ct
   nest(data = c(age, circumference))</code></pre>
 <p>Then we run a correlation test for each nested tibble using <code>purrr::map()</code>:</p>
 <pre class="r"><code>nested %&gt;% 
-  mutate(test = map(data, ~ cor.test(.x$age, .x$circumference)))
-#&gt; # A tibble: 5 x 3
+  mutate(test = map(data, ~ cor.test(.x$age, .x$circumference)))</code></pre>
+<pre><code>#&gt; # A tibble: 5 x 3
 #&gt;   Tree            data test   
 #&gt;   &lt;ord&gt; &lt;list&lt;df[,2]&gt;&gt; &lt;list&gt; 
 #&gt; 1 1            [7 × 2] &lt;htest&gt;
@@ -93,8 +92,8 @@ ct
   mutate(
     test = map(data, ~ cor.test(.x$age, .x$circumference)), # S3 list-col
     tidied = map(test, tidy)
-  ) 
-#&gt; # A tibble: 5 x 4
+  ) </code></pre>
+<pre><code>#&gt; # A tibble: 5 x 4
 #&gt;   Tree            data test    tidied          
 #&gt;   &lt;ord&gt; &lt;list&lt;df[,2]&gt;&gt; &lt;list&gt;  &lt;list&gt;          
 #&gt; 1 1            [7 × 2] &lt;htest&gt; &lt;tibble [1 × 8]&gt;
@@ -110,8 +109,8 @@ ct
     tidied = map(test, tidy)
   ) %&gt;% 
   unnest(cols = tidied) %&gt;% 
-  select(-data, -test)
-#&gt; # A tibble: 5 x 9
+  select(-data, -test)</code></pre>
+<pre><code>#&gt; # A tibble: 5 x 9
 #&gt;   Tree  estimate statistic p.value parameter conf.low conf.high method
 #&gt;   &lt;ord&gt;    &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;     &lt;int&gt;    &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt; 
 #&gt; 1 1        0.985      13.0 4.85e-5         5    0.901     0.998 Pears…
@@ -123,8 +122,8 @@ ct
 <p>Note that the <code>.drop</code> argument to <code>tidyr::unnest()</code> is often useful.</p>
 <p>This workflow becomes even more useful when applied to regressions. Untidy ouput for a regression looks like:</p>
 <pre class="r"><code>lm_fit &lt;- lm(age ~ circumference, data = Orange)
-summary(lm_fit)
-#&gt; 
+summary(lm_fit)</code></pre>
+<pre><code>#&gt; 
 #&gt; Call:
 #&gt; lm(formula = age ~ circumference, data = Orange)
 #&gt; 
@@ -143,8 +142,8 @@ summary(lm_fit)
 #&gt; Multiple R-squared:  0.835,  Adjusted R-squared:  0.83 
 #&gt; F-statistic:  166 on 1 and 33 DF,  p-value: 1.93e-14</code></pre>
 <p>where we tidy these results, we get multiple rows of output for each model:</p>
-<pre class="r"><code>tidy(lm_fit)
-#&gt; # A tibble: 2 x 5
+<pre class="r"><code>tidy(lm_fit)</code></pre>
+<pre><code>#&gt; # A tibble: 2 x 5
 #&gt;   term          estimate std.error statistic  p.value
 #&gt;   &lt;chr&gt;            &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
 #&gt; 1 (Intercept)      16.6     78.1       0.212 8.33e- 1
@@ -157,8 +156,8 @@ summary(lm_fit)
     tidied = map(fit, tidy)
   ) %&gt;% 
   unnest(tidied) %&gt;% 
-  select(-data, -fit)
-#&gt; # A tibble: 10 x 6
+  select(-data, -fit)</code></pre>
+<pre><code>#&gt; # A tibble: 10 x 6
 #&gt;    Tree  term          estimate std.error statistic   p.value
 #&gt;    &lt;ord&gt; &lt;chr&gt;            &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
 #&gt;  1 1     (Intercept)    -265.      98.6      -2.68  0.0436   
@@ -174,8 +173,8 @@ summary(lm_fit)
 <p>You can just as easily use multiple predictors in the regressions, as shown here on the <code>mtcars</code> dataset. We nest the data into automatic and manual cars (the <code>am</code> column), then perform the regression within each nested tibble.</p>
 <pre class="r"><code>data(mtcars)
 mtcars &lt;- as_tibble(mtcars)  # to play nicely with list-cols
-mtcars
-#&gt; # A tibble: 32 x 11
+mtcars</code></pre>
+<pre><code>#&gt; # A tibble: 32 x 11
 #&gt;      mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
 #&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
 #&gt;  1  21       6  160    110  3.9   2.62  16.5     0     1     4     4
@@ -188,17 +187,16 @@ mtcars
 #&gt;  8  24.4     4  147.    62  3.69  3.19  20       1     0     4     2
 #&gt;  9  22.8     4  141.    95  3.92  3.15  22.9     1     0     4     2
 #&gt; 10  19.2     6  168.   123  3.92  3.44  18.3     1     0     4     4
-#&gt; # … with 22 more rows
-
-mtcars %&gt;%
+#&gt; # … with 22 more rows</code></pre>
+<pre class="r"><code>mtcars %&gt;%
   nest(data = c(-am)) %&gt;% 
   mutate(
     fit = map(data, ~ lm(wt ~ mpg + qsec + gear, data = .x)),  # S3 list-col
     tidied = map(fit, tidy)
   ) %&gt;% 
   unnest(tidied) %&gt;% 
-  select(-data, -fit)
-#&gt; # A tibble: 8 x 6
+  select(-data, -fit)</code></pre>
+<pre><code>#&gt; # A tibble: 8 x 6
 #&gt;      am term        estimate std.error statistic  p.value
 #&gt;   &lt;dbl&gt; &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
 #&gt; 1     1 (Intercept)   4.28      3.46      1.24   0.247   
@@ -222,8 +220,8 @@ mtcars %&gt;%
 
 regressions %&gt;% 
   select(tidied) %&gt;% 
-  unnest(tidied)
-#&gt; # A tibble: 8 x 5
+  unnest(tidied)</code></pre>
+<pre><code>#&gt; # A tibble: 8 x 5
 #&gt;   term        estimate std.error statistic  p.value
 #&gt;   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
 #&gt; 1 (Intercept)   4.28      3.46      1.24   0.247   
@@ -233,22 +231,20 @@ regressions %&gt;%
 #&gt; 5 (Intercept)   4.92      1.40      3.52   0.00309 
 #&gt; 6 mpg          -0.192     0.0443   -4.33   0.000591
 #&gt; 7 qsec          0.0919    0.0983    0.935  0.365   
-#&gt; 8 gear          0.147     0.368     0.398  0.696
-
-regressions %&gt;% 
+#&gt; 8 gear          0.147     0.368     0.398  0.696</code></pre>
+<pre class="r"><code>regressions %&gt;% 
   select(glanced) %&gt;% 
-  unnest(glanced)
-#&gt; # A tibble: 2 x 11
+  unnest(glanced)</code></pre>
+<pre><code>#&gt; # A tibble: 2 x 11
 #&gt;   r.squared adj.r.squared sigma statistic p.value    df   logLik   AIC   BIC
 #&gt;       &lt;dbl&gt;         &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;int&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
 #&gt; 1     0.833         0.778 0.291     15.0  7.59e-4     4 -5.80e-3  10.0  12.8
 #&gt; 2     0.625         0.550 0.522      8.32 1.70e-3     4 -1.24e+1  34.7  39.4
-#&gt; # … with 2 more variables: deviance &lt;dbl&gt;, df.residual &lt;int&gt;
-
-regressions %&gt;% 
+#&gt; # … with 2 more variables: deviance &lt;dbl&gt;, df.residual &lt;int&gt;</code></pre>
+<pre class="r"><code>regressions %&gt;% 
   select(augmented) %&gt;% 
-  unnest(augmented)
-#&gt; # A tibble: 32 x 11
+  unnest(augmented)</code></pre>
+<pre><code>#&gt; # A tibble: 32 x 11
 #&gt;       wt   mpg  qsec  gear .fitted .se.fit  .resid  .hat .sigma .cooksd
 #&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;
 #&gt;  1  2.62  21    16.5     4    2.73   0.209 -0.107  0.517  0.304 7.44e-2

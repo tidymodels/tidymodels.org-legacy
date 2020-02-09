@@ -6,8 +6,9 @@ tags: [broom, clustering]
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   digits = 3,
-  collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  dev = 'svg', 
+  dev.args = list(bg = "transparent")
 )
 library(tidymodels)
 theme_set(theme_bw() + theme(legend.position = "top"))
@@ -118,10 +119,10 @@ clusterings <-
 
 Now we can plot the original points, with each point colored according to the predicted cluster.
 
-```{r}
+```{r, fig.width = 7, fig.height = 7}
 p1 <- 
   ggplot(assignments, aes(x = x1, y = x2)) +
-  geom_point(aes(color = .cluster), alpha = 0.3) + 
+  geom_point(aes(color = .cluster), alpha = 0.8) + 
   facet_wrap(~ k)
 p1
 ```

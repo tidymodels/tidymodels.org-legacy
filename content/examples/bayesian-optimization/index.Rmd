@@ -6,8 +6,9 @@ tags: [tune, kernlab, Bayesian optimization, classification models, model tuning
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   digits = 3,
-  collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  dev = 'svg', 
+  dev.args = list(bg = "transparent")
 )
 options(digits = 3)
 library(tidymodels)
@@ -59,7 +60,7 @@ seg_pre_proc <-
   step_YeoJohnson(all_predictors()) %>%
   step_normalize(all_predictors()) %>%
   step_pca(all_predictors(), num_comp = tune()) %>%
-  step_downsample(Class)
+  step_downsample(class)
 ```
 
 Like the original analysis, a support vector machine will be used to model the data. A radial basis function (RBF) kernel will be used and its main parameter ($\sigma$) will be tuned. Additionally, the main SVM parameter, the cost value, also needs optimization. 

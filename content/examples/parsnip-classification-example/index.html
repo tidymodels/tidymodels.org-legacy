@@ -39,10 +39,10 @@ nnet_fit &lt;-
   set_engine(&quot;keras&quot;, verbose = 0, validation_split = .20) %&gt;%
   fit(Status ~ ., data = juice(credit_rec))
 
-nnet_fit
-#&gt; parsnip model object
+nnet_fit</code></pre>
+<pre><code>#&gt; parsnip model object
 #&gt; 
-#&gt; Fit time:  14s 
+#&gt; Fit time:  14.1s 
 #&gt; Model
 #&gt; Model: &quot;sequential&quot;
 #&gt; ________________________________________________________________________________
@@ -72,18 +72,18 @@ nnet_fit
       pull(.pred_good)
   )
 
-test_results %&gt;% roc_auc(truth = Status, nnet_prob)
-#&gt; # A tibble: 1 x 3
+test_results %&gt;% roc_auc(truth = Status, nnet_prob)</code></pre>
+<pre><code>#&gt; # A tibble: 1 x 3
 #&gt;   .metric .estimator .estimate
 #&gt;   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
-#&gt; 1 roc_auc binary         0.825
-test_results %&gt;% accuracy(truth = Status, nnet_class)
-#&gt; # A tibble: 1 x 3
+#&gt; 1 roc_auc binary         0.824</code></pre>
+<pre class="r"><code>test_results %&gt;% accuracy(truth = Status, nnet_class)</code></pre>
+<pre><code>#&gt; # A tibble: 1 x 3
 #&gt;   .metric  .estimator .estimate
 #&gt;   &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;
-#&gt; 1 accuracy binary         0.803
-test_results %&gt;% conf_mat(truth = Status, nnet_class)
-#&gt;           Truth
+#&gt; 1 accuracy binary         0.802</code></pre>
+<pre class="r"><code>test_results %&gt;% conf_mat(truth = Status, nnet_class)</code></pre>
+<pre><code>#&gt;           Truth
 #&gt; Prediction bad good
-#&gt;       bad  180   86
-#&gt;       good 133  714</code></pre>
+#&gt;       bad  179   86
+#&gt;       good 134  714</code></pre>
