@@ -10,23 +10,8 @@ knitr::opts_chunk$set(
   comment = "#>"
   )
 options(digits = 3)
-library(recipes)
-library(textrecipes)
-library(embed)
-library(themis)
-library(tidymodels)
-
-library(fs)
-library(httr)
-library(rlang)
-library(cli)
-library(pkgdown)
-library(glue)
-library(stringr)
+source("get_pkgdown_urls.R")
 library(DT)
-
-tmp_path <- tempdir()
-
 pkgs <- c("recipes", "embed", "textrecipes", "themis")
 ```
 
@@ -42,55 +27,7 @@ There are many recipe steps in the `recipes` package. Other package that contain
 This table contains a list of steps and checking functions across these packages: 
 
 ```{r table-compute, include = FALSE}
-get_pkgdown_urls <- function(x, pth) {
-  base_url <- "https://tidymodels.github.io/{pkg}/reference/{file}"
-  null_res <- tibble(topic = na_chr, title = na_chr, url = na_chr, pkg = x)
-  src_file <- download.packages(x, destdir = pth, repos = "https://cran.rstudio.com/")
-  if (nrow(src_file) == 0) {
-    cli::cli_alert_warning(paste(x, "was not downloaded"))
-    return(null_res)
-  }
-  untar_res <- untar(src_file[1,2], exdir = pth)
-  if (!(fs::path(pth, x) %in% fs::dir_ls(pth))) {
-    cli::cli_alert_warning(paste(x, "was not unpacked"))
-    return(null_res)
-  }
-  pkg_info <- pkgdown::as_pkgdown(fs::path(pth, x))
-  topic_info <-
-    pkg_info$topics %>%
-    dplyr::filter(str_detect(name, "(^check_)|(^step_)")) %>% 
-    unnest(cols = c(alias)) %>%
-    mutate(url = map_chr(file_out, ~ glue::glue(base_url, file = .x, pkg = x)))  %>%
-    dplyr::filter(str_detect(alias, "(^check_)|(^step_)")) %>%
-    dplyr::select(topic = alias, title, url) %>%
-    mutate(
-      pkg = x,
-      title = str_replace(title, "\\n", " ")
-    )
-
-  topic_info
-}
-
-pkg_urls_raw <-
-  map_dfr(pkgs, get_pkgdown_urls, pth = tmp_path)
-
-pkg_urls <-
-  pkg_urls_raw %>%
-  na.omit() %>%
-  dplyr::filter(
-    str_detect(topic, "reexport", negate = TRUE),
-    str_detect(topic, "-package$", negate = TRUE),
-    str_detect(title, "^Internal", negate = TRUE),
-    topic != "_PACKAGE",
-    title != "Pipe",
-    topic != "%>%",
-    title != "Objects exported from other packages"
-  ) %>%
-  dplyr::arrange(topic, pkg) %>%
-  mutate(
-    topic = paste0("<a href='", url,"'  target='_blank'><tt>", topic, "</tt></a>")
-  ) %>%
-  dplyr::select(topic, package = pkg, title)
+pkg_urls <- get_pkgdown_urls(pkgs, fltr = "(^check_)|(^step_)")
 ```
 
 ```{r table-display, echo = FALSE, results = "asis"}

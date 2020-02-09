@@ -1,0 +1,37 @@
+---
+title: "List of all functions across packages"
+---
+
+```{r ex_setup, include=FALSE}
+knitr::opts_chunk$set(
+  message = FALSE,
+  digits = 3,
+  collapse = TRUE,
+  comment = "#>"
+  )
+options(digits = 3)
+source("get_pkgdown_urls.R")
+library(DT)
+```
+
+
+This table lists the functions in CRAN versions of the tidymodels packages. 
+
+```{r table-compute, include = FALSE}
+pkgs <- c("broom", "butcher", "corrr", "dials", "discrim", 
+          "embed", "hardhat", "infer", "modeldata", "modeldb", "parsnip", 
+          "probably", "recipes", "rsample", "textrecipes", "tidyposterior", 
+          "tidypredict", "yardstick", "workflows")
+pkg_urls <- get_pkgdown_urls(pkgs)
+```
+
+```{r table-display, echo = FALSE, results = "asis"}
+DT::datatable(
+  pkg_urls,
+  rownames = FALSE,
+  escape = FALSE,
+  filter = "top",
+  style = 'bootstrap',
+  width = 800
+)
+```
