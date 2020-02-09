@@ -1,5 +1,6 @@
 ---
 title: "Using parsnip for Classification Models"
+tags: [parsnip, keras, classification models]
 ---
   
 ```{r ex_setup, include=FALSE}

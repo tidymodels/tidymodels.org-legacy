@@ -1,15 +1,16 @@
 ---
 title: "Iterative Optimzation of a Classification Model"
+tags: [tune, kernlab, Bayesian optimization, classification models, model tuning]
 ---
 
 <script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
 <script src="/rmarkdown-libs/elevate-section-attrs/elevate-section-attrs.js"></script>
 
 
+<p>In addition to the <code>tidymodels</code> package, this example uses the <code>kernlab</code> package.</p>
 <p>The cell segmentation data from <a href="http://www.biomedcentral.com/1471-2105/8/340">Hill, LaPan, Li and Haney (2007)</a> will be used to demonstrate tuning for a classification model. For these data, the predictors are aspects of cells (like size, shape, etc.). These cells are measured using image analysis and manual curation of the cells are used to determine if the boundaries of the cells were adequately captured. The outcome is either poorly segmented (<code>PS</code>) or well segmented (<code>WS</code>). The point of the analysis is to predict whether <em>future</em> cells were properly delineated. The predictors tend to be highly correlated.</p>
 <p>After first loading the data set, we remove indicators for the cell identifier, the original author’s training/test allocation, and two predictors that are scientifically unimportant. A new training/test split is created and a scheme for 10-fold cross-validation is also created.</p>
 <pre class="r"><code>library(tidymodels)
-library(tune)
 library(kernlab)
 library(modeldata)
 
@@ -42,9 +43,7 @@ folds &lt;- vfold_cv(seg_train, repeats = 2)</code></pre>
   svm_rbf(mode = &quot;classification&quot;, cost = tune(), rbf_sigma = tune()) %&gt;%
   set_engine(&quot;kernlab&quot;)</code></pre>
 <p>These two objects will be combined into a single object via the <code>workflow()</code> function from the <code>workflows</code> package and this object will be used to fuel the optimization process.</p>
-<pre class="r"><code>library(workflows) 
-
-svm_wflow &lt;-
+<pre class="r"><code>svm_wflow &lt;-
   workflow() %&gt;%
   add_model(svm_mod) %&gt;%
   add_recipe(seg_pre_proc)</code></pre>

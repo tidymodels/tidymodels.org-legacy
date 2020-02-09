@@ -1,5 +1,6 @@
 ---
 title: "broom and dplyr"
+tags: [broom, dplyr, regression models]
 ---
 
 ```{r setup, include = FALSE}

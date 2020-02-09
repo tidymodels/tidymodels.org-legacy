@@ -1,12 +1,13 @@
 ---
 title: "Subsampling for Class Imbalances"
+tags: [recipes, themis, discrim, klaR, ROSE, classification models, class imbalance]
 ---
 
 <script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
 <script src="/rmarkdown-libs/elevate-section-attrs/elevate-section-attrs.js"></script>
 
 
-<p>In addition to the <code>tidymodels</code> package, this example uses the <code>caret</code>, <code>discrim</code>, <code>klaR</code>, and <code>themis</code> packages.</p>
+<p>In addition to the <code>tidymodels</code> package, this example uses the <code>caret</code>, <code>discrim</code>, <code>ROSE</code>, <code>klaR</code>, and <code>themis</code> packages.</p>
 <p>Subsampling can be a helpful approach to dealing will classification data where one or more classes occur very infrequently. Often, most models will overfit to the majority class and produce very good statistics for the class containing the frequently occurring classes while the minority classes have poor performance.</p>
 <p>Consider a two-class problem where the first class has a very low rate of occurrence. The <a href="https://topepo.github.io/caret/"><code>caret</code></a> package has a function that can simulate such data:</p>
 <pre class="r"><code>library(caret)
@@ -43,16 +44,16 @@ qda_mod &lt;-
   add_model(qda_mod) %&gt;% 
   add_recipe(imbal_rec)
 qda_rose_wflw
-#&gt; ══ Workflow ════════════════════════════════════════════════════════
+#&gt; ══ Workflow ═════════════════════════════════════════════════════════════════════════════════
 #&gt; Preprocessor: Recipe
 #&gt; Model: discrim_regularized()
 #&gt; 
-#&gt; ── Preprocessor ────────────────────────────────────────────────────
+#&gt; ── Preprocessor ─────────────────────────────────────────────────────────────────────────────
 #&gt; 1 Recipe Step
 #&gt; 
 #&gt; ● step_rose()
 #&gt; 
-#&gt; ── Model ───────────────────────────────────────────────────────────
+#&gt; ── Model ────────────────────────────────────────────────────────────────────────────────────
 #&gt; Regularized Discriminant Model Specification (classification)
 #&gt; 
 #&gt; Main Arguments:

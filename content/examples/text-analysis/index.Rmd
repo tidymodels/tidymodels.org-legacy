@@ -1,5 +1,6 @@
 ---
 title: "Tuning a Supervised Text Model"
+tags: [recipes, textrecipes, glmnet, textfeatures, textrecipes, text data, classification models, model tuning, grid search, Bayesian optimization]
 ---
   
 ```{r setup, include=FALSE}
@@ -10,8 +11,6 @@ knitr::opts_chunk$set(
 )
 options(digits = 3)
 library(tidymodels)
-library(tune)
-library(workflows)
 library(textrecipes)
 library(textfeatures)
 library(glmnet)
@@ -39,7 +38,6 @@ There is a column for the product, a column for the text of the review, and a fa
 
 ```{r data}
 library(tidymodels)
-library(tune)
 library(modeldata)
 
 data("small_fine_foods")

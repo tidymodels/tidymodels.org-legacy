@@ -1,5 +1,6 @@
 ---
 title: "Tidy bootstrapping"
+tags: [rsample, broom, resampling, bootstrap, nonlinear regression, regression models, splines, confidence intervals]
 ---
 
 ```{r setup, include = FALSE}
@@ -13,7 +14,7 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
 
-Another place where combining model fits in a tidy way becomes useful is when performing bootstrapping or permutation tests. These approaches have been explored before, for instance by [Andrew MacDonald here](http://rstudio-pubs-static.s3.amazonaws.com/19698_a4c472606e3c43e4b94720506e49bb7b.html), and [Hadley has explored efficient support for bootstrapping](https://github.com/hadley/dplyr/issues/269) as a potential enhancement to dplyr. broom fits naturally with dplyr in performing these analyses.
+Another place where combining model fits in a tidy way becomes useful is when performing bootstrapping or permutation tests. These approaches have been explored before, for instance by [Andrew MacDonald here](http://rstudio-pubs-static.s3.amazonaws.com/19698_a4c472606e3c43e4b94720506e49bb7b.html), and [Hadley has explored efficient support for bootstrapping](https://github.com/hadley/dplyr/issues/269) as a potential enhancement to `dplyr`. `broom` fits naturally with dplyr in performing these analyses.
 
 Bootstrapping consists of randomly sampling a dataset with replacement, then performing the analysis individually on each bootstrapped replicate. The variation in the resulting estimate is then a reasonable approximation of the variance in our estimate.
 

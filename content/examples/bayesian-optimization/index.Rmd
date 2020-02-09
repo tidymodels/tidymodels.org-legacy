@@ -1,5 +1,6 @@
 ---
 title: "Iterative Optimzation of a Classification Model"
+tags: [tune, kernlab, Bayesian optimization, classification models, model tuning]
 ---
   
 ```{r setup, include=FALSE}
@@ -12,9 +13,7 @@ options(digits = 3)
 library(tidymodels)
 library(tune)
 library(kernlab)
-library(crayon)
 library(rlang)
-library(workflows)
 
 theme_set(theme_bw())
 
@@ -22,13 +21,14 @@ library(doMC)
 registerDoMC(cores = parallel::detectCores())
 ```
 
+In addition to the `tidymodels` package, this example uses the `kernlab` package. 
+
 The cell segmentation data from [Hill, LaPan, Li and Haney (2007)](http://www.biomedcentral.com/1471-2105/8/340) will be used to demonstrate tuning for a classification model. For these data, the predictors are aspects of cells (like size, shape, etc.). These cells are measured using image analysis and manual curation of the cells are used to determine if the boundaries of the cells were adequately captured. The outcome is either poorly segmented (`PS`) or well segmented (`WS`). The point of the analysis is to predict whether _future_ cells were properly delineated. The predictors tend to be highly correlated. 
 
 After first loading the data set, we remove indicators for the cell identifier, the original author's training/test allocation, and two predictors that are scientifically unimportant. A new training/test split is created and a scheme for 10-fold cross-validation is also created. 
 
 ```{r import-data}
 library(tidymodels)
-library(tune)
 library(kernlab)
 library(modeldata)
 
@@ -73,8 +73,6 @@ svm_mod <-
 These two objects will be combined into a single object via the `workflow()` function from the `workflows` package and this object will be used to fuel the optimization process. 
 
 ```{r workflow}
-library(workflows) 
-
 svm_wflow <-
   workflow() %>%
   add_model(svm_mod) %>%

@@ -1,5 +1,6 @@
 ---
 title: "Subsampling for Class Imbalances"
+tags: [recipes, themis, discrim, klaR, ROSE, classification models, class imbalance]
 ---
 
 ```{r ex_setup, include=FALSE}
@@ -23,7 +24,7 @@ theme_set(thm)
 options(digits = 3)
 ```
 
-In addition to the `tidymodels` package, this example uses the `caret`, `discrim`, `klaR`, and `themis` packages. 
+In addition to the `tidymodels` package, this example uses the `caret`, `discrim`, `ROSE`, `klaR`, and `themis` packages. 
 
 Subsampling can be a helpful approach to dealing will classification data where one or more classes occur very infrequently. Often, most models will overfit to the majority class and produce very good statistics for the class containing the frequently occurring classes while the minority classes have poor performance. 
 

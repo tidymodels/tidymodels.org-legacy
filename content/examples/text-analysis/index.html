@@ -1,5 +1,6 @@
 ---
 title: "Tuning a Supervised Text Model"
+tags: [recipes, textrecipes, glmnet, textfeatures, textrecipes, text data, classification models, model tuning, grid search, Bayesian optimization]
 ---
 
 <script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
@@ -15,7 +16,6 @@ title: "Tuning a Supervised Text Model"
 <p>A small subset of the data are contained here; we sampled a single review from 5,000 random products and 80% of these data were used as the training set. The remaining 1,000 were used as the test set.</p>
 <p>There is a column for the product, a column for the text of the review, and a factor column for a class variable. The outcome is whether the reviewer game the product a five-star rating or not.</p>
 <pre class="r"><code>library(tidymodels)
-library(tune)
 library(modeldata)
 
 data(&quot;small_fine_foods&quot;)

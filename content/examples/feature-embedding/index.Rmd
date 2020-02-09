@@ -1,5 +1,6 @@
 ---
 title: "Entity Embeddings of Categorical Variables using Tensorflow"
+tags: [embed, tensorflow, recipes, ggiraph, classification models, feature engineering, categorical predictors]
 ---
 
 

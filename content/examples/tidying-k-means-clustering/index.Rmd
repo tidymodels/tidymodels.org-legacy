@@ -1,5 +1,6 @@
 ---
 title: "K-Means Clasutering with dplyr and broom"
+tags: [broom, clustering]
 ---
 
 ```{r setup, include = FALSE}
@@ -38,7 +39,7 @@ labelled_points <-
   unnest(cols = c(x1, x2))
 
 ggplot(labelled_points, aes(x1, x2, color = cluster)) +
-  geom_point()
+  geom_point(alpha = 0.3)
 ```
 
 This is an ideal case for k-means clustering. We'll use the built-in `kmeans` function, which accepts a dataframe with all numeric columns as it's primary argument.
@@ -81,7 +82,7 @@ glance(kclust)
 
 ## broom and dplyr for exploratory clustering
 
-While these summaries are useful, they would not have been too difficult to extract out from the dataset yourself. The real power comes from combining these analyses with dplyr.
+While these summaries are useful, they would not have been too difficult to extract out from the dataset yourself. The real power comes from combining these analyses with `dplyr`.
 
 Let's say we want to explore the effect of different choices of `k`, from 1 to 9, on this clustering. First cluster the data 9 times, each using a different value of `k`, then create columns containing the tidied, glanced and augmented data:
 
@@ -120,7 +121,7 @@ Now we can plot the original points, with each point colored according to the pr
 ```{r}
 p1 <- 
   ggplot(assignments, aes(x = x1, y = x2)) +
-  geom_point(aes(color = .cluster)) + 
+  geom_point(aes(color = .cluster), alpha = 0.3) + 
   facet_wrap(~ k)
 p1
 ```
@@ -136,7 +137,8 @@ The data from `glance()` fits a different but equally important purpose: it lets
 
 ```{r}
 ggplot(clusterings, aes(k, tot.withinss)) +
-  geom_line()
+  geom_line() +
+  geom_point()
 ```
 
 This represents the variance within the clusters. It decreases as `k` increases, but one can notice a bend (or "elbow") right at k=3. This bend indicates that additional clusters beyond the third have little value. (See [here](http://web.stanford.edu/~hastie/Papers/gap.pdf) for a more mathematically rigorous interpretation and implementation of this method). Thus, all three methods of tidying data provided by broom are useful for summarizing clustering output.

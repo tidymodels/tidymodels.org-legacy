@@ -1,6 +1,7 @@
 
 ---
 title: "Comparing Models via Bayesian Analysis and Resampling"
+tags: [tune, tidyposterior, earth, rpart, kernlab, Bayesian analysis, regression models, model comparisons]
 ---
 
 

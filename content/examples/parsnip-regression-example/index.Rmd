@@ -1,5 +1,6 @@
 ---
 title: "Using parsnip for Regression Models"
+tags: [parsnip, glmnet, randomForest, ranger, regression models]
 ---
   
 

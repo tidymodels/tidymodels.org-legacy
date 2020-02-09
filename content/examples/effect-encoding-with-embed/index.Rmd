@@ -1,5 +1,6 @@
 ---
 title: "Effect Encodings Using Generalized Linear Models"
+tags: [embed, recipes, ggiraph, classification models, feature engineering, categorical predictors, Bayesian analysis, mixed models]
 ---
 
 ```{r setup, include = FALSE}

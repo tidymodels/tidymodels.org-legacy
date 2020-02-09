@@ -1,8 +1,15 @@
 ---
 title: "Time Series Analysis Example"
+tags: [rsample, timetk, forecast, sweep, zoo, time series, regression analysis]
 ---
 
 ```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  message = FALSE,
+  digits = 3,
+  collapse = TRUE,
+  comment = "#>"
+  )
 options(digits = 3)
 library(timetk)
 library(forecast)

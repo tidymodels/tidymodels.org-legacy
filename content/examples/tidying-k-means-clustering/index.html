@@ -1,5 +1,6 @@
 ---
 title: "K-Means Clasutering with dplyr and broom"
+tags: [broom, clustering]
 ---
 
 <script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
@@ -29,7 +30,7 @@ labelled_points &lt;-
   unnest(cols = c(x1, x2))
 
 ggplot(labelled_points, aes(x1, x2, color = cluster)) +
-  geom_point()</code></pre>
+  geom_point(alpha = 0.3)</code></pre>
 <p><img src="/examples/tidying-k-means-clustering/index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
 <p>This is an ideal case for k-means clustering. We’ll use the built-in <code>kmeans</code> function, which accepts a dataframe with all numeric columns as it’s primary argument.</p>
 <pre class="r"><code>points &lt;- 
@@ -115,7 +116,7 @@ summary(kclust)
 #&gt; 1 3724.         651.     3073.     2</code></pre>
 <div id="broom-and-dplyr-for-exploratory-clustering" class="section level2">
 <h2>broom and dplyr for exploratory clustering</h2>
-<p>While these summaries are useful, they would not have been too difficult to extract out from the dataset yourself. The real power comes from combining these analyses with dplyr.</p>
+<p>While these summaries are useful, they would not have been too difficult to extract out from the dataset yourself. The real power comes from combining these analyses with <code>dplyr</code>.</p>
 <p>Let’s say we want to explore the effect of different choices of <code>k</code>, from 1 to 9, on this clustering. First cluster the data 9 times, each using a different value of <code>k</code>, then create columns containing the tidied, glanced and augmented data:</p>
 <pre class="r"><code>kclusts &lt;- 
   tibble(k = 1:9) %&gt;%
@@ -155,7 +156,7 @@ clusterings &lt;-
 <p>Now we can plot the original points, with each point colored according to the predicted cluster.</p>
 <pre class="r"><code>p1 &lt;- 
   ggplot(assignments, aes(x = x1, y = x2)) +
-  geom_point(aes(color = .cluster)) + 
+  geom_point(aes(color = .cluster), alpha = 0.3) + 
   facet_wrap(~ k)
 p1</code></pre>
 <p><img src="/examples/tidying-k-means-clustering/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
@@ -165,7 +166,8 @@ p2</code></pre>
 <p><img src="/examples/tidying-k-means-clustering/index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <p>The data from <code>glance()</code> fits a different but equally important purpose: it lets you view trends of some summary statistics across values of k. Of particular interest is the total within sum of squares, saved in the <code>tot.withinss</code> column.</p>
 <pre class="r"><code>ggplot(clusterings, aes(k, tot.withinss)) +
-  geom_line()</code></pre>
+  geom_line() +
+  geom_point()</code></pre>
 <p><img src="/examples/tidying-k-means-clustering/index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <p>This represents the variance within the clusters. It decreases as <code>k</code> increases, but one can notice a bend (or “elbow”) right at k=3. This bend indicates that additional clusters beyond the third have little value. (See <a href="http://web.stanford.edu/~hastie/Papers/gap.pdf">here</a> for a more mathematically rigorous interpretation and implementation of this method). Thus, all three methods of tidying data provided by broom are useful for summarizing clustering output.</p>
 </div>

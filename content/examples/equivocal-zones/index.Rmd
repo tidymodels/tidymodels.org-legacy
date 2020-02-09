@@ -1,5 +1,6 @@
 ---
 title: "Equivocal zones"
+tags: [probably, classification models, class probabilities, equivocal zones]
 ---
 
 ```{r setup, include = FALSE}
@@ -18,6 +19,8 @@ In addition to the `tidymodels` package, this example uses the `probably` packag
 library(tidymodels)
 library(probably)
 ```
+
+In addition to the `tidymodels` package, this example uses the `probably` package. 
 
 In some fields, class probability predictions must meet certain standards before a firm decision can be made using them. If they fail these standards, the prediction can be marked as _equivocal_, which just means that you are unsure of the true result. You might want to further investigate these equivocal values, or rerun whatever process generated them before proceeding.
 

@@ -1,5 +1,6 @@
 ---
 title: "Multivariate Analysis using Partial Least Squares"
+tags: [recipes, multivariate analysis]
 ---
 
 ```{r setup, include = FALSE}

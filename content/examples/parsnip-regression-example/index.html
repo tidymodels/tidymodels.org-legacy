@@ -1,5 +1,6 @@
 ---
 title: "Using parsnip for Regression Models"
+tags: [parsnip, glmnet, randomForest, ranger, regression models]
 ---
 
 <script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
@@ -38,7 +39,7 @@ rf_xy_fit &lt;-
 rf_xy_fit
 #&gt; parsnip model object
 #&gt; 
-#&gt; Fit time:  902ms 
+#&gt; Fit time:  903ms 
 #&gt; Ranger result
 #&gt; 
 #&gt; Call:
@@ -100,7 +101,7 @@ test_results %&gt;% metrics(truth = Sale_Price, estimate = .pred)
   )
 #&gt; parsnip model object
 #&gt; 
-#&gt; Fit time:  2.5s 
+#&gt; Fit time:  2.6s 
 #&gt; Ranger result
 #&gt; 
 #&gt; Call:
@@ -125,7 +126,7 @@ test_results %&gt;% metrics(truth = Sale_Price, estimate = .pred)
   )
 #&gt; parsnip model object
 #&gt; 
-#&gt; Fit time:  1.8s 
+#&gt; Fit time:  1.9s 
 #&gt; 
 #&gt; Call:
 #&gt;  randomForest(x = as.data.frame(x), y = y, ntree = ~1000, mtry = ~3) 

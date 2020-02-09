@@ -1,17 +1,23 @@
 ---
 title: "Survival Analysis Example"
+tags: [survival, tidyposterior, survival analysis, regression models]
 ---
 
 ```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  message = FALSE,
+  digits = 3,
+  collapse = TRUE,
+  comment = "#>"
+  )
 options(digits = 3)
 library(survival)
-library(purrr)
-library(rsample)
-library(dplyr)
+library(tidymodels)
 library(tidyposterior)
-library(ggplot2)
-library(tidyr)
+theme_set(theme_bw() + theme(legend.position = "top"))
 ```
+
+In addition to the `tidymodels` package, this example uses the `survival`, and `tidyposterior` packages. 
 
 In this article, a parametric analysis of censored data is conducted and `rsample` is used to measure the importance of predictors in the model. The data that will be used is the NCCTG lung cancer data contained in the `survival` package:
 
@@ -36,11 +42,10 @@ coef(lung_mod)
 To resample these data, it would be a good idea to try to maintain the same censoring rate across the splits. To do this, stratified resampling can be used where each analysis/assessment split is conducted within each value of the status indicator. To demonstrate, Monte Carlo resampling is used where 75% of the data are in the analysis set. A total of 100 splits are created.   
 
 ```{r splits}
-library(rsample)
+library(tidymodels)
 set.seed(9666)
-mc_samp <- mc_cv(lung, strata = "status", times = 100)
+mc_samp <- mc_cv(lung, strata = status, times = 100)
 
-library(purrr)
 cens_rate <- function(x) mean(analysis(x)$status == 1)
 summary(map_dbl(mc_samp$splits, cens_rate))
 ```
@@ -59,16 +64,17 @@ rm_sex     <- as.formula(Surv(time, status) ~ ph.ecog + age              )
 The model fitting function will take the formula as an argument:
 
 ```{r fit-func}
-mod_fit <- function(x, form, ...) 
+mod_fit <- function(x, form, ...) {
   survreg(form, data = analysis(x), ...)
+}
 ```
 
 To calculate the efficacy of the model, the concordance statistic is used (see `?survConcordance`):
 
 ```{r concord}
-get_concord <- function(split, mod, ...) {
+get_concord <- function(split, model, ...) {
   pred_dat <- assessment(split)
-  pred_dat$pred <- predict(mod, newdata = pred_dat)
+  pred_dat$pred <- predict(model, newdata = pred_dat)
   concordance(Surv(time, status) ~ pred, pred_dat, ...)$concordance
 }
 ```
@@ -76,79 +82,86 @@ get_concord <- function(split, mod, ...) {
 With these functions, a series of models are created for each variable set.
 
 ```{r models}
-mc_samp$mod_full    <- map(mc_samp$splits, mod_fit, form = three_fact)
-mc_samp$mod_ph.ecog <- map(mc_samp$splits, mod_fit, form = rm_ph.ecog)
-mc_samp$mod_age     <- map(mc_samp$splits, mod_fit, form = rm_age)
-mc_samp$mod_sex     <- map(mc_samp$splits, mod_fit, form = rm_sex)
+mc_samp <- 
+  mc_samp %>% 
+  mutate(
+    full_mod    = map(splits, mod_fit, form = three_fact),
+    ph_ecog_mod = map(splits, mod_fit, form = rm_ph.ecog),
+    age_mod     = map(splits, mod_fit, form = rm_age),
+    sex_mod     = map(splits, mod_fit, form = rm_sex)
+  )
 ```
 
 Similarly, the concordance values are computed for each model:
 
 ```{r concord-est}
-mc_samp$full    <- map2_dbl(mc_samp$splits, mc_samp$mod_full, get_concord)
-mc_samp$ph.ecog <- map2_dbl(mc_samp$splits, mc_samp$mod_ph.ecog, get_concord)
-mc_samp$age     <- map2_dbl(mc_samp$splits, mc_samp$mod_age, get_concord)
-mc_samp$sex     <- map2_dbl(mc_samp$splits, mc_samp$mod_sex, get_concord)
+mc_samp <- 
+  mc_samp %>% 
+  mutate(
+    full    = map2_dbl(splits, full_mod, get_concord),
+    ph_ecog = map2_dbl(splits, ph_ecog_mod, get_concord),
+    age     = map2_dbl(splits, age_mod, get_concord),
+    sex     = map2_dbl(splits, sex_mod, get_concord)
+  )
 ```
 
-The distributions of the resampling estimates
+The results are:
 
 ```{r concord-df}
-library(dplyr)
-concord_est <- mc_samp %>%
-  dplyr::select(-matches("^mod"))
+concord_est <- 
+  mc_samp %>%
+  dplyr::select(-ends_with("mod")) 
 
-library(tidyr)
-library(ggplot2)
-concord_est %>%
-  gather() %>%
-  ggplot(aes(x = statistic, col = model)) + 
-  geom_line(stat = "density") + 
-  theme_bw() + 
-  theme(legend.position = "top")
+concord_est %>% 
+  select(-splits) %>% 
+  pivot_longer(cols = c(-starts_with("id")), names_to = "Removed", values_to = "Concordance") %>% 
+  ggplot(aes(x = reorder(Removed, Concordance), y = Concordance)) + 
+  geom_line(aes(group = id), alpha = .3) + 
+  xlab("Predictor Removed")
 ```
 
-It looks as though the model missing `ph.ecog` has larger concordance values than the other models. As one might expect, the full model and the model absent `sex` are very similar; the difference in these models should only be the scale parameters estimates. 
+It looks as though the model missing `ph_ecog` has more of a loss in concordance values than the other models. As one might expect, the full model and the model absent `sex` are very similar; the difference in these models should only be the scale parameters estimates. 
 
 To more formally test this, the `tidyposterior` package is used to create a Bayesian model for the concordance statistics. 
 
-```{r perf-mod, warning = FALSE, message = FALSE}
+```{r perf-mod, include = FALSE}
 library(tidyposterior)
 concord_est <- perf_mod(concord_est, seed = 6507, iter = 5000)
+```
+
+The actual Bayesian model is:
+
+```{r stan}
 concord_est$stan
 ```
 
 To summarize the posteriors for each model:
 
 ```{r post}
-ggplot(tidy(concord_est)) + 
-  theme_bw()
+concord_est %>% 
+  tidy() %>% 
+  as_tibble() %>% 
+  ggplot(aes(x = posterior, col = model)) + 
+  geom_line(stat = "density", trim = TRUE)
 ```
 
-While this seems clear-cut, let's assume that a difference in the concordance statistic of 0.1 is a real effect. To compute the posteriors for the difference in models, the full model will be contrasted with the others:
+To compute the posteriors for the difference in models, the full model will be contrasted with the others:
 
 ```{r diffs}
 comparisons <- contrast_models(
   concord_est, 
   list_1 = rep("full", 3),
-  list_2 = c("ph.ecog", "age", "sex"),
+  list_2 = c("ph_ecog", "age", "sex"),
   seed = 4654
   )
 ```
 
-The posterior distributions show that, statistically, `ph.ecog` has real importance ot the model. However, since these distributions are mostly with +/- 0.05, they are unlikely to be real differences. 
+The posterior distributions show that, statistically, `ph_ecog` has real importance to the model. 
 
 ```{r diff-post}
-ggplot(comparisons, size = 0.05) + 
+ggplot(comparisons) + 
   theme_bw()
+summary(comparisons)
 ```
 
-The ROPE statistics quantify the practical effects:
-
-```{r diff-sum}
-summary(comparisons, size = 0.05) %>%
-  dplyr::select(contrast, starts_with("pract"))
-```
-
-
-
+The effect of `sex` shouldn't be suprising since it only affected the scale parameter in the model. 

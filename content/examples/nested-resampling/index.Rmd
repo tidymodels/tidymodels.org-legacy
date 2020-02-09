@@ -1,23 +1,28 @@
 ---
 title: "Nested Resampling"
+tags: [rsample, parsnip, kernlab, scales, furrr, resampling, parallel processing]
 ---
 
 
 ```{r setup, include=FALSE}
-library(rsample)   
-library(purrr)
-library(dplyr)
-library(ggplot2)
+knitr::opts_chunk$set(
+  message = FALSE,
+  digits = 3,
+  collapse = TRUE,
+  comment = "#>"
+  )
+library(tidymodels)   
 library(scales)
 library(mlbench)
 library(kernlab)
+library(furrr)
 theme_set(theme_bw())
 ```
 
 
 (A version of this article was originally published in the [_Applied Predictive Modeling_ blog](http://appliedpredictivemodeling.com/blog/2017/9/2/njdc83d01pzysvvlgik02t5qnaljnd))
 
-In addition to the `tidymodels` package, this example uses the `kernlab`, `scales`, and `mlbench` packages. 
+In addition to the `tidymodels` package, this example uses the `furrr`, `kernlab`, `scales`, and `mlbench` packages. 
 
 A typical scheme for splitting the data when developing a predictive model is to create an initial split of the data into a training and test set. If resampling is used, it is executed on the training set. A series of binary splits is created. In `rsample`, we use the term _analysis set_ for the data that are used to fit the model and the _assessment set_ is used to compute performance: 
 
@@ -36,7 +41,7 @@ We will simulate some regression data to illustrate the methods. The `mlbench` f
 ```{r sim-data}
 library(mlbench)
 sim_data <- function(n) {
-  tmp <- mlbench.friedman1(n, sd=1)
+  tmp <- mlbench.friedman1(n, sd = 1)
   tmp <- cbind(tmp$x, tmp$y)
   tmp <- as.data.frame(tmp)
   names(tmp)[ncol(tmp)] <- "y"
@@ -93,10 +98,15 @@ library(kernlab)
 # `cost` is the tuning parameter
 svm_rmse <- function(object, cost = 1) {
   y_col <- ncol(object$data)
-  mod <- ksvm(y ~ ., data = analysis(object),  C = cost)
-  holdout_pred <- predict(mod, assessment(object)[-y_col])
-  rmse <- sqrt(mean((assessment(object)$y - holdout_pred) ^ 2, na.rm = TRUE))
-  rmse
+  mod <- 
+    svm_rbf(mode = "regression", cost = cost) %>% 
+    set_engine("kernlab") %>% 
+    fit(y ~ ., data = analysis(object))
+  
+  holdout_pred <- 
+    predict(mod, assessment(object) %>% dplyr::select(-y)) %>% 
+    bind_cols(assessment(object) %>% dplyr::select(y))
+  rmse(holdout_pred, truth = y, estimate = .pred)$.estimate
 }
 
 # In some case, we want to parameterize the function over the tuning parameter:
@@ -107,11 +117,8 @@ For the nested resampling, a model needs to be fit for each tuning parameter and
 ```{r inner-tune-func}
 # `object` will be an `rsplit` object for the bootstrap samples
 tune_over_cost <- function(object) {
-  results <- tibble(cost = 2 ^ seq(-2, 8, by = 1))
-  results$RMSE <- map_dbl(results$cost, 
-                          rmse_wrapper,
-                          object = object)
-  results
+  tibble(cost = 2 ^ seq(-2, 8, by = 1)) %>% 
+    mutate(RMSE = map_dbl(cost, rmse_wrapper, object = object))
 }
 ```
 
@@ -131,15 +138,25 @@ summarize_tune_results <- function(object) {
 
 Now that those functions are defined, we can execute all the inner resampling loops:
 
-```{r inner-runs}
+```{r inner-runs, eval = FALSE}
 tuning_results <- map(results$inner_resamples, summarize_tune_results) 
 ```
+
+Alternatively, since these computations can be run in parallel, the `furrr` package can be used to do so. Instead of using `map()`, the function `future_map()` will parallelize using the [`future` package](https://cran.r-project.org/web/packages/future/vignettes/future-1-overview.html). The `multisession` plan uses the a local cores to process the inner resampling loop. The ends results are the same as the sequential computations. 
+
+```{r inner-runs-parallel}
+library(furrr)
+plan(multisession)
+
+tuning_results <- future_map(results$inner_resamples, summarize_tune_results) 
+```
+
 
 `tuning_results` is a list of data frames for each of the 50 outer resamples. 
 
 Let's make a plot of the averaged results to see what the relationship is between the RMSE and the tuning parameters for each of the inner bootstrapping operations:
 
-```{r rmse-plot, fig.height=4}
+```{r rmse-plot, fig.height=4, message = FALSE}
 library(scales)
 
 pooled_inner <- tuning_results %>% bind_rows
@@ -154,7 +171,7 @@ p <-
 for (i in 1:length(tuning_results))
   p <- p  +
   geom_line(data = tuning_results[[i]], alpha = .2) +
-  geom_point(data = best_cost(tuning_results[[i]]), pch = 16)
+  geom_point(data = best_cost(tuning_results[[i]]), pch = 16, alpha = 3/4)
 
 p <- p + geom_smooth(data = pooled_inner, se = FALSE)
 p
