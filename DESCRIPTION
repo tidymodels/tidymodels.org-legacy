@@ -12,7 +12,6 @@ Depends:
 Imports:
     AmesHousing,
     caret,
-    devtools,
     discrim,
     doMC,
     DT,
