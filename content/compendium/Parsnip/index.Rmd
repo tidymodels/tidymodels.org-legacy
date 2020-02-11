@@ -10,7 +10,7 @@ knitr::opts_chunk$set(
   comment = "#>"
   )
 options(digits = 3)
-source("get_pkgdown_urls.R")
+source("static/get_pkgdown_urls.R")
 library(DT)
 pkgs <- c("parsnip", "discrim")
 library(discrim)
