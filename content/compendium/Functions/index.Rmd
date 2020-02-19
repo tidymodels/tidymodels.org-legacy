@@ -10,7 +10,8 @@ knitr::opts_chunk$set(
   comment = "#>"
   )
 options(digits = 3)
-source("static/get_pkgdown_urls.R")
+script <- here::here("static/code/get_pkgdown_urls.R")
+source(script)
 library(DT)
 ```
 
