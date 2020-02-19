@@ -2,6 +2,7 @@
 title: Examples
 ---
 
+* [Getting Started 1: Using models](./getting-started-models) <img src="/images/pkg_list_2.png"  align="right"  height="39">
 
 * [Using `broom` and `dplyr`](./broom-and-dplyr) <img src="/images/pkg_list_2.png"  align="right"  height="39">
 
