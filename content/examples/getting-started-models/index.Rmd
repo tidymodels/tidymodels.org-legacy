@@ -19,6 +19,9 @@ options(width = 100, digits = 3)
 
 This page illustrates the basics of model building using the tidymodels. It is organized into a "How do I do that?" section and an optional "Why does it work that way?" section at the end. 
 
+In addition to the `tidymodels` package, this example uses the `readr` and `rstanarm` packages. 
+
+
 ## How to create and use a model
 
 The data used to illustrate modeling is from [Constable (1993)](https://link.springer.com/article/10.1007/BF00349318). They looked at how three different feeding regimes affected the size of sea urchins overtime. As one might expect, the initial size of the sea urchins would probably affect these results. Those data are included in the analysis. 
