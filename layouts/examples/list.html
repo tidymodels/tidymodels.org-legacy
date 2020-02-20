@@ -39,9 +39,12 @@
                 <div class="itemDate">
                   <div class="created">
                   <i class="fas fa-box-open"></i>&nbsp;
-                  {{- range .Params.tags -}}
-                    <a href="{{ relURL (print "/tags/" . | urlize) }}">{{ . }}</a>
-                  {{ end -}}  
+                  {{ range $i, $tags := (.GetTerms "tags") }}
+                      {{- if $i -}}, {{ end -}}
+                      {{ with $tags }}
+                      <a href="{{ .Permalink }}">{{- .LinkTitle -}}</a>
+                      {{- end -}}
+                  {{- end -}} 
                   </div>
                 </div>
               </div>
