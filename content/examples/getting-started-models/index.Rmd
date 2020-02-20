@@ -1,5 +1,5 @@
 ---
-title: "Getting Started 1: Using models"
+title: "01 Getting Started: Using models"
 description: "Something helpful here"
 categories: [Bayesian analysis, regression models]
 tags: [parsnip, rstanarm]
