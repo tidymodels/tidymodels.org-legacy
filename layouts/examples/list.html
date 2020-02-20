@@ -21,12 +21,7 @@
                 <div class="itemTitle"><a href="{{ .RelPermalink }}">{{ .Title | markdownify }}</a></div>
                 <div class="itemTag">
                   {{- range .Params.categories -}}
-                    <a href="{{ relURL (print "/categories/" . | urlize) }}">{{ . }}</a>
-                  {{ end -}}
-                </div>
-                  <div class="itemTag">
-                  {{- range .Params.tags -}}
-                    <a href="{{ relURL (print "/tags/" . | urlize) }}">{{ . }}</a>
+                    <a href="{{ relURL (print "/categories/" . | urlize) }}">{{ . | humanize }}</a>
                   {{ end -}}
                 </div>
               </div>
@@ -42,7 +37,11 @@
                   <a class="readMore" href="{{ .RelPermalink }}">Read more ...</a>
                 </div>
                 <div class="itemDate">
-                  <div class="created">{{ .Page.Lastmod.Format "2006/01/02" }}</div>
+                  <div class="created">
+                  {{- range .Params.tags -}}
+                    <a href="{{ relURL (print "/tags/" . | urlize) }}">{{ . }}</a>
+                  {{ end -}}  
+                  </div>
                 </div>
               </div>
             </div>
