@@ -3,3 +3,12 @@ body, button, input, textarea {
   font-size: 15px;
   font-weight: normal;
   -webkit-font-smoothing: antialiased; }
+
+
+.listItem .itemDetails .itemMeta .itemDate, .listItem .itemDetails .itemMeta .itemInfo {
+  font-size: .875rem;
+}    
+
+.listItem .itemDetails .itemHeader .itemTag {
+  font-size: .875rem;
+}
