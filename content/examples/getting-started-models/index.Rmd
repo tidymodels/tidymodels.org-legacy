@@ -51,13 +51,15 @@ ggplot(urchins, aes(x = initial_volume, y = width, group = food_regime, col = fo
   geom_smooth(method = lm, se = FALSE)
 ```
 
-It seems like a standard analysis of covariance (ANCOVA) model might make sense for these data. Since the slopes appear to be different for at least two of the feeding regimes, a two-way interaction model is reasonable. Using a standard R formula: 
+It seems like a standard analysis of covariance ([ANCOVA](https://en.wikipedia.org/wiki/Analysis_of_covariance)) model might make sense for these data. Since the slopes appear to be different for at least two of the feeding regimes, a two-way interaction model is reasonable. Using a standard R formula: 
 
 ```{r two-way-int, eval = FALSE}
 width ~ (initial_volume + food_regime)^2
 ```
 
-For an ANOVA model, ordinary least squares is a good initial first model. In tidymodels, we start be specifying the _functional form_ of the model that we will be using. Since there is a numeric outcome and the model should be linear with slopes and intercepts, the model type is "linear regression". To declare this: 
+would allow the regression model to have separate slopes and intercepts for each food regime. 
+
+For an ANCOVA model, ordinary least squares is a good initial first model. In tidymodels, we start be specifying the _functional form_ of the model that we will be using. Since there is a numeric outcome and the model should be linear with slopes and intercepts, the model type is "linear regression". To declare this: 
 
 
 ```{r lm-tm}
@@ -131,7 +133,7 @@ ggplot(plot_data, aes(x = food_regime)) +
   labs(y = "urchin size")
 ```
 
-Every one on your team is happy with that plot _except_ that one person who just read their first book on Bayesian analysis. They are interested in knowing if the results would be different if the model were estimated using a Bayesian approach. In such an analysis, a _prior distribution_ needs to be declared for each model parameter that represents the possible values of the parameters (before being exposed to the observed data). After some discussion, the group agrees that the priors should be bell-shaped but, since they have no idea what the range of values should be, a conservative approach should be taken by making the priors _wide_ using a Cauchy distribution (which is the same as a t-distribution with a single degree of freedom).
+Every one on your team is happy with that plot _except_ that one person who just read their first book on [Bayesian analysis](https://bayesian.org/what-is-bayesian-analysis/). They are interested in knowing if the results would be different if the model were estimated using a Bayesian approach. In such an analysis, a [_prior distribution_](https://towardsdatascience.com/introduction-to-bayesian-linear-regression-e66e60791ea7) needs to be declared for each model parameter that represents the possible values of the parameters (before being exposed to the observed data). After some discussion, the group agrees that the priors should be bell-shaped but, since they have no idea what the range of values should be, a conservative approach should be taken by making the priors _wide_ using a Cauchy distribution (which is the same as a t-distribution with a single degree of freedom).
 
 After reading the [documentation](http://mc-stan.org/rstanarm/articles/priors.html) on the `rstanarm` package, it becomes clear that the `stan_glm()` function can be used and that the function arguments that need to be modified are called `prior` and `prior_intercept`. It turns out that `linear_reg()` has a `stan` engine. Since these prior distribution arguments are specific to the Stan software, they can be passed when the engine is set. After that, the same exact `fit()` call is used:
 
@@ -154,7 +156,7 @@ To update the parameter table, the `tidy()` method is once again used:
 tidy(bayes_fit, intervals = TRUE)
 ```
 
-The nice thing about the standardization of tidymodels packages is that the interfaces to common tasks are standardized (as was seen in the `tidy()` results above). The same is true for getting predictions; the same code can be used even though the underlying syntax for the packages are very different:
+The nice thing about the standardization of tidymodels packages is that the **interfaces to common tasks are standardized** (as was seen in the `tidy()` results above). The same is true for getting predictions; the same code can be used even though the underlying syntax for the packages are very different:
 
 ```{r stan-pred}
 bayes_plot_data <- 
@@ -178,7 +180,7 @@ The extra step of defining the model using a function like `linear_reg()` might 
 
 Also, from a tidy point of view, there are some interesting things that we can do by incrementally creating a model (instead of in a single function call). Model tuning, the tidy way, uses the specification of the model (e.g. `linear_reg()` and `set_engine()`) to declare what parts of the model should be tuned. That would be very difficult to do if `linear_reg()` immediately fit the model. 
 
-If you are familiar with the tidyverse, you may have noticed that our modeling code uses the `magrittr` pipe (`%>%`). With `dplyr` and other tidyverse packages, the pipe works well because all of the functions take the data as the first argument. For example: 
+Additionally, iIf you are familiar with the tidyverse, you may have noticed that our modeling code uses the `magrittr` pipe (`%>%`). With `dplyr` and other tidyverse packages, the pipe works well because all of the functions take the data as the first argument. For example: 
 
 ```{r tidy-data, eval = FALSE}
 iris %>% 
