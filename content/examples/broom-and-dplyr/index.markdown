@@ -1,6 +1,7 @@
 ---
 title: "Using `broom` and `dplyr`"
-tags: [broom, dplyr, regression models]
+categories: [regression models]
+tags: [broom, dplyr]
 weight: 2
 ---
 
