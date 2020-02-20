@@ -1,0 +1,20 @@
+      <div class="column25">
+
+        <div class="section">
+          <div class="sectionTitle">Categories</div>
+          {{ range $key, $value := $.Site.Taxonomies.categories }}
+          <div class="articleCategory {{ replace (lower $key) " " "" }}">
+            <a href="{{ (print "/categories/" $key | urlize) | relURL }}">{{ $key | humanize }}</a>
+          </div>
+          {{ end }}
+        </div>
+
+        <div class="section">
+          <div class="sectionTitle">Find by package</div>
+          {{ range $key, $value := $.Site.Taxonomies.tags }}
+          <div class="articleCategory {{ replace (lower $key) " " "" }}">
+            <a href="{{ (print "/tags/" $key | urlize) | relURL }}">{{ $key }}</a>
+          </div>
+          {{ end }}
+        </div>
+      </div>

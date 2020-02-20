@@ -38,6 +38,7 @@
                 </div>
                 <div class="itemDate">
                   <div class="created">
+                  <i class="fas fa-box-open"></i>&nbsp;
                   {{- range .Params.tags -}}
                     <a href="{{ relURL (print "/tags/" . | urlize) }}">{{ . }}</a>
                   {{ end -}}  
@@ -50,7 +51,7 @@
       {{ template "_internal/pagination.html" . }}
       </div>
 
-{{ partial "sidebar.html" . }}
+{{ partial "ex-sidebar.html" . }}
 
     </div>
   </div>  <!-- bandContent -->
