@@ -10,22 +10,14 @@
     url = "/news/"
     weight = 2
 [[main]]
-    name = "Examples"
-    url = "/examples/"
-    weight = 3
-[[main]]
-    name = "Compendium"
-    url = "/compendium/"
-    weight = 4        
-[[main]]
     name = "Learn"
     url = "/learn/"
-    weight = 5
+    weight = 3
 [[main]]
     name = "Help"
     url = "/help/"
-    weight = 6
+    weight = 4
 [[main]]
     name = "Contribute"
     url = "/contribute/"
-    weight = 7
+    weight = 5

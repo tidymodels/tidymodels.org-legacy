@@ -951,7 +951,7 @@ ol {
 
 pre, code {
   font-family: "Source Code Pro", monospace;
-  background-color: #f8f8f8;
+  background-color: #f8f8f8 !important;
   font-size: 14px; }
 
 pre {
