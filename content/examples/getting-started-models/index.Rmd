@@ -1,6 +1,8 @@
 ---
 title: "Getting Started 1: Using models"
-tags: [Bayesian analysis, regression models]
+description: "Something helpful here"
+categories: [Bayesian analysis, regression models]
+tags: [parsnip, rstanarm]
 weight: 1
 output:
   blogdown::html_page:
@@ -8,16 +10,8 @@ output:
 ---
 
 
-```{r load, include = FALSE, message = FALSE, warning = FALSE}
-knitr::opts_chunk$set(
-  digits = 3,
-  comment = "#>",
-  dev = 'svg', 
-  dev.args = list(bg = "transparent")
-)
-library(readr)
-library(rstanarm)
-options(width = 100, digits = 3)
+```{r setup, include = FALSE}
+source(here::here("content/examples/setup.R"))
 ```
 
 
@@ -35,6 +29,7 @@ To begin, some helpful packages are loaded and then the data are imported:
 ```{r data}
 library(tidymodels)
 library(readr)
+library(rstanarm)
 
 urchins <-
   # Data were assembled for a tutorial 
