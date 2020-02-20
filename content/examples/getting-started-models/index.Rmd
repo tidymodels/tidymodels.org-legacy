@@ -180,7 +180,7 @@ The extra step of defining the model using a function like `linear_reg()` might 
 
 Also, from a tidy point of view, there are some interesting things that we can do by incrementally creating a model (instead of in a single function call). Model tuning, the tidy way, uses the specification of the model (e.g. `linear_reg()` and `set_engine()`) to declare what parts of the model should be tuned. That would be very difficult to do if `linear_reg()` immediately fit the model. 
 
-Additionally, iIf you are familiar with the tidyverse, you may have noticed that our modeling code uses the `magrittr` pipe (`%>%`). With `dplyr` and other tidyverse packages, the pipe works well because all of the functions take the data as the first argument. For example: 
+Additionally, if you are familiar with the tidyverse, you may have noticed that our modeling code uses the `magrittr` pipe (`%>%`). With `dplyr` and other tidyverse packages, the pipe works well because all of the functions take the data as the first argument. For example: 
 
 ```{r tidy-data, eval = FALSE}
 iris %>% 
