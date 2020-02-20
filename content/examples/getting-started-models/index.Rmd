@@ -1,6 +1,7 @@
 ---
 title: "Getting Started 1: Using models"
 tags: [Bayesian analysis, regression models]
+weight: 1
 ---
 
 

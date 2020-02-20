@@ -1,10 +1,9 @@
 ---
-title: "broom and dplyr"
+title: "Using `broom` and `dplyr`"
 tags: [broom, dplyr, regression models]
+weight: 2
 ---
 
-<script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
-<script src="/rmarkdown-libs/elevate-section-attrs/elevate-section-attrs.js"></script>
 
 
 <div id="broom-and-dplyr" class="section level1">
@@ -80,13 +79,13 @@ ct</code></pre>
 <pre class="r"><code>nested %&gt;% 
   mutate(test = map(data, ~ cor.test(.x$age, .x$circumference)))</code></pre>
 <pre><code>#&gt; # A tibble: 5 x 3
-#&gt;   Tree            data test   
-#&gt;   &lt;ord&gt; &lt;list&lt;df[,2]&gt;&gt; &lt;list&gt; 
-#&gt; 1 1            [7 × 2] &lt;htest&gt;
-#&gt; 2 2            [7 × 2] &lt;htest&gt;
-#&gt; 3 3            [7 × 2] &lt;htest&gt;
-#&gt; 4 4            [7 × 2] &lt;htest&gt;
-#&gt; 5 5            [7 × 2] &lt;htest&gt;</code></pre>
+#&gt;   Tree  data             test   
+#&gt;   &lt;ord&gt; &lt;list&gt;           &lt;list&gt; 
+#&gt; 1 1     &lt;tibble [7 × 2]&gt; &lt;htest&gt;
+#&gt; 2 2     &lt;tibble [7 × 2]&gt; &lt;htest&gt;
+#&gt; 3 3     &lt;tibble [7 × 2]&gt; &lt;htest&gt;
+#&gt; 4 4     &lt;tibble [7 × 2]&gt; &lt;htest&gt;
+#&gt; 5 5     &lt;tibble [7 × 2]&gt; &lt;htest&gt;</code></pre>
 <p>This results in a list-column of S3 objects. We want to tidy each of the objects, which we can also do with <code>map()</code>.</p>
 <pre class="r"><code>nested %&gt;% 
   mutate(
@@ -94,13 +93,13 @@ ct</code></pre>
     tidied = map(test, tidy)
   ) </code></pre>
 <pre><code>#&gt; # A tibble: 5 x 4
-#&gt;   Tree            data test    tidied          
-#&gt;   &lt;ord&gt; &lt;list&lt;df[,2]&gt;&gt; &lt;list&gt;  &lt;list&gt;          
-#&gt; 1 1            [7 × 2] &lt;htest&gt; &lt;tibble [1 × 8]&gt;
-#&gt; 2 2            [7 × 2] &lt;htest&gt; &lt;tibble [1 × 8]&gt;
-#&gt; 3 3            [7 × 2] &lt;htest&gt; &lt;tibble [1 × 8]&gt;
-#&gt; 4 4            [7 × 2] &lt;htest&gt; &lt;tibble [1 × 8]&gt;
-#&gt; 5 5            [7 × 2] &lt;htest&gt; &lt;tibble [1 × 8]&gt;</code></pre>
+#&gt;   Tree  data             test    tidied          
+#&gt;   &lt;ord&gt; &lt;list&gt;           &lt;list&gt;  &lt;list&gt;          
+#&gt; 1 1     &lt;tibble [7 × 2]&gt; &lt;htest&gt; &lt;tibble [1 × 8]&gt;
+#&gt; 2 2     &lt;tibble [7 × 2]&gt; &lt;htest&gt; &lt;tibble [1 × 8]&gt;
+#&gt; 3 3     &lt;tibble [7 × 2]&gt; &lt;htest&gt; &lt;tibble [1 × 8]&gt;
+#&gt; 4 4     &lt;tibble [7 × 2]&gt; &lt;htest&gt; &lt;tibble [1 × 8]&gt;
+#&gt; 5 5     &lt;tibble [7 × 2]&gt; &lt;htest&gt; &lt;tibble [1 × 8]&gt;</code></pre>
 <p>Finally, we want to unnest the tidied data frames so we can see the results in a flat tibble. All together, this looks like:</p>
 <pre class="r"><code>Orange %&gt;% 
   nest(data = c(age, circumference)) %&gt;% 

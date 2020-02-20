@@ -1,10 +1,9 @@
 ---
 title: "Getting Started 1: Using models"
 tags: [Bayesian analysis, regression models]
+weight: 1
 ---
 
-<script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
-<script src="/rmarkdown-libs/elevate-section-attrs/elevate-section-attrs.js"></script>
 
 
 <p>This page illustrates the basics of model building using the tidymodels. It is organized into a “How do I do that?” section and an optional “Why does it work that way?” section at the end.</p>
@@ -14,15 +13,14 @@ tags: [Bayesian analysis, regression models]
 <p>The data used to illustrate modeling is from <a href="https://link.springer.com/article/10.1007/BF00349318">Constable (1993)</a>. They looked at how three different feeding regimes affected the size of sea urchins overtime. As one might expect, the initial size of the sea urchins would probably affect these results. Those data are included in the analysis.</p>
 <p>To begin, some helpful packages are loaded and then the data are imported:</p>
 <pre class="r"><code>library(tidymodels)</code></pre>
-<pre><code>#&gt; ── Attaching packages ──────────────────────────────────────────────────── tidymodels 0.0.4 ──</code></pre>
-<pre><code>#&gt; ✓ broom     0.5.4          ✓ recipes   0.1.9     
-#&gt; ✓ dials     0.0.4.9000     ✓ rsample   0.0.5     
-#&gt; ✓ dplyr     0.8.4          ✓ tibble    2.1.3     
-#&gt; ✓ ggplot2   3.2.1          ✓ tune      0.0.1     
-#&gt; ✓ infer     0.5.1          ✓ workflows 0.1.0     
-#&gt; ✓ parsnip   0.0.5          ✓ yardstick 0.0.5     
-#&gt; ✓ purrr     0.3.3</code></pre>
-<pre><code>#&gt; ── Conflicts ─────────────────────────────────────────────────────── tidymodels_conflicts() ──
+<pre><code>#&gt; ── Attaching packages ───────────────────────────── tidymodels 0.0.3 ──</code></pre>
+<pre><code>#&gt; ✓ broom     0.5.3          ✓ purrr     0.3.3     
+#&gt; ✓ dials     0.0.4          ✓ recipes   0.1.9     
+#&gt; ✓ dplyr     0.8.4          ✓ rsample   0.0.5     
+#&gt; ✓ ggplot2   3.3.0.9000     ✓ tibble    2.1.3     
+#&gt; ✓ infer     0.5.1          ✓ yardstick 0.0.4     
+#&gt; ✓ parsnip   0.0.4.9000</code></pre>
+<pre><code>#&gt; ── Conflicts ──────────────────────────────── tidymodels_conflicts() ──
 #&gt; x purrr::discard()    masks scales::discard()
 #&gt; x dplyr::filter()     masks stats::filter()
 #&gt; x dplyr::lag()        masks stats::lag()
@@ -52,10 +50,12 @@ urchins &lt;-
 ggplot(urchins, aes(x = initial_volume, y = width, group = food_regime, col = food_regime)) + 
   geom_point() + 
   geom_smooth(method = lm, se = FALSE)</code></pre>
+<pre><code>#&gt; `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
 <p><img src="/examples/getting-started-models/index_files/figure-html/urchin-plot-1.svg" width="672" /></p>
-<p>It seems like a standard analysis of covariance (ANCOVA) model might make sense for these data. Since the slopes appear to be different for at least two of the feeding regimes, a two-way interaction model is reasonable. Using a standard R formula:</p>
+<p>It seems like a standard analysis of covariance (<a href="https://en.wikipedia.org/wiki/Analysis_of_covariance">ANCOVA</a>) model might make sense for these data. Since the slopes appear to be different for at least two of the feeding regimes, a two-way interaction model is reasonable. Using a standard R formula:</p>
 <pre class="r"><code>width ~ (initial_volume + food_regime)^2</code></pre>
-<p>For an ANOVA model, ordinary least squares is a good initial first model. In tidymodels, we start be specifying the <em>functional form</em> of the model that we will be using. Since there is a numeric outcome and the model should be linear with slopes and intercepts, the model type is “linear regression”. To declare this:</p>
+<p>would allow the regression model to have separate slopes and intercepts for each food regime.</p>
+<p>For an ANCOVA model, ordinary least squares is a good initial first model. In tidymodels, we start be specifying the <em>functional form</em> of the model that we will be using. Since there is a numeric outcome and the model should be linear with slopes and intercepts, the model type is “linear regression”. To declare this:</p>
 <pre class="r"><code>lm_model &lt;- linear_reg()
 lm_model</code></pre>
 <pre><code>#&gt; Linear Regression Model Specification (regression)</code></pre>
@@ -74,7 +74,7 @@ lm_model</code></pre>
 lm_fit</code></pre>
 <pre><code>#&gt; parsnip model object
 #&gt; 
-#&gt; Fit time:  2ms 
+#&gt; Fit time:  4ms 
 #&gt; 
 #&gt; Call:
 #&gt; stats::lm(formula = formula, data = data)
@@ -136,7 +136,7 @@ ggplot(plot_data, aes(x = food_regime)) +
   geom_errorbar(aes(ymin = .pred_lower, ymax = .pred_upper), width = .2) + 
   labs(y = &quot;urchin size&quot;)</code></pre>
 <p><img src="/examples/getting-started-models/index_files/figure-html/lm-all-pred-1.svg" width="672" /></p>
-<p>Every one on your team is happy with that plot <em>except</em> that one person who just read their first book on Bayesian analysis. They are interested in knowing if the results would be different if the model were estimated using a Bayesian approach. In such an analysis, a <em>prior distribution</em> needs to be declared for each model parameter that represents the possible values of the parameters (before being exposed to the observed data). After some discussion, the group agrees that the priors should be bell-shaped but, since they have no idea what the range of values should be, a conservative approach should be taken by making the priors <em>wide</em> using a Cauchy distribution (which is the same as a t-distribution with a single degree of freedom).</p>
+<p>Every one on your team is happy with that plot <em>except</em> that one person who just read their first book on <a href="https://bayesian.org/what-is-bayesian-analysis/">Bayesian analysis</a>. They are interested in knowing if the results would be different if the model were estimated using a Bayesian approach. In such an analysis, a <a href="https://towardsdatascience.com/introduction-to-bayesian-linear-regression-e66e60791ea7"><em>prior distribution</em></a> needs to be declared for each model parameter that represents the possible values of the parameters (before being exposed to the observed data). After some discussion, the group agrees that the priors should be bell-shaped but, since they have no idea what the range of values should be, a conservative approach should be taken by making the priors <em>wide</em> using a Cauchy distribution (which is the same as a t-distribution with a single degree of freedom).</p>
 <p>After reading the <a href="http://mc-stan.org/rstanarm/articles/priors.html">documentation</a> on the <code>rstanarm</code> package, it becomes clear that the <code>stan_glm()</code> function can be used and that the function arguments that need to be modified are called <code>prior</code> and <code>prior_intercept</code>. It turns out that <code>linear_reg()</code> has a <code>stan</code> engine. Since these prior distribution arguments are specific to the Stan software, they can be passed when the engine is set. After that, the same exact <code>fit()</code> call is used:</p>
 <pre class="r"><code>library(rstanarm)
 
@@ -149,8 +149,8 @@ bayes_fit &lt;-
 <pre><code>#&gt; 
 #&gt; SAMPLING FOR MODEL &#39;continuous&#39; NOW (CHAIN 1).
 #&gt; Chain 1: 
-#&gt; Chain 1: Gradient evaluation took 7.7e-05 seconds
-#&gt; Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.77 seconds.
+#&gt; Chain 1: Gradient evaluation took 0.000402 seconds
+#&gt; Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 4.02 seconds.
 #&gt; Chain 1: Adjust your expectations accordingly!
 #&gt; Chain 1: 
 #&gt; Chain 1: 
@@ -167,9 +167,9 @@ bayes_fit &lt;-
 #&gt; Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #&gt; Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 #&gt; Chain 1: 
-#&gt; Chain 1:  Elapsed Time: 0.196521 seconds (Warm-up)
-#&gt; Chain 1:                0.119927 seconds (Sampling)
-#&gt; Chain 1:                0.316448 seconds (Total)
+#&gt; Chain 1:  Elapsed Time: 0.20944 seconds (Warm-up)
+#&gt; Chain 1:                0.145034 seconds (Sampling)
+#&gt; Chain 1:                0.354474 seconds (Total)
 #&gt; Chain 1: 
 #&gt; 
 #&gt; SAMPLING FOR MODEL &#39;continuous&#39; NOW (CHAIN 2).
@@ -192,15 +192,15 @@ bayes_fit &lt;-
 #&gt; Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #&gt; Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 #&gt; Chain 2: 
-#&gt; Chain 2:  Elapsed Time: 0.208678 seconds (Warm-up)
-#&gt; Chain 2:                0.116864 seconds (Sampling)
-#&gt; Chain 2:                0.325542 seconds (Total)
+#&gt; Chain 2:  Elapsed Time: 0.213401 seconds (Warm-up)
+#&gt; Chain 2:                0.148744 seconds (Sampling)
+#&gt; Chain 2:                0.362145 seconds (Total)
 #&gt; Chain 2: 
 #&gt; 
 #&gt; SAMPLING FOR MODEL &#39;continuous&#39; NOW (CHAIN 3).
 #&gt; Chain 3: 
-#&gt; Chain 3: Gradient evaluation took 1.4e-05 seconds
-#&gt; Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.14 seconds.
+#&gt; Chain 3: Gradient evaluation took 1.5e-05 seconds
+#&gt; Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.15 seconds.
 #&gt; Chain 3: Adjust your expectations accordingly!
 #&gt; Chain 3: 
 #&gt; Chain 3: 
@@ -217,15 +217,15 @@ bayes_fit &lt;-
 #&gt; Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #&gt; Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
 #&gt; Chain 3: 
-#&gt; Chain 3:  Elapsed Time: 0.174221 seconds (Warm-up)
-#&gt; Chain 3:                0.120327 seconds (Sampling)
-#&gt; Chain 3:                0.294548 seconds (Total)
+#&gt; Chain 3:  Elapsed Time: 0.197759 seconds (Warm-up)
+#&gt; Chain 3:                0.135332 seconds (Sampling)
+#&gt; Chain 3:                0.333091 seconds (Total)
 #&gt; Chain 3: 
 #&gt; 
 #&gt; SAMPLING FOR MODEL &#39;continuous&#39; NOW (CHAIN 4).
 #&gt; Chain 4: 
-#&gt; Chain 4: Gradient evaluation took 1.2e-05 seconds
-#&gt; Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.12 seconds.
+#&gt; Chain 4: Gradient evaluation took 1.1e-05 seconds
+#&gt; Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.11 seconds.
 #&gt; Chain 4: Adjust your expectations accordingly!
 #&gt; Chain 4: 
 #&gt; Chain 4: 
@@ -242,14 +242,14 @@ bayes_fit &lt;-
 #&gt; Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #&gt; Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 #&gt; Chain 4: 
-#&gt; Chain 4:  Elapsed Time: 0.177731 seconds (Warm-up)
-#&gt; Chain 4:                0.1273 seconds (Sampling)
-#&gt; Chain 4:                0.305031 seconds (Total)
+#&gt; Chain 4:  Elapsed Time: 0.187933 seconds (Warm-up)
+#&gt; Chain 4:                0.12825 seconds (Sampling)
+#&gt; Chain 4:                0.316183 seconds (Total)
 #&gt; Chain 4:</code></pre>
 <pre class="r"><code>print(bayes_fit, digits = 5)</code></pre>
 <pre><code>#&gt; parsnip model object
 #&gt; 
-#&gt; Fit time:  1.4s 
+#&gt; Fit time:  1.5s 
 #&gt; stan_glm
 #&gt;  family:       gaussian [identity]
 #&gt;  formula:      width ~ (initial_volume + food_regime)^2
@@ -257,16 +257,16 @@ bayes_fit &lt;-
 #&gt;  predictors:   6
 #&gt; ------
 #&gt;                                Median   MAD_SD  
-#&gt; (Intercept)                     0.03479  0.00931
-#&gt; initial_volume                  0.00150  0.00039
-#&gt; food_regimeLow                  0.01764  0.01246
-#&gt; food_regimeHigh                 0.01892  0.01390
-#&gt; initial_volume:food_regimeLow  -0.00118  0.00048
-#&gt; initial_volume:food_regimeHigh  0.00063  0.00067
+#&gt; (Intercept)                     0.03500  0.00959
+#&gt; initial_volume                  0.00148  0.00039
+#&gt; food_regimeLow                  0.01685  0.01299
+#&gt; food_regimeHigh                 0.01895  0.01420
+#&gt; initial_volume:food_regimeLow  -0.00115  0.00051
+#&gt; initial_volume:food_regimeHigh  0.00064  0.00071
 #&gt; 
 #&gt; Auxiliary parameter(s):
 #&gt;       Median  MAD_SD 
-#&gt; sigma 0.02131 0.00183
+#&gt; sigma 0.02130 0.00185
 #&gt; 
 #&gt; ------
 #&gt; * For help interpreting the printed output see ?print.stanreg
@@ -276,13 +276,13 @@ bayes_fit &lt;-
 <pre><code>#&gt; # A tibble: 6 x 5
 #&gt;   term                            estimate std.error     lower     upper
 #&gt;   &lt;chr&gt;                              &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
-#&gt; 1 (Intercept)                     0.0348    0.00931   0.0193    0.0508  
-#&gt; 2 initial_volume                  0.00150   0.000385  0.000842  0.00212 
-#&gt; 3 food_regimeLow                  0.0176    0.0125   -0.00390   0.0379  
-#&gt; 4 food_regimeHigh                 0.0189    0.0139   -0.00483   0.0410  
-#&gt; 5 initial_volume:food_regimeLow  -0.00118   0.000482 -0.00198  -0.000332
-#&gt; 6 initial_volume:food_regimeHigh  0.000631  0.000668 -0.000490  0.00178</code></pre>
-<p>The nice thing about the standardization of tidymodels packages is that the interfaces to common tasks are standardized (as was seen in the <code>tidy()</code> results above). The same is true for getting predictions; the same code can be used even though the underlying syntax for the packages are very different:</p>
+#&gt; 1 (Intercept)                     0.0350    0.00959   0.0194    0.0508  
+#&gt; 2 initial_volume                  0.00148   0.000389  0.000800  0.00211 
+#&gt; 3 food_regimeLow                  0.0168    0.0130   -0.00387   0.0380  
+#&gt; 4 food_regimeHigh                 0.0190    0.0142   -0.00352   0.0425  
+#&gt; 5 initial_volume:food_regimeLow  -0.00115   0.000511 -0.00197  -0.000338
+#&gt; 6 initial_volume:food_regimeHigh  0.000641  0.000714 -0.000539  0.00173</code></pre>
+<p>The nice thing about the standardization of tidymodels packages is that the <strong>interfaces to common tasks are standardized</strong> (as was seen in the <code>tidy()</code> results above). The same is true for getting predictions; the same code can be used even though the underlying syntax for the packages are very different:</p>
 <pre class="r"><code>bayes_plot_data &lt;- 
   new_points %&gt;% 
   bind_cols(predict(bayes_fit, new_data = new_points)) %&gt;% 
@@ -299,8 +299,8 @@ ggplot(bayes_plot_data, aes(x = food_regime)) +
 <div id="why-does-it-work-that-way" class="section level2">
 <h2>Why does it work that way?</h2>
 <p>The extra step of defining the model using a function like <code>linear_reg()</code> might seem superfluous. A call to <code>lm()</code> is much more succinct. The problem with standard modeling functions is that they don’t separate what you want to do from the execution. For example, the process of executing a formula has to happen repeatedly across model calls even when the formula does not change; we can’t recycle those computations.</p>
-<p>Also, from a tidy point of view, there are some interesting things that we can do by incrementally creating a model (instead of in a single function call). Model tuning, the tidy way, uses the specification of the model (e.g. <code>linear_reg()</code> and <code>set_engine()</code>) to declare what parts of the model should be tuned. That would be very difficult to do if <code>linear_reg()</code> immediately fit the model.</p>
-<p>If you are familiar with the tidyverse, you may have noticed that our modeling code uses the <code>magrittr</code> pipe (<code>%&gt;%</code>). With <code>dplyr</code> and other tidyverse packages, the pipe works well because all of the functions take the data as the first argument. For example:</p>
+<p>Also, from a tidy point of view, there are some interesting things that we can do by incrementally creating a model (instead of in a single function call). Model tuning, the tidy way, uses the specification of the model (e.g. <code>linear_reg()</code> and <code>set_engine()</code>) to declare what parts of the model should be tuned. That would be very difficult to do if <code>linear_reg()</code> immediately fit the model.</p>
+<p>Additionally, if you are familiar with the tidyverse, you may have noticed that our modeling code uses the <code>magrittr</code> pipe (<code>%&gt;%</code>). With <code>dplyr</code> and other tidyverse packages, the pipe works well because all of the functions take the data as the first argument. For example:</p>
 <pre class="r"><code>iris %&gt;% 
   select(starts_with(&quot;Sepal&quot;), Species) %&gt;% 
   pivot_longer(
