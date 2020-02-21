@@ -21,9 +21,9 @@ How do you create a statistical model using the tidymodels packages? Start with 
 
 ## How to create and use a model
 
-Let's use the data from [Constable (1993)](https://link.springer.com/article/10.1007/BF00349318) to explore how three different feeding regimes affect the size of sea urchins over time. The initial size of the sea urchins at the beginning of the experiment probably affects how big they grow as they are fed, and fortunately we have that information to include in our modeling. 
+Let's use the data from [Constable (1993)](https://link.springer.com/article/10.1007/BF00349318) to explore how three different feeding regimes affect the size of sea urchins over time. The initial size of the sea urchins at the beginning of the experiment probably affects how big they grow as they are fed. 
 
-To start, let's load the tidymodels packages, along with `readr` to read our urchins data into R: 
+To start, let's load the tidymodels packages, along with `readr` to read our urchins data into R. For each urchin, we know their initial size (volume), the feeding regime of the experiment, and the suture width at the end of the experiment:
 
 ```{r data}
 library(tidymodels)
@@ -84,13 +84,13 @@ lm_fit
 
 This object has the `lm` model built-in. 
 
-Perhaps our analysis requires a description of the model parameter estimates and their statistical properties. Although the `summary()` function for `lm` objects can provide that, it gives the results back in an unwieldy matrices format. Many models have a `tidy()` method that provides the summary results in a more predictable and useful format (e.g. a data frame with standard column names): 
+Perhaps our analysis requires a description of the model parameter estimates and their statistical properties. Although the `summary()` function for `lm` objects can provide that, it gives the results back in an unwieldy format. Many models have a `tidy()` method that provides the summary results in a more predictable and useful format (e.g. a data frame with standard column names): 
 
 ```{r lm-table}
 tidy(lm_fit)
 ```
 
-Suppose that, for a publication, it would be particularly interesting to make a plot of the mean body size for urchins that started the experiment with an initial volume of 20ml. To create this, we can create a data frame to make predictions for the data that will be shown in a graph:
+Suppose that, for a publication, it would be particularly interesting to make a plot of the mean body size for urchins that started the experiment with an initial volume of 20ml. To create such a graph, we start with some new example data that we will make predictions for, to show in our graph:
 
 ```{r new-points}
 new_points <- expand.grid(initial_volume = 20, food_regime = c("Initial", "Low", "High"))
@@ -99,7 +99,7 @@ new_points
 
 To get our predicted results, let's use the `predict()` function to find the mean values at 20ml. 
 
-It is also important communicate the variability, so we also need to find the predicted confidence intervals. If we had used `lm()` to fit the model directly, a few minutes of reading the documentation page for `predict.lm()` would explain how to do this. However, if we decide to use a different model to estimate urchin size (_spoilers:_ we will), it is likely that a completely different syntax would be required. 
+It is also important to communicate the variability, so we also need to find the predicted confidence intervals. If we had used `lm()` to fit the model directly, a few minutes of reading the documentation page for `predict.lm()` would explain how to do this. However, if we decide to use a different model to estimate urchin size (_spoilers:_ we will), it is likely that a completely different syntax would be required. 
 
 Instead, with tidymodels, the types of predicted values are standardized so that we can use the same syntax to get these values. 
 
@@ -152,7 +152,7 @@ To update the parameter table, the `tidy()` method is once again used:
 tidy(bayes_fit, intervals = TRUE)
 ```
 
-A goal of the standardization of tidymodels packages is that the **interfaces to common tasks are standardized** (as seen in the `tidy()` results above). The same is true for getting predictions; we can use the same code even though the underlying packages use very different syntax:
+A goal of the tidymodels packages is that the **interfaces to common tasks are standardized** (as seen in the `tidy()` results above). The same is true for getting predictions; we can use the same code even though the underlying packages use very different syntax:
 
 ```{r stan-pred}
 bayes_plot_data <- 
