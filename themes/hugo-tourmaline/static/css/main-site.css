@@ -461,7 +461,7 @@ a {
     line-height: 20px; }
     #rStudioFooter .bandContent #copyright {
       flex-shrink: 5;
-      color: #e3eef8; }
+      color: #fcfcfc; }
       #rStudioFooter .bandContent #copyright a {
         color: #fff; }
     #rStudioFooter .bandContent #logos {
@@ -1075,17 +1075,18 @@ em {
     #homeContent .band.first .bandContent {
       padding-top: 220px;
       height: 100%;
-      background-image: url(images/tidy-back-01.svg);
+      background-image: url(images/tidy-back-01a.svg);
       background-repeat: no-repeat;
-      background-size: 570px 690px; }
+      background-size: 570px 690px;
+      color: #fcfcfc;}
   #homeContent .band.second {
     height: 952px;
-    background-color: #fdeba4; }
+    background-color: #fcfcfc; } /*This is overridden by params */
     #homeContent .band.second .bandContent {
       padding-top: 120px;
       padding-bottom: 100px;
       height: 100%;
-      background-image: url(images/tidy-back-02.svg);
+      background-image: url(images/tidy-back-02a.svg);
       background-repeat: no-repeat;
       background-size: 700px 952px; }
   #homeContent .band.third {
@@ -1094,9 +1095,10 @@ em {
       height: 450px;
       padding-top: 100px;
       padding-bottom: 100px;
-      background-image: url(images/tidy-back-03.svg);
+      background-image: url(images/tidy-back-03a.svg);
       background-repeat: no-repeat;
-      background-size: 650px 450px; }
+      background-size: 650px 450px;
+      color: #fcfcfc;}
   #homeContent .bookCover {
     margin-top: 50px;
     margin-left: 50px; }
