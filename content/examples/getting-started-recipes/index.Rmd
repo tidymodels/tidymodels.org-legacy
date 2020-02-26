@@ -1,0 +1,258 @@
+---
+title: "Getting Started 2: Recipes"
+tags: [Bayesian analysis, regression models]
+---
+
+
+```{r load, include = FALSE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(
+  digits = 3,
+  comment = "#>",
+  dev = 'svg', 
+  dev.args = list(bg = "transparent")
+)
+options(width = 100, digits = 3)
+```
+
+
+After reviewing our first getting started page, this one shows how to use the `recipes` package. 
+
+Recipes are tools that are primarily used for data pre-processing that occurs prior to creating a model. Pre-processing might consist of: 
+
+ * Converting qualitative predictors to indicator variables.
+ 
+ * Transforming data to be on different scales (e.g., logging a variable). 
+ 
+ * Transforming groups of predictors, and so on. 
+ 
+This might sound an awful lot like a model formula. In many ways, recipes can be used to do many of the same things but have a much wider ranger of possibilities. 
+
+This guide shows how recipes can be used for modeling. 
+
+## The New York City flight data
+
+For an example, the `nycflights13` data will be used. This data set contains information on flights departing near New York City in 2013. We will try to predict if a plane arrives more than 30 minutes late. Let's start by loading the data and making a few changes to the variables:
+
+```{r flight-start}
+library(nycflights13)
+library(tidymodels)
+
+set.seed(25213)
+flight_data <- 
+  flights %>% 
+  mutate(
+    # Convert the arrival delay to a factor
+    arr_delay = ifelse(arr_delay >= 30, "late", "on_time"),
+    arr_delay = factor(arr_delay),
+    # We will use the date (not date-time) in the recipe below.
+    date = as.Date(time_hour)
+  ) %>% 
+  # Inlcude the weather data
+  inner_join(weather, by = c("origin", "time_hour")) %>% 
+  # Only retain the columns used in the analysis. 
+  select(dep_time, flight, origin, dest, air_time, distance, 
+         carrier, date, arr_delay, time_hour) %>% 
+  # Exclude missing data
+  na.omit() %>% 
+  # For creating models, it is better to have qualitative columns
+  # encoded as factors (instead of character strings).
+  mutate_if(is.character, as.factor)
+```
+
+From these operations, about `r round(mean(flight_data$arr_delay == "late") * 100, 1)`% of the data had late arrivals. A summary of the variables are:
+
+```{r skim}
+skimr::skim(flight_data)
+```
+
+There are some interesting things to notice from this output. First, the flight number is a numeric value. In the analyses below, this column won't be used as a predictor but retained as an identification variable (along with `time_hour`) that can be used to troubleshoot poorly predicted data points.  
+
+Second, there are `r length(levels(flight_data$dest))` destination values contained in `dest` as well as `r length(levels(flight_data$carrier))` carriers. In the initial analysis, these will be converted to simple [dummy variables](https://bookdown.org/max/FES/creating-dummy-variables-for-unordered-categories.html). However, since some of these values do not occur very frequently, this might complicate the analysis (as is discussed below). 
+
+To get started, these data will be split into two subsets. The majority of the data will be allocated at random to a _training set_. These data are used create the model. The remainder of the data are used as a _test set_ and these are only used to measure model performance^[This is a fairly common approach. However, it is inadvisable to directly predict the training set after fitting the model. Other techniques called [resampling methods](https://bookdown.org/max/FES/resampling.html) are used instead to get an initial sense of how well the model performs.].
+
+To do this, the `rsample` package is used to create an object that contains the information on _how_ to split the data and then two functions are used to create data frames for the training and testing sets: 
+
+```{r split}
+# Fix the random numbers by setting the seed. This enables the analysis 
+# to be reproducible when random numbers are used. 
+set.seed(5970)
+# Put 3/4 of the data into the training set. 
+data_split <- initial_split(flight_data, prop = 3/4)
+
+# Create data frames for the two sets:
+train_data <- training(data_split)
+test_data  <- testing(data_split)
+```
+ 
+## Creating the predictor definitions
+
+To get started, a simple logistic regression model will be created. Before creating the model fit object, a recipe will be used to create a few new predictors and conduct some pre-processing required by the model. 
+
+To get started, an initial recipe declares the roles of the columns of the data: 
+
+```{r initial-recipe}
+flights_rec <- 
+  recipe(arr_delay ~ ., data = train_data) %>% 
+  update_role(flight, time_hour, new_role = "ID") 
+```
+
+The `recipe()` command simply enumerates the columns in the data, their type (e.g. categorical, numeric), and their role. For the latter, any variable on the left-hand side of the tilde (`~`) is considered the model outcome and the others are initially considered to be predictors. 
+
+To use a recipe, a series of data processing steps can be appended to `flights_rec`. 
+
+For example, `update_role()` tells the recipe that two of the columns are not predictors or outcomes. The role of these columns is changed to `"ID` (a role can have any character value). The purpose of changing this characteristic for these columns is that they can be contained in the data but not included in the model. It could be that, after the model is fit, there could be interest in investigating a poorly predicted value. These ID columns will be available and can be used to try to understand what went wrong. 
+To get the current set of variables and roles, the `summary()` function can be used: 
+
+```{r summary}
+summary(flights_rec)
+```
+
+A value of "nominal" implies that the column is either factor or character. 
+
+Finally, note that a recipe is always associated with the data set used to create the model (as opposed to the test set).  
+
+Other operations can be added to the recipes. For example, it is reasonable that the date of the flight might have an effect on the likelihood of a late arrival. A little bit of _feature engineering_ might go a long way to improving the model. How should the date be encoded into the model?  The `date` column has an R `date` object so including that column as-is in the model will just convert it to a numeric format that is the number of days after a reference date: 
+
+```{r dates}
+days <- 
+  flight_data %>% 
+  distinct(date) %>% 
+  slice(1:3) %>% 
+  pull(date)
+
+days
+as.numeric(days)
+```
+
+It could be that the model would benefit from a linear trend between the log-odds of a late arrival and the day number. However, it might be better to add model terms _derived_ from the date that reflect aspects of the date that have a better potential to be important to the model. For example, these might be extracted from the date: 
+
+ * The day of the week.
+ * The month. 
+ * Whether or not the date corresponds to a holiday. 
+ 
+and so on. To do this, two more steps are added to the recipe:
+
+
+```{r date-recipe}
+flights_rec <- 
+  recipe(arr_delay ~ ., data = train_data) %>% 
+  update_role(flight, time_hour, new_role = "ID") %>% 
+  step_date(date, features = c("dow", "month")) %>% 
+  step_holiday(date, holidays = timeDate::listHolidays("US")) %>% 
+  step_rm(date)
+```
+
+`step_date()` is used to create basic date-oriented features. In this case, two factor columns are added with the appropriate day of the week and the month. `step_holiday()` create binary indicator variables if the current date is a holiday. The argument value of `timeDate::listHolidays("US")` uses the `timeDate` package to list the `r length(timeDate::listHolidays("US"))` standard US holidays. Finally, since the date column is no longer needed be the model, `step_rm()` eliminates it from the data set. 
+
+Recall that, to use this model, each predictor will need to be in a numeric format. For columns like `dest` and `origin`, which are factor columns, the standard method to convert them to be numeric is to create _dummy_ or _indicator_ variables. These are binary values for the levels of the factors. For example, since `origin` has values of `"EWR"`, `"JFK"`, and `"LGA"`, the standard dummy variable encoding will create _two_ numeric columns of the data that are 1 when the originating airport is `"JFK"` or `"LGA"` and zero otherwise, respectively^[Why two and not three? If you know the value of two of the columns, the third can be inferred. The standard in R is to leave out the dummy variable column for the first level of the factor which, in this case, corresponds to `"EWR"`.].
+
+Unlike the standard model formula methods, a recipe **does not** automatically create dummy variables. However, `step_dummy()` can be used for this purpose: 
+
+```{r dummy}
+flights_rec <- 
+  recipe(arr_delay ~ ., data = train_data) %>% 
+  update_role(flight, time_hour, new_role = "ID") %>% 
+  step_date(date, features = c("dow", "month")) %>% 
+  step_holiday(date, holidays = timeDate::listHolidays("US")) %>% 
+  step_rm(date) %>% 
+  step_dummy(all_nominal(), -all_outcomes())
+```
+
+Note that the `dplyr` selectors don't like column names. Since a recipe knows the role of each column, they can also be selected using this information. The selectors above translate to
+
+> Create dummy variables for all of the factor or character columns _unless_ they are outcomes. 
+
+At this stage in the recipe, this selects columns `origin`, `dest`, `carrier`, `date_dow`, and `date_month` (the latter two were created by `step_date()`). 
+
+One final step is added to the recipe: since `carrier` and `dest` have some infrequently occurring values, it is possible that dummy variables might be created for values that don't exist in the training set. For example, there is one destination that is only in the test set: 
+
+```{r zv-cols}
+setdiff(flight_data$dest, train_data$dest)
+```
+
+When the recipe is applied to the training set, a column is made for `r setdiff(flight_data$dest, train_data$dest)` but it will contain all zeros. This is a "zero-variance predictor" that has no information within the column. While some R functions will not produce an error for such predictors, it usually causes warnings and other issues. `step_zv()` will remove columns from the data when the training set data have a single value, so it is added to the recipe: 
+
+```{r zv}
+flights_rec <- 
+  recipe(arr_delay ~ ., data = train_data) %>% 
+  update_role(flight, time_hour, new_role = "ID") %>% 
+  step_date(date, features = c("dow", "month")) %>% 
+  step_holiday(date, holidays = timeDate::listHolidays("US")) %>% 
+  step_rm(date) %>% 
+  step_dummy(all_nominal(), -all_outcomes()) %>% 
+  step_zv(all_predictors())
+```
+
+Now that we've created this _specification_ of what should be done with the data, how do we use it? 
+
+## Using a recipe with a model
+
+Simple logistic regression will be used to model the flight data. Using the `parsnip` package, a model specification can be used: 
+
+```{r model}
+lr_mod <- 
+  logistic_reg() %>% 
+  set_engine("glm")
+```
+
+How should model performance be evaluated? For simplicity, the area under the [ROC curve](https://bookdown.org/max/FES/measuring-performance.html#class-metrics) will be computed using the `yardstick` package functions called `roc_curve()` and `roc_auc()`. 
+
+For the recipe, its usage would be to: 
+
+ 1. **Process the recipe using the training set**: This would involve any estimation or calculations on these data. For our recipe, the training set would be used to determine what dummy variable columns should be created and which zero-variance predictors are slated for removal. 
+ 
+ 1. **Apply the recipe to the training set**: create the final predictor set on the training set. 
+ 
+ 1. **Apply the recipe to the test set**: create the final predictor set on the test set. Nothing is recomputed; the dummy variable and zero-variance results from the training set are applied to the test set. 
+ 
+There are a few methods for doing this. The most straightforward and simple approach is to use a _model workflow_ which pairs a model and recipe together. For example: 
+
+```{r workflow}
+flights_wflow <- 
+  workflow() %>% 
+  add_model(lr_mod) %>% 
+  add_recipe(flights_rec)
+flights_wflow
+```
+
+There are two niceties in doing this. First, the model and recipe are bundled so that you can more easily keep track of them. Second, there is a single function that can be used to prepare the recipe and create the model from the resulting predictors: 
+
+```{r fit}
+flights_fit <- fit(flights_wflow, data = train_data)
+```
+ 
+This object has the finalized recipe and model objects inside. To extract those objects, the functions `pull_workflow_fit()` and `pull_workflow_recipe()` can be used. For example, to use the `broom::tidy()` function to get data on the model coefficients: 
+
+```{r fit-glance}
+flights_fit %>% 
+  pull_workflow_fit() %>% 
+  tidy()
+```
+
+There is also a single interface for getting predictions on new data. The `predict()` method applies the recipe to the new data then passes them to the fitted model. For the ROC curve, the predicted class probabilities are needed (along with the true outcome column):  
+
+```{r test-pred}
+flights_pred <- 
+  predict(flights_fit, test_data, type = "prob") %>% 
+  bind_cols(test_data %>% select(arr_delay, time_hour, flight)) 
+
+# The data look like: 
+flights_pred %>% slice(1:5)
+```
+
+The create the ROC curve with these values, `roc_curve()` is used and piped to the `autoplot()` method: 
+
+```{r roc-plot}
+flights_pred %>% 
+  roc_curve(truth = arr_delay, .pred_late) %>% 
+  autoplot()
+```
+
+Similarly, `roc_auc()` estimates the area under the curve: 
+
+```{r roc-auc}
+flights_pred %>% roc_auc(truth = arr_delay, .pred_late)
+```
+
+Which isn't too bad. 
