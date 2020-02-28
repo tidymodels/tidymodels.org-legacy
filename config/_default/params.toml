@@ -49,8 +49,8 @@ MathJaxVersion = "2.7.1"
 [colors]
     text = "#1a1917" # black
     # Links
-    link = "#6555b5" # modified to purple
-    link_hover = "#826fe3" # lighter purple
+    link = "#0a9a8c" # green/teal
+    link_hover = "#0dc2b1" # lighter green
     # Footer
     footer_primary = "#767381" # same as tidyverse.org
     footer_text = "#fcfcfc" 
@@ -62,10 +62,10 @@ MathJaxVersion = "2.7.1"
     menu_primary = "#262334" # modified to lighter navy
     menu_text = "#fcfcfc"
     menu_text_active = "#fff"
-    menu_text_current = "#6555b5" # purple --does this show up?
+    menu_text_current = "#0dc2b1" # light green --does this show up?
     menu_decorate_current = "none"
     menu_title = "#fcfcfc" #modified to light grey
-    menu_title_active = "#826fe3" # lighter purple
+    menu_title_active = "#0dc2b1" # lighter green
     menu_box_hover = "#484557" # same as tidyverse.org
     menu_box_active = "#fff" # same as tidyverse.org
     # Tables
