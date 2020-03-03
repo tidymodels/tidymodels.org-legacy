@@ -52,7 +52,7 @@ MathJaxVersion = "2.7.1"
     link = "#0a9a8c" # green/teal
     link_hover = "#0dc2b1" # lighter green
     # Footer
-    footer_primary = "#767381" # same as tidyverse.org
+    footer_primary = "#737e81" # grayish variety of the green accent
     footer_text = "#fcfcfc" 
     # Backgrounds
     background = "white" 
