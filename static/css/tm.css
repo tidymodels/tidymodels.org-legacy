@@ -1,5 +1,7 @@
+@import url('https://fonts.googleapis.com/css?family=Spartan:400,700&display=swap'); 
+
 body, button, input, textarea {
-  font-family: 'Lato', sans-serif;
+  font-family: 'Spartan', sans-serif;
   font-size: 15px;
   font-weight: normal;
   -webkit-font-smoothing: antialiased; }
@@ -12,3 +14,4 @@ body, button, input, textarea {
 .listItem .itemDetails .itemHeader .itemTag {
   font-size: .875rem;
 }
+
