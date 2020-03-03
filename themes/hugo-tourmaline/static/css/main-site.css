@@ -364,6 +364,8 @@ a {
     cursor: pointer;
     border-radius: 3px;
     color: inherit;
+    text-transform: lowercase;
+    font-size: 10pt;
     -webkit-transition-property: background-color;
     -moz-transition-property: background-color;
     -o-transition-property: background-color;
@@ -1062,6 +1064,7 @@ em {
     line-height: 40px;
     max-width: 48%; }
     #homeContent .band .blurb .tagline {
+      font-family: 'Lato' !important;
       font-size: 36px;
       margin-bottom: 16px; }
       #homeContent .band .blurb .tagline.small {
@@ -1107,7 +1110,9 @@ em {
     bottom: 10px;
     left: 10px;
     width: 100px;
-    height: auto; }
+    height: auto; 
+    display: none;
+  }
 
 /* size & position adjustments */
 @media screen and (max-width: 1023px) {
