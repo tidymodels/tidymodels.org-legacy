@@ -108,7 +108,7 @@ html, body {
 
 .bandContent {
   margin: 0 auto;
-  max-width: 1200px; }
+  max-width: 1100px; }
 
 .full {
   margin: 30px 0 30px 0; }
@@ -518,7 +518,7 @@ a {
   -webkit-justify-content: space-between;
   align-items: flex-start; }
   .splitColumns .column75 {
-    width: 73%; }
+    width: 70%; }
   .splitColumns .column67 {
     width: 65%; }
   .splitColumns .column50 {
