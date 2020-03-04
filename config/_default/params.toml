@@ -49,25 +49,25 @@ MathJaxVersion = "2.7.1"
 [colors]
     text = "#1a1917" # black
     # Links
-    link = "#0a9a8c" # green/teal
-    link_hover = "#0dc2b1" # lighter green
+    link = "#ff414b" # red salmon
+    link_hover = "#f97b82" #lighter
     # Footer
-    footer_primary = "#737e81" # grayish variety of the green accent
+    footer_primary = "#00000026" # grayish variety of the accent
     footer_text = "#fcfcfc" 
     # Backgrounds
     background = "white" 
-    home_section_odd = "#1a162d"
-    home_section_even = "#fcfcfc"
+    home_section_odd = "#fcfcfc"
+    home_section_even = "#ca225e" #recipe cupcake's pink
     # Menu
-    menu_primary = "#262334" # modified to lighter navy
-    menu_text = "#fcfcfc"
-    menu_text_active = "#fff"
-    menu_text_current = "#0dc2b1" # light green --does this show up?
+    menu_primary = "#fcfcfc" # modified to lighter navy
+    menu_text = "black"
+    menu_text_active = "#ff414b"
+    menu_text_current = "#ff414b" # --does this show up?
     menu_decorate_current = "none"
-    menu_title = "#fcfcfc" #modified to light grey
-    menu_title_active = "#0dc2b1" # lighter green
-    menu_box_hover = "#484557" # same as tidyverse.org
-    menu_box_active = "#fff" # same as tidyverse.org
+    menu_title = "#141227" # Tidymodels navy/black
+    menu_title_active = "#ff414b" # salmon
+    menu_box_hover = "#fcfcfc" 
+    menu_box_active = "#fcfcfc" 
     # Tables
     header_background = "#dfe3eb"
     table_row_even = "#f7faff"

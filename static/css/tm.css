@@ -15,3 +15,24 @@ body, button, input, textarea {
   font-size: .875rem;
 }
 
+/*-------- NAVBAR --------- */
+
+ 
+#rStudioHeader {
+  -moz-box-shadow: 0 1px 0px 0px rgba(0, 0, 0, 0.15);
+  -webkit-box-shadow: 0 1px 0px 0px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 1px 0px 0px rgba(0, 0, 0, 0.15);
+}
+
+
+#homeContent .band.second {
+  color: #fcfcfc; } 
+
+#homeContent .band.second a{
+  color: #f6b73c; } 
+  
+#homeContent .bee1 {
+  display: none;
+}
+
+

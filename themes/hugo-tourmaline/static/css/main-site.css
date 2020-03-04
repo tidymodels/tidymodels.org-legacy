@@ -204,7 +204,7 @@ a {
     display: inline-block; }
   #rStudioHeader .user {
     cursor: pointer;
-    font-size: 13px;
+    font-size: 16px;
     padding-right: 4px;
     border-radius: 3px;
     -webkit-transition-property: opacity, background-color;
@@ -351,7 +351,7 @@ a {
 #rStudioHeader #menu {
   text-align: right;
   font-weight: 400;
-  font-size: 13px;
+  font-size: 16px;
   line-height: 26px;
   white-space: nowrap; }
   #rStudioHeader #menu #menuToggler {
@@ -364,8 +364,6 @@ a {
     cursor: pointer;
     border-radius: 3px;
     color: inherit;
-    text-transform: lowercase;
-    font-size: 10pt;
     -webkit-transition-property: background-color;
     -moz-transition-property: background-color;
     -o-transition-property: background-color;
@@ -1081,7 +1079,7 @@ em {
       background-image: url(images/tidy-back-01a.svg);
       background-repeat: no-repeat;
       background-size: 570px 690px;
-      color: #fcfcfc;}
+      color: #1a162d;}
   #homeContent .band.second {
     height: 952px;
     background-color: #fcfcfc; } /*This is overridden by params */
@@ -1101,7 +1099,7 @@ em {
       background-image: url(images/tidy-back-03a.svg);
       background-repeat: no-repeat;
       background-size: 650px 450px;
-      color: #fcfcfc;}
+      color: #1a162d;}
   #homeContent .bookCover {
     margin-top: 50px;
     margin-left: 50px; }
@@ -1110,9 +1108,7 @@ em {
     bottom: 10px;
     left: 10px;
     width: 100px;
-    height: auto; 
-    display: none;
-  }
+    height: auto; }
 
 /* size & position adjustments */
 @media screen and (max-width: 1023px) {
