@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Spartan:400,700&display=swap'); 
 
+@import url('https://fonts.googleapis.com/css?family=Libre+Baskerville:400,700&display=swap');
+
 body, button, input, textarea {
   font-family: 'Lato', sans-serif;
   font-size: 15px;
@@ -15,8 +17,32 @@ body, button, input, textarea {
   font-size: .875rem;
 }
 
+
+/*--------- HEADERS -------*/
+
+div.tagline {
+  font-family: 'Libre Baskerville', serif !important;
+  text-transform: uppercase;
+  font-size: 1.2rem !important;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+
 /*-------- NAVBAR --------- */
 
+/*navbar header items */
+
+a.productName {
+  font-family: 'Libre Baskerville', serif !important;
+  letter-spacing: 2;
+}
+
+#menu {
+  text-transform: uppercase;
+  letter-spacing: 2pt;
+  font-size: 0.8rem !important;
+}
  
 #rStudioHeader {
   -moz-box-shadow: 0 1px 0px 0px rgba(0, 0, 0, 0.15);
@@ -24,9 +50,10 @@ body, button, input, textarea {
   box-shadow: 0 1px 0px 0px rgba(0, 0, 0, 0.15);
 }
 
+/*---- home band text color -----*/
 
 #homeContent .band.second {
-  color: #fcfcfc; } 
+  color: black; } 
 
 #homeContent .band.second a{
   color: #f6b73c; } 

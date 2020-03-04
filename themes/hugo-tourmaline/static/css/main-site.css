@@ -1062,7 +1062,7 @@ em {
     line-height: 40px;
     max-width: 48%; }
     #homeContent .band .blurb .tagline {
-      font-family: 'Lato' !important;
+      font-family: 'Lato';
       font-size: 36px;
       margin-bottom: 16px; }
       #homeContent .band .blurb .tagline.small {
