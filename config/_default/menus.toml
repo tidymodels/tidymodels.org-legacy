@@ -6,22 +6,6 @@
     url = "/packages/"
     weight = 1
 [[main]]
-    name = "Examples"
-    url = "/examples/"
-    weight = 2
-[[main]]
-    name = "Compendium"
-    url = "/compendium/"
-    weight = 3     
-[[main]]
-    name = "Books"
-    url = "/books/"
-    weight = 4          
-[[main]]
-    name = "Tidyverse blog"
-    url = "https://www.tidyverse.org/blog/"
-    weight = 5
-[[main]]
     name = "Learn"
     url = "https://www.tidyverse.org/learn/"
     weight = 6
