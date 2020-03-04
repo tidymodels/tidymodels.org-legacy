@@ -4,7 +4,7 @@
 
 body, button, input, textarea {
   font-family: 'Lato', sans-serif;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: normal;
   -webkit-font-smoothing: antialiased; }
 
@@ -46,6 +46,11 @@ a:hover {
   display: inline; /* to have content show up next to bullet */
 }
 
+.article-content ul > li { /*to add back in space between bullet items that I took away by making p display inline */
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
 /*--------- HEADERS -------*/
 
 div.tagline {
@@ -60,12 +65,13 @@ h1, .article-title {
   font-family: 'Libre Baskerville', serif;
   color: #ff414b;
   font-weight: bold;
+  font-size: 2em;
 }
 
 h2 {
   font-family: 'Libre Baskerville', serif;
   font-weight: bold;
-  font-size: 1.5em;
+  font-size: 1.25em;
 }
 
 
@@ -86,6 +92,7 @@ h2 {
   font-family: 'Libre Baskerville';
   color: #00000075;
   transition: color 0.3s;
+  font-size: 15px;
 }
 
 #TableOfContents a:hover {
