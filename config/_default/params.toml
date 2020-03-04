@@ -53,7 +53,7 @@ MathJaxVersion = "2.7.1"
     link_hover = "#f97b82" #lighter
     # Footer
     footer_primary = "#ffd8db"
-    footer_text = "black" 
+    footer_text = "#ff414b" 
     # Backgrounds
     background = "#ffffff" 
     home_section_odd = "#ffffff"
@@ -66,9 +66,9 @@ MathJaxVersion = "2.7.1"
     menu_decorate_current = "none"
     menu_title = "#ff414b" # Tidymodels
     menu_title_active = "silver" 
-    menu_box_hover = "#fcfcfc" 
+    menu_box_hover = "white" 
     menu_box_active = "#fcfcfc" 
     # Tables
-    header_background = "#dfe3eb"
-    table_row_even = "#f7faff"
+    header_background = "#ffd8db"
+    table_row_even = "#f97b82"
     table_row_odd = "#fff"

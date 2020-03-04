@@ -17,6 +17,34 @@ body, button, input, textarea {
   font-size: .875rem;
 }
 
+/*----- general LINKS ----- */
+
+a {
+  transition: color 0.3s;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+/*----- COLORED LIST BULLET----*/
+
+.article-content ul {
+  list-style: none; /* Remove default bullets */
+}
+
+.article-content ul li::before {
+  content: "\2022";  /* Add content: \2022 is the CSS Code/unicode for a bullet */
+  color: #ff414b; /* Change the color */
+  font-weight: bold; /* If you want it to be bold */
+  display: inline-block; /* Needed to add space between the bullet and the text */
+  width: 1.5em; /* Also needed for space (tweak if needed) */
+  margin-left: -1em; /* Also needed for space (tweak if needed) */
+}
+
+.article-content ul > li > p {
+  display: inline; /* to have content show up next to bullet */
+}
 
 /*--------- HEADERS -------*/
 
@@ -28,6 +56,47 @@ div.tagline {
   letter-spacing: 2px;
 }
 
+h1, .article-title {
+  font-family: 'Libre Baskerville', serif;
+  color: #ff414b;
+  font-weight: bold;
+}
+
+h2 {
+  font-family: 'Libre Baskerville', serif;
+  font-weight: bold;
+  font-size: 1.5em;
+}
+
+
+
+/*---------TOC----------*/
+
+/*Contents header*/
+.sectionTitle, .sectionTitle a {
+  text-transform: uppercase;
+  letter-spacing: 2pt;
+  font-size: 0.8rem !important;
+  font-weight: bold;
+  color: #f6b73c;
+}
+
+/*TOC links */
+#TableOfContents a {
+  font-family: 'Libre Baskerville';
+  color: #00000075;
+  transition: color 0.3s;
+}
+
+#TableOfContents a:hover {
+  color: silver;
+  text-decoration: none;
+}
+
+.column25 {
+  padding-left: 3em;
+  border-left: solid #d9d9d9 1pt;
+}
 
 /*-------- NAVBAR --------- */
 
@@ -36,6 +105,7 @@ div.tagline {
 a.productName {
   font-family: 'Libre Baskerville', serif !important;
   letter-spacing: 2;
+  transition: color 0.3s; /*is this even being applied?? */
 }
 
 #menu {
@@ -50,13 +120,20 @@ a.productName {
   box-shadow: 0 1px 0px 0px rgba(0, 0, 0, 0.15);
 }
 
-/*---- home band text color -----*/
+/*---- HOME BAND TEXT COLOR -----*/
 
 #homeContent .band.second {
-  color: black; } 
+  color: black;
+  border-bottom: solid 1pt #d9d9d9;
+  border-top: solid 1pt #d9d9d9;
+} 
 
 #homeContent .band.second a{
-  color: #f6b73c; } 
+  color: #f6b73c;
+  transition: color 0.3s;} 
+  
+#homeContent .band.second a:hover {
+  color: #f37e45; } 
   
 #homeContent .bee1 {
   display: none;
