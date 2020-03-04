@@ -55,7 +55,7 @@ MathJaxVersion = "2.7.1"
     footer_primary = "#00000026" # grayish variety of the accent
     footer_text = "#fcfcfc" 
     # Backgrounds
-    background = "white" 
+    background = "#fcfcfc" 
     home_section_odd = "#fcfcfc"
     home_section_even = "#ca225e" #recipe cupcake's pink
     # Menu
