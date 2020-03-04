@@ -3,18 +3,26 @@
 
 <style>
   .cls-1{
-    opacity: .2;
+    opacity: .1;
+    stroke: #fcfcfc;
+    stroke-width: 3pt;
   }
   .cls-2,.cls-4{
-    fill: #fcfcfc;
+    fill: #ff414b;
+    stroke: white;
+    stroke-width: 3pt;
   }
   .cls-3,.cls-4{
     opacity: 0.5;
+    stroke: white;
+    stroke-width: 3pt;
   }
   
   polygon.cls-4 {
-    fill: #f6b73c;
+    fill: #ff414b;
     opacity: 100%;
+    stroke: white;
+    stroke-width: 3pt;
   }
 </style>
 

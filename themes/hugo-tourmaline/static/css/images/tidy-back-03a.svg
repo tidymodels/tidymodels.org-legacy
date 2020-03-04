@@ -5,13 +5,17 @@
         fill:#f6b73c; /*question hex*/ 
       }
       .cls-2{
-        fill:#f6b73c; /*top and bottom*/
+        fill:#ff414b; /*top and bottom*/
+        stroke: white;
+    stroke-width: 3pt;
       }
       .cls-3{
         opacity: 1;
       }
       .cls-4{ 
         fill:#00000026; /*surrounding hexes*/
+        stroke: white;
+        stroke-width: 3pt;
         }
       .cls-5{
         fill:#fff;

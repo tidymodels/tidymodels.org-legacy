@@ -52,20 +52,20 @@ MathJaxVersion = "2.7.1"
     link = "#ff414b" # red salmon
     link_hover = "#f97b82" #lighter
     # Footer
-    footer_primary = "#00000026" # grayish variety of the accent
-    footer_text = "#fcfcfc" 
+    footer_primary = "#ffd8db"
+    footer_text = "black" 
     # Backgrounds
-    background = "#fcfcfc" 
-    home_section_odd = "#fcfcfc"
-    home_section_even = "#ca225e" #recipe cupcake's pink
+    background = "#ffffff" 
+    home_section_odd = "#ffffff"
+    home_section_even = "#fcfcfc" 
     # Menu
-    menu_primary = "#fcfcfc" # modified to lighter navy
+    menu_primary = "#ffffff" 
     menu_text = "black"
     menu_text_active = "#ff414b"
     menu_text_current = "#ff414b" # --does this show up?
     menu_decorate_current = "none"
-    menu_title = "#141227" # Tidymodels navy/black
-    menu_title_active = "#ff414b" # salmon
+    menu_title = "#ff414b" # Tidymodels
+    menu_title_active = "silver" 
     menu_box_hover = "#fcfcfc" 
     menu_box_active = "#fcfcfc" 
     # Tables
