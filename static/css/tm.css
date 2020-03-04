@@ -146,4 +146,15 @@ a.productName {
   display: none;
 }
 
+/*----filtered hex colors -----*/
 
+.filtered {
+   background: yellow;
+   position: relative;
+}
+
+.filtered img {
+  -webkit-filter: grayscale(100%);
+  filter: grayscale(100%);
+  opacity: 0.5;
+}
