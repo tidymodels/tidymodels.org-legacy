@@ -106,8 +106,6 @@ h2 {
 /*navbar header items */
 
 a.productName {
-  font-family: 'Libre Baskerville', serif !important;
-  letter-spacing: 2;
   transition: color 0.3s; /*is this even being applied?? */
 }
 
