@@ -35,7 +35,7 @@ a:hover {
 
 .article-content ul li::before {
   content: "\2022";  /* Add content: \2022 is the CSS Code/unicode for a bullet */
-  color: #ff414b; /* Change the color */
+  color: #f6b73c; /* Change the color */
   font-weight: bold; /* If you want it to be bold */
   display: inline-block; /* Needed to add space between the bullet and the text */
   width: 1.5em; /* Also needed for space (tweak if needed) */
@@ -63,7 +63,7 @@ div.tagline {
 
 h1, .article-title {
   font-family: 'Libre Baskerville', serif;
-  color: #ff414b;
+  color: #4254A7;
   font-weight: bold;
   font-size: 2em;
 }
@@ -158,3 +158,4 @@ a.productName {
   filter: grayscale(100%);
   opacity: 0.5;
 }
+
