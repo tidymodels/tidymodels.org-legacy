@@ -47,7 +47,7 @@ MathJaxVersion = "2.7.1"
 # then, the layouts/partials/head_includes.html uses that partial
 # the partial head_includes.html is called in the partial header.html everywhere!
 [colors]
-    text = "404040" # off-black
+    text = "#404040" # off-black
     # Links
     link = "#CA225E" # main accent
     link_hover = "#cc3168" #lighter
