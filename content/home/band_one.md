@@ -10,4 +10,10 @@ col2:
 title: tidymodels
 ---
 
-The tidymodels repository is a collection of modeling packages that work with the [tidyverse](https://www.tidyverse.org/) and are designed in the same way.
+Tidymodels is an opinionated collection of R packages designed for modeling and machine learning. All packages are designed to be consistent, composable, and to support good modeling practices.  
+
+Install tidymodels with:
+
+```{r, eval= FALSE}
+install.packages("tidymodels")
+```
