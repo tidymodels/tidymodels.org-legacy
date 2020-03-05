@@ -156,19 +156,19 @@ a.productName {
 }
 
 /*----filtered hex colors -----*/
-
+/*
 .filtered {
-   background: #ff3f9e; /*choose brighter hue than main accent*/
+   background: #ff3f9e;
    position: absolute;
    height: 139px;
    width: 120px;
    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 49% 100%, 0 75%, 0 25%);
-}
-
-.filtered + img { /*img immediately following .filtered element */
+} */
+/*img immediately following .filtered element */
+/*.filtered + img { 
   -webkit-filter: grayscale(100%);
   filter: grayscale(100%);
-  opacity: 0.4;
+  opacity: 0.7;
 }
 
 .filtered.r0.c0, .filtered.r2.c0, .filtered.r4.c0 {
@@ -206,4 +206,4 @@ a.productName {
     .filtered.r0.c2, .filtered.r2.c2, .filtered.r4.c2 {
       left: 125px; }
     .filtered.r1.c2, .filtered.r3.c2, .filtered.r5.c2 {
-      left: 187px; } }
+      left: 187px; } } */
