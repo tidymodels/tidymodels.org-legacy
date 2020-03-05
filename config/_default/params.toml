@@ -49,11 +49,11 @@ MathJaxVersion = "2.7.1"
 [colors]
     text = "#1a1917" # black
     # Links
-    link = "#3CA6B1" # main accent
+    link = "#CA225E" # main accent
     link_hover = "#c7d0f9" #lighter
     # Footer
-    footer_primary = "#3CA6B130"
-    footer_text = "#3CA6B1" 
+    footer_primary = "#CA225E30"
+    footer_text = "#CA225E" 
     # Backgrounds
     background = "#ffffff" 
     home_section_odd = "#ffffff"
@@ -61,10 +61,10 @@ MathJaxVersion = "2.7.1"
     # Menu
     menu_primary = "#ffffff" 
     menu_text = "black"
-    menu_text_active = "#3CA6B1"
-    menu_text_current = "#3CA6B1" # --does this show up?
+    menu_text_active = "#CA225E"
+    menu_text_current = "#CA225E" # --does this show up?
     menu_decorate_current = "none"
-    menu_title = "#3CA6B1" # Tidymodels
+    menu_title = "#CA225E" # Tidymodels
     menu_title_active = "silver" 
     menu_box_hover = "white" 
     menu_box_active = "#fcfcfc" 
