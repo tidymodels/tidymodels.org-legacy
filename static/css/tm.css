@@ -23,9 +23,9 @@ a {
   transition: color 0.3s;
 }
 
-a:hover {
+/*a:hover {
   text-decoration: none;
-}
+}*/
 
 /*----- COLORED LIST BULLET----*/
 
