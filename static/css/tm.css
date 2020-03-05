@@ -128,7 +128,16 @@ a.productName {
 }
 
 /*---- HOME BAND TEXT COLOR -----*/
+/*first band*/
 
+#homeContent .band.first a{
+  color: #f6b73b;
+  transition: color 0.3s;} 
+  
+#homeContent .band.first a:hover {
+  color: #f37e45; } 
+
+/*second band*/
 #homeContent .band.second {
   color: black;
   border-bottom: solid 1pt #d9d9d9;
@@ -136,7 +145,7 @@ a.productName {
 } 
 
 #homeContent .band.second a{
-  color: #f6b73c;
+  color: #f6b73b;
   transition: color 0.3s;} 
   
 #homeContent .band.second a:hover {
