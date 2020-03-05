@@ -2,11 +2,11 @@
 col0:
   row1: tidymodels
   row2: rsample
-  row3: yardstick
+  row3: parsnip
 col2:
-  row2: parsnip
+  row2: recipes
   row3: tune
-  row4: recipes
+  row4: yardstick
 title: tidymodels
 ---
 
