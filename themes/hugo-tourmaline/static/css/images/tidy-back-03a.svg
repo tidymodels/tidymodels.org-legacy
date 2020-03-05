@@ -5,7 +5,7 @@
         fill:#f6b73c; /*question hex*/ 
       }
       .cls-2{
-        fill:#4254A7; /*top and bottom*/
+        fill:#3CA6B1; /*top and bottom*/
         stroke: white;
     stroke-width: 3pt;
       }

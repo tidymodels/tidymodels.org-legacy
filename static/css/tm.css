@@ -63,7 +63,7 @@ div.tagline {
 
 h1, .article-title {
   font-family: 'Libre Baskerville', serif;
-  color: #4254A7;
+  color: #3CA6B1;
   font-weight: bold;
   font-size: 2em;
 }
@@ -158,7 +158,7 @@ a.productName {
 /*----filtered hex colors -----*/
 
 .filtered {
-   background: #4254A7;
+   background: #56efff; /*choose brighter hue than main accent*/
    position: absolute;
    height: 139px;
    width: 120px;
