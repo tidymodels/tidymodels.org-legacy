@@ -23,10 +23,6 @@ a {
   transition: color 0.3s;
 }
 
-/*a:hover {
-  text-decoration: none;
-}*/
-
 /*----- COLORED LIST BULLET----*/
 
 .article-content ul {
@@ -35,7 +31,7 @@ a {
 
 .article-content ul li::before {
   content: "\2022";  /* Add content: \2022 is the CSS Code/unicode for a bullet */
-  color: #CA225E; /* Change the color */
+  color: #4254A7; /* Change the color */
   font-weight: bold; /* If you want it to be bold */
   display: inline-block; /* Needed to add space between the bullet and the text */
   width: 1.5em; /* Also needed for space (tweak if needed) */
@@ -84,7 +80,7 @@ h2 {
   letter-spacing: 2pt;
   font-size: 0.8rem !important;
   font-weight: bold;
-  color: #f6b73c;
+  color: #4254A7;
 }
 
 /*TOC links */
@@ -131,11 +127,10 @@ a.productName {
 /*first band*/
 
 #homeContent .band.first a{
-  color: #f6b73b;
-  transition: color 0.3s;} 
+ } 
   
 #homeContent .band.first a:hover {
-  color: #f37e45; } 
+  } 
 
 /*second band*/
 #homeContent .band.second {
@@ -145,65 +140,11 @@ a.productName {
 } 
 
 #homeContent .band.second a{
-  color: #f6b73b;
-  transition: color 0.3s;} 
+  } 
   
 #homeContent .band.second a:hover {
-  color: #f37e45; } 
+  } 
   
 #homeContent .bee1 {
   display: none;
 }
-
-/*----filtered hex colors -----*/
-/*
-.filtered {
-   background: #ff3f9e;
-   position: absolute;
-   height: 139px;
-   width: 120px;
-   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 49% 100%, 0 75%, 0 25%);
-} */
-/*img immediately following .filtered element */
-/*.filtered + img { 
-  -webkit-filter: grayscale(100%);
-  filter: grayscale(100%);
-  opacity: 0.7;
-}
-
-.filtered.r0.c0, .filtered.r2.c0, .filtered.r4.c0 {
-      left: 0; }
-    .filtered.r0.c1, .filtered.r2.c1, .filtered.r4.c1 {
-      left: 125px; }
-    .filtered.r0.c2, .filtered.r2.c2, .filtered.r4.c2 {
-      left: 250px; }
-    .filtered.r0.c3, .filtered.r2.c3, .filtered.r4.c3 {
-      left: 375px; }
-    .filtered.r1.c0, .filtered.r3.c0, .filtered.r5.c0 {
-      left: 62px; }
-    .filtered.r1.c1, .filtered.r3.c1, .filtered.r5.c1 {
-      left: 187px; }
-    .filtered.r1.c2, .filtered.r3.c2, .filtered.r5.c2 {
-      left: 312px; }
-    .filtered.r1.c3, .filtered.r3.c3, .filtered.r5.c3 {
-      left: 437px; }
-    .filtered.r0 {
-      top: 0px; }
-    .filtered.r1 {
-      top: 107.5px; }
-    .filtered.r2 {
-      top: 215px; }
-    .filtered.r3 {
-      top: 322.5px; }
-    .filtered.r4 {
-      top: 430px; }
-    .filtered.r5 {
-      top: 537.5px; }
-
-@media screen and (max-width: 1023px) {
-  .hexBadges {
-    width: 350px; }
-    .filtered.r0.c2, .filtered.r2.c2, .filtered.r4.c2 {
-      left: 125px; }
-    .filtered.r1.c2, .filtered.r3.c2, .filtered.r5.c2 {
-      left: 187px; } } */
