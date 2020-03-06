@@ -146,7 +146,17 @@ roc_auc(rf_testing_pred,  truth = class, .pred_PS)
 accuracy(rf_testing_pred, truth = class, .pred_class)
 ```
 
-What happened?  **more here**
+What happened?
+
+There are be several reasons why these training set statistics can be highly optimistic: 
+
+ * Models like random forests, neural networks, and other black-box methods can essentially memorize the training set. Re-predicting that set should always result in nearly prefect results^[This also means that the degree of optimism in the training set statistics is model dependent.]. 
+
+* The training set does not have the capacity to be a good arbiter of performance. It is not an independent piece of information; predicting the training set can only reflect what the model already knows. 
+
+The latter point is usually made by analogy to teaching. Suppose you give a class a test, then give them the answers, then provide the same test. The student scores on the _second_ test would probably not reflect what they know about the subject and would be more optimistic than their results on the first test. 
+
+
 
 # Resampling to the rescue
 
@@ -195,7 +205,7 @@ The final resampling estimates for the model are the averages of the performance
 ```{r rs-table, echo = FALSE, results = "asis"}
 assessment_stats %>% 
   kable() %>% 
-  kable_styling()
+  kable_styling(full_width = FALSE)
 ```
 
 From these resampling statistics, the final estimate of performance for this random forest model would be `r rs_stats$mean[rs_stats$.metric == "roc_auc"]` for the area under the ROC curve and `r rs_stats$mean[rs_stats$.metric == "accuracy"]` for accuracy. 
@@ -214,9 +224,11 @@ The list column for `splits` contains the information on which rows belong in th
 
 However, the `tune` package contains high-level functions that can do the required computations to resample a model (and, optionally, a recipe) for the purpose of measuring performance. The syntax is very similar to `fit()`: 
 
-```{r rs}
+```{r rs, eval = FALSE}
 set.seed(5273)
 rf_fit_rs <- rf_mod %>% fit_resamples(class ~ ., folds)
+```
+```{r rs-show}
 rf_fit_rs
 ```
 
