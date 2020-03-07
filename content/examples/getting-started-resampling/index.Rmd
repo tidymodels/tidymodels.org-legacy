@@ -17,11 +17,11 @@ library(tidymodels)
 library(ranger)
 library(modeldata)
 library(kableExtra)
-
+source(here::here("static/code/req_pkgs.R"))
 data(cells, package = "modeldata")
 ```
 
-This tutorial will explain how to characterize how well your model is doing based on resampling statistics. 
+This tutorial will explain how to characterize how well your model is doing based on resampling statistics. `r req_pkgs(c("tidymodels", "ranger", "modeldata"), "It")`
 
 ## Predicting image segmentation
 
