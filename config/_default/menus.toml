@@ -22,6 +22,7 @@
     url = "/contribute/"
     weight = 9
 [[main]]
-    name = "GitHub"
+    pre = "<i class=\"fab fa-github fa-lg\"></i>"
+    name = ""
     url = "https://github.com/tidymodels/"
     weight = 10
