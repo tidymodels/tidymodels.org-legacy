@@ -3,7 +3,7 @@ title: Get Help
 ---
 
 
-# Resources
+## Resources
 
 - Links to current “compendium”
 
@@ -13,11 +13,11 @@ title: Get Help
 
 - Learn section
 
-# Asking for help
+## Asking for help
 
 If you’re asking for R help, reporting a bug, or requesting a new feature, you’re more likely to succeed if you include a good reproducible example, which is precisely what the [reprex](http://reprex.tidymodels.org/) package is built for. You can learn more about reprex, along with other tips on how to help others help you in the [tidyverse.org help section](https://www.tidyverse.org/help/).
 
-# Where to ask
+## Where to ask
 
 <img src="https://raw.githubusercontent.com/allisonhorst/stats-illustrations/master/rstats-artwork/reprex.png" alt="" width="400" height="285" align="right" style="padding:1em;" />
 <!-- Thanks to Mark Hansen for the image! https://twitter.com/cocteau/status/893811714420088832 -->
@@ -35,7 +35,7 @@ Now that you've made a reprex that you can easily inflict on others, you need to
   more likely to get a useful answer. Make sure to [tag your question](https://stackoverflow.com/help/tagging) with R
   and tidymodels so that the right people are more likely to see it.
   
-* [__Twitter__][twitter-rstats]. It's hard to share your reprex only on twitter, because 140 characters are rarely enough and screenshots don't help others play with your code. But twitter is a great place to share a link to your reprex that's hosted elsewhere. The [#rstats twitter][twitter-rstats] community is extremely friendly and active, and is a great crowd to be a part of. Make sure you tag your tweet with #rstats and #tidymodels.
+* [__Twitter__][twitter-rstats]. It's hard to share your reprex only on twitter, because 280 characters are rarely enough and screenshots don't help others play with your code. But twitter is a great place to share a link to your reprex that's hosted elsewhere. The [#rstats twitter][twitter-rstats] community is extremely friendly and active, and is a great crowd to be a part of. Make sure you tag your tweet with #rstats and #tidymodels.
 
 * If you think you've found a __bug__, please follow the instructions on 
   [contributing to tidymodels(/contribute/).
