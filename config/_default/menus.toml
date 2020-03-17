@@ -6,30 +6,22 @@
     url = "/packages/"
     weight = 1
 [[main]]
-    name = "Examples"
+    name = "Get Started"
     url = "/examples/"
     weight = 2
 [[main]]
-    name = "Compendium"
-    url = "/compendium/"
-    weight = 3     
-[[main]]
-    name = "Books"
-    url = "/books/"
-    weight = 4          
-[[main]]
-    name = "Tidyverse blog"
-    url = "https://www.tidyverse.org/blog/"
-    weight = 5
-[[main]]
     name = "Learn"
-    url = "https://www.tidyverse.org/learn/"
-    weight = 6
-[[main]]
-    name = "Help"
-    url = "https://www.tidyverse.org/help/"
+    url = "/learn/"
     weight = 7
 [[main]]
-    name = "Contribute"
-    url = "https://www.tidyverse.org/contribute/"
+    name = "Help"
+    url = "/help/"
     weight = 8
+[[main]]
+    name = "Contribute"
+    url = "/contribute/"
+    weight = 9
+[[main]]
+    name = "GitHub"
+    url = "https://github.com/tidymodels/"
+    weight = 10
