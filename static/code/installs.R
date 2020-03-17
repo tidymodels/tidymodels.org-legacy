@@ -5,7 +5,7 @@ pkgs <- c("AmesHousing", "caret", "devtools", "discrim", "doMC", "DT",
           "textfeatures", "textrecipes", "themis", "tidymodels", "tidyposterior", 
           "timetk", "zoo")
 
-install.packages(pkgs, repos = "https::cran.rstudio.com")
+install.packages(pkgs, repos = "https://cran.rstudio.com")
 
 library(devtools)
 

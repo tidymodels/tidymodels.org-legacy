@@ -10,4 +10,4 @@ col2:
 title: tidymodels
 ---
 
-The tidymodels repository is a collection of modeling packages that work with the [tidyverse](https://www.tidyverse.org/) and are designed in the same way.
+The tidymodels framework is a collection of packages for modeling and machine learning using [tidyverse](https://www.tidyverse.org/) principles.
