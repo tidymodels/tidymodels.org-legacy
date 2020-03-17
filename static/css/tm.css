@@ -1,6 +1,8 @@
+@import url('https://fonts.googleapis.com/css?family=Libre+Baskerville:400,700&display=swap');
+
 body, button, input, textarea {
   font-family: 'Lato', sans-serif;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: normal;
   -webkit-font-smoothing: antialiased; }
 
@@ -12,3 +14,179 @@ body, button, input, textarea {
 .listItem .itemDetails .itemHeader .itemTag {
   font-size: .875rem;
 }
+
+/*----- general LINKS ----- */
+
+a {
+  transition: color 0.3s;
+}
+/*
+a:hover {
+  text-decoration: none;
+}*/
+
+/*----- COLORED LIST BULLET----*/
+
+.article-content ul {
+  list-style: none; /* Remove default bullets */
+}
+
+.article-content ul li::before {
+  content: "\2022";  /* Add content: \2022 is the CSS Code/unicode for a bullet */
+  color: #f6b73c; /* Change the color */
+  font-weight: bold; /* If you want it to be bold */
+  display: inline-block; /* Needed to add space between the bullet and the text */
+  width: 1.5em; /* Also needed for space (tweak if needed) */
+  margin-left: -1em; /* Also needed for space (tweak if needed) */
+}
+
+.article-content ul > li > p {
+  display: inline; /* to have content show up next to bullet */
+}
+
+.article-content ul > li { /*to add back in space between bullet items that I took away by making p display inline */
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+/*--------- HEADERS -------*/
+
+div.tagline {
+  font-family: 'Libre Baskerville', serif !important;
+  text-transform: uppercase;
+  font-size: 1.2rem !important;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+h1, .article-title {
+  font-family: 'Libre Baskerville', serif;
+  color: #4254A7;
+  font-weight: bold;
+  font-size: 2em;
+}
+
+h2 {
+  font-family: 'Libre Baskerville', serif;
+  font-weight: bold;
+  font-size: 1.25em;
+}
+
+
+
+/*---------TOC----------*/
+
+/*Contents header*/
+.sectionTitle, .sectionTitle a {
+  text-transform: uppercase;
+  letter-spacing: 2pt;
+  font-size: 0.8rem !important;
+  font-weight: bold;
+  color: #4254A7;
+}
+
+/*TOC links */
+#TableOfContents a {
+  font-family: 'Libre Baskerville';
+  color: #00000075;
+  transition: color 0.3s;
+  font-size: 15px;
+}
+
+#TableOfContents a:hover {
+  color: silver;
+  text-decoration: none;
+}
+
+.column25 {
+  padding-left: 3em;
+  border-left: solid #d9d9d9 1pt;
+}
+
+/*-------- NAVBAR --------- */
+
+/*navbar header items */
+
+a.productName {
+  /*font-family: 'Libre Baskerville', serif !important;
+  letter-spacing: 2;
+  transition: color 0.3s; /*is this even being applied?? */
+}
+
+#menu {
+  text-transform: uppercase;
+  letter-spacing: 2pt;
+  font-size: 0.8rem !important;
+}
+ 
+#rStudioHeader {
+  -moz-box-shadow: 0 1px 0px 0px rgba(0, 0, 0, 0.15);
+  -webkit-box-shadow: 0 1px 0px 0px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 1px 0px 0px rgba(0, 0, 0, 0.15);
+}
+
+/*---- HOME BAND TEXT COLOR -----*/
+/*first band*/
+
+#homeContent .band.first a{
+  color: #4254A7;
+  transition: color 0.3s;} 
+  
+#homeContent .band.first a:hover {
+  color: #4254A7; } 
+
+/*second band*/
+#homeContent .band.second {
+  color: black;
+  border-bottom: solid 1pt #d9d9d9;
+  border-top: solid 1pt #d9d9d9;
+} 
+
+#homeContent .band.second a{
+  transition: color 0.3s;} 
+  
+#homeContent .band.second a:hover {
+   } 
+  
+#homeContent .bee1 {
+  display: none;
+}
+
+/*--------- HEXES -------*/
+
+    #homeContent .band.first .bandContent {
+      padding-top: 220px;
+      height: 100%;
+      background-image: url(images/tidy-back-01a.svg);
+      background-repeat: no-repeat;
+      background-size: 570px 690px; }
+      
+          #homeContent .band.second .bandContent {
+      padding-top: 120px;
+      padding-bottom: 100px;
+      height: 100%;
+      background-image: url(images/tidy-back-02a.svg);
+      background-repeat: no-repeat;
+      background-size: 700px 952px; }
+      
+          #homeContent .band.third .bandContent {
+      height: 450px;
+      padding-top: 100px;
+      padding-bottom: 100px;
+      background-image: url(images/tidy-back-03a.svg);
+      background-repeat: no-repeat;
+      background-size: 650px 450px; }
+      
+      .package-section .packages .package {
+  position: relative;
+  height: 200px;
+  overflow-y: hidden;
+  background-size: 190px 215px;
+  background-repeat: no-repeat;
+  background-position: left top;
+  background-image: url(images/tidy-packages-back-01.svg); }
+  .package-section .packages .package:first-of-type {
+    background-image: url(images/tidy-packages-back-02.svg); }
+  .package-section .packages .package:last-of-type {
+    background-image: url(images/tidy-packages-back-03.svg); }
+
