@@ -47,28 +47,28 @@ MathJaxVersion = "2.7.1"
 # then, the layouts/partials/head_includes.html uses that partial
 # the partial head_includes.html is called in the partial header.html everywhere!
 [colors]
-    text = "#1a1917" # black
+    text = "#404040" # black
     # Links
-    link = "#38577f" # same as tidyverse.org
-    link_hover = "#42709b" # same as tidyverse.org
+    link = "#4254A7" # main accent
+    link_hover = "#4254A7" #lighter
     # Footer
-    footer_primary = "#767381" # same as tidyverse.org
-    footer_text = "#e3eef8" # same as tidyverse.org
+    footer_primary = "#4254a730"
+    footer_text = "#4254A7" 
     # Backgrounds
-    background = "white"
-    home_section_odd = "white"
-    home_section_even = "#fdeba4"
+    background = "#ffffff" 
+    home_section_odd = "#ffffff"
+    home_section_even = "#fcfcfc" 
     # Menu
-    menu_primary = "#1a162d" # same as tidyverse.org
-    menu_text = "#fff"
-    menu_text_active = "#fff"
-    menu_text_current = "#1a162d" # same as tidyverse.org
+    menu_primary = "#ffffff" 
+    menu_text = "black"
+    menu_text_active = "#4254A7"
+    menu_text_current = "#4254A7" # --does this show up?
     menu_decorate_current = "none"
-    menu_title = "#fff"
-    menu_title_active = "#fdeba4" # same as tidyverse.org
-    menu_box_hover = "#484557" # same as tidyverse.org
-    menu_box_active = "#fff" # same as tidyverse.org
+    menu_title = "#4254A7" # Tidymodels
+    menu_title_active = "silver" 
+    menu_box_hover = "white" 
+    menu_box_active = "#fcfcfc" 
     # Tables
-    header_background = "#dfe3eb"
-    table_row_even = "#f7faff"
+    header_background = "#ffd8db"
+    table_row_even = "#f97b82"
     table_row_odd = "#fff"
