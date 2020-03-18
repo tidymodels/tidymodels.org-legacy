@@ -35,7 +35,7 @@ a {
   font-weight: bold; /* If you want it to be bold */
   display: inline-block; /* Needed to add space between the bullet and the text */
   width: 1.5em; /* Also needed for space (tweak if needed) */
-  margin-left: -1em; /* Also needed for space (tweak if needed) */
+  margin-left: -1.7em; /* Also needed for space (tweak if needed) */
 }
 
 .article-content ul > li > p {
