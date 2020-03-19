@@ -20,7 +20,7 @@
   
   /* top shape */
   polygon.cls-4 {
-    fill: #4254A7;
+    fill: #e6c2a3;
     opacity: 70%;
     stroke: white;
     stroke-width: 3pt;
