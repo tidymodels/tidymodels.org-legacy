@@ -70,5 +70,5 @@ MathJaxVersion = "2.7.1"
     menu_box_active = "#fcfcfc" 
     # Tables
     header_background = "#ffd8db"
-    table_row_even = "#f97b82"
+    table_row_even = "#4254a730"
     table_row_odd = "#fff"
