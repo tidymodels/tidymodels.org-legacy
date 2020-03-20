@@ -3,7 +3,7 @@
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 650 450" style="enable-background:new 0 0 650 450;" xml:space="preserve">
 <style type="text/css">
-	.st0{fill:#1a162d40;} /* ? */
+	.st0{fill:#1a162d; opacity: 90%;} /* ? */
 	.st1{fill:#CA225E;stroke:#FFFFFF;stroke-width:3;}
 	.st2{stroke:#FFFFFF;stroke-width:4; opacity: 30%;}
 	.st3{fill:#FFFFFF;}
