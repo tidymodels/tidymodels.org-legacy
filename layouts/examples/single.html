@@ -22,6 +22,14 @@
       <div class="column75">
 
       <h1 class="article-title">{{ .Title | markdownify }}</h1>
+      
+      <i class="fas fa-box-open"></i>&nbsp;
+      {{ range $i, $tags := (.GetTerms "tags") }}
+        {{- if $i -}}, {{ end -}}
+        {{ with $tags }}
+        <a href="{{ .Permalink }}">{{- .LinkTitle -}}</a>
+        {{- end -}}
+      {{- end -}}
 
       {{ $slug := .Param "slug" }}
       <div class="article-header">
@@ -46,13 +54,7 @@
       {{ .Content }}
       </div>
 
-      <i class="fas fa-box-open"></i>&nbsp;
-      {{ range $i, $tags := (.GetTerms "tags") }}
-        {{- if $i -}}, {{ end -}}
-        {{ with $tags }}
-        <a href="{{ .Permalink }}">{{- .LinkTitle -}}</a>
-        {{- end -}}
-      {{- end -}}
+
 
       </div>
 
