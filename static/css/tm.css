@@ -103,6 +103,19 @@ h2 {
   border-left: solid #d9d9d9 1pt;
 }
 
+.column25-left {
+  padding-top: 20px;
+  padding-right: 3em;
+  position: fixed;
+  border-right: solid #d9d9d9 1pt;
+}
+
+#page-wrap { 
+  width: 600px; 
+  margin: 15px auto; 
+  position: relative; 
+}
+
 /*-------- NAVBAR --------- */
 
 /*navbar header items */
@@ -123,6 +136,13 @@ a.productName {
   -moz-box-shadow: 0 1px 0px 0px rgba(0, 0, 0, 0.15);
   -webkit-box-shadow: 0 1px 0px 0px rgba(0, 0, 0, 0.15);
   box-shadow: 0 1px 0px 0px rgba(0, 0, 0, 0.15);
+}
+
+#TOC, .sectionTitle, .sectionTitle a {
+  text-transform: uppercase;
+  letter-spacing: 2pt;
+  font-size: 0.8rem !important;
+  font-weight: bold;
 }
 
 /*---- HOME BAND TEXT COLOR -----*/
