@@ -1,5 +1,6 @@
 ---
-title: "Getting Started 2: Recipes"
+title: "Using Recipes"
+weight: 2
 tags: [Bayesian analysis, regression models]
 ---
 
@@ -18,7 +19,7 @@ tags: [Bayesian analysis, regression models]
 <p>In this example, let’s use the <code>nycflights13</code> data. This data set contains information on flights departing near New York City in 2013. We will try to predict if a plane arrives more than 30 minutes late. Let’s start by loading the data and making a few changes to the variables:</p>
 <pre class="r"><code>library(nycflights13)
 library(tidymodels)</code></pre>
-<pre><code>#&gt; ── Attaching packages ────────────────────────────────────────────────────────── tidymodels 0.1.0 ──</code></pre>
+<pre><code>#&gt; ── Attaching packages ──────────────────────────────── tidymodels 0.1.0 ──</code></pre>
 <pre><code>#&gt; ✓ broom     0.5.5          ✓ recipes   0.1.9     
 #&gt; ✓ dials     0.0.4          ✓ rsample   0.0.5     
 #&gt; ✓ dplyr     0.8.5          ✓ tibble    2.1.3     
@@ -26,7 +27,7 @@ library(tidymodels)</code></pre>
 #&gt; ✓ infer     0.5.1          ✓ workflows 0.1.0.9000
 #&gt; ✓ parsnip   0.0.5          ✓ yardstick 0.0.5     
 #&gt; ✓ purrr     0.3.3</code></pre>
-<pre><code>#&gt; ── Conflicts ───────────────────────────────────────────────────────────── tidymodels_conflicts() ──
+<pre><code>#&gt; ── Conflicts ─────────────────────────────────── tidymodels_conflicts() ──
 #&gt; x purrr::discard()    masks scales::discard()
 #&gt; x dplyr::filter()     masks stats::filter()
 #&gt; x dplyr::lag()        masks stats::lag()
@@ -385,11 +386,11 @@ days</code></pre>
   add_model(lr_mod) %&gt;% 
   add_recipe(flights_rec)
 flights_wflow</code></pre>
-<pre><code>#&gt; ══ Workflow ════════════════════════════════════════════════════════════════════════════════════════
+<pre><code>#&gt; ══ Workflow ══════════════════════════════════════════════════════════════
 #&gt; Preprocessor: Recipe
 #&gt; Model: logistic_reg()
 #&gt; 
-#&gt; ── Preprocessor ────────────────────────────────────────────────────────────────────────────────────
+#&gt; ── Preprocessor ──────────────────────────────────────────────────────────
 #&gt; 5 Recipe Steps
 #&gt; 
 #&gt; ● step_date()
@@ -398,7 +399,7 @@ flights_wflow</code></pre>
 #&gt; ● step_dummy()
 #&gt; ● step_zv()
 #&gt; 
-#&gt; ── Model ───────────────────────────────────────────────────────────────────────────────────────────
+#&gt; ── Model ─────────────────────────────────────────────────────────────────
 #&gt; Logistic Regression Model Specification (classification)
 #&gt; 
 #&gt; Computational engine: glm</code></pre>

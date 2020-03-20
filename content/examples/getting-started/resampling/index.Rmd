@@ -1,5 +1,6 @@
 ---
-title: "Getting Started 3: Resampling a model"
+title: "Resampling a model"
+weight: 3
 tags: [Bayesian analysis, regression models]
 ---
 

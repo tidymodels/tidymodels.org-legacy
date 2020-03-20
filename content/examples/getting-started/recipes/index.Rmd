@@ -1,5 +1,6 @@
 ---
-title: "Getting Started 2: Recipes"
+title: "Using Recipes"
+weight: 2
 tags: [Bayesian analysis, regression models]
 ---
 
