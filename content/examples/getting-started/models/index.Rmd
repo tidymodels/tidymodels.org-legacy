@@ -1,23 +1,62 @@
 ---
 title: "Using models"
-description: "Something helpful here"
-categories: [Bayesian analysis, regression models]
-tags: [parsnip, rstanarm]
 weight: 1
-output:
-  blogdown::html_page:
-    toc: true
+tags: [parsnip]
+categories: [model fitting]
 ---
 
 
-```{r setup, include = FALSE}
-source(here::here("content/examples/setup.R"))
+```{r load, include = FALSE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(
+  digits = 3,
+  comment = "#>",
+  dev = 'svg', 
+  dev.args = list(bg = "transparent")
+)
+library(readr)
+library(rstanarm)
+library(tidymodels)
+
+pkgs <- c("tidymodels", "readr", "rstanarm")
+
+req_pkgs <- function(x, what = "This article") {
+  x <- sort(x)
+  x <- paste0("`", x, "`")
+  x <- knitr::combine_words(x, and = " and ")
+  paste0(
+    what,
+    " requires that you have the following packages installed: ",
+    x, "." 
+  )
+}
+
+small_session <- function(pkgs = NULL) {
+  pkgs <- c(pkgs, "recipes", "parsnip", "tune", "workflows", "dials", "dplyr",
+            "broom", "ggplot2", "purrr", "rlang", "rsample", "tibble", 
+            "yardstick", "tidymodels")
+  pkgs <- unique(pkgs)
+  library(sessioninfo)
+  library(dplyr)
+  sinfo <- sessioninfo::session_info()
+  cls <- class(sinfo$packages)
+  sinfo$packages <- 
+    sinfo$packages %>% 
+    dplyr::filter(package %in% pkgs)
+  class(sinfo$packages) <- cls
+  sinfo
+}
+
+theme_set(theme_bw() + theme(legend.position = "top"))
+options(width = 100, digits = 3)
 ```
 
+`r req_pkgs(pkgs)`
+
+# Introduction
 
 How do you create a statistical model using the tidymodels packages? Start with your data, learn how to specify and train models with different engines, and understand why these functions are designed this way.
 
-## How to create and use a model
+# How to create and use a model
 
 Let's use the data from [Constable (1993)](https://link.springer.com/article/10.1007/BF00349318) to explore how three different feeding regimes affect the size of sea urchins over time. The initial size of the sea urchins at the beginning of the experiment probably affects how big they grow as they are fed. 
 
@@ -26,7 +65,6 @@ To start, let's load the tidymodels packages, along with `readr` to read our urc
 ```{r data}
 library(tidymodels)
 library(readr)
-library(rstanarm)
 
 urchins <-
   # Data were assembled for a tutorial 
@@ -169,7 +207,7 @@ ggplot(bayes_plot_data, aes(x = food_regime)) +
 This isn't very different from the non-Bayesian results (except in interpretation). 
 
 
-## Why does it work that way? 
+# Why does it work that way? 
 
 The extra step of defining the model using a function like `linear_reg()` might seem superfluous since a call to `lm()` is much more succinct. However, the problem with standard modeling functions is that they don't separate what you want to do from the execution. For example, the process of executing a formula has to happen repeatedly across model calls even when the formula does not change; we can't recycle those computations. 
 
@@ -205,4 +243,10 @@ ggplot(iris, aes(Sepal.Width, Sepal.Length)) + # returns a ggplot object
   labs(y = "Width", x = "Length")              # etc etc
 ```
 
+
+# Session information
+
+```{r si, echo = FALSE}
+small_session(pkgs)
+```
 

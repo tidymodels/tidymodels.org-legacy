@@ -1,7 +1,8 @@
 ---
 title: "Resampling a model"
 weight: 3
-tags: [Bayesian analysis, regression models]
+tags: [rsample, parsnip, tune, yardstick]
+categories: [resampling]
 ---
 
 
@@ -18,13 +19,50 @@ library(tidymodels)
 library(ranger)
 library(modeldata)
 library(kableExtra)
-source(here::here("static/code/req_pkgs.R"))
+
 data(cells, package = "modeldata")
+
+pkgs <- c("tidymodels", "ranger", "modeldata")
+
+req_pkgs <- function(x, what = "This article") {
+  x <- sort(x)
+  x <- paste0("`", x, "`")
+  x <- knitr::combine_words(x, and = " and ")
+  paste0(
+    what,
+    " requires that you have the following packages installed: ",
+    x, "." 
+  )
+}
+
+small_session <- function(pkgs = NULL) {
+  pkgs <- c(pkgs, "recipes", "parsnip", "tune", "workflows", "dials", "dplyr",
+            "broom", "ggplot2", "purrr", "rlang", "rsample", "tibble", 
+            "yardstick", "tidymodels")
+  pkgs <- unique(pkgs)
+  library(sessioninfo)
+  library(dplyr)
+  sinfo <- sessioninfo::session_info()
+  cls <- class(sinfo$packages)
+  sinfo$packages <- 
+    sinfo$packages %>% 
+    dplyr::filter(package %in% pkgs)
+  class(sinfo$packages) <- cls
+  sinfo
+}
+
+theme_set(theme_bw() + theme(legend.position = "top"))
+options(width = 100, digits = 3)
 ```
+
+
+`r req_pkgs(pkgs)`
+
+# Introduction
 
 Once we have a model trained, we need a way to measure how well that model is doing. This tutorial explains how to characterize model performance based on **resampling** statistics. `r req_pkgs(c("tidymodels", "ranger", "modeldata"), "It")`
 
-## Predicting image segmentation
+# Predicting image segmentation
 
 Some biologists conduct experiments on cells. In drug discovery, a particular type of cell can be treated with either a drug or control and then observed to see what the effect is (if any). A common approach for this kind of measurement is cell imaging. Different parts of the cells can be colored so that the locations of a cell can be determined. 
 
@@ -54,7 +92,7 @@ class_rates <- table(cells$class)/nrow(cells)
 class_rates
 ```
 
-## Data splitting
+# Data splitting
 
 When beginning a modeling project, it is common to [separate the data set](https://bookdown.org/max/FES/data-splitting.html) into two partitions: 
 
@@ -71,10 +109,10 @@ Since random sampling uses random numbers, it is important to set the random num
 ```{r cell-split}
 library(tidymodels) # Load the rsample package
 
-set.seed(2369)
-tr_te_split <- initial_split(cells %>% select(-case), prop = 3/4)
-cell_train <- training(tr_te_split)
-cell_test  <- testing(tr_te_split)
+set.seed(123)
+cell_split <- initial_split(cells %>% select(-case), strata = class)
+cell_train <- training(cell_split)
+cell_test  <- testing(cell_split)
 
 nrow(cell_train)
 nrow(cell_train)/nrow(cells)
@@ -82,7 +120,7 @@ nrow(cell_train)/nrow(cells)
 
 The majority of the modeling work is then conducted on the training set data. 
 
-## Modeling
+# Modeling
 
 Random forest models are ensembles of decisions trees. A large number of tree models are created for the ensemble based on slightly different versions of the training set. When creating the individual decision trees, the fitting process encourages then to be as diverse as possible. The collection of trees are combined into the random forest model and, when a new sample is predicted, the votes from each tree are used to calculate the final predicted value for the new sample. 
 
@@ -250,3 +288,10 @@ roc_auc(rf_testing_pred,  truth = class, .pred_PS)
 
 The performance metrics from the test set are much closer to the performance metrics computed using resampling than our first ("bad idea") attempt. Resampling allows us to simulate how well our model will perform on new data, and the test set acts as the final, unbiased check for our model's performance.
 
+
+
+# Session information
+
+```{r si, echo = FALSE}
+small_session(pkgs)
+```

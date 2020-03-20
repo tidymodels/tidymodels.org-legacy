@@ -1,11 +1,15 @@
 ---
-title: "Using Recipes"
+title: "Recipes"
 weight: 2
-tags: [Bayesian analysis, regression models]
+tags: [recipes, parsnip, workflows, yardstick]
+categories: [pre-processing]
 ---
 
 
 
+<p>This article requires that you have the following packages installed: <code>nycflights13</code>, <code>skimr</code>, and <code>tidymodels</code>.</p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
 <p>After reviewing our <a href="linkTODO">first steps with models</a>, let’s explore how to use the <code>recipes</code> package.</p>
 <p>Recipes are tools primarily used for data pre-processing prior to creating a model. Such pre-processing might consist of:</p>
 <ul>
@@ -14,27 +18,14 @@ tags: [Bayesian analysis, regression models]
 <li><p>transforming whole groups of predictors together,</p></li>
 </ul>
 <p>and so on. This might sound an awful lot like a model formula, if you have used R’s formula interface. Recipes can be used to do many of the same things, but they have a much wider range of possibilities. This guide shows how to use recipes for modeling.</p>
-<div id="the-new-york-city-flight-data" class="section level2">
-<h2>The New York City flight data</h2>
+</div>
+<div id="the-new-york-city-flight-data" class="section level1">
+<h1>The New York City flight data</h1>
 <p>In this example, let’s use the <code>nycflights13</code> data. This data set contains information on flights departing near New York City in 2013. We will try to predict if a plane arrives more than 30 minutes late. Let’s start by loading the data and making a few changes to the variables:</p>
 <pre class="r"><code>library(nycflights13)
-library(tidymodels)</code></pre>
-<pre><code>#&gt; ── Attaching packages ──────────────────────────────── tidymodels 0.1.0 ──</code></pre>
-<pre><code>#&gt; ✓ broom     0.5.5          ✓ recipes   0.1.9     
-#&gt; ✓ dials     0.0.4          ✓ rsample   0.0.5     
-#&gt; ✓ dplyr     0.8.5          ✓ tibble    2.1.3     
-#&gt; ✓ ggplot2   3.3.0.9000     ✓ tune      0.0.1.9000
-#&gt; ✓ infer     0.5.1          ✓ workflows 0.1.0.9000
-#&gt; ✓ parsnip   0.0.5          ✓ yardstick 0.0.5     
-#&gt; ✓ purrr     0.3.3</code></pre>
-<pre><code>#&gt; ── Conflicts ─────────────────────────────────── tidymodels_conflicts() ──
-#&gt; x purrr::discard()    masks scales::discard()
-#&gt; x dplyr::filter()     masks stats::filter()
-#&gt; x dplyr::lag()        masks stats::lag()
-#&gt; x ggplot2::margin()   masks dials::margin()
-#&gt; x recipes::step()     masks stats::step()
-#&gt; x recipes::yj_trans() masks scales::yj_trans()</code></pre>
-<pre class="r"><code>set.seed(25213)
+library(tidymodels)
+
+set.seed(25213)
 flight_data &lt;- 
   flights %&gt;% 
   mutate(
@@ -287,7 +278,6 @@ data_split &lt;- initial_split(flight_data, prop = 3/4)
 # Create data frames for the two sets:
 train_data &lt;- training(data_split)
 test_data  &lt;- testing(data_split)</code></pre>
-</div>
 <div id="creating-the-predictor-definitions" class="section level2">
 <h2>Creating the predictor definitions</h2>
 <p>To get started, let’s create a simple logistic regression model. Before creating the model fit object, we can use a recipe to create a few new predictors and conduct some pre-processing required by the model.</p>
@@ -339,8 +329,8 @@ days</code></pre>
   step_holiday(date, holidays = timeDate::listHolidays(&quot;US&quot;)) %&gt;% 
   step_rm(date)</code></pre>
 <p><code>step_date()</code> creates basic date-oriented features. In this case, two factor columns are added with the appropriate day of the week and the month. <code>step_holiday()</code> creates binary indicator variables detailing if the current date is a holiday or not. The argument value of <code>timeDate::listHolidays(&quot;US&quot;)</code> uses the <code>timeDate</code> package to list the 17 standard US holidays. Finally, since we longer want the date column itself in the model, <code>step_rm()</code> eliminates it from the data set.</p>
-<p>To train this model, each predictor will need to be in a numeric format. For columns like <code>dest</code> and <code>origin</code>, which are currently factor columns, the standard method to convert them to be numeric is to create <em>dummy</em> or <em>indicator</em> variables. These are binary values for the levels of the factors. For example, since <code>origin</code> has values of <code>&quot;EWR&quot;</code>, <code>&quot;JFK&quot;</code>, and <code>&quot;LGA&quot;</code>, the standard dummy variable encoding will create <em>two</em> numeric columns of the data that are 1 when the originating airport is <code>&quot;JFK&quot;</code> or <code>&quot;LGA&quot;</code> and zero otherwise, respectively<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>.</p>
-<p>Unlike the standard model formula methods in R, a recipe <strong>does not</strong> automatically create dummy variables. Instead, <code>step_dummy()</code> can be used for this purpose:</p>
+<p>To train this model, each predictor will need to be in a numeric format<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>. For columns like <code>dest</code> and <code>origin</code>, which are currently factor columns, the standard method to convert them to be numeric is to create <em>dummy</em> or <em>indicator</em> variables. These are binary values for the levels of the factors. For example, since <code>origin</code> has values of <code>&quot;EWR&quot;</code>, <code>&quot;JFK&quot;</code>, and <code>&quot;LGA&quot;</code>, the standard dummy variable encoding will create <em>two</em> numeric columns of the data that are 1 when the originating airport is <code>&quot;JFK&quot;</code> or <code>&quot;LGA&quot;</code> and zero otherwise, respectively<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a>.</p>
+<p>Unlike the standard model formula methods in R, a recipe <strong>does not</strong> automatically create dummy variables<a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a>. Instead, <code>step_dummy()</code> can be used for this purpose:</p>
 <pre class="r"><code>flights_rec &lt;- 
   recipe(arr_delay ~ ., data = train_data) %&gt;% 
   update_role(flight, time_hour, new_role = &quot;ID&quot;) %&gt;% 
@@ -348,7 +338,7 @@ days</code></pre>
   step_holiday(date, holidays = timeDate::listHolidays(&quot;US&quot;)) %&gt;% 
   step_rm(date) %&gt;% 
   step_dummy(all_nominal(), -all_outcomes())</code></pre>
-<p>Note that the <code>dplyr</code> selectors don’t like column names. Since a recipe knows the role of each column, they can also be selected using this information. The selectors above translate to</p>
+<p>Note that the <code>dplyr</code> selectors don’t have to use column <em>names</em>. Since a recipe knows the <em>role</em> of each column, they can also be selected using this information. The selectors above translate to</p>
 <blockquote>
 <p>Create dummy variables for all of the factor or character columns <em>unless</em> they are outcomes.</p>
 </blockquote>
@@ -367,8 +357,9 @@ days</code></pre>
   step_zv(all_predictors())</code></pre>
 <p>Now that we’ve created this <em>specification</em> of what should be done with the data, how do we use it?</p>
 </div>
-<div id="using-a-recipe-with-a-model" class="section level2">
-<h2>Using a recipe with a model</h2>
+</div>
+<div id="using-a-recipe-with-a-model" class="section level1">
+<h1>Using a recipe with a model</h1>
 <p>Let’s use straightforward logistic regression to model the flight data. We can build a model specification using the <code>parsnip</code> package:</p>
 <pre class="r"><code>lr_mod &lt;- 
   logistic_reg() %&gt;% 
@@ -451,10 +442,47 @@ flights_pred %&gt;% slice(1:5)</code></pre>
 #&gt; 1 roc_auc binary         0.763</code></pre>
 <p>Not too bad!</p>
 </div>
+<div id="session-information" class="section level1">
+<h1>Session information</h1>
+<pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────────────────────────
+#&gt;  setting  value                       
+#&gt;  version  R version 3.6.1 (2019-07-05)
+#&gt;  os       macOS Catalina 10.15.3      
+#&gt;  system   x86_64, darwin15.6.0        
+#&gt;  ui       X11                         
+#&gt;  language (EN)                        
+#&gt;  collate  en_US.UTF-8                 
+#&gt;  ctype    en_US.UTF-8                 
+#&gt;  tz       America/Los_Angeles         
+#&gt;  date     2020-03-19                  
+#&gt; 
+#&gt; ─ Packages ───────────────────────────────────────────────────────────────────────────────────────
+#&gt;  package      * version    date       lib source                               
+#&gt;  broom        * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
+#&gt;  dials        * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
+#&gt;  dplyr        * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
+#&gt;  ggplot2      * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
+#&gt;  nycflights13 * 1.0.1      2019-09-16 [1] CRAN (R 3.6.0)                       
+#&gt;  parsnip      * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
+#&gt;  purrr        * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
+#&gt;  recipes      * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
+#&gt;  rlang          0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
+#&gt;  rsample      * 0.0.5      2019-07-12 [1] CRAN (R 3.6.0)                       
+#&gt;  skimr        * 2.0.2      2019-11-26 [1] CRAN (R 3.6.0)                       
+#&gt;  tibble       * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
+#&gt;  tidymodels   * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
+#&gt;  tune         * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
+#&gt;  workflows    * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
+#&gt;  yardstick    * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
+#&gt; 
+#&gt; [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library</code></pre>
+</div>
 <div class="footnotes">
 <hr />
 <ol>
 <li id="fn1"><p>This straightforward split of data into two subsets is fairly common. However, it is inadvisable to directly predict the training set one time after fitting the model. Instead, <a href="https://bookdown.org/max/FES/resampling.html">resampling methods</a> can be used to estimate how well the model performs on the training set.<a href="#fnref1" class="footnote-back">↩</a></p></li>
-<li id="fn2"><p>Why two and not three? If you know the value of two of the columns, the third can be inferred. The standard in R is to leave out the dummy variable column for the first level of the factor which, in this case, corresponds to <code>&quot;EWR&quot;</code>.<a href="#fnref2" class="footnote-back">↩</a></p></li>
+<li id="fn2"><p>When computing the model coefficients, the equations that logistic regression uses required numbers (as opposed for factor variables). In other words, there may be a difference in how we store our data (in factors inside a data frame) and how the underlying equations require them (a purely numeric matrix). Luckily, it is easy to go between these two formats in R.<a href="#fnref2" class="footnote-back">↩</a></p></li>
+<li id="fn3"><p>Why two and not three? If you know the value of two of the columns, the third can be inferred. The standard in R is to leave out the dummy variable column for the first level of the factor which, in this case, corresponds to <code>&quot;EWR&quot;</code>.<a href="#fnref3" class="footnote-back">↩</a></p></li>
+<li id="fn4"><p>We don’t make the assumption that dummy variables are going to be used. For one reason: <a href="https://bookdown.org/max/FES/categorical-trees.html">not all models require the predictors to be numeric</a>. For another reason, recipes can be used to prepare the data for other, non-model purposes what prefer factors (such as a table or plot).<a href="#fnref4" class="footnote-back">↩</a></p></li>
 </ol>
 </div>

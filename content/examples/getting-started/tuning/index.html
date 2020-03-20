@@ -1,0 +1,171 @@
+---
+title: "Tuning model parameters"
+weight: 4
+tags: [regression models]
+---
+
+
+
+<p>Some model parameters cannot be learned directly from a data set during model training; these kinds of parameters are called <strong>hyperparameters</strong>. Some examples of hyperparameters include the number of predictors that are sampled at splits in a tree-based model (we call this <code>mtry</code> in tidymodels) or the learning rate in a boosted tree model (we call this <code>learn_rate</code>). Instead of learning these kinds of hyperparameters during model training, we can estimate the best values for these values by training many models on resampled data sets and exploring how well all these models perform. This process is called <strong>tuning</strong>.</p>
+<div id="predicting-image-segmentation-but-better" class="section level2">
+<h2>Predicting image segmentation, but better</h2>
+<p>In our <a href="LINKTODO">article on resampling</a>, we introduced a data set of images of cells that were labeled by experts as well-segmented (<code>WS</code>) or poorly segmented (<code>PS</code>). We trained a random forest model to predict which images are segmented well vs. poorly, so that a biologist could filter out poorly segmented cell images in their analysis. We used resampling to estimate the performance of our model on this data.</p>
+<pre class="r"><code>data(cells, package = &quot;modeldata&quot;)
+cells</code></pre>
+<pre><code>#&gt; # A tibble: 2,019 x 58
+#&gt;    case  class angle_ch_1 area_ch_1 avg_inten_ch_1 avg_inten_ch_2 avg_inten_ch_3 avg_inten_ch_4
+#&gt;    &lt;fct&gt; &lt;fct&gt;      &lt;dbl&gt;     &lt;int&gt;          &lt;dbl&gt;          &lt;dbl&gt;          &lt;dbl&gt;          &lt;dbl&gt;
+#&gt;  1 Test  PS        143.         185           15.7           4.95           9.55           2.21
+#&gt;  2 Train PS        134.         819           31.9         207.            69.9          164.  
+#&gt;  3 Train WS        107.         431           28.0         116.            63.9          107.  
+#&gt;  4 Train PS         69.2        298           19.5         102.            28.2           31.0 
+#&gt;  5 Test  PS          2.89       285           24.3         112.            20.5           40.6 
+#&gt;  6 Test  WS         40.7        172          326.          654.           129.           347.  
+#&gt;  7 Test  WS        174.         177          260.          596.           124.           273.  
+#&gt;  8 Test  PS        180.         251           18.3           5.73          17.2            1.55
+#&gt;  9 Test  WS         18.9        495           16.1          89.5           13.7           51.4 
+#&gt; 10 Test  WS        153.         384           17.7          89.9           20.4           63.1 
+#&gt; # … with 2,009 more rows, and 50 more variables: convex_hull_area_ratio_ch_1 &lt;dbl&gt;,
+#&gt; #   convex_hull_perim_ratio_ch_1 &lt;dbl&gt;, diff_inten_density_ch_1 &lt;dbl&gt;,
+#&gt; #   diff_inten_density_ch_3 &lt;dbl&gt;, diff_inten_density_ch_4 &lt;dbl&gt;, entropy_inten_ch_1 &lt;dbl&gt;,
+#&gt; #   entropy_inten_ch_3 &lt;dbl&gt;, entropy_inten_ch_4 &lt;dbl&gt;, eq_circ_diam_ch_1 &lt;dbl&gt;,
+#&gt; #   eq_ellipse_lwr_ch_1 &lt;dbl&gt;, eq_ellipse_oblate_vol_ch_1 &lt;dbl&gt;, eq_ellipse_prolate_vol_ch_1 &lt;dbl&gt;,
+#&gt; #   eq_sphere_area_ch_1 &lt;dbl&gt;, eq_sphere_vol_ch_1 &lt;dbl&gt;, fiber_align_2_ch_3 &lt;dbl&gt;,
+#&gt; #   fiber_align_2_ch_4 &lt;dbl&gt;, fiber_length_ch_1 &lt;dbl&gt;, fiber_width_ch_1 &lt;dbl&gt;,
+#&gt; #   inten_cooc_asm_ch_3 &lt;dbl&gt;, inten_cooc_asm_ch_4 &lt;dbl&gt;, inten_cooc_contrast_ch_3 &lt;dbl&gt;,
+#&gt; #   inten_cooc_contrast_ch_4 &lt;dbl&gt;, inten_cooc_entropy_ch_3 &lt;dbl&gt;, inten_cooc_entropy_ch_4 &lt;dbl&gt;,
+#&gt; #   inten_cooc_max_ch_3 &lt;dbl&gt;, inten_cooc_max_ch_4 &lt;dbl&gt;, kurt_inten_ch_1 &lt;dbl&gt;,
+#&gt; #   kurt_inten_ch_3 &lt;dbl&gt;, kurt_inten_ch_4 &lt;dbl&gt;, length_ch_1 &lt;dbl&gt;, neighbor_avg_dist_ch_1 &lt;dbl&gt;,
+#&gt; #   neighbor_min_dist_ch_1 &lt;dbl&gt;, neighbor_var_dist_ch_1 &lt;dbl&gt;, perim_ch_1 &lt;dbl&gt;,
+#&gt; #   shape_bfr_ch_1 &lt;dbl&gt;, shape_lwr_ch_1 &lt;dbl&gt;, shape_p_2_a_ch_1 &lt;dbl&gt;, skew_inten_ch_1 &lt;dbl&gt;,
+#&gt; #   skew_inten_ch_3 &lt;dbl&gt;, skew_inten_ch_4 &lt;dbl&gt;, spot_fiber_count_ch_3 &lt;int&gt;,
+#&gt; #   spot_fiber_count_ch_4 &lt;dbl&gt;, total_inten_ch_1 &lt;int&gt;, total_inten_ch_2 &lt;dbl&gt;,
+#&gt; #   total_inten_ch_3 &lt;int&gt;, total_inten_ch_4 &lt;int&gt;, var_inten_ch_1 &lt;dbl&gt;, var_inten_ch_3 &lt;dbl&gt;,
+#&gt; #   var_inten_ch_4 &lt;dbl&gt;, width_ch_1 &lt;dbl&gt;</code></pre>
+<p>Random forest models typically perform well with defaults, but there are several hyperparameters that can be tuned for better performance. The two hyperparameters that have the largest impact on predictive accuracy are</p>
+<ul>
+<li>the number of features considered at any given split (which we call <code>mtry</code> in tidymodels), and</li>
+<li>the minimum node size for the node to be split further (which we call <code>min_n</code>).</li>
+</ul>
+<p>Before we start the tuning process, we split our data into training and testing sets, just like when we trained the model with one set of hyperparameters. We can use <code>strata = class</code> if we want our training and testing sets to be created using stratified sampling so that both have the same proportion of both kinds of segmentation.</p>
+<pre class="r"><code>library(tidymodels) 
+
+set.seed(123)
+cell_split &lt;- initial_split(cells %&gt;% select(-case), strata = class)
+cell_train &lt;- training(cell_split)
+cell_test  &lt;- testing(cell_split)</code></pre>
+<p>We use the training data for tuning the model.</p>
+</div>
+<div id="tuning-hyperparameters" class="section level2">
+<h2>Tuning hyperparameters</h2>
+<p>To tune the random forest hyperparameters <code>mtry</code> and <code>min_n</code>, we create a model specification that identifies which hyperparameters we will <code>tune()</code>.</p>
+<pre class="r"><code>tune_spec &lt;- 
+  rand_forest(
+    mtry = tune(),
+    trees = 1000,
+    min_n = tune()
+  ) %&gt;% 
+  set_engine(&quot;ranger&quot;) %&gt;% 
+  set_mode(&quot;classification&quot;)
+
+tune_spec</code></pre>
+<pre><code>#&gt; Random Forest Model Specification (classification)
+#&gt; 
+#&gt; Main Arguments:
+#&gt;   mtry = tune()
+#&gt;   trees = 1000
+#&gt;   min_n = tune()
+#&gt; 
+#&gt; Computational engine: ranger</code></pre>
+<p>We can’t train this specification on a single data set (such as the entire training set) and learn what the hyperparameter values should be, but we can train many models using resampled data and see which models turn out best. We can create a grid of values to try using <code>crossing()</code> from <code>tidyr</code>:</p>
+<pre class="r"><code>rf_grid &lt;- crossing(mtry = floor(ncol(cells) * c(0.1, 0.2, 0.3, 0.5)),
+                    min_n = c(2, 4, 8, 16))</code></pre>
+<p>Let’s create cross-validation folds for tuning, and then use <code>tune_grid()</code> to fit models at all the different values we chose for each tuned hyperparameter.</p>
+<pre class="r"><code>set.seed(234)
+cell_folds &lt;- vfold_cv(cell_train)
+
+rf_res &lt;- tune_spec %&gt;%
+  tune_grid(
+    class ~ .,
+    resamples = cell_folds,
+    grid = rf_grid
+  )</code></pre>
+<pre><code>#&gt; i Creating pre-processing data to finalize unknown parameter: mtry</code></pre>
+<pre class="r"><code>rf_res</code></pre>
+<pre><code>#&gt; #  10-fold cross-validation 
+#&gt; # A tibble: 10 x 4
+#&gt;    splits             id     .metrics          .notes          
+#&gt;  * &lt;list&gt;             &lt;chr&gt;  &lt;list&gt;            &lt;list&gt;          
+#&gt;  1 &lt;split [1.4K/152]&gt; Fold01 &lt;tibble [32 × 5]&gt; &lt;tibble [0 × 1]&gt;
+#&gt;  2 &lt;split [1.4K/152]&gt; Fold02 &lt;tibble [32 × 5]&gt; &lt;tibble [0 × 1]&gt;
+#&gt;  3 &lt;split [1.4K/152]&gt; Fold03 &lt;tibble [32 × 5]&gt; &lt;tibble [0 × 1]&gt;
+#&gt;  4 &lt;split [1.4K/152]&gt; Fold04 &lt;tibble [32 × 5]&gt; &lt;tibble [0 × 1]&gt;
+#&gt;  5 &lt;split [1.4K/152]&gt; Fold05 &lt;tibble [32 × 5]&gt; &lt;tibble [0 × 1]&gt;
+#&gt;  6 &lt;split [1.4K/151]&gt; Fold06 &lt;tibble [32 × 5]&gt; &lt;tibble [0 × 1]&gt;
+#&gt;  7 &lt;split [1.4K/151]&gt; Fold07 &lt;tibble [32 × 5]&gt; &lt;tibble [0 × 1]&gt;
+#&gt;  8 &lt;split [1.4K/151]&gt; Fold08 &lt;tibble [32 × 5]&gt; &lt;tibble [0 × 1]&gt;
+#&gt;  9 &lt;split [1.4K/151]&gt; Fold09 &lt;tibble [32 × 5]&gt; &lt;tibble [0 × 1]&gt;
+#&gt; 10 &lt;split [1.4K/151]&gt; Fold10 &lt;tibble [32 × 5]&gt; &lt;tibble [0 × 1]&gt;</code></pre>
+<p>Once we have our tuning results, we can both explore them through visualization and then select the best result.</p>
+<pre class="r"><code>rf_res %&gt;%
+  collect_metrics() %&gt;%
+  mutate(min_n = factor(min_n)) %&gt;%
+  ggplot(aes(mtry, mean, color = min_n)) +
+  geom_errorbar(aes(
+    ymin = mean - std_err,
+    ymax = mean + std_err
+  ),
+  alpha = 0.5
+  ) +
+  geom_line(size = 1.5, alpha = 0.8) +
+  facet_wrap(~ .metric, scales = &quot;free&quot;, nrow = 2)</code></pre>
+<p><img src="/examples/getting-started/tuning/index_files/figure-html/best-rf-1.svg" width="768" /></p>
+<pre class="r"><code>best_rf &lt;- rf_res %&gt;%
+  select_best(&quot;accuracy&quot;)
+
+best_rf</code></pre>
+<pre><code>#&gt; # A tibble: 1 x 2
+#&gt;    mtry min_n
+#&gt;   &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1    29     2</code></pre>
+<p>These are the values for <code>mtry</code> and <code>min_n</code> that maximize AUC in this data set of cell images. We can update (or “finalize”) our model with these values.</p>
+<pre class="r"><code>final_rf &lt;- finalize_model(
+  tune_spec,
+  best_rf
+)
+
+final_rf</code></pre>
+<pre><code>#&gt; Random Forest Model Specification (classification)
+#&gt; 
+#&gt; Main Arguments:
+#&gt;   mtry = 29
+#&gt;   trees = 1000
+#&gt;   min_n = 2
+#&gt; 
+#&gt; Computational engine: ranger</code></pre>
+<p>Perhaps we would also like to understand what variables are important in this final model. We can use the <a href="https://koalaverse.github.io/vip/">vip</a> package to estimate variable importance, and we can update the engine of our final model with <code>importance = &quot;permutation&quot;</code> so that the correct quantities are computed when growing the forest.</p>
+<pre class="r"><code>library(vip)</code></pre>
+<pre><code>#&gt; 
+#&gt; Attaching package: &#39;vip&#39;</code></pre>
+<pre><code>#&gt; The following object is masked from &#39;package:utils&#39;:
+#&gt; 
+#&gt;     vi</code></pre>
+<pre class="r"><code>final_rf %&gt;%
+  set_engine(&quot;ranger&quot;, importance = &quot;permutation&quot;) %&gt;% 
+  fit(class ~ .,
+      data = cell_train) %&gt;%
+  vip(geom = &quot;point&quot;)</code></pre>
+<p><img src="/examples/getting-started/tuning/index_files/figure-html/vip-1.svg" width="576" /></p>
+<p>These are the automated image analysis measurements that are the most important in driving segmentation quality predictions.</p>
+<p>Finally, let’s return to our test data and estimate the model performance we expect to see on new data. We can use the function <code>last_fit()</code> with our finalized model; this function <em>fits</em> the finalized model on the training data and <em>evaluates</em> the finalized model on the testing data.</p>
+<pre class="r"><code>final_rf %&gt;%
+  last_fit(class ~ ., 
+           cell_split) %&gt;%
+  collect_metrics</code></pre>
+<pre><code>#&gt; # A tibble: 2 x 3
+#&gt;   .metric  .estimator .estimate
+#&gt;   &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;
+#&gt; 1 accuracy binary         0.829
+#&gt; 2 roc_auc  binary         0.901</code></pre>
+<p>The performance metrics from the test set indicate that we did not overfit during our tuning procedure.</p>
+</div>
