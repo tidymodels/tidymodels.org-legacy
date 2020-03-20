@@ -12,7 +12,7 @@
         {{ range (where .Site.RegularPages.ByWeight "Section" "examples" ) }}
         {{ $post := . }}
         <div class="section">
-          <div class="sectionTitle"><a href="{{ .RelPermalink }}">{{ .Title }}</a></div>
+          <div class="sectionTitle">{{ .Weight }}&nbsp&nbsp<a href="{{ .RelPermalink }}">{{ .Title }}</a></div>
         </div>
         {{ end }}
         </div>
