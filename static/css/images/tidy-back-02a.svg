@@ -7,7 +7,7 @@
 	.st1{fill:#CA225E;stroke:#FFFFFF;stroke-width:4;}
 	.st2{opacity:0.5;}
 	.st3{fill:#CA225E;stroke:#FFFFFF;stroke-width:3;}
-	.st4{fill:#1a162d; stroke:#FFFFFF;stroke-width:3; opacity: 40%;} /*top solid shape */
+	.st4{fill:#CA225E; stroke:#FFFFFF;stroke-width:3; opacity: 30%;} /*top solid shape */
 </style>
 <title>tidy-back</title>
 <g class="st0">

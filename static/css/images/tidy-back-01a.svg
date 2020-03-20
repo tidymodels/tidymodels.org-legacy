@@ -3,8 +3,8 @@
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 570 690" style="enable-background:new 0 0 570 690;" xml:space="preserve">
 <style type="text/css">
-	.st0{fill:#1a162d;stroke:#FFFFFF;stroke-width:4;}
-	.st1{fill:#1a162d;stroke:#FFFFFF;stroke-width:3;} /*solid shape at bottom */
+	.st0{fill:#1a162d40;stroke:#FFFFFF;stroke-width:4;}
+	.st1{fill:#CA225E80;stroke:#FFFFFF;stroke-width:3;} /*solid shape at bottom */
 </style>
 <title>tidy-back</title>
 <path class="st0" d="M185,90l-60,34.8v69.5l60,34.8l60-34.8v-69.5L185,90z M240,191.4l-55,31.8l-55-31.8v-63.7l55-31.9l55,31.9
