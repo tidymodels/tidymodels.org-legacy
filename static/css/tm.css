@@ -31,7 +31,7 @@ a {
 
 .article-content ul li::before {
   content: "\2022";  /* Add content: \2022 is the CSS Code/unicode for a bullet */
-  color: #194777; /* Change the color */
+  color: #CA225E; /* Change the color */
   font-weight: bold; /* If you want it to be bold */
   display: inline-block; /* Needed to add space between the bullet and the text */
   width: 1.5em; /* Also needed for space (tweak if needed) */
@@ -50,24 +50,27 @@ a {
 /*--------- HEADERS -------*/
 
 div.tagline {
-  font-family: 'Libre Baskerville', serif !important;
+  font-family: 'Lato', sans-serif !important;
   text-transform: uppercase;
   font-size: 1.2rem !important;
   font-weight: bold;
   letter-spacing: 2px;
+  
 }
 
 h1, .article-title {
-  font-family: 'Libre Baskerville', serif;
+  font-family: 'Lato', sans-serif;
   color: #CA225E;
-  font-weight: bold;
+  font-weight: normal;
   font-size: 2em;
 }
 
 h2 {
-  font-family: 'Libre Baskerville', serif;
-  font-weight: bold;
+  font-family: 'Lato', sans-serif;
+  font-weight: normal;
   font-size: 1.25em;
+  text-transform: uppercase;
+  letter-spacing: 1.5pt;
 }
 
 
@@ -80,12 +83,12 @@ h2 {
   letter-spacing: 2pt;
   font-size: 0.8rem !important;
   font-weight: bold;
-  color: #194777;
+  color: #CA225E;
 }
 
 /*TOC links */
 #TableOfContents a {
-  font-family: 'Libre Baskerville';
+  font-family: 'Lato', sans-serif;
   color: #00000075;
   transition: color 0.3s;
   font-size: 15px;
