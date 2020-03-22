@@ -151,6 +151,7 @@ h2 {
   padding-right: 3em;
   position: fixed;
   border-right: solid #d9d9d9 1pt;
+  max-width: 250px;
 }
 
 #page-wrap { 
