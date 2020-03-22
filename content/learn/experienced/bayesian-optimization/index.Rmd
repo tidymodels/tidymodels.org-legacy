@@ -1,7 +1,8 @@
 ---
-title: "Iterative Optimzation of a Classification Model"
+title: "Iterative Optimization of a Classification Model"
 tags: [tune, dials, parsnip, recipes]
-categories: [tuning]
+categories: [model tuning]
+type: learn-subsection
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}
