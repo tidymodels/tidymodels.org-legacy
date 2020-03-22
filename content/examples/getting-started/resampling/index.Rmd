@@ -5,16 +5,12 @@ tags: [rsample, parsnip, tune, yardstick]
 categories: [resampling]
 ---
 
+```{r setup, include = FALSE, message = FALSE, warning = FALSE}
+source(here::here("content/examples/common.R"))
+```
+
 
 ```{r load, include = FALSE, message = FALSE, warning = FALSE}
-knitr::opts_chunk$set(
-  digits = 3,
-  comment = "#>",
-  dev = 'svg', 
-  dev.args = list(bg = "transparent")
-)
-options(width = 100, digits = 3)
-
 library(tidymodels)
 library(ranger)
 library(modeldata)
@@ -52,7 +48,6 @@ small_session <- function(pkgs = NULL) {
 }
 
 theme_set(theme_bw() + theme(legend.position = "top"))
-options(width = 100, digits = 3)
 ```
 
 
@@ -69,7 +64,7 @@ Some biologists conduct experiments on cells. In drug discovery, a particular ty
 For example, in top panel of this image of five cells, the green color is meant to define the boundary of the cell (coloring something called the cytoskeleton) while the blue color defines the nucleus of the cell. 
 
 ```{r cell-fig, echo = FALSE, fig.align='center'}
-knitr::include_graphics(here::here("static/images/cells.png"))
+knitr::include_graphics("img/cells.png")
 ```
 
 Using these colors, the cells in an image can be _segmented_ so that we know which pixels belong to which cell. If this is done well, the cell can be measured in different ways that are important to the biology. Sometimes the shape of the cell matters and different mathematical tools are used to summarize characteristics like the size or "oblongness" of the cell. 
@@ -202,7 +197,7 @@ To understand that second point better, think about an analogy from teaching. Su
 Resampling methods, such as cross-validation and the bootstrap, are empirical simulation systems. They create a series of data sets similar to the training/testing split discussed previously; a subset of the data are used for creating the model and a different subset is used to measure performance. Resampling is always used with the _training set_. This schematic from [Kuhn and Johnson (2019)](https://bookdown.org/max/FES/resampling.html) illustrates data usage for resampling methods:
 
 ```{r resampling-fig, echo = FALSE, fig.align='center', out.width="70%"}
-knitr::include_graphics(here::here("static/images/resampling.svg"))
+knitr::include_graphics("img/resampling.svg")
 ```
 
 Let's use 10-fold cross-validation (CV) in this example. This method randomly allocates the `r nrow(cell_train)` cells in the training set to 10 groups of roughly equal size, called "folds". For the first iteration of resampling, the first fold of about `r floor(nrow(cell_train)/10)` cells are held out for the purpose of measuring performance. This is similar to a test set but, to avoid confusion, we call these data the _assessment set_. The other 90% of the data (about `r floor(nrow(cell_train) * .9)` cells) are used to fit the model and is called the _analysis set_. This model is applied to the assessment set and performance statistics are computed on that assessment set. 

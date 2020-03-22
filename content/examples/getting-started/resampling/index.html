@@ -17,49 +17,55 @@ categories: [resampling]
 <h1>Predicting image segmentation</h1>
 <p>Some biologists conduct experiments on cells. In drug discovery, a particular type of cell can be treated with either a drug or control and then observed to see what the effect is (if any). A common approach for this kind of measurement is cell imaging. Different parts of the cells can be colored so that the locations of a cell can be determined.</p>
 <p>For example, in top panel of this image of five cells, the green color is meant to define the boundary of the cell (coloring something called the cytoskeleton) while the blue color defines the nucleus of the cell.</p>
-<p><img src="/Users/alison/rsites/tidymodels.org/static/images/cells.png" width="242" style="display: block; margin: auto;" /></p>
+<p><img src="img/cells.png" width="242" style="display: block; margin: auto;" /></p>
 <p>Using these colors, the cells in an image can be <em>segmented</em> so that we know which pixels belong to which cell. If this is done well, the cell can be measured in different ways that are important to the biology. Sometimes the shape of the cell matters and different mathematical tools are used to summarize characteristics like the size or “oblongness” of the cell.</p>
 <p>The bottom panel shows some segmentation results. Cells 1 and 5 are fairly well segmented. However, cells 2 to 4 are bunched up together because the segmentation was not very good. The consequence of bad segmentation is data contamination; when the biologist analyzes the shape or size of these cells, the data are inaccurate and could lead to the wrong conclusion.</p>
 <p>A cell-based experiment might involve millions of cells so it is unfeasible to visually assessment all. Instead, a subsample can be created and the cells can be manually labeled by experts as either poorly segmented (<code>PS</code>) or well-segmented (<code>WS</code>). If we can predict these labels accurately, the larger data set can be improved by filtering out the cells most likely to be poorly segmented.</p>
 <p>An example data set called <code>cells</code> is contained in the <code>modeldata</code> package. It has labeled data for 2019 cells. Each also has a total of 56 predictors based on automated image analysis measurements. For example, <code>avg_inten_ch_1</code> is the mean intensity of the data contained in the nucleus, <code>area_ch_1</code> is the total size of the cell, and so on (some predictors are fairly arcane in nature).</p>
 <pre class="r"><code>data(cells, package = &quot;modeldata&quot;)
-cells</code></pre>
-<pre><code>#&gt; # A tibble: 2,019 x 58
-#&gt;    case  class angle_ch_1 area_ch_1 avg_inten_ch_1 avg_inten_ch_2 avg_inten_ch_3 avg_inten_ch_4
-#&gt;    &lt;fct&gt; &lt;fct&gt;      &lt;dbl&gt;     &lt;int&gt;          &lt;dbl&gt;          &lt;dbl&gt;          &lt;dbl&gt;          &lt;dbl&gt;
-#&gt;  1 Test  PS        143.         185           15.7           4.95           9.55           2.21
-#&gt;  2 Train PS        134.         819           31.9         207.            69.9          164.  
-#&gt;  3 Train WS        107.         431           28.0         116.            63.9          107.  
-#&gt;  4 Train PS         69.2        298           19.5         102.            28.2           31.0 
-#&gt;  5 Test  PS          2.89       285           24.3         112.            20.5           40.6 
-#&gt;  6 Test  WS         40.7        172          326.          654.           129.           347.  
-#&gt;  7 Test  WS        174.         177          260.          596.           124.           273.  
-#&gt;  8 Test  PS        180.         251           18.3           5.73          17.2            1.55
-#&gt;  9 Test  WS         18.9        495           16.1          89.5           13.7           51.4 
-#&gt; 10 Test  WS        153.         384           17.7          89.9           20.4           63.1 
-#&gt; # … with 2,009 more rows, and 50 more variables: convex_hull_area_ratio_ch_1 &lt;dbl&gt;,
-#&gt; #   convex_hull_perim_ratio_ch_1 &lt;dbl&gt;, diff_inten_density_ch_1 &lt;dbl&gt;,
-#&gt; #   diff_inten_density_ch_3 &lt;dbl&gt;, diff_inten_density_ch_4 &lt;dbl&gt;, entropy_inten_ch_1 &lt;dbl&gt;,
-#&gt; #   entropy_inten_ch_3 &lt;dbl&gt;, entropy_inten_ch_4 &lt;dbl&gt;, eq_circ_diam_ch_1 &lt;dbl&gt;,
-#&gt; #   eq_ellipse_lwr_ch_1 &lt;dbl&gt;, eq_ellipse_oblate_vol_ch_1 &lt;dbl&gt;, eq_ellipse_prolate_vol_ch_1 &lt;dbl&gt;,
-#&gt; #   eq_sphere_area_ch_1 &lt;dbl&gt;, eq_sphere_vol_ch_1 &lt;dbl&gt;, fiber_align_2_ch_3 &lt;dbl&gt;,
-#&gt; #   fiber_align_2_ch_4 &lt;dbl&gt;, fiber_length_ch_1 &lt;dbl&gt;, fiber_width_ch_1 &lt;dbl&gt;,
-#&gt; #   inten_cooc_asm_ch_3 &lt;dbl&gt;, inten_cooc_asm_ch_4 &lt;dbl&gt;, inten_cooc_contrast_ch_3 &lt;dbl&gt;,
-#&gt; #   inten_cooc_contrast_ch_4 &lt;dbl&gt;, inten_cooc_entropy_ch_3 &lt;dbl&gt;, inten_cooc_entropy_ch_4 &lt;dbl&gt;,
-#&gt; #   inten_cooc_max_ch_3 &lt;dbl&gt;, inten_cooc_max_ch_4 &lt;dbl&gt;, kurt_inten_ch_1 &lt;dbl&gt;,
-#&gt; #   kurt_inten_ch_3 &lt;dbl&gt;, kurt_inten_ch_4 &lt;dbl&gt;, length_ch_1 &lt;dbl&gt;, neighbor_avg_dist_ch_1 &lt;dbl&gt;,
-#&gt; #   neighbor_min_dist_ch_1 &lt;dbl&gt;, neighbor_var_dist_ch_1 &lt;dbl&gt;, perim_ch_1 &lt;dbl&gt;,
-#&gt; #   shape_bfr_ch_1 &lt;dbl&gt;, shape_lwr_ch_1 &lt;dbl&gt;, shape_p_2_a_ch_1 &lt;dbl&gt;, skew_inten_ch_1 &lt;dbl&gt;,
-#&gt; #   skew_inten_ch_3 &lt;dbl&gt;, skew_inten_ch_4 &lt;dbl&gt;, spot_fiber_count_ch_3 &lt;int&gt;,
-#&gt; #   spot_fiber_count_ch_4 &lt;dbl&gt;, total_inten_ch_1 &lt;int&gt;, total_inten_ch_2 &lt;dbl&gt;,
-#&gt; #   total_inten_ch_3 &lt;int&gt;, total_inten_ch_4 &lt;int&gt;, var_inten_ch_1 &lt;dbl&gt;, var_inten_ch_3 &lt;dbl&gt;,
-#&gt; #   var_inten_ch_4 &lt;dbl&gt;, width_ch_1 &lt;dbl&gt;</code></pre>
+cells
+#&gt; # A tibble: 2,019 x 58
+#&gt;    case  class angle_ch_1 area_ch_1 avg_inten_ch_1 avg_inten_ch_2 avg_inten_ch_3
+#&gt;    &lt;fct&gt; &lt;fct&gt;      &lt;dbl&gt;     &lt;int&gt;          &lt;dbl&gt;          &lt;dbl&gt;          &lt;dbl&gt;
+#&gt;  1 Test  PS        143.         185           15.7           4.95           9.55
+#&gt;  2 Train PS        134.         819           31.9         207.            69.9 
+#&gt;  3 Train WS        107.         431           28.0         116.            63.9 
+#&gt;  4 Train PS         69.2        298           19.5         102.            28.2 
+#&gt;  5 Test  PS          2.89       285           24.3         112.            20.5 
+#&gt;  6 Test  WS         40.7        172          326.          654.           129.  
+#&gt;  7 Test  WS        174.         177          260.          596.           124.  
+#&gt;  8 Test  PS        180.         251           18.3           5.73          17.2 
+#&gt;  9 Test  WS         18.9        495           16.1          89.5           13.7 
+#&gt; 10 Test  WS        153.         384           17.7          89.9           20.4 
+#&gt; # … with 2,009 more rows, and 51 more variables: avg_inten_ch_4 &lt;dbl&gt;,
+#&gt; #   convex_hull_area_ratio_ch_1 &lt;dbl&gt;, convex_hull_perim_ratio_ch_1 &lt;dbl&gt;,
+#&gt; #   diff_inten_density_ch_1 &lt;dbl&gt;, diff_inten_density_ch_3 &lt;dbl&gt;,
+#&gt; #   diff_inten_density_ch_4 &lt;dbl&gt;, entropy_inten_ch_1 &lt;dbl&gt;,
+#&gt; #   entropy_inten_ch_3 &lt;dbl&gt;, entropy_inten_ch_4 &lt;dbl&gt;,
+#&gt; #   eq_circ_diam_ch_1 &lt;dbl&gt;, eq_ellipse_lwr_ch_1 &lt;dbl&gt;,
+#&gt; #   eq_ellipse_oblate_vol_ch_1 &lt;dbl&gt;, eq_ellipse_prolate_vol_ch_1 &lt;dbl&gt;,
+#&gt; #   eq_sphere_area_ch_1 &lt;dbl&gt;, eq_sphere_vol_ch_1 &lt;dbl&gt;,
+#&gt; #   fiber_align_2_ch_3 &lt;dbl&gt;, fiber_align_2_ch_4 &lt;dbl&gt;,
+#&gt; #   fiber_length_ch_1 &lt;dbl&gt;, fiber_width_ch_1 &lt;dbl&gt;, inten_cooc_asm_ch_3 &lt;dbl&gt;,
+#&gt; #   inten_cooc_asm_ch_4 &lt;dbl&gt;, inten_cooc_contrast_ch_3 &lt;dbl&gt;,
+#&gt; #   inten_cooc_contrast_ch_4 &lt;dbl&gt;, inten_cooc_entropy_ch_3 &lt;dbl&gt;,
+#&gt; #   inten_cooc_entropy_ch_4 &lt;dbl&gt;, inten_cooc_max_ch_3 &lt;dbl&gt;,
+#&gt; #   inten_cooc_max_ch_4 &lt;dbl&gt;, kurt_inten_ch_1 &lt;dbl&gt;, kurt_inten_ch_3 &lt;dbl&gt;,
+#&gt; #   kurt_inten_ch_4 &lt;dbl&gt;, length_ch_1 &lt;dbl&gt;, neighbor_avg_dist_ch_1 &lt;dbl&gt;,
+#&gt; #   neighbor_min_dist_ch_1 &lt;dbl&gt;, neighbor_var_dist_ch_1 &lt;dbl&gt;,
+#&gt; #   perim_ch_1 &lt;dbl&gt;, shape_bfr_ch_1 &lt;dbl&gt;, shape_lwr_ch_1 &lt;dbl&gt;,
+#&gt; #   shape_p_2_a_ch_1 &lt;dbl&gt;, skew_inten_ch_1 &lt;dbl&gt;, skew_inten_ch_3 &lt;dbl&gt;,
+#&gt; #   skew_inten_ch_4 &lt;dbl&gt;, spot_fiber_count_ch_3 &lt;int&gt;,
+#&gt; #   spot_fiber_count_ch_4 &lt;dbl&gt;, total_inten_ch_1 &lt;int&gt;,
+#&gt; #   total_inten_ch_2 &lt;dbl&gt;, total_inten_ch_3 &lt;int&gt;, total_inten_ch_4 &lt;int&gt;,
+#&gt; #   var_inten_ch_1 &lt;dbl&gt;, var_inten_ch_3 &lt;dbl&gt;, var_inten_ch_4 &lt;dbl&gt;,
+#&gt; #   width_ch_1 &lt;dbl&gt;</code></pre>
 <p>The rates of the classes are somewhat imbalanced; there are more poorly segmented cells than well-segmented cells:</p>
 <pre class="r"><code>class_rates &lt;- table(cells$class)/nrow(cells)
-class_rates</code></pre>
-<pre><code>#&gt; 
-#&gt;    PS    WS 
-#&gt; 0.644 0.356</code></pre>
+class_rates
+#&gt; 
+#&gt;        PS        WS 
+#&gt; 0.6438831 0.3561169</code></pre>
 </div>
 <div id="data-splitting" class="section level1">
 <h1>Data splitting</h1>
@@ -78,10 +84,10 @@ cell_split &lt;- initial_split(cells %&gt;% select(-case), strata = class)
 cell_train &lt;- training(cell_split)
 cell_test  &lt;- testing(cell_split)
 
-nrow(cell_train)</code></pre>
-<pre><code>#&gt; [1] 1515</code></pre>
-<pre class="r"><code>nrow(cell_train)/nrow(cells)</code></pre>
-<pre><code>#&gt; [1] 0.75</code></pre>
+nrow(cell_train)
+#&gt; [1] 1515
+nrow(cell_train)/nrow(cells)
+#&gt; [1] 0.7503715</code></pre>
 <p>The majority of the modeling work is then conducted on the training set data.</p>
 </div>
 <div id="modeling" class="section level1">
@@ -96,10 +102,10 @@ nrow(cell_train)</code></pre>
 <p>From this, the <code>fit()</code> function can be used with a simple model formula. Since random forest uses random numbers, we again set the seed prior to computing:</p>
 <pre class="r"><code>set.seed(5273)
 rf_fit &lt;- rf_mod %&gt;% fit(class ~ ., data = cell_train)
-rf_fit</code></pre>
-<pre><code>#&gt; parsnip model object
+rf_fit
+#&gt; parsnip model object
 #&gt; 
-#&gt; Fit time:  2.8s 
+#&gt; Fit time:  3.2s 
 #&gt; Ranger result
 #&gt; 
 #&gt; Call:
@@ -113,7 +119,7 @@ rf_fit</code></pre>
 #&gt; Target node size:                 10 
 #&gt; Variable importance mode:         none 
 #&gt; Splitrule:                        gini 
-#&gt; OOB prediction error (Brier s.):  0.121</code></pre>
+#&gt; OOB prediction error (Brier s.):  0.1214473</code></pre>
 </div>
 <div id="estimating-performance" class="section level1">
 <h1>Estimating performance</h1>
@@ -132,13 +138,13 @@ rf_fit</code></pre>
   bind_cols(cell_train %&gt;% 
               select(class))</code></pre>
 <p>Using the <code>yardstick</code> functions, this model has spectacular results, so spectacular that you might be starting to get suspicious:</p>
-<pre class="r"><code>roc_auc(rf_training_pred,  truth = class, .pred_PS)</code></pre>
-<pre><code>#&gt; # A tibble: 1 x 3
+<pre class="r"><code>roc_auc(rf_training_pred,  truth = class, .pred_PS)
+#&gt; # A tibble: 1 x 3
 #&gt;   .metric .estimator .estimate
 #&gt;   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
-#&gt; 1 roc_auc binary          1.00</code></pre>
-<pre class="r"><code>accuracy(rf_training_pred, truth = class, .pred_class)</code></pre>
-<pre><code>#&gt; # A tibble: 1 x 3
+#&gt; 1 roc_auc binary          1.00
+accuracy(rf_training_pred, truth = class, .pred_class)
+#&gt; # A tibble: 1 x 3
 #&gt;   .metric  .estimator .estimate
 #&gt;   &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;
 #&gt; 1 accuracy binary         0.993</code></pre>
@@ -148,13 +154,13 @@ rf_fit</code></pre>
   bind_cols(predict(rf_fit, cell_test, type = &quot;prob&quot;)) %&gt;% 
   bind_cols(cell_test %&gt;% select(class))
 
-roc_auc(rf_testing_pred,  truth = class, .pred_PS)</code></pre>
-<pre><code>#&gt; # A tibble: 1 x 3
+roc_auc(rf_testing_pred,  truth = class, .pred_PS)
+#&gt; # A tibble: 1 x 3
 #&gt;   .metric .estimator .estimate
 #&gt;   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
-#&gt; 1 roc_auc binary         0.910</code></pre>
-<pre class="r"><code>accuracy(rf_testing_pred, truth = class, .pred_class)</code></pre>
-<pre><code>#&gt; # A tibble: 1 x 3
+#&gt; 1 roc_auc binary         0.910
+accuracy(rf_testing_pred, truth = class, .pred_class)
+#&gt; # A tibble: 1 x 3
 #&gt;   .metric  .estimator .estimate
 #&gt;   &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;
 #&gt; 1 accuracy binary         0.839</code></pre>
@@ -169,7 +175,7 @@ roc_auc(rf_testing_pred,  truth = class, .pred_PS)</code></pre>
 <div id="resampling-to-the-rescue" class="section level1">
 <h1>Resampling to the rescue</h1>
 <p>Resampling methods, such as cross-validation and the bootstrap, are empirical simulation systems. They create a series of data sets similar to the training/testing split discussed previously; a subset of the data are used for creating the model and a different subset is used to measure performance. Resampling is always used with the <em>training set</em>. This schematic from <a href="https://bookdown.org/max/FES/resampling.html">Kuhn and Johnson (2019)</a> illustrates data usage for resampling methods:</p>
-<p><img src="/Users/alison/rsites/tidymodels.org/static/images/resampling.svg" width="70%" style="display: block; margin: auto;" /></p>
+<p><img src="img/resampling.svg" width="70%" style="display: block; margin: auto;" /></p>
 <p>Let’s use 10-fold cross-validation (CV) in this example. This method randomly allocates the 1515 cells in the training set to 10 groups of roughly equal size, called “folds”. For the first iteration of resampling, the first fold of about 151 cells are held out for the purpose of measuring performance. This is similar to a test set but, to avoid confusion, we call these data the <em>assessment set</em>. The other 90% of the data (about 1363 cells) are used to fit the model and is called the <em>analysis set</em>. This model is applied to the assessment set and performance statistics are computed on that assessment set.</p>
 <p>In this example, 10-fold CV moves iteratively through the folds and leaves a different 10% out each time for model assessment. At the end of this process, there are 10 sets of performance statistics that were created on 10 data sets that were not used in the modeling process. For the cell example, this means 10 accuracies and 10 areas under the ROC curve. While 10 models were created, these are not used further; we do not keep the models themselves trained on these folds because their only purpose is calculating performance metrics.</p>
 <p>The final resampling estimates for the model are the <strong>averages</strong> of the performance statistics replicates. For example, suppose for our data, the results were:</p>
@@ -196,10 +202,10 @@ assessment size
 Fold01
 </td>
 <td style="text-align:right;">
-0.836
+0.8355263
 </td>
 <td style="text-align:right;">
-0.894
+0.8944311
 </td>
 <td style="text-align:right;">
 152
@@ -210,10 +216,10 @@ Fold01
 Fold02
 </td>
 <td style="text-align:right;">
-0.763
+0.7631579
 </td>
 <td style="text-align:right;">
-0.826
+0.8259958
 </td>
 <td style="text-align:right;">
 152
@@ -224,10 +230,10 @@ Fold02
 Fold03
 </td>
 <td style="text-align:right;">
-0.809
+0.8092105
 </td>
 <td style="text-align:right;">
-0.896
+0.8962054
 </td>
 <td style="text-align:right;">
 152
@@ -238,10 +244,10 @@ Fold03
 Fold04
 </td>
 <td style="text-align:right;">
-0.816
+0.8157895
 </td>
 <td style="text-align:right;">
-0.893
+0.8925961
 </td>
 <td style="text-align:right;">
 152
@@ -252,10 +258,10 @@ Fold04
 Fold05
 </td>
 <td style="text-align:right;">
-0.842
+0.8421053
 </td>
 <td style="text-align:right;">
-0.924
+0.9243115
 </td>
 <td style="text-align:right;">
 152
@@ -266,10 +272,10 @@ Fold05
 Fold06
 </td>
 <td style="text-align:right;">
-0.841
+0.8410596
 </td>
 <td style="text-align:right;">
-0.904
+0.9039773
 </td>
 <td style="text-align:right;">
 151
@@ -280,10 +286,10 @@ Fold06
 Fold07
 </td>
 <td style="text-align:right;">
-0.841
+0.8410596
 </td>
 <td style="text-align:right;">
-0.933
+0.9331921
 </td>
 <td style="text-align:right;">
 151
@@ -294,10 +300,10 @@ Fold07
 Fold08
 </td>
 <td style="text-align:right;">
-0.801
+0.8013245
 </td>
 <td style="text-align:right;">
-0.889
+0.8892707
 </td>
 <td style="text-align:right;">
 151
@@ -308,10 +314,10 @@ Fold08
 Fold09
 </td>
 <td style="text-align:right;">
-0.861
+0.8609272
 </td>
 <td style="text-align:right;">
-0.919
+0.9190196
 </td>
 <td style="text-align:right;">
 151
@@ -322,10 +328,10 @@ Fold09
 Fold10
 </td>
 <td style="text-align:right;">
-0.848
+0.8476821
 </td>
 <td style="text-align:right;">
-0.944
+0.9440285
 </td>
 <td style="text-align:right;">
 151
@@ -333,13 +339,13 @@ Fold10
 </tr>
 </tbody>
 </table>
-<p>From these resampling statistics, the final estimate of performance for this random forest model would be 0.902 for the area under the ROC curve and 0.826 for accuracy.</p>
+<p>From these resampling statistics, the final estimate of performance for this random forest model would be 0.9023028 for the area under the ROC curve and 0.8257842 for accuracy.</p>
 <p>These resampling statistics are an effective method for measuring model performance <em>without</em> predicting the training set directly as a whole.</p>
 <p>To generate these results, the first step is to create a resampling object using <code>rsample</code>. There are several resampling methods implemented and cross-validation folds can be created using <code>vfold_cv()</code>:</p>
 <pre class="r"><code>set.seed(1697)
 folds &lt;- vfold_cv(cell_train, v = 10)
-folds</code></pre>
-<pre><code>#&gt; #  10-fold cross-validation 
+folds
+#&gt; #  10-fold cross-validation 
 #&gt; # A tibble: 10 x 2
 #&gt;    splits             id    
 #&gt;    &lt;named list&gt;       &lt;chr&gt; 
@@ -358,8 +364,8 @@ folds</code></pre>
 <pre class="r"><code>set.seed(5273)
 rf_fit_rs &lt;- rf_mod %&gt;% 
   fit_resamples(class ~ ., folds)</code></pre>
-<pre class="r"><code>rf_fit_rs</code></pre>
-<pre><code>#&gt; #  10-fold cross-validation 
+<pre class="r"><code>rf_fit_rs
+#&gt; #  10-fold cross-validation 
 #&gt; # A tibble: 10 x 4
 #&gt;    splits             id     .metrics         .notes          
 #&gt;  * &lt;list&gt;             &lt;chr&gt;  &lt;list&gt;           &lt;list&gt;          
@@ -374,20 +380,20 @@ rf_fit_rs &lt;- rf_mod %&gt;%
 #&gt;  9 &lt;split [1.4K/151]&gt; Fold09 &lt;tibble [2 × 3]&gt; &lt;tibble [0 × 1]&gt;
 #&gt; 10 &lt;split [1.4K/151]&gt; Fold10 &lt;tibble [2 × 3]&gt; &lt;tibble [0 × 1]&gt;</code></pre>
 <p>The results are similar to the <code>folds</code> results with some extra columns. The column <code>.metrics</code> contains the performance statistics created from the 10 assessment sets. These can be manually unnested but <code>tune</code> contains a number of simple functions that can extract these data:</p>
-<pre class="r"><code>collect_metrics(rf_fit_rs)</code></pre>
-<pre><code>#&gt; # A tibble: 2 x 5
+<pre class="r"><code>collect_metrics(rf_fit_rs)
+#&gt; # A tibble: 2 x 5
 #&gt;   .metric  .estimator  mean     n std_err
 #&gt;   &lt;chr&gt;    &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
 #&gt; 1 accuracy binary     0.826    10 0.00909
 #&gt; 2 roc_auc  binary     0.902    10 0.0104</code></pre>
 <p>Think about these values we now have for accuracy and AUC. These performance metrics are now more realistic (i.e. lower) than our ill-advised first attempt at computing performance metrics in the section above. If we wanted to try different model types for this data set, we could more confidently compare performance metrics computed using resampling to choose between models. Also, remember that at the end of our project, we return to our test set to estimate final model performance. We have looked at this once already before we started using resampling, but let’s remind ourselves of the results:</p>
-<pre class="r"><code>accuracy(rf_testing_pred, truth = class, .pred_class)</code></pre>
-<pre><code>#&gt; # A tibble: 1 x 3
+<pre class="r"><code>accuracy(rf_testing_pred, truth = class, .pred_class)
+#&gt; # A tibble: 1 x 3
 #&gt;   .metric  .estimator .estimate
 #&gt;   &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;
-#&gt; 1 accuracy binary         0.839</code></pre>
-<pre class="r"><code>roc_auc(rf_testing_pred,  truth = class, .pred_PS)</code></pre>
-<pre><code>#&gt; # A tibble: 1 x 3
+#&gt; 1 accuracy binary         0.839
+roc_auc(rf_testing_pred,  truth = class, .pred_PS)
+#&gt; # A tibble: 1 x 3
 #&gt;   .metric .estimator .estimate
 #&gt;   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
 #&gt; 1 roc_auc binary         0.910</code></pre>
@@ -395,7 +401,7 @@ rf_fit_rs &lt;- rf_mod %&gt;%
 </div>
 <div id="session-information" class="section level1">
 <h1>Session information</h1>
-<pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────────────────────────
+<pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────
 #&gt;  setting  value                       
 #&gt;  version  R version 3.6.1 (2019-07-05)
 #&gt;  os       macOS Catalina 10.15.3      
@@ -405,9 +411,9 @@ rf_fit_rs &lt;- rf_mod %&gt;%
 #&gt;  collate  en_US.UTF-8                 
 #&gt;  ctype    en_US.UTF-8                 
 #&gt;  tz       America/Los_Angeles         
-#&gt;  date     2020-03-20                  
+#&gt;  date     2020-03-22                  
 #&gt; 
-#&gt; ─ Packages ───────────────────────────────────────────────────────────────────────────────────────
+#&gt; ─ Packages ───────────────────────────────────────────────────────────────────
 #&gt;  package    * version    date       lib source                               
 #&gt;  broom      * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
 #&gt;  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
@@ -419,7 +425,7 @@ rf_fit_rs &lt;- rf_mod %&gt;%
 #&gt;  ranger     * 0.11.2     2019-03-07 [1] CRAN (R 3.6.0)                       
 #&gt;  recipes    * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
 #&gt;  rlang        0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
-#&gt;  rsample    * 0.0.5      2019-07-12 [1] CRAN (R 3.6.0)                       
+#&gt;  rsample    * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
 #&gt;  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
 #&gt;  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
 #&gt;  tune       * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     

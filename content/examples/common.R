@@ -4,5 +4,6 @@ knitr::opts_chunk$set(
   dev = 'svg', 
   dev.args = list(bg = "transparent"),
   fig.path = "figs/",
-  collapse = TRUE
+  collapse = TRUE,
+  width = 100
 )

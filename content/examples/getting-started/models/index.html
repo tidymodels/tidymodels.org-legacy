@@ -26,8 +26,8 @@ urchins &lt;-
   # Change the names to be a little more verbose
   setNames(c(&quot;food_regime&quot;, &quot;initial_volume&quot;, &quot;width&quot;)) %&gt;% 
   # Factors are very helpful for modeling, so we convert one column
-  mutate(food_regime = factor(food_regime, levels = c(&quot;Initial&quot;, &quot;Low&quot;, &quot;High&quot;)))</code></pre>
-<pre><code>#&gt; Parsed with column specification:
+  mutate(food_regime = factor(food_regime, levels = c(&quot;Initial&quot;, &quot;Low&quot;, &quot;High&quot;)))
+#&gt; Parsed with column specification:
 #&gt; cols(
 #&gt;   TREAT = col_character(),
 #&gt;   IV = col_double(),
@@ -37,19 +37,19 @@ urchins &lt;-
 <pre class="r"><code>theme_set(theme_bw())
 ggplot(urchins, aes(x = initial_volume, y = width, group = food_regime, col = food_regime)) + 
   geom_point() + 
-  geom_smooth(method = lm, se = FALSE)</code></pre>
-<pre><code>#&gt; `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
-<p><img src="/examples/getting-started/models/index_files/figure-html/urchin-plot-1.svg" width="672" /></p>
+  geom_smooth(method = lm, se = FALSE)
+#&gt; `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="figs/urchin-plot-1.svg" width="672" /></p>
 <p>A standard analysis of covariance (<a href="https://en.wikipedia.org/wiki/Analysis_of_covariance">ANCOVA</a>) model makes sense for this dataset because we have both a continuous predictor and a categorical predictor. Since the slopes appear to be different for at least two of the feeding regimes, let’s build a model that allows for two-way interactions. Specifying an R formula with our variables in this way:</p>
 <pre class="r"><code>width ~ (initial_volume + food_regime)^2</code></pre>
 <p>allows our regression model depending on initial volume to have separate slopes and intercepts for each food regime.</p>
 <p>For this kind of model, ordinary least squares is a good initial approach. With tidymodels, we start by specifying the <em>functional form</em> of the model that we will be using. Since there is a numeric outcome and the model should be linear with slopes and intercepts, the model type is “linear regression”. To declare this:</p>
-<pre class="r"><code>linear_reg()</code></pre>
-<pre><code>#&gt; Linear Regression Model Specification (regression)</code></pre>
+<pre class="r"><code>linear_reg()
+#&gt; Linear Regression Model Specification (regression)</code></pre>
 <p>That is pretty underwhelming since, on its own, it doesn’t really do much. However, now that the type of model has been specified, a method for <em>fitting</em> the model can be stated using the <strong>engine</strong>. The engine value is often a mash-up of the software that can be used to fit the model as well as the estimation method. For example, to use ordinary least squares, we can set the engine to be <code>lm</code>:</p>
 <pre class="r"><code>linear_reg() %&gt;% 
-  set_engine(&quot;lm&quot;)</code></pre>
-<pre><code>#&gt; Linear Regression Model Specification (regression)
+  set_engine(&quot;lm&quot;)
+#&gt; Linear Regression Model Specification (regression)
 #&gt; 
 #&gt; Computational engine: lm</code></pre>
 <p>The <a href="https://tidymodels.github.io/parsnip/reference/linear_reg.html">documentation page for <code>linear_reg()</code></a> lists the possible engines.</p>
@@ -58,23 +58,25 @@ ggplot(urchins, aes(x = initial_volume, y = width, group = food_regime, col = fo
   linear_reg() %&gt;% 
   set_engine(&quot;lm&quot;) %&gt;% 
   fit(width ~ (initial_volume + food_regime)^2, data = urchins)
-lm_fit</code></pre>
-<pre><code>#&gt; parsnip model object
+lm_fit
+#&gt; parsnip model object
 #&gt; 
-#&gt; Fit time:  4ms 
+#&gt; Fit time:  3ms 
 #&gt; 
 #&gt; Call:
 #&gt; stats::lm(formula = formula, data = data)
 #&gt; 
 #&gt; Coefficients:
-#&gt;                    (Intercept)                  initial_volume                  food_regimeLow  
-#&gt;                       0.033122                        0.001555                        0.019782  
-#&gt;                food_regimeHigh   initial_volume:food_regimeLow  initial_volume:food_regimeHigh  
-#&gt;                       0.021411                       -0.001259                        0.000525</code></pre>
+#&gt;                    (Intercept)                  initial_volume  
+#&gt;                      0.0331216                       0.0015546  
+#&gt;                 food_regimeLow                 food_regimeHigh  
+#&gt;                      0.0197824                       0.0214111  
+#&gt;  initial_volume:food_regimeLow  initial_volume:food_regimeHigh  
+#&gt;                     -0.0012594                       0.0005254</code></pre>
 <p>This object has the <code>lm</code> model built-in.</p>
 <p>Perhaps our analysis requires a description of the model parameter estimates and their statistical properties. Although the <code>summary()</code> function for <code>lm</code> objects can provide that, it gives the results back in an unwieldy format. Many models have a <code>tidy()</code> method that provides the summary results in a more predictable and useful format (e.g. a data frame with standard column names):</p>
-<pre class="r"><code>tidy(lm_fit)</code></pre>
-<pre><code>#&gt; # A tibble: 6 x 5
+<pre class="r"><code>tidy(lm_fit)
+#&gt; # A tibble: 6 x 5
 #&gt;   term                            estimate std.error statistic  p.value
 #&gt;   &lt;chr&gt;                              &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
 #&gt; 1 (Intercept)                     0.0331    0.00962      3.44  0.00100 
@@ -85,8 +87,8 @@ lm_fit</code></pre>
 #&gt; 6 initial_volume:food_regimeHigh  0.000525  0.000702     0.748 0.457</code></pre>
 <p>Suppose that, for a publication, it would be particularly interesting to make a plot of the mean body size for urchins that started the experiment with an initial volume of 20ml. To create such a graph, we start with some new example data that we will make predictions for, to show in our graph:</p>
 <pre class="r"><code>new_points &lt;- expand.grid(initial_volume = 20, food_regime = c(&quot;Initial&quot;, &quot;Low&quot;, &quot;High&quot;))
-new_points</code></pre>
-<pre><code>#&gt;   initial_volume food_regime
+new_points
+#&gt;   initial_volume food_regime
 #&gt; 1             20     Initial
 #&gt; 2             20         Low
 #&gt; 3             20        High</code></pre>
@@ -95,8 +97,8 @@ new_points</code></pre>
 <p>Instead, with tidymodels, the types of predicted values are standardized so that we can use the same syntax to get these values.</p>
 <p>First, let’s generate the mean body width values:</p>
 <pre class="r"><code>mean_pred &lt;- predict(lm_fit, new_data = new_points)
-mean_pred</code></pre>
-<pre><code>#&gt; # A tibble: 3 x 1
+mean_pred
+#&gt; # A tibble: 3 x 1
 #&gt;    .pred
 #&gt;    &lt;dbl&gt;
 #&gt; 1 0.0642
@@ -104,14 +106,15 @@ mean_pred</code></pre>
 #&gt; 3 0.0961</code></pre>
 <p>When making predictions, the tidymodels convention is to always produce a tibble of results with standardized column names. This makes it easy to combine the original data and the predictions in a usable format:</p>
 <pre class="r"><code>conf_int_pred &lt;- predict(lm_fit, new_data = new_points, type = &quot;conf_int&quot;)
-conf_int_pred</code></pre>
-<pre><code>#&gt; # A tibble: 3 x 2
+conf_int_pred
+#&gt; # A tibble: 3 x 2
 #&gt;   .pred_lower .pred_upper
 #&gt;         &lt;dbl&gt;       &lt;dbl&gt;
 #&gt; 1      0.0555      0.0729
 #&gt; 2      0.0499      0.0678
-#&gt; 3      0.0870      0.105</code></pre>
-<pre class="r"><code># Now combine: 
+#&gt; 3      0.0870      0.105
+
+# Now combine: 
 plot_data &lt;- 
   new_points %&gt;% 
   bind_cols(mean_pred) %&gt;% 
@@ -122,7 +125,7 @@ ggplot(plot_data, aes(x = food_regime)) +
   geom_point(aes(y = .pred)) + 
   geom_errorbar(aes(ymin = .pred_lower, ymax = .pred_upper), width = .2) + 
   labs(y = &quot;urchin size&quot;)</code></pre>
-<p><img src="/examples/getting-started/models/index_files/figure-html/lm-all-pred-1.svg" width="672" /></p>
+<p><img src="figs/lm-all-pred-1.svg" width="672" /></p>
 <p>Every one on your team is happy with that plot <em>except</em> that one person who just read their first book on <a href="https://bayesian.org/what-is-bayesian-analysis/">Bayesian analysis</a>. They are interested in knowing if the results would be different if the model were estimated using a Bayesian approach. In such an analysis, a <a href="https://towardsdatascience.com/introduction-to-bayesian-linear-regression-e66e60791ea7"><em>prior distribution</em></a> needs to be declared for each model parameter that represents the possible values of the parameters (before being exposed to the observed data). After some discussion, the group agrees that the priors should be bell-shaped but, since no one has any idea what the range of values should be, to take a conservative approach and make the priors <em>wide</em> using a Cauchy distribution (which is the same as a t-distribution with a single degree of freedom).</p>
 <p>The <a href="http://mc-stan.org/rstanarm/articles/priors.html">documentation</a> on the <code>rstanarm</code> package shows us that the <code>stan_glm()</code> function can be used to estimate this model, and that the function arguments that need to be specified are called <code>prior</code> and <code>prior_intercept</code>. It turns out that <code>linear_reg()</code> has a <code>stan</code> engine. Since these prior distribution arguments are specific to the Stan software, they are passed when the engine is set. After that, the same exact <code>fit()</code> call is used:</p>
 <pre class="r"><code>library(rstanarm)
@@ -132,12 +135,12 @@ prior_dist &lt;- student_t(df = 1)
 bayes_fit &lt;- 
   linear_reg() %&gt;% 
   set_engine(&quot;stan&quot;, prior_intercept = prior_dist, prior = prior_dist) %&gt;% 
-  fit(width ~ (initial_volume + food_regime)^2, data = urchins)</code></pre>
-<pre><code>#&gt; 
+  fit(width ~ (initial_volume + food_regime)^2, data = urchins)
+#&gt; 
 #&gt; SAMPLING FOR MODEL &#39;continuous&#39; NOW (CHAIN 1).
 #&gt; Chain 1: 
-#&gt; Chain 1: Gradient evaluation took 7.6e-05 seconds
-#&gt; Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.76 seconds.
+#&gt; Chain 1: Gradient evaluation took 7.7e-05 seconds
+#&gt; Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.77 seconds.
 #&gt; Chain 1: Adjust your expectations accordingly!
 #&gt; Chain 1: 
 #&gt; Chain 1: 
@@ -154,9 +157,9 @@ bayes_fit &lt;-
 #&gt; Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #&gt; Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 #&gt; Chain 1: 
-#&gt; Chain 1:  Elapsed Time: 0.212634 seconds (Warm-up)
-#&gt; Chain 1:                0.139774 seconds (Sampling)
-#&gt; Chain 1:                0.352408 seconds (Total)
+#&gt; Chain 1:  Elapsed Time: 0.264132 seconds (Warm-up)
+#&gt; Chain 1:                0.154091 seconds (Sampling)
+#&gt; Chain 1:                0.418223 seconds (Total)
 #&gt; Chain 1: 
 #&gt; 
 #&gt; SAMPLING FOR MODEL &#39;continuous&#39; NOW (CHAIN 2).
@@ -179,15 +182,15 @@ bayes_fit &lt;-
 #&gt; Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #&gt; Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 #&gt; Chain 2: 
-#&gt; Chain 2:  Elapsed Time: 0.223806 seconds (Warm-up)
-#&gt; Chain 2:                0.150268 seconds (Sampling)
-#&gt; Chain 2:                0.374074 seconds (Total)
+#&gt; Chain 2:  Elapsed Time: 0.23674 seconds (Warm-up)
+#&gt; Chain 2:                0.157327 seconds (Sampling)
+#&gt; Chain 2:                0.394067 seconds (Total)
 #&gt; Chain 2: 
 #&gt; 
 #&gt; SAMPLING FOR MODEL &#39;continuous&#39; NOW (CHAIN 3).
 #&gt; Chain 3: 
-#&gt; Chain 3: Gradient evaluation took 1.1e-05 seconds
-#&gt; Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.11 seconds.
+#&gt; Chain 3: Gradient evaluation took 1.6e-05 seconds
+#&gt; Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.16 seconds.
 #&gt; Chain 3: Adjust your expectations accordingly!
 #&gt; Chain 3: 
 #&gt; Chain 3: 
@@ -204,15 +207,15 @@ bayes_fit &lt;-
 #&gt; Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #&gt; Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
 #&gt; Chain 3: 
-#&gt; Chain 3:  Elapsed Time: 0.204413 seconds (Warm-up)
-#&gt; Chain 3:                0.148356 seconds (Sampling)
-#&gt; Chain 3:                0.352769 seconds (Total)
+#&gt; Chain 3:  Elapsed Time: 0.239308 seconds (Warm-up)
+#&gt; Chain 3:                0.180277 seconds (Sampling)
+#&gt; Chain 3:                0.419585 seconds (Total)
 #&gt; Chain 3: 
 #&gt; 
 #&gt; SAMPLING FOR MODEL &#39;continuous&#39; NOW (CHAIN 4).
 #&gt; Chain 4: 
-#&gt; Chain 4: Gradient evaluation took 1.4e-05 seconds
-#&gt; Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.14 seconds.
+#&gt; Chain 4: Gradient evaluation took 1.6e-05 seconds
+#&gt; Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.16 seconds.
 #&gt; Chain 4: Adjust your expectations accordingly!
 #&gt; Chain 4: 
 #&gt; Chain 4: 
@@ -229,14 +232,15 @@ bayes_fit &lt;-
 #&gt; Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #&gt; Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 #&gt; Chain 4: 
-#&gt; Chain 4:  Elapsed Time: 0.189554 seconds (Warm-up)
-#&gt; Chain 4:                0.153602 seconds (Sampling)
-#&gt; Chain 4:                0.343156 seconds (Total)
-#&gt; Chain 4:</code></pre>
-<pre class="r"><code>print(bayes_fit, digits = 5)</code></pre>
-<pre><code>#&gt; parsnip model object
+#&gt; Chain 4:  Elapsed Time: 0.21845 seconds (Warm-up)
+#&gt; Chain 4:                0.165625 seconds (Sampling)
+#&gt; Chain 4:                0.384075 seconds (Total)
+#&gt; Chain 4:
+
+print(bayes_fit, digits = 5)
+#&gt; parsnip model object
 #&gt; 
-#&gt; Fit time:  1.6s 
+#&gt; Fit time:  1.8s 
 #&gt; stan_glm
 #&gt;  family:       gaussian [identity]
 #&gt;  formula:      width ~ (initial_volume + food_regime)^2
@@ -244,31 +248,31 @@ bayes_fit &lt;-
 #&gt;  predictors:   6
 #&gt; ------
 #&gt;                                Median   MAD_SD  
-#&gt; (Intercept)                     0.03532  0.00939
-#&gt; initial_volume                  0.00147  0.00040
-#&gt; food_regimeLow                  0.01686  0.01220
-#&gt; food_regimeHigh                 0.01834  0.01459
-#&gt; initial_volume:food_regimeLow  -0.00115  0.00048
-#&gt; initial_volume:food_regimeHigh  0.00066  0.00069
+#&gt; (Intercept)                     0.03468  0.00918
+#&gt; initial_volume                  0.00150  0.00039
+#&gt; food_regimeLow                  0.01732  0.01228
+#&gt; food_regimeHigh                 0.01949  0.01378
+#&gt; initial_volume:food_regimeLow  -0.00116  0.00049
+#&gt; initial_volume:food_regimeHigh  0.00059  0.00069
 #&gt; 
 #&gt; Auxiliary parameter(s):
 #&gt;       Median  MAD_SD 
-#&gt; sigma 0.02132 0.00190
+#&gt; sigma 0.02124 0.00188
 #&gt; 
 #&gt; ------
 #&gt; * For help interpreting the printed output see ?print.stanreg
 #&gt; * For info on the priors used see ?prior_summary.stanreg</code></pre>
 <p>To update the parameter table, the <code>tidy()</code> method is once again used:</p>
-<pre class="r"><code>tidy(bayes_fit, intervals = TRUE)</code></pre>
-<pre><code>#&gt; # A tibble: 6 x 5
+<pre class="r"><code>tidy(bayes_fit, intervals = TRUE)
+#&gt; # A tibble: 6 x 5
 #&gt;   term                            estimate std.error     lower     upper
 #&gt;   &lt;chr&gt;                              &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
-#&gt; 1 (Intercept)                     0.0353    0.00939   0.0199    0.0509  
-#&gt; 2 initial_volume                  0.00147   0.000399  0.000829  0.00211 
-#&gt; 3 food_regimeLow                  0.0169    0.0122   -0.00329   0.0378  
-#&gt; 4 food_regimeHigh                 0.0183    0.0146   -0.00540   0.0419  
-#&gt; 5 initial_volume:food_regimeLow  -0.00115   0.000477 -0.00193  -0.000346
-#&gt; 6 initial_volume:food_regimeHigh  0.000658  0.000692 -0.000490  0.00183</code></pre>
+#&gt; 1 (Intercept)                     0.0347    0.00918   0.0194    0.0502  
+#&gt; 2 initial_volume                  0.00150   0.000391  0.000849  0.00212 
+#&gt; 3 food_regimeLow                  0.0173    0.0123   -0.00385   0.0383  
+#&gt; 4 food_regimeHigh                 0.0195    0.0138   -0.00423   0.0427  
+#&gt; 5 initial_volume:food_regimeLow  -0.00116   0.000490 -0.00199  -0.000337
+#&gt; 6 initial_volume:food_regimeHigh  0.000592  0.000691 -0.000531  0.00178</code></pre>
 <p>A goal of the tidymodels packages is that the <strong>interfaces to common tasks are standardized</strong> (as seen in the <code>tidy()</code> results above). The same is true for getting predictions; we can use the same code even though the underlying packages use very different syntax:</p>
 <pre class="r"><code>bayes_plot_data &lt;- 
   new_points %&gt;% 
@@ -280,7 +284,7 @@ ggplot(bayes_plot_data, aes(x = food_regime)) +
   geom_errorbar(aes(ymin = .pred_lower, ymax = .pred_upper), width = .2) + 
   labs(y = &quot;urchin size&quot;) + 
   ggtitle(&quot;Bayesian model with t(1) prior distribution&quot;)</code></pre>
-<p><img src="/examples/getting-started/models/index_files/figure-html/stan-pred-1.svg" width="672" /></p>
+<p><img src="figs/stan-pred-1.svg" width="672" /></p>
 <p>This isn’t very different from the non-Bayesian results (except in interpretation).</p>
 </div>
 <div id="why-does-it-work-that-way" class="section level1">
@@ -308,7 +312,7 @@ ggplot(bayes_plot_data, aes(x = food_regime)) +
 </div>
 <div id="session-information" class="section level1">
 <h1>Session information</h1>
-<pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────────────────────────
+<pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────
 #&gt;  setting  value                       
 #&gt;  version  R version 3.6.1 (2019-07-05)
 #&gt;  os       macOS Catalina 10.15.3      
@@ -318,9 +322,9 @@ ggplot(bayes_plot_data, aes(x = food_regime)) +
 #&gt;  collate  en_US.UTF-8                 
 #&gt;  ctype    en_US.UTF-8                 
 #&gt;  tz       America/Los_Angeles         
-#&gt;  date     2020-03-20                  
+#&gt;  date     2020-03-22                  
 #&gt; 
-#&gt; ─ Packages ───────────────────────────────────────────────────────────────────────────────────────
+#&gt; ─ Packages ───────────────────────────────────────────────────────────────────
 #&gt;  package    * version    date       lib source                               
 #&gt;  broom      * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
 #&gt;  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
@@ -331,7 +335,7 @@ ggplot(bayes_plot_data, aes(x = food_regime)) +
 #&gt;  readr      * 1.3.1      2018-12-21 [1] CRAN (R 3.6.0)                       
 #&gt;  recipes    * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
 #&gt;  rlang        0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
-#&gt;  rsample    * 0.0.5      2019-07-12 [1] CRAN (R 3.6.0)                       
+#&gt;  rsample    * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
 #&gt;  rstanarm   * 2.19.2     2019-10-03 [1] CRAN (R 3.6.0)                       
 #&gt;  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
 #&gt;  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       

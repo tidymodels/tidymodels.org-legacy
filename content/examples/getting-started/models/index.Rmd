@@ -5,14 +5,11 @@ tags: [parsnip]
 categories: [model fitting]
 ---
 
+```{r setup, include = FALSE, message = FALSE, warning = FALSE}
+source(here::here("content/examples/common.R"))
+```
 
 ```{r load, include = FALSE, message = FALSE, warning = FALSE}
-knitr::opts_chunk$set(
-  digits = 3,
-  comment = "#>",
-  dev = 'svg', 
-  dev.args = list(bg = "transparent")
-)
 library(readr)
 library(rstanarm)
 library(tidymodels)
@@ -47,7 +44,6 @@ small_session <- function(pkgs = NULL) {
 }
 
 theme_set(theme_bw() + theme(legend.position = "top"))
-options(width = 100, digits = 3)
 ```
 
 `r req_pkgs(pkgs)`

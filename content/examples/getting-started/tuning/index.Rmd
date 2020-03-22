@@ -4,16 +4,12 @@ weight: 4
 tags: [regression models]
 ---
 
+```{r setup, include = FALSE, message = FALSE, warning = FALSE}
+source(here::here("content/examples/common.R"))
+```
+
 
 ```{r load, include = FALSE, message = FALSE, warning = FALSE}
-knitr::opts_chunk$set(
-  digits = 3,
-  comment = "#>",
-  dev = 'svg', 
-  dev.args = list(bg = "transparent")
-)
-options(width = 100, digits = 3)
-
 library(tidymodels)
 library(ranger)
 library(modeldata)

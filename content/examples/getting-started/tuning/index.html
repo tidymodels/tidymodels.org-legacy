@@ -11,37 +11,43 @@ tags: [regression models]
 <h2>Predicting image segmentation, but better</h2>
 <p>In our <a href="LINKTODO">article on resampling</a>, we introduced a data set of images of cells that were labeled by experts as well-segmented (<code>WS</code>) or poorly segmented (<code>PS</code>). We trained a random forest model to predict which images are segmented well vs. poorly, so that a biologist could filter out poorly segmented cell images in their analysis. We used resampling to estimate the performance of our model on this data.</p>
 <pre class="r"><code>data(cells, package = &quot;modeldata&quot;)
-cells</code></pre>
-<pre><code>#&gt; # A tibble: 2,019 x 58
-#&gt;    case  class angle_ch_1 area_ch_1 avg_inten_ch_1 avg_inten_ch_2 avg_inten_ch_3 avg_inten_ch_4
-#&gt;    &lt;fct&gt; &lt;fct&gt;      &lt;dbl&gt;     &lt;int&gt;          &lt;dbl&gt;          &lt;dbl&gt;          &lt;dbl&gt;          &lt;dbl&gt;
-#&gt;  1 Test  PS        143.         185           15.7           4.95           9.55           2.21
-#&gt;  2 Train PS        134.         819           31.9         207.            69.9          164.  
-#&gt;  3 Train WS        107.         431           28.0         116.            63.9          107.  
-#&gt;  4 Train PS         69.2        298           19.5         102.            28.2           31.0 
-#&gt;  5 Test  PS          2.89       285           24.3         112.            20.5           40.6 
-#&gt;  6 Test  WS         40.7        172          326.          654.           129.           347.  
-#&gt;  7 Test  WS        174.         177          260.          596.           124.           273.  
-#&gt;  8 Test  PS        180.         251           18.3           5.73          17.2            1.55
-#&gt;  9 Test  WS         18.9        495           16.1          89.5           13.7           51.4 
-#&gt; 10 Test  WS        153.         384           17.7          89.9           20.4           63.1 
-#&gt; # … with 2,009 more rows, and 50 more variables: convex_hull_area_ratio_ch_1 &lt;dbl&gt;,
-#&gt; #   convex_hull_perim_ratio_ch_1 &lt;dbl&gt;, diff_inten_density_ch_1 &lt;dbl&gt;,
-#&gt; #   diff_inten_density_ch_3 &lt;dbl&gt;, diff_inten_density_ch_4 &lt;dbl&gt;, entropy_inten_ch_1 &lt;dbl&gt;,
-#&gt; #   entropy_inten_ch_3 &lt;dbl&gt;, entropy_inten_ch_4 &lt;dbl&gt;, eq_circ_diam_ch_1 &lt;dbl&gt;,
-#&gt; #   eq_ellipse_lwr_ch_1 &lt;dbl&gt;, eq_ellipse_oblate_vol_ch_1 &lt;dbl&gt;, eq_ellipse_prolate_vol_ch_1 &lt;dbl&gt;,
-#&gt; #   eq_sphere_area_ch_1 &lt;dbl&gt;, eq_sphere_vol_ch_1 &lt;dbl&gt;, fiber_align_2_ch_3 &lt;dbl&gt;,
-#&gt; #   fiber_align_2_ch_4 &lt;dbl&gt;, fiber_length_ch_1 &lt;dbl&gt;, fiber_width_ch_1 &lt;dbl&gt;,
-#&gt; #   inten_cooc_asm_ch_3 &lt;dbl&gt;, inten_cooc_asm_ch_4 &lt;dbl&gt;, inten_cooc_contrast_ch_3 &lt;dbl&gt;,
-#&gt; #   inten_cooc_contrast_ch_4 &lt;dbl&gt;, inten_cooc_entropy_ch_3 &lt;dbl&gt;, inten_cooc_entropy_ch_4 &lt;dbl&gt;,
-#&gt; #   inten_cooc_max_ch_3 &lt;dbl&gt;, inten_cooc_max_ch_4 &lt;dbl&gt;, kurt_inten_ch_1 &lt;dbl&gt;,
-#&gt; #   kurt_inten_ch_3 &lt;dbl&gt;, kurt_inten_ch_4 &lt;dbl&gt;, length_ch_1 &lt;dbl&gt;, neighbor_avg_dist_ch_1 &lt;dbl&gt;,
-#&gt; #   neighbor_min_dist_ch_1 &lt;dbl&gt;, neighbor_var_dist_ch_1 &lt;dbl&gt;, perim_ch_1 &lt;dbl&gt;,
-#&gt; #   shape_bfr_ch_1 &lt;dbl&gt;, shape_lwr_ch_1 &lt;dbl&gt;, shape_p_2_a_ch_1 &lt;dbl&gt;, skew_inten_ch_1 &lt;dbl&gt;,
-#&gt; #   skew_inten_ch_3 &lt;dbl&gt;, skew_inten_ch_4 &lt;dbl&gt;, spot_fiber_count_ch_3 &lt;int&gt;,
-#&gt; #   spot_fiber_count_ch_4 &lt;dbl&gt;, total_inten_ch_1 &lt;int&gt;, total_inten_ch_2 &lt;dbl&gt;,
-#&gt; #   total_inten_ch_3 &lt;int&gt;, total_inten_ch_4 &lt;int&gt;, var_inten_ch_1 &lt;dbl&gt;, var_inten_ch_3 &lt;dbl&gt;,
-#&gt; #   var_inten_ch_4 &lt;dbl&gt;, width_ch_1 &lt;dbl&gt;</code></pre>
+cells
+#&gt; # A tibble: 2,019 x 58
+#&gt;    case  class angle_ch_1 area_ch_1 avg_inten_ch_1 avg_inten_ch_2 avg_inten_ch_3
+#&gt;    &lt;fct&gt; &lt;fct&gt;      &lt;dbl&gt;     &lt;int&gt;          &lt;dbl&gt;          &lt;dbl&gt;          &lt;dbl&gt;
+#&gt;  1 Test  PS        143.         185           15.7           4.95           9.55
+#&gt;  2 Train PS        134.         819           31.9         207.            69.9 
+#&gt;  3 Train WS        107.         431           28.0         116.            63.9 
+#&gt;  4 Train PS         69.2        298           19.5         102.            28.2 
+#&gt;  5 Test  PS          2.89       285           24.3         112.            20.5 
+#&gt;  6 Test  WS         40.7        172          326.          654.           129.  
+#&gt;  7 Test  WS        174.         177          260.          596.           124.  
+#&gt;  8 Test  PS        180.         251           18.3           5.73          17.2 
+#&gt;  9 Test  WS         18.9        495           16.1          89.5           13.7 
+#&gt; 10 Test  WS        153.         384           17.7          89.9           20.4 
+#&gt; # … with 2,009 more rows, and 51 more variables: avg_inten_ch_4 &lt;dbl&gt;,
+#&gt; #   convex_hull_area_ratio_ch_1 &lt;dbl&gt;, convex_hull_perim_ratio_ch_1 &lt;dbl&gt;,
+#&gt; #   diff_inten_density_ch_1 &lt;dbl&gt;, diff_inten_density_ch_3 &lt;dbl&gt;,
+#&gt; #   diff_inten_density_ch_4 &lt;dbl&gt;, entropy_inten_ch_1 &lt;dbl&gt;,
+#&gt; #   entropy_inten_ch_3 &lt;dbl&gt;, entropy_inten_ch_4 &lt;dbl&gt;,
+#&gt; #   eq_circ_diam_ch_1 &lt;dbl&gt;, eq_ellipse_lwr_ch_1 &lt;dbl&gt;,
+#&gt; #   eq_ellipse_oblate_vol_ch_1 &lt;dbl&gt;, eq_ellipse_prolate_vol_ch_1 &lt;dbl&gt;,
+#&gt; #   eq_sphere_area_ch_1 &lt;dbl&gt;, eq_sphere_vol_ch_1 &lt;dbl&gt;,
+#&gt; #   fiber_align_2_ch_3 &lt;dbl&gt;, fiber_align_2_ch_4 &lt;dbl&gt;,
+#&gt; #   fiber_length_ch_1 &lt;dbl&gt;, fiber_width_ch_1 &lt;dbl&gt;, inten_cooc_asm_ch_3 &lt;dbl&gt;,
+#&gt; #   inten_cooc_asm_ch_4 &lt;dbl&gt;, inten_cooc_contrast_ch_3 &lt;dbl&gt;,
+#&gt; #   inten_cooc_contrast_ch_4 &lt;dbl&gt;, inten_cooc_entropy_ch_3 &lt;dbl&gt;,
+#&gt; #   inten_cooc_entropy_ch_4 &lt;dbl&gt;, inten_cooc_max_ch_3 &lt;dbl&gt;,
+#&gt; #   inten_cooc_max_ch_4 &lt;dbl&gt;, kurt_inten_ch_1 &lt;dbl&gt;, kurt_inten_ch_3 &lt;dbl&gt;,
+#&gt; #   kurt_inten_ch_4 &lt;dbl&gt;, length_ch_1 &lt;dbl&gt;, neighbor_avg_dist_ch_1 &lt;dbl&gt;,
+#&gt; #   neighbor_min_dist_ch_1 &lt;dbl&gt;, neighbor_var_dist_ch_1 &lt;dbl&gt;,
+#&gt; #   perim_ch_1 &lt;dbl&gt;, shape_bfr_ch_1 &lt;dbl&gt;, shape_lwr_ch_1 &lt;dbl&gt;,
+#&gt; #   shape_p_2_a_ch_1 &lt;dbl&gt;, skew_inten_ch_1 &lt;dbl&gt;, skew_inten_ch_3 &lt;dbl&gt;,
+#&gt; #   skew_inten_ch_4 &lt;dbl&gt;, spot_fiber_count_ch_3 &lt;int&gt;,
+#&gt; #   spot_fiber_count_ch_4 &lt;dbl&gt;, total_inten_ch_1 &lt;int&gt;,
+#&gt; #   total_inten_ch_2 &lt;dbl&gt;, total_inten_ch_3 &lt;int&gt;, total_inten_ch_4 &lt;int&gt;,
+#&gt; #   var_inten_ch_1 &lt;dbl&gt;, var_inten_ch_3 &lt;dbl&gt;, var_inten_ch_4 &lt;dbl&gt;,
+#&gt; #   width_ch_1 &lt;dbl&gt;</code></pre>
 <p>Random forest models typically perform well with defaults, but there are several hyperparameters that can be tuned for better performance. The two hyperparameters that have the largest impact on predictive accuracy are</p>
 <ul>
 <li>the number of features considered at any given split (which we call <code>mtry</code> in tidymodels), and</li>
@@ -68,8 +74,8 @@ cell_test  &lt;- testing(cell_split)</code></pre>
   set_engine(&quot;ranger&quot;) %&gt;% 
   set_mode(&quot;classification&quot;)
 
-tune_spec</code></pre>
-<pre><code>#&gt; Random Forest Model Specification (classification)
+tune_spec
+#&gt; Random Forest Model Specification (classification)
 #&gt; 
 #&gt; Main Arguments:
 #&gt;   mtry = tune()
@@ -89,10 +95,11 @@ rf_res &lt;- tune_spec %&gt;%
     class ~ .,
     resamples = cell_folds,
     grid = rf_grid
-  )</code></pre>
-<pre><code>#&gt; i Creating pre-processing data to finalize unknown parameter: mtry</code></pre>
-<pre class="r"><code>rf_res</code></pre>
-<pre><code>#&gt; #  10-fold cross-validation 
+  )
+#&gt; i Creating pre-processing data to finalize unknown parameter: mtry
+
+rf_res
+#&gt; #  10-fold cross-validation 
 #&gt; # A tibble: 10 x 4
 #&gt;    splits             id     .metrics          .notes          
 #&gt;  * &lt;list&gt;             &lt;chr&gt;  &lt;list&gt;            &lt;list&gt;          
@@ -119,53 +126,55 @@ rf_res &lt;- tune_spec %&gt;%
   ) +
   geom_line(size = 1.5, alpha = 0.8) +
   facet_wrap(~ .metric, scales = &quot;free&quot;, nrow = 2)</code></pre>
-<p><img src="/examples/getting-started/tuning/index_files/figure-html/best-rf-1.svg" width="768" /></p>
-<pre class="r"><code>best_rf &lt;- rf_res %&gt;%
+<p><img src="figs/best-rf-1.svg" width="768" /></p>
+<pre class="r"><code>  
+best_rf &lt;- rf_res %&gt;%
   select_best(&quot;accuracy&quot;)
 
-best_rf</code></pre>
-<pre><code>#&gt; # A tibble: 1 x 2
+best_rf
+#&gt; # A tibble: 1 x 2
 #&gt;    mtry min_n
 #&gt;   &lt;dbl&gt; &lt;dbl&gt;
-#&gt; 1    17     2</code></pre>
+#&gt; 1    29    16</code></pre>
 <p>These are the values for <code>mtry</code> and <code>min_n</code> that maximize AUC in this data set of cell images. We can update (or “finalize”) our model with these values.</p>
 <pre class="r"><code>final_rf &lt;- finalize_model(
   tune_spec,
   best_rf
 )
 
-final_rf</code></pre>
-<pre><code>#&gt; Random Forest Model Specification (classification)
+final_rf
+#&gt; Random Forest Model Specification (classification)
 #&gt; 
 #&gt; Main Arguments:
-#&gt;   mtry = 17
+#&gt;   mtry = 29
 #&gt;   trees = 1000
-#&gt;   min_n = 2
+#&gt;   min_n = 16
 #&gt; 
 #&gt; Computational engine: ranger</code></pre>
 <p>Perhaps we would also like to understand what variables are important in this final model. We can use the <a href="https://koalaverse.github.io/vip/">vip</a> package to estimate variable importance, and we can update the engine of our final model with <code>importance = &quot;permutation&quot;</code> so that the correct quantities are computed when growing the forest.</p>
-<pre class="r"><code>library(vip)</code></pre>
-<pre><code>#&gt; 
-#&gt; Attaching package: &#39;vip&#39;</code></pre>
-<pre><code>#&gt; The following object is masked from &#39;package:utils&#39;:
+<pre class="r"><code>library(vip)
 #&gt; 
-#&gt;     vi</code></pre>
-<pre class="r"><code>final_rf %&gt;%
+#&gt; Attaching package: &#39;vip&#39;
+#&gt; The following object is masked from &#39;package:utils&#39;:
+#&gt; 
+#&gt;     vi
+
+final_rf %&gt;%
   set_engine(&quot;ranger&quot;, importance = &quot;permutation&quot;) %&gt;% 
   fit(class ~ .,
       data = cell_train) %&gt;%
   vip(geom = &quot;point&quot;)</code></pre>
-<p><img src="/examples/getting-started/tuning/index_files/figure-html/vip-1.svg" width="576" /></p>
+<p><img src="figs/vip-1.svg" width="576" /></p>
 <p>These are the automated image analysis measurements that are the most important in driving segmentation quality predictions.</p>
 <p>Finally, let’s return to our test data and estimate the model performance we expect to see on new data. We can use the function <code>last_fit()</code> with our finalized model; this function <em>fits</em> the finalized model on the training data and <em>evaluates</em> the finalized model on the testing data.</p>
 <pre class="r"><code>final_rf %&gt;%
   last_fit(class ~ ., 
            cell_split) %&gt;%
-  collect_metrics</code></pre>
-<pre><code>#&gt; # A tibble: 2 x 3
+  collect_metrics
+#&gt; # A tibble: 2 x 3
 #&gt;   .metric  .estimator .estimate
 #&gt;   &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;
-#&gt; 1 accuracy binary         0.829
-#&gt; 2 roc_auc  binary         0.904</code></pre>
+#&gt; 1 accuracy binary         0.833
+#&gt; 2 roc_auc  binary         0.902</code></pre>
 <p>The performance metrics from the test set indicate that we did not overfit during our tuning procedure.</p>
 </div>
