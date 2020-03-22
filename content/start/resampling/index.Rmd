@@ -6,7 +6,7 @@ categories: [resampling]
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}
-source(here::here("content/examples/common.R"))
+source(here::here("content/get-started/common.R"))
 ```
 
 

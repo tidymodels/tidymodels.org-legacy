@@ -135,7 +135,7 @@ best_rf
 #&gt; # A tibble: 1 x 2
 #&gt;    mtry min_n
 #&gt;   &lt;dbl&gt; &lt;dbl&gt;
-#&gt; 1    29    16</code></pre>
+#&gt; 1    11     4</code></pre>
 <p>These are the values for <code>mtry</code> and <code>min_n</code> that maximize AUC in this data set of cell images. We can update (or “finalize”) our model with these values.</p>
 <pre class="r"><code>final_rf &lt;- finalize_model(
   tune_spec,
@@ -146,9 +146,9 @@ final_rf
 #&gt; Random Forest Model Specification (classification)
 #&gt; 
 #&gt; Main Arguments:
-#&gt;   mtry = 29
+#&gt;   mtry = 11
 #&gt;   trees = 1000
-#&gt;   min_n = 16
+#&gt;   min_n = 4
 #&gt; 
 #&gt; Computational engine: ranger</code></pre>
 <p>Perhaps we would also like to understand what variables are important in this final model. We can use the <a href="https://koalaverse.github.io/vip/">vip</a> package to estimate variable importance, and we can update the engine of our final model with <code>importance = &quot;permutation&quot;</code> so that the correct quantities are computed when growing the forest.</p>
@@ -174,7 +174,7 @@ final_rf %&gt;%
 #&gt; # A tibble: 2 x 3
 #&gt;   .metric  .estimator .estimate
 #&gt;   &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;
-#&gt; 1 accuracy binary         0.833
-#&gt; 2 roc_auc  binary         0.902</code></pre>
+#&gt; 1 accuracy binary         0.835
+#&gt; 2 roc_auc  binary         0.906</code></pre>
 <p>The performance metrics from the test set indicate that we did not overfit during our tuning procedure.</p>
 </div>
