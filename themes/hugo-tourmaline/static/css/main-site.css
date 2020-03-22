@@ -108,7 +108,7 @@ html, body {
 
 .bandContent {
   margin: 0 auto;
-  max-width: 1100px; }
+  max-width: 1200px; }
 
 .full {
   margin: 30px 0 30px 0; }
@@ -204,7 +204,7 @@ a {
     display: inline-block; }
   #rStudioHeader .user {
     cursor: pointer;
-    font-size: 16px;
+    font-size: 13px;
     padding-right: 4px;
     border-radius: 3px;
     -webkit-transition-property: opacity, background-color;
@@ -351,7 +351,7 @@ a {
 #rStudioHeader #menu {
   text-align: right;
   font-weight: 400;
-  font-size: 16px;
+  font-size: 13px;
   line-height: 26px;
   white-space: nowrap; }
   #rStudioHeader #menu #menuToggler {
@@ -461,7 +461,7 @@ a {
     line-height: 20px; }
     #rStudioFooter .bandContent #copyright {
       flex-shrink: 5;
-      color: #fcfcfc; }
+      color: #e3eef8; }
       #rStudioFooter .bandContent #copyright a {
         color: #fff; }
     #rStudioFooter .bandContent #logos {
@@ -518,7 +518,7 @@ a {
   -webkit-justify-content: space-between;
   align-items: flex-start; }
   .splitColumns .column75 {
-    width: 70%; }
+    width: 73%; }
   .splitColumns .column67 {
     width: 65%; }
   .splitColumns .column50 {
@@ -1062,7 +1062,6 @@ em {
     line-height: 40px;
     max-width: 48%; }
     #homeContent .band .blurb .tagline {
-      font-family: 'Lato';
       font-size: 36px;
       margin-bottom: 16px; }
       #homeContent .band .blurb .tagline.small {
@@ -1076,18 +1075,17 @@ em {
     #homeContent .band.first .bandContent {
       padding-top: 220px;
       height: 100%;
-      background-image: url(images/tidy-back-01a.svg);
+      background-image: url(images/tidy-back-01.svg);
       background-repeat: no-repeat;
-      background-size: 570px 690px;
-      color: #1a162d;}
+      background-size: 570px 690px; }
   #homeContent .band.second {
     height: 952px;
-    background-color: #fcfcfc; } /*This is overridden by params */
+    background-color: #fdeba4; }
     #homeContent .band.second .bandContent {
       padding-top: 120px;
       padding-bottom: 100px;
       height: 100%;
-      background-image: url(images/tidy-back-02a.svg);
+      background-image: url(images/tidy-back-02.svg);
       background-repeat: no-repeat;
       background-size: 700px 952px; }
   #homeContent .band.third {
@@ -1096,10 +1094,9 @@ em {
       height: 450px;
       padding-top: 100px;
       padding-bottom: 100px;
-      background-image: url(images/tidy-back-03a.svg);
+      background-image: url(images/tidy-back-03.svg);
       background-repeat: no-repeat;
-      background-size: 650px 450px;
-      color: #1a162d;}
+      background-size: 650px 450px; }
   #homeContent .bookCover {
     margin-top: 50px;
     margin-left: 50px; }
