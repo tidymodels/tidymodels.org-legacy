@@ -1,5 +1,5 @@
 ---
-title: "Using models"
+title: "Building a model"
 weight: 1
 tags: [parsnip]
 categories: [model fitting]
@@ -72,7 +72,7 @@ ggplot(urchins, aes(x = initial_volume, y = width, group = food_regime, col = fo
 lm_fit
 #&gt; parsnip model object
 #&gt; 
-#&gt; Fit time:  2ms 
+#&gt; Fit time:  4ms 
 #&gt; 
 #&gt; Call:
 #&gt; stats::lm(formula = formula, data = data)
@@ -150,8 +150,8 @@ bayes_fit &lt;-
 #&gt; 
 #&gt; SAMPLING FOR MODEL &#39;continuous&#39; NOW (CHAIN 1).
 #&gt; Chain 1: 
-#&gt; Chain 1: Gradient evaluation took 7.5e-05 seconds
-#&gt; Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.75 seconds.
+#&gt; Chain 1: Gradient evaluation took 0.000115 seconds
+#&gt; Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 1.15 seconds.
 #&gt; Chain 1: Adjust your expectations accordingly!
 #&gt; Chain 1: 
 #&gt; Chain 1: 
@@ -168,15 +168,15 @@ bayes_fit &lt;-
 #&gt; Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #&gt; Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 #&gt; Chain 1: 
-#&gt; Chain 1:  Elapsed Time: 0.21407 seconds (Warm-up)
-#&gt; Chain 1:                0.134977 seconds (Sampling)
-#&gt; Chain 1:                0.349047 seconds (Total)
+#&gt; Chain 1:  Elapsed Time: 0.504522 seconds (Warm-up)
+#&gt; Chain 1:                0.327622 seconds (Sampling)
+#&gt; Chain 1:                0.832144 seconds (Total)
 #&gt; Chain 1: 
 #&gt; 
 #&gt; SAMPLING FOR MODEL &#39;continuous&#39; NOW (CHAIN 2).
 #&gt; Chain 2: 
-#&gt; Chain 2: Gradient evaluation took 1.2e-05 seconds
-#&gt; Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.12 seconds.
+#&gt; Chain 2: Gradient evaluation took 2.6e-05 seconds
+#&gt; Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.26 seconds.
 #&gt; Chain 2: Adjust your expectations accordingly!
 #&gt; Chain 2: 
 #&gt; Chain 2: 
@@ -193,15 +193,15 @@ bayes_fit &lt;-
 #&gt; Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #&gt; Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 #&gt; Chain 2: 
-#&gt; Chain 2:  Elapsed Time: 0.175578 seconds (Warm-up)
-#&gt; Chain 2:                0.136738 seconds (Sampling)
-#&gt; Chain 2:                0.312316 seconds (Total)
+#&gt; Chain 2:  Elapsed Time: 0.475159 seconds (Warm-up)
+#&gt; Chain 2:                0.268759 seconds (Sampling)
+#&gt; Chain 2:                0.743918 seconds (Total)
 #&gt; Chain 2: 
 #&gt; 
 #&gt; SAMPLING FOR MODEL &#39;continuous&#39; NOW (CHAIN 3).
 #&gt; Chain 3: 
-#&gt; Chain 3: Gradient evaluation took 1.2e-05 seconds
-#&gt; Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.12 seconds.
+#&gt; Chain 3: Gradient evaluation took 2.5e-05 seconds
+#&gt; Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.25 seconds.
 #&gt; Chain 3: Adjust your expectations accordingly!
 #&gt; Chain 3: 
 #&gt; Chain 3: 
@@ -218,15 +218,15 @@ bayes_fit &lt;-
 #&gt; Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #&gt; Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
 #&gt; Chain 3: 
-#&gt; Chain 3:  Elapsed Time: 0.244479 seconds (Warm-up)
-#&gt; Chain 3:                0.139669 seconds (Sampling)
-#&gt; Chain 3:                0.384148 seconds (Total)
+#&gt; Chain 3:  Elapsed Time: 0.442358 seconds (Warm-up)
+#&gt; Chain 3:                0.287219 seconds (Sampling)
+#&gt; Chain 3:                0.729577 seconds (Total)
 #&gt; Chain 3: 
 #&gt; 
 #&gt; SAMPLING FOR MODEL &#39;continuous&#39; NOW (CHAIN 4).
 #&gt; Chain 4: 
-#&gt; Chain 4: Gradient evaluation took 1.3e-05 seconds
-#&gt; Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.13 seconds.
+#&gt; Chain 4: Gradient evaluation took 2.5e-05 seconds
+#&gt; Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.25 seconds.
 #&gt; Chain 4: Adjust your expectations accordingly!
 #&gt; Chain 4: 
 #&gt; Chain 4: 
@@ -243,15 +243,15 @@ bayes_fit &lt;-
 #&gt; Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #&gt; Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 #&gt; Chain 4: 
-#&gt; Chain 4:  Elapsed Time: 0.219855 seconds (Warm-up)
-#&gt; Chain 4:                0.138924 seconds (Sampling)
-#&gt; Chain 4:                0.358779 seconds (Total)
+#&gt; Chain 4:  Elapsed Time: 0.465304 seconds (Warm-up)
+#&gt; Chain 4:                0.332777 seconds (Sampling)
+#&gt; Chain 4:                0.798081 seconds (Total)
 #&gt; Chain 4:
 
 print(bayes_fit, digits = 5)
 #&gt; parsnip model object
 #&gt; 
-#&gt; Fit time:  1.6s 
+#&gt; Fit time:  3.4s 
 #&gt; stan_glm
 #&gt;  family:       gaussian [identity]
 #&gt;  formula:      width ~ (initial_volume + food_regime)^2
@@ -259,16 +259,16 @@ print(bayes_fit, digits = 5)
 #&gt;  predictors:   6
 #&gt; ------
 #&gt;                                Median   MAD_SD  
-#&gt; (Intercept)                     0.03473  0.00992
-#&gt; initial_volume                  0.00150  0.00042
-#&gt; food_regimeLow                  0.01718  0.01280
-#&gt; food_regimeHigh                 0.01895  0.01467
-#&gt; initial_volume:food_regimeLow  -0.00116  0.00049
-#&gt; initial_volume:food_regimeHigh  0.00061  0.00072
+#&gt; (Intercept)                     0.03510  0.00917
+#&gt; initial_volume                  0.00147  0.00041
+#&gt; food_regimeLow                  0.01718  0.01271
+#&gt; food_regimeHigh                 0.01813  0.01388
+#&gt; initial_volume:food_regimeLow  -0.00116  0.00050
+#&gt; initial_volume:food_regimeHigh  0.00066  0.00066
 #&gt; 
 #&gt; Auxiliary parameter(s):
 #&gt;       Median  MAD_SD 
-#&gt; sigma 0.02133 0.00181
+#&gt; sigma 0.02130 0.00186
 #&gt; 
 #&gt; ------
 #&gt; * For help interpreting the printed output see ?print.stanreg
@@ -278,12 +278,12 @@ print(bayes_fit, digits = 5)
 #&gt; # A tibble: 6 x 5
 #&gt;   term                            estimate std.error     lower     upper
 #&gt;   &lt;chr&gt;                              &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
-#&gt; 1 (Intercept)                     0.0347    0.00992   0.0187    0.0508  
-#&gt; 2 initial_volume                  0.00150   0.000417  0.000831  0.00216 
-#&gt; 3 food_regimeLow                  0.0172    0.0128   -0.00364   0.0384  
-#&gt; 4 food_regimeHigh                 0.0190    0.0147   -0.00450   0.0439  
-#&gt; 5 initial_volume:food_regimeLow  -0.00116   0.000494 -0.00201  -0.000349
-#&gt; 6 initial_volume:food_regimeHigh  0.000612  0.000718 -0.000588  0.00177</code></pre>
+#&gt; 1 (Intercept)                     0.0351    0.00917   0.0195    0.0503  
+#&gt; 2 initial_volume                  0.00147   0.000407  0.000836  0.00214 
+#&gt; 3 food_regimeLow                  0.0172    0.0127   -0.00374   0.0379  
+#&gt; 4 food_regimeHigh                 0.0181    0.0139   -0.00472   0.0423  
+#&gt; 5 initial_volume:food_regimeLow  -0.00116   0.000499 -0.00199  -0.000309
+#&gt; 6 initial_volume:food_regimeHigh  0.000656  0.000660 -0.000502  0.00177</code></pre>
 <p>A goal of the tidymodels packages is that the <strong>interfaces to common tasks are standardized</strong> (as seen in the <code>tidy()</code> results above). The same is true for getting predictions; we can use the same code even though the underlying packages use very different syntax:</p>
 <pre class="r"><code>bayes_plot_data &lt;- 
   new_points %&gt;% 

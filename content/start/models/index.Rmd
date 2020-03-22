@@ -1,5 +1,5 @@
 ---
-title: "Using models"
+title: "Building a model"
 weight: 1
 tags: [parsnip]
 categories: [model fitting]

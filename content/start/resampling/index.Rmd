@@ -1,5 +1,5 @@
 ---
-title: "Resampling a model"
+title: "Evaluate your model with resampling"
 weight: 3
 tags: [rsample, parsnip, tune, yardstick]
 categories: [resampling]
