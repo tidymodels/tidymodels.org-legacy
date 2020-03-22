@@ -3,6 +3,9 @@ title: "Recipes"
 weight: 2
 tags: [recipes, parsnip, workflows, yardstick]
 categories: [pre-processing]
+output:
+  blogdown::html_page:
+    toc: true
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}

@@ -3,6 +3,9 @@ title: "Using models"
 weight: 1
 tags: [parsnip]
 categories: [model fitting]
+output:
+  blogdown::html_page:
+    toc: true
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}

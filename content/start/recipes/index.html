@@ -3,9 +3,22 @@ title: "Recipes"
 weight: 2
 tags: [recipes, parsnip, workflows, yardstick]
 categories: [pre-processing]
+output:
+  blogdown::html_page:
+    toc: true
 ---
 
 
+<div id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#the-new-york-city-flight-data">The New York City flight data</a><ul>
+<li><a href="#creating-the-predictor-definitions">Creating the predictor definitions</a></li>
+</ul></li>
+<li><a href="#using-a-recipe-with-a-model">Using a recipe with a model</a></li>
+<li><a href="#session-information">Session information</a></li>
+</ul>
+</div>
 
 <p>This article requires that you have the following packages installed: <code>nycflights13</code>, <code>skimr</code>, and <code>tidymodels</code>.</p>
 <div id="introduction" class="section level1">
@@ -377,11 +390,11 @@ as.numeric(days)
   add_model(lr_mod) %&gt;% 
   add_recipe(flights_rec)
 flights_wflow
-#&gt; ══ Workflow ═══════════════════════════════════════════════════════════
+#&gt; ══ Workflow ════════════════════════════════════════════════════════════════
 #&gt; Preprocessor: Recipe
 #&gt; Model: logistic_reg()
 #&gt; 
-#&gt; ── Preprocessor ───────────────────────────────────────────────────────
+#&gt; ── Preprocessor ────────────────────────────────────────────────────────────
 #&gt; 5 Recipe Steps
 #&gt; 
 #&gt; ● step_date()
@@ -390,7 +403,7 @@ flights_wflow
 #&gt; ● step_dummy()
 #&gt; ● step_zv()
 #&gt; 
-#&gt; ── Model ──────────────────────────────────────────────────────────────
+#&gt; ── Model ───────────────────────────────────────────────────────────────────
 #&gt; Logistic Regression Model Specification (classification)
 #&gt; 
 #&gt; Computational engine: glm</code></pre>

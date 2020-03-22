@@ -3,10 +3,24 @@ title: "Resampling a model"
 weight: 3
 tags: [rsample, parsnip, tune, yardstick]
 categories: [resampling]
+output:
+  blogdown::html_page:
+    toc: true
 ---
 
 <script src="/rmarkdown-libs/kePrint/kePrint.js"></script>
 
+<div id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#predicting-image-segmentation">Predicting image segmentation</a></li>
+<li><a href="#data-splitting">Data splitting</a></li>
+<li><a href="#modeling">Modeling</a></li>
+<li><a href="#estimating-performance">Estimating performance</a></li>
+<li><a href="#resampling-to-the-rescue">Resampling to the rescue</a></li>
+<li><a href="#session-information">Session information</a></li>
+</ul>
+</div>
 
 <p>This article requires that you have the following packages installed: <code>modeldata</code>, <code>ranger</code>, and <code>tidymodels</code>.</p>
 <div id="introduction" class="section level1">
@@ -105,7 +119,7 @@ rf_fit &lt;- rf_mod %&gt;% fit(class ~ ., data = cell_train)
 rf_fit
 #&gt; parsnip model object
 #&gt; 
-#&gt; Fit time:  2.7s 
+#&gt; Fit time:  2.9s 
 #&gt; Ranger result
 #&gt; 
 #&gt; Call:

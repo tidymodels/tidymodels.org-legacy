@@ -3,6 +3,9 @@ title: "Resampling a model"
 weight: 3
 tags: [rsample, parsnip, tune, yardstick]
 categories: [resampling]
+output:
+  blogdown::html_page:
+    toc: true
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}
