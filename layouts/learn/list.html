@@ -6,10 +6,8 @@
     <div class="full splitColumns withMobileMargins">
       <div class="column75">
         <div class="sectionTitle">{{ .Title }}</div>
-  
 
-        {{ $paginator := .Paginate (where site.RegularPages "Section" "learn") }}
-        <div>{{ range where $paginator.Pages ".Params.announce" "!=" false }}
+        <div>{{ range .Sections }}
               {{ $post := . }}
           <div class="listItem">
              {{ $card := (.Resources.ByType "image").GetMatch "*thumbnail*" }}
