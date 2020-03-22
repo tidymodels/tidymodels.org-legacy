@@ -6,7 +6,7 @@ categories: [pre-processing]
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}
-source(here::here("content/get-started/common.R"))
+source(here::here("content/start/common.R"))
 ```
 
 
