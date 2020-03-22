@@ -1,0 +1,220 @@
+---
+title: "Model Tuning via Grid Search"
+tags: [rsample, parsnip, tune, yardstick]
+categories: [model tuning]
+type: learn-subsection
+---
+
+
+
+<p>This article requires that you have the following packages installed: <code>kernlab</code>, <code>mlbench</code>, and <code>tidymodels</code>.</p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>This article provides another example of tuning a model using grid search.</p>
+</div>
+<div id="example-data" class="section level1">
+<h1>Example data</h1>
+<p>To demonstrate model tuning, we’ll use the Ionosphere data in the <code>mlbench</code> package:</p>
+<pre class="r"><code>library(tidymodels)
+library(mlbench)
+data(Ionosphere)</code></pre>
+<p>From <code>?Ionosphere</code>:</p>
+<blockquote>
+<p>This radar data was collected by a system in Goose Bay, Labrador. This system consists of a phased array of 16 high-frequency antennas with a total transmitted power on the order of 6.4 kilowatts. See the paper for more details. The targets were free electrons in the ionosphere. “good” radar returns are those showing evidence of some type of structure in the ionosphere. “bad” returns are those that do not; their signals pass through the ionosphere.</p>
+</blockquote>
+<blockquote>
+<p>Received signals were processed using an autocorrelation function whose arguments are the time of a pulse and the pulse number. There were 17 pulse numbers for the Goose Bay system. Instances in this databse are described by 2 attributes per pulse number, corresponding to the complex values returned by the function resulting from the complex electromagnetic signal. See cited below for more details.</p>
+</blockquote>
+<p>There are 43 predictors and a factor outcome. Two of the predictors are factors (<code>V1</code> and <code>V2</code>) and the rest are numerics that have been scaled to a range of -1 to 1. Note that the two factor predictors have sparse distributions:</p>
+<pre class="r"><code>table(Ionosphere$V1)
+#&gt; 
+#&gt;   0   1 
+#&gt;  38 313
+table(Ionosphere$V2)
+#&gt; 
+#&gt;   0 
+#&gt; 351</code></pre>
+<p>There’s no point of putting <code>V2</code> into any model since is is a zero-variance predictor. <code>V1</code> is not but it <em>could</em> be if the resampling process ends up sampling all of the same value. Is this an issue? It might be since the standard R formula infrastructure fails when there is only a single observed value:</p>
+<pre class="r"><code>glm(Class ~ ., data = Ionosphere, family = binomial)
+#&gt; Error in `contrasts&lt;-`(`*tmp*`, value = contr.funs[1 + isOF[nn]]): contrasts can be applied only to factors with 2 or more levels
+
+# Surprisingly, this doesn&#39;t help: 
+
+glm(Class ~ . - V2, data = Ionosphere, family = binomial)
+#&gt; Error in `contrasts&lt;-`(`*tmp*`, value = contr.funs[1 + isOF[nn]]): contrasts can be applied only to factors with 2 or more levels</code></pre>
+<p>At a minimum, let’s get rid of the most problematic variable:</p>
+<pre class="r"><code>Ionosphere &lt;- Ionosphere %&gt;% select(-V2)</code></pre>
+</div>
+<div id="inputs-for-the-search" class="section level1">
+<h1>Inputs for the Search</h1>
+<p>To demonstrate, we’ll fit a radial basis function support vector machine to these data and tune the SVM cost parameter and the <span class="math inline">\(\sigma\)</span> parameter in the kernel function:</p>
+<pre class="r"><code>svm_mod &lt;-
+  svm_rbf(cost = tune(), rbf_sigma = tune()) %&gt;%
+  set_mode(&quot;classification&quot;) %&gt;%
+  set_engine(&quot;kernlab&quot;)</code></pre>
+<p>In the code below, tuning will be demonstrated using a standard R formula as well as this recipe:</p>
+<pre class="r"><code>iono_rec &lt;-
+  recipe(Class ~ ., data = Ionosphere)  %&gt;%
+  # In case V1 is has a single value sampled
+  step_zv(all_predictors()) %&gt;% 
+  # convert it to a dummy variable
+  step_dummy(V1) %&gt;%
+  # Scale it the same as the others
+  step_range(matches(&quot;V1_&quot;))</code></pre>
+<p>The only other required item for tuning is a resampling strategy as defined by an <code>rsample</code> object. Let’s demonstrate using basic bootstrapping:</p>
+<pre class="r"><code>set.seed(4943)
+iono_rs &lt;- bootstraps(Ionosphere, times = 30)</code></pre>
+</div>
+<div id="optional-inputs" class="section level1">
+<h1>Optional Inputs</h1>
+<p>An <em>optional</em> step for model tuning is to specify which metrics should be computed using the out-of-sample predictions. For classification, the default is to calculate the log-likelihood statistic and overall accuracy. Instead of the defaults, the area under the ROC curve will be used. To do this, a <code>yardstick</code> function can be used to create a metric set:</p>
+<pre class="r"><code>roc_vals &lt;- metric_set(roc_auc)</code></pre>
+<p>If no grid or parameters are provided, a set of 10 are created using a space-filling design (via a Latin hypercube). A grid can be given in a data frame where the parameters are in columns and parameter combinations are in rows. Here, the default will be used.</p>
+<p>Also, a control object can be passed that specifies different aspects of the search. Here, the verbose option is turned off.</p>
+<pre class="r"><code>ctrl &lt;- control_grid(verbose = FALSE)</code></pre>
+</div>
+<div id="executing-the-grid-using-a-formula" class="section level1">
+<h1>Executing the grid using a formula</h1>
+<p>First, the formula interface will be used:</p>
+<pre class="r"><code>set.seed(35)
+formula_res &lt;-
+  svm_mod %&gt;% 
+  tune_grid(
+    Class ~ .,
+    resamples = iono_rs,
+    metrics = roc_vals,
+    control = ctrl
+  )
+formula_res
+#&gt; # Bootstrap sampling 
+#&gt; # A tibble: 30 x 4
+#&gt;    splits            id          .metrics          .notes          
+#&gt;  * &lt;list&gt;            &lt;chr&gt;       &lt;list&gt;            &lt;list&gt;          
+#&gt;  1 &lt;split [351/120]&gt; Bootstrap01 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
+#&gt;  2 &lt;split [351/130]&gt; Bootstrap02 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
+#&gt;  3 &lt;split [351/137]&gt; Bootstrap03 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
+#&gt;  4 &lt;split [351/141]&gt; Bootstrap04 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
+#&gt;  5 &lt;split [351/131]&gt; Bootstrap05 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
+#&gt;  6 &lt;split [351/131]&gt; Bootstrap06 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
+#&gt;  7 &lt;split [351/127]&gt; Bootstrap07 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
+#&gt;  8 &lt;split [351/123]&gt; Bootstrap08 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
+#&gt;  9 &lt;split [351/131]&gt; Bootstrap09 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
+#&gt; 10 &lt;split [351/117]&gt; Bootstrap10 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
+#&gt; # … with 20 more rows</code></pre>
+<p>The <code>.metrics</code> column contains tibbles of the performance metrics for each tuning parameter combination:</p>
+<pre class="r"><code>formula_res %&gt;% select(.metrics) %&gt;% slice(1) %&gt;% pull(1)
+#&gt; [[1]]
+#&gt; # A tibble: 10 x 5
+#&gt;        cost rbf_sigma .metric .estimator .estimate
+#&gt;       &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+#&gt;  1  0.00849  1.11e-10 roc_auc binary         0.890
+#&gt;  2  0.176    7.28e- 8 roc_auc binary         0.903
+#&gt;  3 14.9      3.93e- 4 roc_auc binary         0.913
+#&gt;  4  5.51     2.10e- 3 roc_auc binary         0.937
+#&gt;  5  1.87     3.53e- 7 roc_auc binary         0.909
+#&gt;  6  0.00719  1.45e- 5 roc_auc binary         0.905
+#&gt;  7  0.00114  8.41e- 2 roc_auc binary         0.968
+#&gt;  8  0.950    1.74e- 1 roc_auc binary         0.984
+#&gt;  9  0.189    3.13e- 6 roc_auc binary         0.905
+#&gt; 10  0.0364   4.96e- 9 roc_auc binary         0.908</code></pre>
+<p>To get the final resampling estimates, the <code>collect_metrics()</code> function can be used on the grid object:</p>
+<pre class="r"><code>estimates &lt;- collect_metrics(formula_res)
+estimates
+#&gt; # A tibble: 10 x 7
+#&gt;        cost rbf_sigma .metric .estimator  mean     n std_err
+#&gt;       &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
+#&gt;  1  0.00114  8.41e- 2 roc_auc binary     0.969    30 0.00278
+#&gt;  2  0.00719  1.45e- 5 roc_auc binary     0.917    30 0.00387
+#&gt;  3  0.00849  1.11e-10 roc_auc binary     0.862    30 0.00644
+#&gt;  4  0.0364   4.96e- 9 roc_auc binary     0.916    30 0.00374
+#&gt;  5  0.176    7.28e- 8 roc_auc binary     0.916    30 0.00381
+#&gt;  6  0.189    3.13e- 6 roc_auc binary     0.917    30 0.00389
+#&gt;  7  0.950    1.74e- 1 roc_auc binary     0.979    30 0.00195
+#&gt;  8  1.87     3.53e- 7 roc_auc binary     0.917    30 0.00387
+#&gt;  9  5.51     2.10e- 3 roc_auc binary     0.962    30 0.00316
+#&gt; 10 14.9      3.93e- 4 roc_auc binary     0.936    30 0.00391</code></pre>
+<p>The top combinations were:</p>
+<pre class="r"><code>show_best(formula_res, metric = &quot;roc_auc&quot;)
+#&gt; # A tibble: 5 x 7
+#&gt;       cost rbf_sigma .metric .estimator  mean     n std_err
+#&gt;      &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
+#&gt; 1  0.950   0.174     roc_auc binary     0.979    30 0.00195
+#&gt; 2  0.00114 0.0841    roc_auc binary     0.969    30 0.00278
+#&gt; 3  5.51    0.00210   roc_auc binary     0.962    30 0.00316
+#&gt; 4 14.9     0.000393  roc_auc binary     0.936    30 0.00391
+#&gt; 5  0.00719 0.0000145 roc_auc binary     0.917    30 0.00387</code></pre>
+</div>
+<div id="executing-the-grid-using-a-recipe" class="section level1">
+<h1>Executing the grid using a recipe</h1>
+<p>The same syntax is used but a recipe is passed in as the pre-processor argument:</p>
+<pre class="r"><code>set.seed(325)
+recipe_res &lt;-
+  svm_mod %&gt;% 
+  tune_grid(
+    iono_rec,
+    resamples = iono_rs,
+    metrics = roc_vals,
+    control = ctrl
+  )
+recipe_res
+#&gt; # Bootstrap sampling 
+#&gt; # A tibble: 30 x 4
+#&gt;    splits            id          .metrics          .notes          
+#&gt;  * &lt;list&gt;            &lt;chr&gt;       &lt;list&gt;            &lt;list&gt;          
+#&gt;  1 &lt;split [351/120]&gt; Bootstrap01 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
+#&gt;  2 &lt;split [351/130]&gt; Bootstrap02 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
+#&gt;  3 &lt;split [351/137]&gt; Bootstrap03 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
+#&gt;  4 &lt;split [351/141]&gt; Bootstrap04 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
+#&gt;  5 &lt;split [351/131]&gt; Bootstrap05 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
+#&gt;  6 &lt;split [351/131]&gt; Bootstrap06 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
+#&gt;  7 &lt;split [351/127]&gt; Bootstrap07 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
+#&gt;  8 &lt;split [351/123]&gt; Bootstrap08 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
+#&gt;  9 &lt;split [351/131]&gt; Bootstrap09 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
+#&gt; 10 &lt;split [351/117]&gt; Bootstrap10 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
+#&gt; # … with 20 more rows</code></pre>
+<p>The best setting here was:</p>
+<pre class="r"><code>show_best(recipe_res, metric = &quot;roc_auc&quot;)
+#&gt; # A tibble: 5 x 7
+#&gt;      cost rbf_sigma .metric .estimator  mean     n std_err
+#&gt;     &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
+#&gt; 1 15.6    0.182     roc_auc binary     0.981    30 0.00215
+#&gt; 2  0.385  0.0276    roc_auc binary     0.978    30 0.00220
+#&gt; 3  0.143  0.00243   roc_auc binary     0.948    30 0.00349
+#&gt; 4  0.841  0.000691  roc_auc binary     0.921    30 0.00421
+#&gt; 5  0.0499 0.0000335 roc_auc binary     0.903    30 0.00463</code></pre>
+</div>
+<div id="session-information" class="section level1">
+<h1>Session information</h1>
+<pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────
+#&gt;  setting  value                       
+#&gt;  version  R version 3.6.1 (2019-07-05)
+#&gt;  os       macOS Catalina 10.15.3      
+#&gt;  system   x86_64, darwin15.6.0        
+#&gt;  ui       X11                         
+#&gt;  language (EN)                        
+#&gt;  collate  en_US.UTF-8                 
+#&gt;  ctype    en_US.UTF-8                 
+#&gt;  tz       America/Los_Angeles         
+#&gt;  date     2020-03-22                  
+#&gt; 
+#&gt; ─ Packages ───────────────────────────────────────────────────────────────────
+#&gt;  package    * version    date       lib source                               
+#&gt;  broom      * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
+#&gt;  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
+#&gt;  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
+#&gt;  ggplot2    * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
+#&gt;  kernlab    * 0.9-29     2019-11-12 [1] CRAN (R 3.6.0)                       
+#&gt;  mlbench    * 2.1-1      2012-07-10 [1] CRAN (R 3.6.0)                       
+#&gt;  parsnip    * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
+#&gt;  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
+#&gt;  recipes    * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
+#&gt;  rlang        0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
+#&gt;  rsample    * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
+#&gt;  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
+#&gt;  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
+#&gt;  tune       * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
+#&gt;  workflows  * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
+#&gt;  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
+#&gt; 
+#&gt; [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library</code></pre>
+</div>
