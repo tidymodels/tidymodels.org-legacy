@@ -12,15 +12,15 @@
       <div class="hexBadges">
         {{ $col0 := .Params.col0 }}
         {{ with $col0 }}
-        {{ with .row1 }}<a href="/"><img src="https://raw.githubusercontent.com/rstudio/hex-stickers/master/PNG/{{ . }}.png" alt="{{ . }} hex sticker" class="r1 c0"></a>{{ end }}
-        {{ with .row2 }}<a href="https://{{ $.Site.Params.hex_base_url }}{{ . }}"><img src="https://raw.githubusercontent.com/rstudio/hex-stickers/master/PNG/{{ . }}.png" alt="{{ . }} hex sticker" class="r2 c0"></a>{{ end }}
-        {{ with .row3 }}<a href="https://{{ $.Site.Params.hex_base_url }}{{ . }}"><img src="https://raw.githubusercontent.com/rstudio/hex-stickers/master/PNG/{{ . }}.png" alt="{{ . }} hex sticker" class="r3 c0"></a>{{ end }}
+        {{ with .row1 }}<a href="/"><div class=""></div><img src="https://raw.githubusercontent.com/rstudio/hex-stickers/master/PNG/{{ . }}.png" alt="{{ . }} hex sticker" class="r1 c0"></a>{{ end }}
+        {{ with .row2 }}<a href="https://{{ $.Site.Params.hex_base_url }}{{ . }}"><div class="filtered r2 c0"></div><img src="https://raw.githubusercontent.com/rstudio/hex-stickers/master/PNG/{{ . }}.png" alt="{{ . }} hex sticker" class="r2 c0"></a>{{ end }}
+        {{ with .row3 }}<a href="https://{{ $.Site.Params.hex_base_url }}{{ . }}"><div class="filtered r3 c0"></div><img src="https://raw.githubusercontent.com/rstudio/hex-stickers/master/PNG/{{ . }}.png" alt="{{ . }} hex sticker" class="r3 c0"></a>{{ end }}
         {{ end }}
         {{ $col2 := .Params.col2 }}
         {{ with $col2 }}
-        {{ with .row2 }}<a href="https://{{ $.Site.Params.hex_base_url }}{{ . }}"><img src="https://raw.githubusercontent.com/rstudio/hex-stickers/master/PNG/{{ . }}.png" alt="{{ . }} hex sticker" class="r2 c2"></a>{{ end }}
-        {{ with .row3 }}<a href="https://{{ $.Site.Params.hex_base_url }}{{ . }}"><img src="https://raw.githubusercontent.com/rstudio/hex-stickers/master/PNG/{{ . }}.png" alt="{{ . }} hex sticker" class="r3 c2"></a>{{ end }}
-        {{ with .row4 }}<a href="https://{{ $.Site.Params.hex_base_url }}{{ . }}"><img src="https://raw.githubusercontent.com/rstudio/hex-stickers/master/PNG/{{ . }}.png" alt="{{ . }} hex sticker" class="r4 c2" /></a>{{ end }}
+        {{ with .row2 }}<a href="https://{{ $.Site.Params.hex_base_url }}{{ . }}"><div class="filtered r2 c2"></div><img src="https://raw.githubusercontent.com/rstudio/hex-stickers/master/PNG/{{ . }}.png" alt="{{ . }} hex sticker" class="r2 c2"></a>{{ end }}
+        {{ with .row3 }}<a href="https://{{ $.Site.Params.hex_base_url }}{{ . }}"><div class="filtered r3 c2"></div><img src="https://raw.githubusercontent.com/rstudio/hex-stickers/master/PNG/{{ . }}.png" alt="{{ . }} hex sticker" class="r3 c2"></a>{{ end }}
+        {{ with .row4 }}<a href="https://{{ $.Site.Params.hex_base_url }}{{ . }}"><div class="filtered r4 c2"></div><img src="https://raw.githubusercontent.com/rstudio/hex-stickers/master/PNG/{{ . }}.png" alt="{{ . }} hex sticker" class="r4 c2"></a>{{ end }}
         {{ end }}
       </div>
 
