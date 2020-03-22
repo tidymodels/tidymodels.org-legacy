@@ -17,6 +17,52 @@ body, button, input, textarea {
   font-size: .875rem;
 }
 
+
+
+/* ----WHITE SPACE ----*/
+
+.bandContent{
+  max-width: 1100px; /*Main container width with page content */
+}
+
+.splitColumns {
+  display: flex;
+  justify-content: space-between;
+  display: -ms-flexbox;
+  -ms-flex-pack: justify;
+  display: -webkit-box;
+  display: -webkit-flex;
+  -webkit-justify-content: space-between;
+  align-items: flex-start; }
+  .splitColumns .column75 {
+    width: 70%; } /* Change from main-site's 73% > 70% */
+  .splitColumns .column67 {
+    width: 65%; }
+  .splitColumns .column50 {
+    width: 48%; }
+  .splitColumns .column33 {
+    width: 31%; }
+  .splitColumns .column25 {
+    width: 23%; }
+    .splitColumns .column25 .columnImage {
+      width: 276px; }
+  .splitColumns .columnImage {
+    max-width: 100%;
+    margin-bottom: 1em;
+    background-repeat: no-repeat;
+    background-size: cover; }
+
+@media screen and (max-width: 1023px) { /* Same as main-site, but ensures that media query is not overrident by above rule */
+  .splitColumns {
+    flex-wrap: wrap;
+    -ms-flex-wrap: wrap; }
+    .splitColumns .column75, .splitColumns .column67, .splitColumns .column50, .splitColumns .column33, .splitColumns .column25 {
+      width: 100%; }
+    .splitColumns.withMobileMargins .column75, .splitColumns.withMobileMargins .column67, .splitColumns.withMobileMargins .column50, .splitColumns.withMobileMargins .column33, .splitColumns.withMobileMargins .column25 {
+      margin-bottom: 30px; } }
+
+
+
 /*----- general LINKS ----- */
 
 a {
