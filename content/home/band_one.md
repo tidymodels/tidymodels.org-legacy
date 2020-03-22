@@ -11,3 +11,9 @@ title: tidymodels
 ---
 
 The tidymodels framework is a collection of packages for modeling and machine learning using [tidyverse](https://www.tidyverse.org/) principles.
+
+Install tidymodels with:
+
+```{r, eval= FALSE}
+install.packages("tidymodels")
+```
