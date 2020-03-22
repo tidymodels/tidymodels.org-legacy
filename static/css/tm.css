@@ -135,13 +135,13 @@ h2 {
 /*TOC links */
 #TableOfContents a {
   font-family: 'Lato', sans-serif;
-  color: #00000075;
+  color: #1a162d99;
   transition: color 0.3s;
   font-size: 15px;
 }
 
 #TableOfContents a:hover {
-  color: silver;
+  color: #1a162dde;
   text-decoration: none;
 }
 
