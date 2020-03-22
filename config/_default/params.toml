@@ -25,8 +25,8 @@ MathJaxCDN = "//cdn.bootcss.com"
 MathJaxVersion = "2.7.1"
 
 [footer]
-    github_url = "https://github.com/tidymodels"
-    twitter_url = "https://twitter.com/hashtag/rstats"
+    github_url = ""
+    twitter_url = ""
     support = "Proudly supported by"
 
 # leave blank in quotes for the default = true
