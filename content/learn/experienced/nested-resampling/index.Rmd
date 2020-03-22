@@ -2,6 +2,7 @@
 title: "Nested Resampling"
 tags: [rsample, parsnip]
 categories: [resampling]
+type: learn-subsection
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}

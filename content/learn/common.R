@@ -6,5 +6,5 @@ knitr::opts_chunk$set(
   fig.path = "figs/",
   collapse = TRUE,
   width = 100,
-  cache.path = "cache/",
+  cache.path = "cache/"
 )
