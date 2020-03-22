@@ -1,13 +1,8 @@
----
-title: "Tuning a Supervised Text Model"
-tags: [recipes, textrecipes, glmnet, textfeatures, textrecipes, text data, classification models, model tuning, grid search, Bayesian optimization]
----
-
-<script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
-<script src="/rmarkdown-libs/elevate-section-attrs/elevate-section-attrs.js"></script>
 
 
-<p>In addition to the <code>tidymodels</code> package, this example uses the <code>glmnet</code>, <code>textfeatures</code>, <code>textrecipes</code>, and <code>modeldata</code> packages.</p>
+<p>This article requires that you have the following packages installed: <code>glmnet</code>, <code>modeldata</code>, <code>textfeatures</code>, <code>textrecipes</code>, and <code>tidymodels</code>.</p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
 <p>This advanced example shows how to process text data with recipes and use them in a predictive model. It also has an example of extracting information from each model fit for later use.</p>
 <p>The data are from Amazon:</p>
 <blockquote>
@@ -21,22 +16,23 @@ library(modeldata)
 data(&quot;small_fine_foods&quot;)
 training_data</code></pre>
 <pre><code>#&gt; # A tibble: 4,000 x 3
-#&gt;    product    review                                                       score
-#&gt;    &lt;chr&gt;      &lt;chr&gt;                                                        &lt;fct&gt;
-#&gt;  1 B000J0LSBG &quot;this stuff is  not stuffing  its  not good at all  save yo… other
-#&gt;  2 B000EYLDYE &quot;I absolutely LOVE this dried fruit.  LOVE IT.  Whenever I … great
-#&gt;  3 B0026LIO9A &quot;GREAT DEAL, CONVENIENT TOO.  Much cheaper than WalMart and… great
-#&gt;  4 B00473P8SK &quot;Great flavor, we go through a ton of this sauce! I discove… great
-#&gt;  5 B001SAWTNM &quot;This is excellent salsa/hot sauce, but you can get it for … great
-#&gt;  6 B000FAG90U &quot;Again, this is the best dogfood out there.  One suggestion… great
-#&gt;  7 B006BXTCEK &quot;The box I received was filled with teas, hot chocolates, a… other
-#&gt;  8 B002GWH5OY &quot;This is delicious coffee which compares favorably with muc… great
-#&gt;  9 B003R0MFYY &quot;Don&#39;t let these little tiny cans fool you.  They pack a lo… great
-#&gt; 10 B001EO5ZXI &quot;One of the nicest, smoothest cup of chai I&#39;ve made. Nice m… great
+#&gt;    product    review                                                                           score
+#&gt;    &lt;chr&gt;      &lt;chr&gt;                                                                            &lt;fct&gt;
+#&gt;  1 B000J0LSBG &quot;this stuff is  not stuffing  its  not good at all  save your money&quot;             other
+#&gt;  2 B000EYLDYE &quot;I absolutely LOVE this dried fruit.  LOVE IT.  Whenever I have a craving for s… great
+#&gt;  3 B0026LIO9A &quot;GREAT DEAL, CONVENIENT TOO.  Much cheaper than WalMart and I don&#39;t need to lug… great
+#&gt;  4 B00473P8SK &quot;Great flavor, we go through a ton of this sauce! I discovered it in a local gr… great
+#&gt;  5 B001SAWTNM &quot;This is excellent salsa/hot sauce, but you can get it for $29.95 from the El F… great
+#&gt;  6 B000FAG90U &quot;Again, this is the best dogfood out there.  One suggestion:  the bag is a bit … great
+#&gt;  7 B006BXTCEK &quot;The box I received was filled with teas, hot chocolates, and none of the \&quot;Hol… other
+#&gt;  8 B002GWH5OY &quot;This is delicious coffee which compares favorably with much higher priced coff… great
+#&gt;  9 B003R0MFYY &quot;Don&#39;t let these little tiny cans fool you.  They pack a lot of food.  When you… great
+#&gt; 10 B001EO5ZXI &quot;One of the nicest, smoothest cup of chai I&#39;ve made. Nice mix of spices, larges… great
 #&gt; # … with 3,990 more rows</code></pre>
 <p>The idea is to process the text data into features and use these features to predict whether the review was five-star or not.</p>
-<div id="recipe-and-model-specifications" class="section level2">
-<h2>Recipe and Model Specifications</h2>
+</div>
+<div id="recipe-and-model-specifications" class="section level1">
+<h1>Recipe and Model Specifications</h1>
 <p>The data processing steps are:</p>
 <ul>
 <li><p>create an initial set of features based on simple word/character scores, such as the number of words, URLs and so on; The <a href="https://github.com/mkearney/textfeatures"><code>textfeatures</code></a> will be used for this</p></li>
@@ -54,8 +50,7 @@ training_data</code></pre>
 
 basics &lt;- names(textfeatures:::count_functions)
 head(basics)</code></pre>
-<pre><code>#&gt; [1] &quot;n_words&quot;    &quot;n_uq_words&quot; &quot;n_charS&quot;    &quot;n_uq_charS&quot; &quot;n_digits&quot;  
-#&gt; [6] &quot;n_hashtags&quot;</code></pre>
+<pre><code>#&gt; [1] &quot;n_words&quot;    &quot;n_uq_words&quot; &quot;n_charS&quot;    &quot;n_uq_charS&quot; &quot;n_digits&quot;   &quot;n_hashtags&quot;</code></pre>
 <p>Also, the implementation of feature hashes does not produce binary values. This small function will help convert the scores to values of -1, 0, or 1:</p>
 <pre class="r"><code>binary_hash &lt;- function(x) {
   x &lt;- ifelse(x &lt; 0, -1, x)
@@ -63,9 +58,7 @@ head(basics)</code></pre>
   x
 }</code></pre>
 <p>The recipe is:</p>
-<pre class="r"><code># uses the devel version of textrecipes
-# devtools::install_github(&quot;tidymodels/textrecipes&quot;)
-library(textrecipes)
+<pre class="r"><code>library(textrecipes)
 
 pre_proc &lt;-
   recipe(score ~ product + review, data = training_data) %&gt;%
@@ -100,14 +93,14 @@ pre_proc &lt;-
   set_engine(&quot;glmnet&quot;)</code></pre>
 <p>Three tuning parameters should be trained for this data analysis.</p>
 </div>
-<div id="resampling" class="section level2">
-<h2>Resampling</h2>
+<div id="resampling" class="section level1">
+<h1>Resampling</h1>
 <p>There are enough data here such that 10-fold resampling would hold out 400 reviews at a time to estimate performance. Performance estimates using this many observations have sufficiently low noise to measure and tune models.</p>
 <pre class="r"><code>set.seed(8935)
 folds &lt;- vfold_cv(training_data)</code></pre>
 </div>
-<div id="grid-search" class="section level2">
-<h2>Grid Search</h2>
+<div id="grid-search" class="section level1">
+<h1>Grid Search</h1>
 <p>A regular grid is used. For <code>glmnet</code> models, evaluating penalty values is fairly cheap due to the use of the “submodel-trick”. The grid will use 20 penalty values, 5 mixture values, and 3 values for the number of hash features.</p>
 <pre class="r"><code>five_star_grid &lt;- 
   expand.grid(
@@ -132,6 +125,12 @@ set.seed(1559)
 five_star_glmnet &lt;- 
   tune_grid(pre_proc, lr_mod, resamples = folds, grid = five_star_grid, 
             metrics = roc_scores, control = ctrl)</code></pre>
+<pre><code>#&gt; Warning: `tune_grid.recipe()` is deprecated as of lifecycle 0.1.0.
+#&gt; The first argument to `tune_grid()` should be either a model or a workflow. In the future, you can use:
+#&gt; tune_grid(lr_mod, pre_proc, resamples = folds, grid = five_star_grid, 
+#&gt;     metrics = roc_scores, control = ctrl)
+#&gt; This warning is displayed once every 8 hours.
+#&gt; Call `lifecycle::last_warnings()` to see where this warning was generated.</code></pre>
 <p>This took a while to complete. What did the results look like? Let’s get the resampling estimates of the area under the ROC curve for each tuning parameter:</p>
 <pre class="r"><code>grid_roc &lt;- 
   collect_metrics(five_star_glmnet) %&gt;% 
@@ -159,13 +158,13 @@ grid_roc</code></pre>
   geom_line() +
   scale_x_log10() + 
   theme(legend.position = &quot;top&quot;)</code></pre>
-<p><img src="/examples/text-analysis/index_files/figure-html/grid-plot-1.svg" width="672" /></p>
+<p><img src="index_files/figure-html/grid-plot-1.svg" width="672" /></p>
 <p>There is definitely an effect due to the number of features used<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>. The profiles with mixture values greater than zero had steep drop-offs in performance. What’s that about? Those are cases where the lasso penalty is removing too many (and perhaps all) features from the model<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>.</p>
 <p>It’s clear from the panels at least 4096 features that there are several parameter combinations that have roughly equivalent performance. A case could be made to choose a larger mixture value and less of a penalty to select a more simplistic model that contains fewer predictors. If more experimentation were conducted, a largest set of features should also be considered.</p>
 <p>We’ll come back to the extracted <code>glmnet</code> components at the end of this example.</p>
 </div>
-<div id="directed-search" class="section level2">
-<h2>Directed Search</h2>
+<div id="directed-search" class="section level1">
+<h1>Directed Search</h1>
 <p>What if we had started with Bayesian optimization? Would a good set of conditions have been found more efficiently?</p>
 <p>Let’s pretend that we haven’t seen the grid search results. We’ll initialize the Gaussian process model with five tuning parameter combinations chosen with a space-filling design.</p>
 <p>It might be good to use a custom <code>dials</code> object for the number of hash terms. The default object, <code>num_terms()</code>, uses a linear range and tries to set the upper bound of the parameter using the data. Instead, let’s create a parameter set, change the scale to be log2, and define the same range as was used in grid search.</p>
@@ -205,7 +204,7 @@ five_star_search &lt;-
 <pre><code>#&gt; </code></pre>
 <pre><code>#&gt; Optimizing roc_auc using the expected improvement with variable trade-off values.</code></pre>
 <pre><code>#&gt; </code></pre>
-<pre><code>#&gt; ── Iteration 1 ──────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; ── Iteration 1 ─────────────────────────────────────────────────────────────────────────────────────</code></pre>
 <pre><code>#&gt; </code></pre>
 <pre><code>#&gt; i Current best:      roc_auc=0.7559 (@iter 0)</code></pre>
 <pre><code>#&gt; i Gaussian process model</code></pre>
@@ -218,7 +217,7 @@ five_star_search &lt;-
 <pre><code>#&gt; ✓ Estimating performance</code></pre>
 <pre><code>#&gt; ⓧ Newest results:    roc_auc=0.5</code></pre>
 <pre><code>#&gt; </code></pre>
-<pre><code>#&gt; ── Iteration 2 ──────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; ── Iteration 2 ─────────────────────────────────────────────────────────────────────────────────────</code></pre>
 <pre><code>#&gt; </code></pre>
 <pre><code>#&gt; i Current best:      roc_auc=0.7559 (@iter 0)</code></pre>
 <pre><code>#&gt; i Gaussian process model</code></pre>
@@ -231,7 +230,7 @@ five_star_search &lt;-
 <pre><code>#&gt; ✓ Estimating performance</code></pre>
 <pre><code>#&gt; ⓧ Newest results:    roc_auc=0.7457 (+/-0.00814)</code></pre>
 <pre><code>#&gt; </code></pre>
-<pre><code>#&gt; ── Iteration 3 ──────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; ── Iteration 3 ─────────────────────────────────────────────────────────────────────────────────────</code></pre>
 <pre><code>#&gt; </code></pre>
 <pre><code>#&gt; i Current best:      roc_auc=0.7559 (@iter 0)</code></pre>
 <pre><code>#&gt; i Gaussian process model</code></pre>
@@ -244,7 +243,7 @@ five_star_search &lt;-
 <pre><code>#&gt; ✓ Estimating performance</code></pre>
 <pre><code>#&gt; ♥ Newest results:    roc_auc=0.7945 (+/-0.00494)</code></pre>
 <pre><code>#&gt; </code></pre>
-<pre><code>#&gt; ── Iteration 4 ──────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; ── Iteration 4 ─────────────────────────────────────────────────────────────────────────────────────</code></pre>
 <pre><code>#&gt; </code></pre>
 <pre><code>#&gt; i Current best:      roc_auc=0.7945 (@iter 3)</code></pre>
 <pre><code>#&gt; i Gaussian process model</code></pre>
@@ -257,7 +256,7 @@ five_star_search &lt;-
 <pre><code>#&gt; ✓ Estimating performance</code></pre>
 <pre><code>#&gt; ♥ Newest results:    roc_auc=0.8015 (+/-0.00618)</code></pre>
 <pre><code>#&gt; </code></pre>
-<pre><code>#&gt; ── Iteration 5 ──────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; ── Iteration 5 ─────────────────────────────────────────────────────────────────────────────────────</code></pre>
 <pre><code>#&gt; </code></pre>
 <pre><code>#&gt; i Current best:      roc_auc=0.8015 (@iter 4)</code></pre>
 <pre><code>#&gt; i Gaussian process model</code></pre>
@@ -270,7 +269,7 @@ five_star_search &lt;-
 <pre><code>#&gt; ✓ Estimating performance</code></pre>
 <pre><code>#&gt; ⓧ Newest results:    roc_auc=0.5</code></pre>
 <pre><code>#&gt; </code></pre>
-<pre><code>#&gt; ── Iteration 6 ──────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; ── Iteration 6 ─────────────────────────────────────────────────────────────────────────────────────</code></pre>
 <pre><code>#&gt; </code></pre>
 <pre><code>#&gt; i Current best:      roc_auc=0.8015 (@iter 4)</code></pre>
 <pre><code>#&gt; i Gaussian process model</code></pre>
@@ -283,7 +282,7 @@ five_star_search &lt;-
 <pre><code>#&gt; ✓ Estimating performance</code></pre>
 <pre><code>#&gt; ♥ Newest results:    roc_auc=0.8132 (+/-0.00563)</code></pre>
 <pre><code>#&gt; </code></pre>
-<pre><code>#&gt; ── Iteration 7 ──────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; ── Iteration 7 ─────────────────────────────────────────────────────────────────────────────────────</code></pre>
 <pre><code>#&gt; </code></pre>
 <pre><code>#&gt; i Current best:      roc_auc=0.8132 (@iter 6)</code></pre>
 <pre><code>#&gt; i Gaussian process model</code></pre>
@@ -296,7 +295,7 @@ five_star_search &lt;-
 <pre><code>#&gt; ✓ Estimating performance</code></pre>
 <pre><code>#&gt; ♥ Newest results:    roc_auc=0.8134 (+/-0.00997)</code></pre>
 <pre><code>#&gt; </code></pre>
-<pre><code>#&gt; ── Iteration 8 ──────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; ── Iteration 8 ─────────────────────────────────────────────────────────────────────────────────────</code></pre>
 <pre><code>#&gt; </code></pre>
 <pre><code>#&gt; i Current best:      roc_auc=0.8134 (@iter 7)</code></pre>
 <pre><code>#&gt; i Gaussian process model</code></pre>
@@ -309,7 +308,7 @@ five_star_search &lt;-
 <pre><code>#&gt; ✓ Estimating performance</code></pre>
 <pre><code>#&gt; ⓧ Newest results:    roc_auc=0.7548 (+/-0.00495)</code></pre>
 <pre><code>#&gt; </code></pre>
-<pre><code>#&gt; ── Iteration 9 ──────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; ── Iteration 9 ─────────────────────────────────────────────────────────────────────────────────────</code></pre>
 <pre><code>#&gt; </code></pre>
 <pre><code>#&gt; i Current best:      roc_auc=0.8134 (@iter 7)</code></pre>
 <pre><code>#&gt; i Gaussian process model</code></pre>
@@ -322,7 +321,7 @@ five_star_search &lt;-
 <pre><code>#&gt; ✓ Estimating performance</code></pre>
 <pre><code>#&gt; ⓧ Newest results:    roc_auc=0.7785 (+/-0.00569)</code></pre>
 <pre><code>#&gt; </code></pre>
-<pre><code>#&gt; ── Iteration 10 ─────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; ── Iteration 10 ────────────────────────────────────────────────────────────────────────────────────</code></pre>
 <pre><code>#&gt; </code></pre>
 <pre><code>#&gt; i Current best:      roc_auc=0.8134 (@iter 7)</code></pre>
 <pre><code>#&gt; i Gaussian process model</code></pre>
@@ -335,7 +334,7 @@ five_star_search &lt;-
 <pre><code>#&gt; ✓ Estimating performance</code></pre>
 <pre><code>#&gt; ⓧ Newest results:    roc_auc=0.5</code></pre>
 <pre><code>#&gt; </code></pre>
-<pre><code>#&gt; ── Iteration 11 ─────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; ── Iteration 11 ────────────────────────────────────────────────────────────────────────────────────</code></pre>
 <pre><code>#&gt; </code></pre>
 <pre><code>#&gt; i Current best:      roc_auc=0.8134 (@iter 7)</code></pre>
 <pre><code>#&gt; i Gaussian process model</code></pre>
@@ -348,7 +347,7 @@ five_star_search &lt;-
 <pre><code>#&gt; ✓ Estimating performance</code></pre>
 <pre><code>#&gt; ⓧ Newest results:    roc_auc=0.5</code></pre>
 <pre><code>#&gt; </code></pre>
-<pre><code>#&gt; ── Iteration 12 ─────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; ── Iteration 12 ────────────────────────────────────────────────────────────────────────────────────</code></pre>
 <pre><code>#&gt; </code></pre>
 <pre><code>#&gt; i Current best:      roc_auc=0.8134 (@iter 7)</code></pre>
 <pre><code>#&gt; i Gaussian process model</code></pre>
@@ -361,7 +360,7 @@ five_star_search &lt;-
 <pre><code>#&gt; ✓ Estimating performance</code></pre>
 <pre><code>#&gt; ⓧ Newest results:    roc_auc=0.797 (+/-0.00783)</code></pre>
 <pre><code>#&gt; </code></pre>
-<pre><code>#&gt; ── Iteration 13 ─────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; ── Iteration 13 ────────────────────────────────────────────────────────────────────────────────────</code></pre>
 <pre><code>#&gt; </code></pre>
 <pre><code>#&gt; i Current best:      roc_auc=0.8134 (@iter 7)</code></pre>
 <pre><code>#&gt; i Gaussian process model</code></pre>
@@ -374,7 +373,7 @@ five_star_search &lt;-
 <pre><code>#&gt; ✓ Estimating performance</code></pre>
 <pre><code>#&gt; ⓧ Newest results:    roc_auc=0.7694 (+/-0.00752)</code></pre>
 <pre><code>#&gt; </code></pre>
-<pre><code>#&gt; ── Iteration 14 ─────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; ── Iteration 14 ────────────────────────────────────────────────────────────────────────────────────</code></pre>
 <pre><code>#&gt; </code></pre>
 <pre><code>#&gt; i Current best:      roc_auc=0.8134 (@iter 7)</code></pre>
 <pre><code>#&gt; i Gaussian process model</code></pre>
@@ -387,7 +386,7 @@ five_star_search &lt;-
 <pre><code>#&gt; ✓ Estimating performance</code></pre>
 <pre><code>#&gt; ⓧ Newest results:    roc_auc=0.7931 (+/-0.00965)</code></pre>
 <pre><code>#&gt; </code></pre>
-<pre><code>#&gt; ── Iteration 15 ─────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; ── Iteration 15 ────────────────────────────────────────────────────────────────────────────────────</code></pre>
 <pre><code>#&gt; </code></pre>
 <pre><code>#&gt; i Current best:      roc_auc=0.8134 (@iter 7)</code></pre>
 <pre><code>#&gt; i Gaussian process model</code></pre>
@@ -400,7 +399,7 @@ five_star_search &lt;-
 <pre><code>#&gt; ✓ Estimating performance</code></pre>
 <pre><code>#&gt; ⓧ Newest results:    roc_auc=0.7818 (+/-0.00833)</code></pre>
 <pre><code>#&gt; </code></pre>
-<pre><code>#&gt; ── Iteration 16 ─────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; ── Iteration 16 ────────────────────────────────────────────────────────────────────────────────────</code></pre>
 <pre><code>#&gt; </code></pre>
 <pre><code>#&gt; i Current best:      roc_auc=0.8134 (@iter 7)</code></pre>
 <pre><code>#&gt; i Gaussian process model</code></pre>
@@ -413,7 +412,7 @@ five_star_search &lt;-
 <pre><code>#&gt; ✓ Estimating performance</code></pre>
 <pre><code>#&gt; ⓧ Newest results:    roc_auc=0.8072 (+/-0.00654)</code></pre>
 <pre><code>#&gt; </code></pre>
-<pre><code>#&gt; ── Iteration 17 ─────────────────────────────────────────────────────────────────────────────</code></pre>
+<pre><code>#&gt; ── Iteration 17 ────────────────────────────────────────────────────────────────────────────────────</code></pre>
 <pre><code>#&gt; </code></pre>
 <pre><code>#&gt; i Current best:      roc_auc=0.8134 (@iter 7)</code></pre>
 <pre><code>#&gt; i Gaussian process model</code></pre>
@@ -429,13 +428,13 @@ five_star_search &lt;-
 <p>The results show some improvement over the initial set. One issue is that so many settings are sub-optimal (as shown in the figure above for grid search) so there are poor results periodically. There are regions where the penalty parameter becomes too large and all of the predictors are removed from the model. These regions are also dependent on the number of terms. There is a fairly narrow ridge<a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a> where good performance can be achieved. Using more iterations would probably result in the search finding better results.</p>
 <p>A plot of model performance versus the search iterations:</p>
 <pre class="r"><code>autoplot(five_star_search, type = &quot;performance&quot;)</code></pre>
-<p><img src="/examples/text-analysis/index_files/figure-html/iter-plot-1.svg" width="672" /></p>
+<p><img src="index_files/figure-html/iter-plot-1.svg" width="672" /></p>
 <p>What would we do if we knew about the grid search results? In this case, we would restrict the range for the number of hash features to be larger (especially with more data). We might also restrict the penalty and mixture parameters to have a more restricted upper bound.</p>
 </div>
-<div id="extracted-results" class="section level2">
-<h2>Extracted Results</h2>
+<div id="extracted-results" class="section level1">
+<h1>Extracted Results</h1>
 <p>Jumping back to the grid search results, let’s examine the results of our <code>extract</code> function. For each <em>fitted model</em>, a tibble was saved that has the relationship between the number of predictors and the penalty value. Let’s look at these results for the best model:</p>
-<pre class="r"><code>params &lt;- select_best(five_star_glmnet)
+<pre class="r"><code>params &lt;- select_best(five_star_glmnet, metric = &quot;roc_auc&quot;)
 params</code></pre>
 <pre><code>#&gt; # A tibble: 1 x 3
 #&gt;   penalty mixture num_terms
@@ -528,16 +527,53 @@ extracted</code></pre>
   scale_x_log10()  + 
   ggtitle(paste(&quot;mixture = &quot;, params$mixture, &quot;and&quot;, params$num_terms, &quot;features&quot;)) + 
   theme(legend.position = &quot;none&quot;)</code></pre>
-<p><img src="/examples/text-analysis/index_files/figure-html/var-plot-1.svg" width="672" /></p>
+<p><img src="index_files/figure-html/var-plot-1.svg" width="672" /></p>
 <p>These results might help guide the range of the <code>penalty</code> value if more optimization was conducted.</p>
+</div>
+<div id="session-information" class="section level1">
+<h1>Session information</h1>
+<pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────────────────────────
+#&gt;  setting  value                       
+#&gt;  version  R version 3.6.1 (2019-07-05)
+#&gt;  os       macOS Catalina 10.15.3      
+#&gt;  system   x86_64, darwin15.6.0        
+#&gt;  ui       X11                         
+#&gt;  language (EN)                        
+#&gt;  collate  en_US.UTF-8                 
+#&gt;  ctype    en_US.UTF-8                 
+#&gt;  tz       America/Los_Angeles         
+#&gt;  date     2020-03-21                  
+#&gt; 
+#&gt; ─ Packages ───────────────────────────────────────────────────────────────────────────────────────
+#&gt;  package      * version    date       lib source                               
+#&gt;  broom        * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
+#&gt;  dials        * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
+#&gt;  dplyr        * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
+#&gt;  ggplot2      * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
+#&gt;  glmnet       * 3.0-2      2019-12-11 [1] CRAN (R 3.6.0)                       
+#&gt;  modeldata    * 0.0.1      2019-12-19 [1] Github (tidymodels/modeldata@aa91bb1)
+#&gt;  parsnip      * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
+#&gt;  purrr        * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
+#&gt;  recipes      * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
+#&gt;  rlang          0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
+#&gt;  rsample      * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
+#&gt;  textfeatures * 0.3.3      2019-09-03 [1] CRAN (R 3.6.0)                       
+#&gt;  textrecipes  * 0.1.0      2020-03-05 [1] CRAN (R 3.6.0)                       
+#&gt;  tibble       * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
+#&gt;  tidymodels   * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
+#&gt;  tune         * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
+#&gt;  workflows    * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
+#&gt;  yardstick    * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
+#&gt; 
+#&gt; [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library</code></pre>
 </div>
 <div class="footnotes">
 <hr />
 <ol>
-<li id="fn1"><p>This is a small sample of the overall data set. When more data are used, a larger feature set is optimal.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
-<li id="fn2"><p>See the last section below for more details.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
-<li id="fn3"><p>See the vignette on <a href="../acquisition_functions.html">acquisition functions</a> for more details.<a href="#fnref3" class="footnote-back">↩︎</a></p></li>
-<li id="fn4"><p>Sorry, pun intended.<a href="#fnref4" class="footnote-back">↩︎</a></p></li>
-<li id="fn5"><p>This is a feature of this particular model and is not generally true for other engines.<a href="#fnref5" class="footnote-back">↩︎</a></p></li>
+<li id="fn1"><p>This is a small sample of the overall data set. When more data are used, a larger feature set is optimal.<a href="#fnref1" class="footnote-back">↩</a></p></li>
+<li id="fn2"><p>See the last section below for more details.<a href="#fnref2" class="footnote-back">↩</a></p></li>
+<li id="fn3"><p>See the vignette on <a href="../acquisition_functions.html">acquisition functions</a> for more details.<a href="#fnref3" class="footnote-back">↩</a></p></li>
+<li id="fn4"><p>Sorry, pun intended.<a href="#fnref4" class="footnote-back">↩</a></p></li>
+<li id="fn5"><p>This is a feature of this particular model and is not generally true for other engines.<a href="#fnref5" class="footnote-back">↩</a></p></li>
 </ol>
 </div>

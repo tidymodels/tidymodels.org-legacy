@@ -127,7 +127,7 @@ best_rf</code></pre>
 <pre><code>#&gt; # A tibble: 1 x 2
 #&gt;    mtry min_n
 #&gt;   &lt;dbl&gt; &lt;dbl&gt;
-#&gt; 1    29     2</code></pre>
+#&gt; 1    17     2</code></pre>
 <p>These are the values for <code>mtry</code> and <code>min_n</code> that maximize AUC in this data set of cell images. We can update (or “finalize”) our model with these values.</p>
 <pre class="r"><code>final_rf &lt;- finalize_model(
   tune_spec,
@@ -138,7 +138,7 @@ final_rf</code></pre>
 <pre><code>#&gt; Random Forest Model Specification (classification)
 #&gt; 
 #&gt; Main Arguments:
-#&gt;   mtry = 29
+#&gt;   mtry = 17
 #&gt;   trees = 1000
 #&gt;   min_n = 2
 #&gt; 
@@ -166,6 +166,6 @@ final_rf</code></pre>
 #&gt;   .metric  .estimator .estimate
 #&gt;   &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;
 #&gt; 1 accuracy binary         0.829
-#&gt; 2 roc_auc  binary         0.901</code></pre>
+#&gt; 2 roc_auc  binary         0.904</code></pre>
 <p>The performance metrics from the test set indicate that we did not overfit during our tuning procedure.</p>
 </div>
