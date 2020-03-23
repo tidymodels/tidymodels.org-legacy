@@ -103,24 +103,35 @@ div.tagline {
   letter-spacing: 2px;
 }
 
-.article-title{
+.article-title,               /* Most page titles */
+.column75 div.sectionTitle { /* Learn page section title */
   font-family: 'Lato', sans-serif;
   color: #CA225E;
   font-weight: normal;
   text-transform: none;
   letter-spacing: normal;
+  font-size: 2.4em; /* same as main-site, but duplicated here so it applies to Learn .sectionTitle */
 }
 
-h1, h2 {          /* adding h2 in here for now until packages h2 gets sorted out */
+h1, h2, .itemTitle {         /* adding h2 in here for now until packages h2 gets sorted out */
   font-family: 'Lato', sans-serif;
   font-weight: normal;
   font-size: 1.25em;
   text-transform: uppercase;
   letter-spacing: 1.5pt;
+}
+
+h1, h2 {
   color: #1a162d;
 }
 
+.itemTitle a { /* For Learn Page headers */
+  color: #1a162d99;
+}
 
+.itemTitle a:hover { /* For Learn Page headers */
+  color: #1a162d;
+}
 
 
 /*---------TOC----------*/
@@ -137,7 +148,7 @@ h1, h2 {          /* adding h2 in here for now until packages h2 gets sorted out
     color: #CA225E;
   }
   
-  #TOC a {
+  #TOC a { /* Get Started Page TOC */
     color: #CA225E70;
   }
 
