@@ -93,6 +93,8 @@ a {
   margin-bottom: 1em;
 }
 
+
+
 /*--------- BODY HEADERS -------*/
 
 div.tagline {
@@ -104,7 +106,7 @@ div.tagline {
 }
 
 .article-title,               /* Most page titles */
-.column75 div.sectionTitle { /* Learn page section title */
+.column75 div.sectionTitle {  /* Learn page section title */
   font-family: 'Lato', sans-serif;
   color: #CA225E;
   font-weight: normal;
@@ -132,6 +134,8 @@ h1, h2 {
 .itemTitle a:hover { /* For Learn Page headers */
   color: #1a162d;
 }
+
+
 
 
 /*---------TOC----------*/
@@ -220,7 +224,7 @@ h1, h2 {
 /*navbar header items */
 
 a.productName {
-  transition: color 0.3s; /*is this even being applied?? */
+  transition: color 0.3s; /*is this being applied? */
 }
 
 #menu {
