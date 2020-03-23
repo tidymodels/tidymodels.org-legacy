@@ -290,3 +290,11 @@ table tbody tr td:last-child {
 table thead tr th:last-child {
     padding: 15px 13px;
 }
+
+/* MISC */
+/* This is to specifically target the package tag links within GEtting Started.*/
+/* This is a pretty brittle style rule and should probably get replaced */
+
+.column75 > a {
+  color: #1a162d80;
+}
