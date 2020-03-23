@@ -17,6 +17,10 @@ body, button, input, textarea {
 
 /* ----WHITE SPACE ----*/
 
+.article-content h1 {
+  margin-bottom: 1.5em; /* increased from 0.5 main-site.css */
+}
+
 .bandContent{
   max-width: 1100px; /*Main container width with page content */
 }
@@ -58,6 +62,10 @@ body, button, input, textarea {
       margin-bottom: 30px; } }
 
 
+#TOC {
+  margin: 1.5em 0 3em 0; /*around TOC for Getting Started */
+}
+
 
 /*----- general LINKS ----- */
 
@@ -89,7 +97,9 @@ a {
   margin-bottom: 1em;
 }
 
-/*--------- HEADERS -------*/
+
+
+/*--------- BODY HEADERS -------*/
 
 div.tagline {
   font-family: 'Lato', sans-serif !important;
@@ -97,17 +107,19 @@ div.tagline {
   font-size: 1.2rem !important;
   font-weight: bold;
   letter-spacing: 2px;
-  
 }
 
-h1, .article-title {
+.article-title,               /* Most page titles */
+.column75 div.sectionTitle {  /* Learn page section title */
   font-family: 'Lato', sans-serif;
   color: #CA225E;
   font-weight: normal;
-  font-size: 2em;
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 2.4em; /* same as main-site, but duplicated here so it applies to Learn .sectionTitle */
 }
 
-h2 {
+h1, h2, .itemTitle {         /* adding h2 in here for now until packages h2 gets sorted out */
   font-family: 'Lato', sans-serif;
   font-weight: normal;
   font-size: 1.25em;
@@ -115,31 +127,90 @@ h2 {
   letter-spacing: 1.5pt;
 }
 
+h1, h2 {
+  color: #1a162d;
+}
+
+.itemTitle a { /* For Learn Page headers */
+  color: #1a162d99;
+}
+
+.itemTitle a:hover { /* For Learn Page headers */
+  color: #1a162d;
+  text-decoration: none;
+}
+
+
 
 
 /*---------TOC----------*/
 
-/*Contents header*/
-.sectionTitle, .sectionTitle a {
+/*TOC header font attributes*/
+/*#TOC is for Getting Started body content TOC */
+/*.column25 .sectionTitle is for right sidebar TOC headers */
+
+#TOC, .column25 .sectionTitle, .sectionTitle a {
   text-transform: uppercase;
   letter-spacing: 2pt;
   font-size: 0.8rem !important;
   font-weight: bold;
-  color: #CA225E;
 }
 
-/*TOC links */
-#TableOfContents a {
+  .sectionTitle, .sectionTitle a{
+    color: #CA225E;
+  }
+  
+  #TOC a { /* Get Started Page TOC */
+    color: #CA225E90;
+  }
+
+
+/*Sidebar TOC links for Learn and Packages pages */
+#TableOfContents a, 
+.articleCategory a {
   font-family: 'Lato', sans-serif;
   color: #1a162d99;
   transition: color 0.3s;
   font-size: 15px;
+  letter-spacing: 1pt;
 }
 
-#TableOfContents a:hover {
+#TableOfContents a:hover,
+.articleCategory a:hover {
+  color: #1a162dde;
+  text-decoration: none;
+
+}
+
+/*-- Getting Started Page Left Sidebar -- */
+
+.column25-left .sectionTitle { /* Numbered content sections, hanging indent */
+  display: flex; 
+  text-transform: uppercase;
+  letter-spacing: 2pt;
+  font-size: 0.8rem !important;
+  font-weight: bold;
+}
+
+.column25-left .sectionTitle a{
+  font-family: 'Lato', sans-serif;
+  color: #1a162d99;
+  transition: color 0.3s;
+  font-size: 15px !important;
+  text-transform: none;
+  letter-spacing: 1pt; /* do we like? */
+  font-weight: normal;
+}
+
+.column25-left .sectionTitle a:hover {
   color: #1a162dde;
   text-decoration: none;
 }
+
+.column25-left .sectionTitle a:active {
+  color: #CA225E;
+}
+
 
 .column25 {
   padding-left: 3em;
@@ -160,19 +231,13 @@ h2 {
   position: relative; 
 }
 
-#TOC, .sectionTitle, .sectionTitle a {
-  text-transform: uppercase;
-  letter-spacing: 2pt;
-  font-size: 0.8rem !important;
-  font-weight: bold;
-}
 
 /*-------- NAVBAR --------- */
 
 /*navbar header items */
 
 a.productName {
-  transition: color 0.3s; /*is this even being applied?? */
+  transition: color 0.3s; /*is this being applied? */
 }
 
 #menu {
@@ -211,4 +276,26 @@ a.productName {
   
 #homeContent .bee1 {
   display: none;
+}
+
+/*-----TABLES-----*/
+
+.article-content {
+  overflow-x: scroll; /*we probably want to create a parent container around only tables*/
+}
+
+table tbody tr td:last-child {
+  padding: 15px 13px;
+}
+
+table thead tr th:last-child {
+    padding: 15px 13px;
+}
+
+/* MISC */
+/* This is to specifically target the package tag links within GEtting Started.*/
+/* This is a pretty brittle style rule and should probably get replaced */
+
+.column75 > a {
+  color: #1a162d80;
 }

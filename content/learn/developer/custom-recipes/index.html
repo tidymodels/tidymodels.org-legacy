@@ -37,7 +37,7 @@ theme_set(theme_bw())
 ggplot(biomass_tr, aes(x = carbon)) + 
   geom_histogram(binwidth = 5, col = &quot;blue&quot;, fill = &quot;blue&quot;, alpha = .5) + 
   geom_vline(xintercept = biomass_te$carbon[1], lty = 2)</code></pre>
-<p><img src="/learn/developer/developer-custom-recipes/index_files/figure-html/carbon_dist-1.png" width="100%" /></p>
+<p><img src="/learn/developer/custom-recipes/index_files/figure-html/carbon_dist-1.png" width="100%" /></p>
 <p>Based on the training set, 42.1% of the data are less than a value of 46.35. There are some applications where it might be advantageous to represent the predictor values as percentiles rather than their original values.</p>
 <p>Our new step will do this computation for any numeric variables of interest. We will call this <code>step_percentile</code>. The code below is designed for illustration and not speed or best practices. I’ve left out a lot of error trapping that we would want in a real implementation.</p>
 </div>
@@ -226,7 +226,7 @@ percentiles
 #&gt; 10 0.0178   0.0821 0.0987    0.972  0.974  10.8
 #&gt; # … with 70 more rows</code></pre>
 <p>The plot below shows how the original data line up with the percentiles for each split of the data for one of the predictors:</p>
-<p><img src="/learn/developer/developer-custom-recipes/index_files/figure-html/cdf_plot-1.png" width="100%" /></p>
+<p><img src="/learn/developer/custom-recipes/index_files/figure-html/cdf_plot-1.png" width="100%" /></p>
 </div>
 <div id="custom-check-operations" class="section level1">
 <h1>Custom check operations</h1>
@@ -246,33 +246,34 @@ percentiles
 <h1>Session information</h1>
 <pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────────────────────────
 #&gt;  setting  value                       
-#&gt;  version  R version 3.6.1 (2019-07-05)
-#&gt;  os       macOS Catalina 10.15.3      
+#&gt;  version  R version 3.6.0 (2019-04-26)
+#&gt;  os       macOS  10.15.3              
 #&gt;  system   x86_64, darwin15.6.0        
 #&gt;  ui       X11                         
 #&gt;  language (EN)                        
 #&gt;  collate  en_US.UTF-8                 
 #&gt;  ctype    en_US.UTF-8                 
-#&gt;  tz       America/Los_Angeles         
+#&gt;  tz       America/New_York            
 #&gt;  date     2020-03-22                  
 #&gt; 
 #&gt; ─ Packages ───────────────────────────────────────────────────────────────────────────────────────
-#&gt;  package    * version    date       lib source                               
-#&gt;  broom      * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
-#&gt;  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
-#&gt;  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
-#&gt;  ggplot2    * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
-#&gt;  modeldata  * 0.0.1      2019-12-19 [1] Github (tidymodels/modeldata@aa91bb1)
-#&gt;  parsnip    * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
-#&gt;  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
-#&gt;  recipes    * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
-#&gt;  rlang        0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
-#&gt;  rsample    * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
-#&gt;  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
-#&gt;  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
-#&gt;  tune       * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
-#&gt;  workflows  * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
-#&gt;  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
+#&gt;  package    * version date       lib source                               
+#&gt;  broom      * 0.5.5   2020-02-29 [1] CRAN (R 3.6.0)                       
+#&gt;  dials      * 0.0.4   2019-12-02 [1] CRAN (R 3.6.0)                       
+#&gt;  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)                       
+#&gt;  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)                       
+#&gt;  modeldata  * 0.0.1   2020-01-24 [1] Github (tidymodels/modeldata@aa91bb1)
+#&gt;  parsnip    * 0.0.5   2020-01-07 [1] CRAN (R 3.6.0)                       
+#&gt;  purrr      * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)                       
+#&gt;  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)                       
+#&gt;  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)                       
+#&gt;  rsample    * 0.0.5   2019-07-12 [1] CRAN (R 3.6.0)                       
+#&gt;  tibble     * 2.1.3   2019-06-06 [2] CRAN (R 3.6.0)                       
+#&gt;  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)                       
+#&gt;  tune       * 0.0.1   2020-01-24 [1] Github (tidymodels/tune@ba56ec5)     
+#&gt;  workflows  * 0.1.1   2020-03-17 [1] CRAN (R 3.6.0)                       
+#&gt;  yardstick  * 0.0.6   2020-03-17 [1] CRAN (R 3.6.0)                       
 #&gt; 
-#&gt; [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library</code></pre>
+#&gt; [1] /Users/desireedeleon/Library/R/3.6/library
+#&gt; [2] /Library/Frameworks/R.framework/Versions/3.6/Resources/library</code></pre>
 </div>
