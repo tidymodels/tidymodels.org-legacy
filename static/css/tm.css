@@ -93,7 +93,7 @@ a {
   margin-bottom: 1em;
 }
 
-/*--------- HEADERS -------*/
+/*--------- BODY HEADERS -------*/
 
 div.tagline {
   font-family: 'Lato', sans-serif !important;
@@ -126,7 +126,7 @@ h1, h2 {          /* adding h2 in here for now until packages h2 gets sorted out
 /*---------TOC----------*/
 
 /*TOC header font attributes*/
-#TOC, .sectionTitle, .sectionTitle a {
+#TOC, .column25 .sectionTitle, .sectionTitle a {
   text-transform: uppercase;
   letter-spacing: 2pt;
   font-size: 0.8rem !important;
@@ -158,10 +158,14 @@ h1, h2 {          /* adding h2 in here for now until packages h2 gets sorted out
 
 }
 
-/*-- Sidebar For Getting Started Page-- */
+/*-- Getting Started Page Left Sidebar -- */
 
 .column25-left .sectionTitle { /* Numbered content sections, hanging indent */
   display: flex; 
+  text-transform: uppercase;
+  letter-spacing: 2pt;
+  font-size: 0.8rem !important;
+  font-weight: bold;
 }
 
 .column25-left .sectionTitle a{
