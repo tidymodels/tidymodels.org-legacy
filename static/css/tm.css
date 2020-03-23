@@ -125,7 +125,7 @@ h1, h2 {          /* adding h2 in here for now until packages h2 gets sorted out
 
 /*---------TOC----------*/
 
-/*Contents header*/
+/*TOC header font attributes*/
 #TOC, .sectionTitle, .sectionTitle a {
   text-transform: uppercase;
   letter-spacing: 2pt;
@@ -141,17 +141,18 @@ h1, h2 {          /* adding h2 in here for now until packages h2 gets sorted out
     color: #CA225E70;
   }
 
-/*TOC links */
-#TableOfContents a {
+/*Sidebar TOC links for Learn and Packages pages */
+#TableOfContents a, 
+.articleCategory a {
   font-family: 'Lato', sans-serif;
   color: #1a162d99;
   transition: color 0.3s;
   font-size: 15px;
   letter-spacing: 1pt;
-
 }
 
-#TableOfContents a:hover {
+#TableOfContents a:hover,
+.articleCategory a:hover {
   color: #1a162dde;
   text-decoration: none;
 
@@ -159,12 +160,11 @@ h1, h2 {          /* adding h2 in here for now until packages h2 gets sorted out
 
 /*-- Sidebar For Getting Started Page-- */
 
-
 .column25-left .sectionTitle { /* Numbered content sections, hanging indent */
   display: flex; 
 }
 
-.column25-left .sectionTitle a {
+.column25-left .sectionTitle a{
   font-family: 'Lato', sans-serif;
   color: #1a162d99;
   transition: color 0.3s;
@@ -174,7 +174,7 @@ h1, h2 {          /* adding h2 in here for now until packages h2 gets sorted out
   font-weight: normal;
 }
 
-.column25-left .sectionTitle a:hover {
+.column25-left .sectionTitle a:hover{
   color: #1a162dde;
   text-decoration: none;
 }
