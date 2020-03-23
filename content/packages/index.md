@@ -2,7 +2,7 @@
 title: Tidymodels packages
 ---
 
-# Installation and use
+## Installation and use
 
 * Install many of the packages in the tidymodels ecosystem by running `install.packages("tidymodels")`.
 
@@ -12,7 +12,7 @@ title: Tidymodels packages
 
 <div class="package-section-info">
 
-# Core tidymodels
+## Core tidymodels
 
   <p>The core tidymodels packages work together to enable a wide variety of modeling approaches:</p>
 </div>
@@ -84,7 +84,7 @@ title: Tidymodels packages
 
 Learn more about the tidymodels packages at <http://tidymodels.tidymodels.org>.
 
-# Specialized packages
+## Specialized packages
 
 The tidymodels framework also includes many other packages designed for specialized data analysis and modeling tasks. They are not loaded automatically with `library(tidymodels)`, so you'll need to load each one with its own call to `library()`. These packages include: 
 
