@@ -137,6 +137,7 @@ h1, h2 {
 
 .itemTitle a:hover { /* For Learn Page headers */
   color: #1a162d;
+  text-decoration: none;
 }
 
 
