@@ -193,9 +193,13 @@ h1, h2 {
   font-weight: normal;
 }
 
-.column25-left .sectionTitle a:hover{
+.column25-left .sectionTitle a:hover {
   color: #1a162dde;
   text-decoration: none;
+}
+
+.column25-left .sectionTitle a:active {
+  color: #CA225E;
 }
 
 
