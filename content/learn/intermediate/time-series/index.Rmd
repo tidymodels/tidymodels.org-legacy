@@ -1,16 +1,13 @@
 ---
 title: "Time Series Analysis Example"
-tags: [rsample, timetk, forecast, sweep, zoo, time series, regression analysis]
+tags: [rsample]
 ---
 
-```{r setup, include = FALSE}
-knitr::opts_chunk$set(
-  message = FALSE,
-  digits = 3,
-  collapse = TRUE,
-  comment = "#>"
-  )
-options(digits = 3)
+```{r setup, include = FALSE, message = FALSE, warning = FALSE}
+source(here::here("content/learn/common.R"))
+```
+
+```{r load, include = FALSE, message = FALSE, warning = FALSE}
 library(timetk)
 library(forecast)
 library(tidymodels)
@@ -46,7 +43,6 @@ small_session <- function(pkgs = NULL) {
 }
 
 theme_set(theme_bw() + theme(legend.position = "top"))
-options(width = 100, digits = 3)
 ```
 
 

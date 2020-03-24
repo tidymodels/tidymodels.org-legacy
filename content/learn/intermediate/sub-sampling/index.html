@@ -53,16 +53,16 @@ qda_mod &lt;-
   add_model(qda_mod) %&gt;% 
   add_recipe(imbal_rec)
 qda_rose_wflw
-#&gt; ══ Workflow ════════════════════════════════════════════════════════════════════════════════════════
+#&gt; ══ Workflow ════════════════════════════════════════════════════════
 #&gt; Preprocessor: Recipe
 #&gt; Model: discrim_regularized()
 #&gt; 
-#&gt; ── Preprocessor ────────────────────────────────────────────────────────────────────────────────────
+#&gt; ── Preprocessor ────────────────────────────────────────────────────
 #&gt; 1 Recipe Step
 #&gt; 
 #&gt; ● step_rose()
 #&gt; 
-#&gt; ── Model ───────────────────────────────────────────────────────────────────────────────────────────
+#&gt; ── Model ───────────────────────────────────────────────────────────
 #&gt; Regularized Discriminant Model Specification (classification)
 #&gt; 
 #&gt; Main Arguments:
@@ -87,8 +87,8 @@ collect_metrics(qda_rose_res)
 #&gt; # A tibble: 2 x 5
 #&gt;   .metric .estimator  mean     n std_err
 #&gt;   &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
-#&gt; 1 j_index binary     0.741    50 0.0240 
-#&gt; 2 roc_auc binary     0.947    50 0.00533</code></pre>
+#&gt; 1 j_index binary     0.791    50 0.0177 
+#&gt; 2 roc_auc binary     0.950    50 0.00513</code></pre>
 <p>What do the results look like without using ROSE? We can create another workflow and fit the QDA model along the same resamples:</p>
 <pre class="r"><code>qda_wflw &lt;- 
   workflow() %&gt;% 
@@ -122,12 +122,12 @@ bind_rows(no_sampling, with_sampling) %&gt;%
   ggplot(aes(x = sampling, y = .estimate, group = label)) + 
   geom_line(alpha = .4) + 
   facet_wrap(~ .metric, scales = &quot;free_y&quot;)</code></pre>
-<p><img src="/learn/intermediate/intermediate-sub-sampling/index_files/figure-html/merge-metrics-1.png" width="672" /></p>
+<p><img src="figs/merge-metrics-1.svg" width="672" /></p>
 <p>This visually demonstrates that the subsampling mostly affects metrics that use the hard class predictions.</p>
 </div>
 <div id="session-information" class="section level1">
 <h1>Session information</h1>
-<pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────────────────────────
+<pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────
 #&gt;  setting  value                       
 #&gt;  version  R version 3.6.1 (2019-07-05)
 #&gt;  os       macOS Catalina 10.15.3      
@@ -137,9 +137,9 @@ bind_rows(no_sampling, with_sampling) %&gt;%
 #&gt;  collate  en_US.UTF-8                 
 #&gt;  ctype    en_US.UTF-8                 
 #&gt;  tz       America/Los_Angeles         
-#&gt;  date     2020-03-21                  
+#&gt;  date     2020-03-23                  
 #&gt; 
-#&gt; ─ Packages ───────────────────────────────────────────────────────────────────────────────────────
+#&gt; ─ Packages ───────────────────────────────────────────────────────────────────
 #&gt;  package    * version    date       lib source                               
 #&gt;  broom      * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
 #&gt;  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       

@@ -51,7 +51,7 @@ nnet_fit &lt;-
 nnet_fit
 #&gt; parsnip model object
 #&gt; 
-#&gt; Fit time:  8.2s 
+#&gt; Fit time:  9.2s 
 #&gt; Model
 #&gt; Model: &quot;sequential&quot;
 #&gt; ________________________________________________________________________________
@@ -80,17 +80,17 @@ val_results %&gt;% slice(1:5)
 #&gt; # A tibble: 5 x 6
 #&gt;       A     B Class .pred_class .pred_One .pred_Two
 #&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt; &lt;fct&gt;           &lt;dbl&gt;     &lt;dbl&gt;
-#&gt; 1 1061.  74.5 One   Two             0.469    0.531 
-#&gt; 2 1241.  83.4 One   Two             0.480    0.520 
-#&gt; 3  939.  71.9 One   One             0.631    0.369 
-#&gt; 4  813.  77.1 One   One             0.922    0.0775
-#&gt; 5 1706.  92.8 Two   Two             0.353    0.647
+#&gt; 1 1061.  74.5 One   Two             0.467    0.533 
+#&gt; 2 1241.  83.4 One   Two             0.481    0.519 
+#&gt; 3  939.  71.9 One   One             0.628    0.372 
+#&gt; 4  813.  77.1 One   One             0.923    0.0767
+#&gt; 5 1706.  92.8 Two   Two             0.356    0.644
 
 val_results %&gt;% roc_auc(truth = Class, .pred_One)
 #&gt; # A tibble: 1 x 3
 #&gt;   .metric .estimator .estimate
 #&gt;   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
-#&gt; 1 roc_auc binary         0.815
+#&gt; 1 roc_auc binary         0.814
 val_results %&gt;% accuracy(truth = Class, .pred_class)
 #&gt; # A tibble: 1 x 3
 #&gt;   .metric  .estimator .estimate
@@ -130,7 +130,7 @@ ggplot(x_grid, aes(x = A, y = B)) +
 #&gt;  collate  en_US.UTF-8                 
 #&gt;  ctype    en_US.UTF-8                 
 #&gt;  tz       America/Los_Angeles         
-#&gt;  date     2020-03-22                  
+#&gt;  date     2020-03-23                  
 #&gt; 
 #&gt; ─ Packages ───────────────────────────────────────────────────────────────────
 #&gt;  package    * version    date       lib source                               

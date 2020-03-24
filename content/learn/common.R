@@ -5,6 +5,6 @@ knitr::opts_chunk$set(
   dev.args = list(bg = "transparent"),
   fig.path = "figs/",
   collapse = TRUE,
-  width = 100,
   cache.path = "cache/"
 )
+options(width = 80)

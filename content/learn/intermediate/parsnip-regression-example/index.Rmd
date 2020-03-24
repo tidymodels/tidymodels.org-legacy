@@ -3,7 +3,7 @@ title: "Using parsnip for Regression Models"
 tags: [rsample, parsnip]
 categories: [model fitting]
 ---
-  
+
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}
 source(here::here("content/learn/common.R"))
 ```

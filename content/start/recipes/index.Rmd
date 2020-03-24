@@ -12,7 +12,6 @@ output:
 source(here::here("content/start/common.R"))
 ```
 
-
 ```{r load, include = FALSE, message = FALSE, warning = FALSE}
 library(tidymodels)
 library(skimr)
