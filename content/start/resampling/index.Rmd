@@ -23,33 +23,6 @@ data(cells, package = "modeldata")
 
 pkgs <- c("tidymodels", "ranger", "modeldata")
 
-req_pkgs <- function(x, what = "This article") {
-  x <- sort(x)
-  x <- paste0("`", x, "`")
-  x <- knitr::combine_words(x, and = " and ")
-  paste0(
-    what,
-    " requires that you have the following packages installed: ",
-    x, "." 
-  )
-}
-
-small_session <- function(pkgs = NULL) {
-  pkgs <- c(pkgs, "recipes", "parsnip", "tune", "workflows", "dials", "dplyr",
-            "broom", "ggplot2", "purrr", "rlang", "rsample", "tibble", 
-            "yardstick", "tidymodels")
-  pkgs <- unique(pkgs)
-  library(sessioninfo)
-  library(dplyr)
-  sinfo <- sessioninfo::session_info()
-  cls <- class(sinfo$packages)
-  sinfo$packages <- 
-    sinfo$packages %>% 
-    dplyr::filter(package %in% pkgs)
-  class(sinfo$packages) <- cls
-  sinfo
-}
-
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
@@ -58,7 +31,7 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 
 # Introduction
 
-Once we have a model trained, we need a way to measure how well that model is doing. This tutorial explains how to characterize model performance based on **resampling** statistics. `r req_pkgs(c("tidymodels", "ranger", "modeldata"), "It")`
+Once we have a model trained, we need a way to measure how well that model is doing. This tutorial explains how to characterize model performance based on **resampling** statistics. 
 
 # Predicting image segmentation
 
@@ -76,7 +49,7 @@ The bottom panel shows some segmentation results. Cells 1 and 5 are fairly well 
 
 A cell-based experiment might involve millions of cells so it is unfeasible to visually assessment all. Instead, a subsample can be created and the cells can be manually labeled by experts as either poorly segmented (`PS`) or well-segmented (`WS`). If we can predict these labels accurately, the larger data set can be improved by filtering out the cells most likely to be poorly segmented.
 
-An example data set called `cells` is contained in the `modeldata` package. It has labeled data for `r nrow(cells)` cells. Each also has a total of `r ncol(cells) - 2` predictors based on automated image analysis measurements. For example, `avg_inten_ch_1` is the mean intensity of the data contained in the nucleus, `area_ch_1` is the total size of the cell, and so on (some predictors are fairly arcane in nature). 
+An example data set called `cells` is contained in the modeldata package. It has labeled data for `r nrow(cells)` cells. Each also has a total of `r ncol(cells) - 2` predictors based on automated image analysis measurements. For example, `avg_inten_ch_1` is the mean intensity of the data contained in the nucleus, `area_ch_1` is the total size of the cell, and so on (some predictors are fairly arcane in nature). 
 
 ```{r cell-import}
 data(cells, package = "modeldata")
@@ -98,7 +71,7 @@ When beginning a modeling project, it is common to [separate the data set](https
 
  * The _test set_ is held in reserve until the end of the project, at which point there should only be one or two models under serious consideration. It is used as an unbiased source for measuring final model performance. 
 
-There are different ways to create these partitions of the data. The most common approach is to use a random sample. Suppose that one quarter of the data were reserved for the test set. Random sampling would randomly select 25% for the test set and use the remainder for the training set. We can use the `rsample` package for this purpose. In the original analysis, the authors made their own training/test set and that information is contained in the column `case`. To demonstrate how to make a split, we'll remove this column before we make our own split. 
+There are different ways to create these partitions of the data. The most common approach is to use a random sample. Suppose that one quarter of the data were reserved for the test set. Random sampling would randomly select 25% for the test set and use the remainder for the training set. We can use the rsample package for this purpose. In the original analysis, the authors made their own training/test set and that information is contained in the column `case`. To demonstrate how to make a split, we'll remove this column before we make our own split. 
 
 Since random sampling uses random numbers, it is important to set the random number seed. This ensures that the random numbers can be reproduced at a later time (if needed). 
 
@@ -124,7 +97,7 @@ Random forest models are ensembles of decisions trees. A large number of tree mo
 
 This model is very low maintenance; it requires very little pre-processing of the data and, while it can be tuned, the default parameters tend to give reasonable results. At the same time, the number of trees in the ensemble should be large (in the thousands) and this makes the model moderately expensive to compute. 
 
-To fit a random forest model on the training set, use the `parsnip` package in conjunction with the `ranger` package. We first define the model that we want to create:
+To fit a random forest model on the training set, use the parsnip package in conjunction with the ranger package. We first define the model that we want to create:
 
 ```{r rf-def}
 rf_mod <- 
@@ -151,7 +124,7 @@ In the course of any modeling project, we might create a variety of different mo
  
 The ROC curve uses the class probability estimates to give us a sense of performance across the entire set of potential probability cutoffs. Overall accuracy uses the hard class predictions to measure performance (assuming a simple 50% probability cutoff to categorize a cell as poorly segmented). 
 
-The `yardstick` package has functions for computing both of these measures called `roc_auc()` and `accuracy()`. 
+The yardstick package has functions for computing both of these measures called `roc_auc()` and `accuracy()`. 
 
 At first glance, it might seem like a good idea to use the training set data to compute these statistics^[Spoiler alert: it is a very bad idea to do this.]. To do this, we call the `predict()` method to get both types of predictions (i.e. probabilities and hard class predictions).
 
@@ -164,7 +137,7 @@ rf_training_pred <-
               select(class))
 ```
 
-Using the `yardstick` functions, this model has spectacular results, so spectacular that you might be starting to get suspicious: 
+Using the yardstick functions, this model has spectacular results, so spectacular that you might be starting to get suspicious: 
 
 ```{r rf-train-perf}
 roc_auc(rf_training_pred,  truth = class, .pred_PS)
@@ -250,7 +223,7 @@ From these resampling statistics, the final estimate of performance for this ran
 
 These resampling statistics are an effective method for measuring model performance _without_ predicting the training set directly as a whole. 
 
-To generate these results, the first step is to create a resampling object using `rsample`. There are several resampling methods implemented and cross-validation folds can be created using `vfold_cv()`: 
+To generate these results, the first step is to create a resampling object using rsample. There are several resampling methods implemented and cross-validation folds can be created using `vfold_cv()`: 
 
 ```{r folds}
 set.seed(1697)
@@ -260,7 +233,7 @@ folds
 
 The list column for `splits` contains the information on which rows belong in the analysis and assessment sets. There are functions that can be used to extract the individual resampled data called `analysis()` and `assessment()`. 
 
-However, the `tune` package contains high-level functions that can do the required computations to resample a model (and, optionally, a recipe) for the purpose of measuring performance. The syntax is very similar to `fit()`: 
+However, the tune package contains high-level functions that can do the required computations to resample a model (and, optionally, a recipe) for the purpose of measuring performance. The syntax is very similar to `fit()`: 
 
 ```{r rs, eval = FALSE}
 set.seed(5273)
@@ -271,7 +244,7 @@ rf_fit_rs <- rf_mod %>%
 rf_fit_rs
 ```
 
-The results are similar to the `folds` results with some extra columns. The column `.metrics` contains the performance statistics created from the 10 assessment sets. These can be manually unnested but `tune` contains a number of simple functions that can extract these data: 
+The results are similar to the `folds` results with some extra columns. The column `.metrics` contains the performance statistics created from the 10 assessment sets. These can be manually unnested but the tune package contains a number of simple functions that can extract these data: 
  
 ```{r metrics}
 collect_metrics(rf_fit_rs)
