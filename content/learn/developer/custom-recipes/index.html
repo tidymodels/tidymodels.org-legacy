@@ -8,6 +8,7 @@ type: learn-subsection
 <script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 
+<p>This article requires that you have the following packages installed: modeldata and tidymodels.</p>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
 <p>There are a large number of existing recipe steps in packages like recipes, themis and others. A full list of steps in CRAN packages cna be found here. However, you might need to define your own operations; this page describes how to do that. If you are looking for good examples of existing steps, I would suggest looking at the code for <a href="https://github.com/tidymodels/recipes/blob/master/R/center.R">centering</a> or <a href="https://github.com/tidymodels/recipes/blob/master/R/pca.R">PCA</a> to start.</p>
@@ -44,7 +45,7 @@ theme_set(theme_bw())
 ggplot(biomass_tr, aes(x = carbon)) + 
   geom_histogram(binwidth = 5, col = &quot;blue&quot;, fill = &quot;blue&quot;, alpha = .5) + 
   geom_vline(xintercept = biomass_te$carbon[1], lty = 2)</code></pre>
-<p><img src="/learn/developer/custom-recipes/index_files/figure-html/carbon_dist-1.png" width="100%" /></p>
+<p><img src="figs/carbon_dist-1.svg" width="100%" /></p>
 <p>Based on the training set, 42.1% of the data are less than a value of 46.35. There are some applications where it might be advantageous to represent the predictor values as percentiles rather than their original values.</p>
 <p>Our new step will do this computation for any numeric variables of interest. We will call this <code>step_percentile()</code>. The code below is designed for illustration and not speed or best practices. I’ve left out a lot of error trapping that we would want in a real implementation.</p>
 </div>
@@ -247,7 +248,7 @@ ggplot(biomass_tr, aes(x = hydrogen)) +
              aes(x = original, y = hydrogen), 
              col = &quot;red&quot;, alpha = .5, cex = 2) + 
   labs(x = &quot;New Hydrogen Values&quot;, y = &quot;Percentile Based on Training Set&quot;)</code></pre>
-<p><img src="/learn/developer/custom-recipes/index_files/figure-html/cdf_plot-1.png" width="672" /></p>
+<p><img src="figs/cdf_plot-1.svg" width="672" /></p>
 <p>These line up very nicely.</p>
 </div>
 <div id="custom-check-operations" class="section level1">
@@ -371,16 +372,16 @@ tidy(rec_obj, number = 1)
 #&gt; # A tibble: 274 x 4
 #&gt;    term     value percentile id              
 #&gt;    &lt;chr&gt;    &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;           
-#&gt;  1 hydrogen 0.03           0 percentile_2uTCh
-#&gt;  2 hydrogen 0.934          1 percentile_2uTCh
-#&gt;  3 hydrogen 1.60           2 percentile_2uTCh
-#&gt;  4 hydrogen 2.07           3 percentile_2uTCh
-#&gt;  5 hydrogen 2.45           4 percentile_2uTCh
-#&gt;  6 hydrogen 2.74           5 percentile_2uTCh
-#&gt;  7 hydrogen 3.15           6 percentile_2uTCh
-#&gt;  8 hydrogen 3.49           7 percentile_2uTCh
-#&gt;  9 hydrogen 3.71           8 percentile_2uTCh
-#&gt; 10 hydrogen 3.99           9 percentile_2uTCh
+#&gt;  1 hydrogen 0.03           0 percentile_vuqJM
+#&gt;  2 hydrogen 0.934          1 percentile_vuqJM
+#&gt;  3 hydrogen 1.60           2 percentile_vuqJM
+#&gt;  4 hydrogen 2.07           3 percentile_vuqJM
+#&gt;  5 hydrogen 2.45           4 percentile_vuqJM
+#&gt;  6 hydrogen 2.74           5 percentile_vuqJM
+#&gt;  7 hydrogen 3.15           6 percentile_vuqJM
+#&gt;  8 hydrogen 3.49           7 percentile_vuqJM
+#&gt;  9 hydrogen 3.71           8 percentile_vuqJM
+#&gt; 10 hydrogen 3.99           9 percentile_vuqJM
 #&gt; # … with 264 more rows</code></pre>
 </div>
 <div id="s3-methods-for-tuning-parameters" class="section level1">
@@ -429,7 +430,7 @@ spline_degree : function (range = c(3L, 10L), trans = NULL)  </code></pre>
 </div>
 <div id="session-information" class="section level1">
 <h1>Session information</h1>
-<pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────────────────────────
+<pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────
 #&gt;  setting  value                       
 #&gt;  version  R version 3.6.1 (2019-07-05)
 #&gt;  os       macOS Mojave 10.14.6        
@@ -441,12 +442,13 @@ spline_degree : function (range = c(3L, 10L), trans = NULL)  </code></pre>
 #&gt;  tz       America/New_York            
 #&gt;  date     2020-03-26                  
 #&gt; 
-#&gt; ─ Packages ───────────────────────────────────────────────────────────────────────────────────────
+#&gt; ─ Packages ───────────────────────────────────────────────────────────────────
 #&gt;  package    * version    date       lib source                             
 #&gt;  broom      * 0.5.4      2020-01-27 [1] CRAN (R 3.6.0)                     
 #&gt;  dials      * 0.0.4.9000 2020-03-21 [1] local                              
 #&gt;  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                     
 #&gt;  ggplot2    * 3.3.0      2020-03-05 [1] CRAN (R 3.6.0)                     
+#&gt;  infer      * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                     
 #&gt;  modeldata  * 0.0.1      2019-12-06 [1] CRAN (R 3.6.0)                     
 #&gt;  parsnip    * 0.0.5.9000 2020-03-26 [1] local                              
 #&gt;  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                     

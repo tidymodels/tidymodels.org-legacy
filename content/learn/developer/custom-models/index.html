@@ -7,7 +7,7 @@ categories: []
 <script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 
-<p>This article requires that you have the following packages installed: <code>mda</code>, <code>modeldata</code>, and <code>tidymodels</code>.</p>
+<p>This article requires that you have the following packages installed: mda, modeldata, and tidymodels.</p>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
 <p>parsnip constructs models and predictions by representing those actions in expressions. There are a few reasons for this:</p>
@@ -21,11 +21,11 @@ categories: []
 <div id="mixture-discriminant-analysis" class="section level1">
 <h1>Mixture discriminant analysis</h1>
 <p>As an example, we’ll create a function for <em>mixture discriminant analysis</em>. There are <a href="http://search.r-project.org/cgi-bin/namazu.cgi?query=%22mixture+discriminant%22&amp;max=100&amp;result=normal&amp;sort=score&amp;idxname=functions">a few packages</a> that do this but we’ll focus on <code>mda::mda</code>:</p>
-<pre class="r"><code>str(mda::mda)</code></pre>
-<pre><code>#&gt; function (formula = formula(data), data = sys.frame(sys.parent()), subclasses = 3, sub.df = NULL, 
-#&gt;     tot.df = NULL, dimension = sum(subclasses) - 1, eps = .Machine$double.eps, iter = 5, weights = mda.start(x, 
-#&gt;         g, subclasses, trace, ...), method = polyreg, keep.fitted = (n * dimension &lt; 5000), 
-#&gt;     trace = FALSE, ...)</code></pre>
+<pre class="r"><code>str(mda::mda)
+#&gt; function (formula = formula(data), data = sys.frame(sys.parent()), subclasses = 3, 
+#&gt;     sub.df = NULL, tot.df = NULL, dimension = sum(subclasses) - 1, eps = .Machine$double.eps, 
+#&gt;     iter = 5, weights = mda.start(x, g, subclasses, trace, ...), method = polyreg, 
+#&gt;     keep.fitted = (n * dimension &lt; 5000), trace = FALSE, ...)</code></pre>
 <p>The main hyper-parameter is the number of subclasses. We’ll name our function <code>discrim_mixture</code>.</p>
 <div id="aspects-of-models" class="section level2">
 <h2>Aspects of Models</h2>
@@ -55,8 +55,8 @@ set_model_engine(
 )
 set_dependency(&quot;discrim_mixture&quot;, eng = &quot;mda&quot;, pkg = &quot;mda&quot;)</code></pre>
 <p>These functions should silently finish. There is also a function that can be used to show what aspects of the model have been added to parsnip:</p>
-<pre class="r"><code>show_model_info(&quot;discrim_mixture&quot;)</code></pre>
-<pre><code>#&gt; Information for `discrim_mixture`
+<pre class="r"><code>show_model_info(&quot;discrim_mixture&quot;)
+#&gt; Information for `discrim_mixture`
 #&gt;  modes: unknown, classification 
 #&gt; 
 #&gt;  engines: 
@@ -83,8 +83,8 @@ set_dependency(&quot;discrim_mixture&quot;, eng = &quot;mda&quot;, pkg = &quot;m
   func = list(pkg = &quot;foo&quot;, fun = &quot;bar&quot;),
   has_submodel = FALSE
 )
-show_model_info(&quot;discrim_mixture&quot;)</code></pre>
-<pre><code>#&gt; Information for `discrim_mixture`
+show_model_info(&quot;discrim_mixture&quot;)
+#&gt; Information for `discrim_mixture`
 #&gt;  modes: unknown, classification 
 #&gt; 
 #&gt;  engines: 
@@ -147,8 +147,8 @@ show_model_info(&quot;discrim_mixture&quot;)</code></pre>
     defaults = list()
   )
 )
-show_model_info(&quot;discrim_mixture&quot;)</code></pre>
-<pre><code>#&gt; Information for `discrim_mixture`
+show_model_info(&quot;discrim_mixture&quot;)
+#&gt; Information for `discrim_mixture`
 #&gt;  modes: unknown, classification 
 #&gt; 
 #&gt;  engines: 
@@ -222,8 +222,8 @@ set_pred(
   value = prob_info
 )
 
-show_model_info(&quot;discrim_mixture&quot;)</code></pre>
-<pre><code>#&gt; Information for `discrim_mixture`
+show_model_info(&quot;discrim_mixture&quot;)
+#&gt; Information for `discrim_mixture`
 #&gt;  modes: unknown, classification 
 #&gt; 
 #&gt;  engines: 
@@ -248,8 +248,8 @@ show_model_info(&quot;discrim_mixture&quot;)</code></pre>
 <p>As a developer, one thing that may come in handy is the <code>translate()</code> function. This will tell you what the model’s eventual syntax will be.</p>
 <p>For example:</p>
 <pre class="r"><code>discrim_mixture(sub_classes = 2) %&gt;%
-  translate(engine = &quot;mda&quot;)</code></pre>
-<pre><code>#&gt; Model Specification (classification)
+  translate(engine = &quot;mda&quot;)
+#&gt; Model Specification (classification)
 #&gt; 
 #&gt; Main Arguments:
 #&gt;   sub_classes = 2
@@ -270,10 +270,10 @@ mda_spec &lt;- discrim_mixture(sub_classes = 2) %&gt;%
 
 mda_fit &lt;- mda_spec %&gt;%
   fit(Class ~ ., data = example_train, engine = &quot;mda&quot;)
-mda_fit</code></pre>
-<pre><code>#&gt; parsnip model object
+mda_fit
+#&gt; parsnip model object
 #&gt; 
-#&gt; Fit time:  20ms 
+#&gt; Fit time:  22ms 
 #&gt; Call:
 #&gt; mda::mda(formula = formula, data = data, subclasses = ~2)
 #&gt; 
@@ -287,10 +287,11 @@ mda_fit</code></pre>
 #&gt; 
 #&gt; Training Misclassification Error: 0.17 ( N = 784 )
 #&gt; 
-#&gt; Deviance: 674</code></pre>
-<pre class="r"><code>predict(mda_fit, new_data = example_test, type = &quot;prob&quot;) %&gt;%
-  bind_cols(example_test %&gt;% select(Class))</code></pre>
-<pre><code>#&gt; # A tibble: 7 x 3
+#&gt; Deviance: 674
+
+predict(mda_fit, new_data = example_test, type = &quot;prob&quot;) %&gt;%
+  bind_cols(example_test %&gt;% select(Class))
+#&gt; # A tibble: 7 x 3
 #&gt;   .pred_Class1 .pred_Class2 Class 
 #&gt;          &lt;dbl&gt;        &lt;dbl&gt; &lt;fct&gt; 
 #&gt; 1       0.586        0.414  Class1
@@ -299,10 +300,11 @@ mda_fit</code></pre>
 #&gt; 4       0.670        0.330  Class1
 #&gt; 5       0.837        0.163  Class1
 #&gt; 6       0.898        0.102  Class1
-#&gt; 7       0.676        0.324  Class2</code></pre>
-<pre class="r"><code>predict(mda_fit, new_data = example_test) %&gt;% 
- bind_cols(example_test %&gt;% select(Class))</code></pre>
-<pre><code>#&gt; # A tibble: 7 x 2
+#&gt; 7       0.676        0.324  Class2
+
+predict(mda_fit, new_data = example_test) %&gt;% 
+ bind_cols(example_test %&gt;% select(Class))
+#&gt; # A tibble: 7 x 2
 #&gt;   .pred_class Class 
 #&gt;   &lt;fct&gt;       &lt;fct&gt; 
 #&gt; 1 Class1      Class1
@@ -353,19 +355,19 @@ set_pred(
 # testing:
 linear_reg() %&gt;% 
   set_engine(&quot;rlm&quot;) %&gt;% 
-  fit(mpg ~ ., data = mtcars)</code></pre>
-<pre><code>#&gt; parsnip model object
+  fit(mpg ~ ., data = mtcars)
+#&gt; parsnip model object
 #&gt; 
-#&gt; Fit time:  5ms 
+#&gt; Fit time:  4ms 
 #&gt; Call:
 #&gt; rlm(formula = formula, data = data)
 #&gt; Converged in 8 iterations
 #&gt; 
 #&gt; Coefficients:
-#&gt; (Intercept)         cyl        disp          hp        drat          wt        qsec          vs 
-#&gt;     17.8225     -0.2788      0.0159     -0.0254      0.4639     -4.1436      0.6531      0.2498 
-#&gt;          am        gear        carb 
-#&gt;      1.4341      0.8594     -0.0108 
+#&gt; (Intercept)         cyl        disp          hp        drat          wt 
+#&gt;     17.8225     -0.2788      0.0159     -0.0254      0.4639     -4.1436 
+#&gt;        qsec          vs          am        gear        carb 
+#&gt;      0.6531      0.2498      1.4341      0.8594     -0.0108 
 #&gt; 
 #&gt; Degrees of freedom: 32 total; 21 residual
 #&gt; Scale estimate: 2.15</code></pre>
@@ -406,8 +408,8 @@ linear_reg() %&gt;%
 
 # FYI: how it is used under-the-hood: 
 new_param_call &lt;- rlang::call2(.fn = info$fun, .ns = info$pkg)
-rlang::eval_tidy(new_param_call)</code></pre>
-<pre><code>#&gt; # Nearest Neighbors  (quantitative)
+rlang::eval_tidy(new_param_call)
+#&gt; # Nearest Neighbors  (quantitative)
 #&gt; Range: [1, 10]</code></pre>
 <p>For <code>discrim_mixture()</code>, a dials object is needed that returns an integer that is the number of sub-classes that should be create. We can create a dials parameter function for this:</p>
 <pre class="r"><code>sub_classes &lt;- function(range = c(1L, 10L), trans = NULL) {
@@ -437,14 +439,14 @@ rlang::eval_tidy(new_param_call)</code></pre>
 
 set.seed(452)
 cv &lt;- vfold_cv(example_train)
-mda_tune_res &lt;- tune_grid(Class ~ ., mda_spec, cv, grid = 4)</code></pre>
-<pre><code>#&gt; Warning: `tune_grid.formula()` is deprecated as of lifecycle 0.1.0.
+mda_tune_res &lt;- tune_grid(Class ~ ., mda_spec, cv, grid = 4)
+#&gt; Warning: `tune_grid.formula()` is deprecated as of lifecycle 0.1.0.
 #&gt; The first argument to `tune_grid()` should be either a model or a workflow. In the future, you can use:
 #&gt; tune_grid(mda_spec, Class ~ ., resamples = cv, grid = 4)
 #&gt; This warning is displayed once every 8 hours.
-#&gt; Call `lifecycle::last_warnings()` to see where this warning was generated.</code></pre>
-<pre class="r"><code>show_best(mda_tune_res, metric = &quot;roc_auc&quot;)</code></pre>
-<pre><code>#&gt; # A tibble: 4 x 6
+#&gt; Call `lifecycle::last_warnings()` to see where this warning was generated.
+show_best(mda_tune_res, metric = &quot;roc_auc&quot;)
+#&gt; # A tibble: 4 x 6
 #&gt;   sub_classes .metric .estimator  mean     n std_err
 #&gt;         &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
 #&gt; 1           2 roc_auc binary     0.885    10  0.0143
@@ -527,7 +529,7 @@ translate.rand_forest &lt;- function (x, engine, ...){
 </div>
 <div id="session-information" class="section level1">
 <h1>Session information</h1>
-<pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────────────────────────
+<pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────
 #&gt;  setting  value                       
 #&gt;  version  R version 3.6.1 (2019-07-05)
 #&gt;  os       macOS Mojave 10.14.6        
@@ -539,12 +541,13 @@ translate.rand_forest &lt;- function (x, engine, ...){
 #&gt;  tz       America/New_York            
 #&gt;  date     2020-03-26                  
 #&gt; 
-#&gt; ─ Packages ───────────────────────────────────────────────────────────────────────────────────────
+#&gt; ─ Packages ───────────────────────────────────────────────────────────────────
 #&gt;  package    * version    date       lib source                             
 #&gt;  broom      * 0.5.4      2020-01-27 [1] CRAN (R 3.6.0)                     
 #&gt;  dials      * 0.0.4.9000 2020-03-21 [1] local                              
 #&gt;  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                     
 #&gt;  ggplot2    * 3.3.0      2020-03-05 [1] CRAN (R 3.6.0)                     
+#&gt;  infer      * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                     
 #&gt;  mda        * 0.4-10     2017-11-02 [1] CRAN (R 3.6.0)                     
 #&gt;  parsnip    * 0.0.5.9000 2020-03-26 [1] local                              
 #&gt;  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                     
