@@ -1,0 +1,208 @@
+---
+title: "Custom tuning parameter functions"
+tags: [dials]
+categories: []
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<p>This article requires that you have the following packages installed: <code>dials</code> and <code>scales</code>.</p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Some models and recipe steps contain parameters that dials does not know about. You can construct new quantitative and qualitative parameters using <code>new_quant_param()</code> or <code>new_qual_param()</code>, respectively. This article is a guide to creating new parameters.</p>
+</div>
+<div id="quantitative-parameters" class="section level1">
+<h1>Quantitative parameters</h1>
+<p>As an example, the multivariate adaptive regression spline (<a href="https://en.wikipedia.org/wiki/Multivariate_adaptive_regression_spline">MARS</a>) model creates nonlinear features from predictors and adds them to a linear regression models. The earth pacakge is an excellent implementation of this method.</p>
+<p>MARS creates an initial set of features and then prunes them back to an appropriate size. This can be done automatically by <code>earth::earth()</code> or the number of final terms can be set by the user. The parsnip function <code>mars()</code> has a parameter called <code>num_terms</code> that defines this.</p>
+<p>What if we want to create a parameter for the number of <em>initial terms</em> included in the model. There is not argument in <code>parsnip::mars()</code> for this but we will make one. The argument name in <code>earth::earth()</code> is <code>nk</code>, which is not very descriptive. Our parameter will be called <code>num_initial_terms</code>.</p>
+<p>We use the <code>new_quant_param()</code> function since this is a numeric parameter. The main two arguments to a numeric parameter function are <code>range</code> and <code>trans</code>.</p>
+<p>The range specifies the possible values of the parameter. For our example, a minimal value might be one or two. What is the upper limit? The default in the earth package is</p>
+<pre class="r"><code>min(200, max(20, 2 * ncol(x))) + 1</code></pre>
+<p>where <code>x</code> is the predictor matrix. We often put in values that are either sensible defaults or are minimal enough to work for the majority of data sets. For now, let’s specify an upper limit of 10 but this will be discussed more in the next section.</p>
+<p>The other argument is <code>trans</code>, which represents a transformation that should be applied to the parameter values when working with them. For example, many regularization methods have a <code>penalty</code> parameter that tends to range between zero and some upper bound (let’s say 1). The effect of going from a penalty value of 0.01 to 0.1 is much more impactful than going from 0.9 to 1.0. In such a case, it might make sense to work with this parameter in transformed units (such as the log, in this example). If new parameter values are generated at random, it helps if they are uniformly simulated in the transformed units and then converted back to the original units.</p>
+<p>The <code>trans</code> parameter accepts a transformation object from the scales package. For example:</p>
+<pre class="r"><code>library(scales)
+lsf.str(&quot;package:scales&quot;, pattern = &quot;_trans$&quot;)</code></pre>
+<pre><code>#&gt; asn_trans : function ()  
+#&gt; atanh_trans : function ()  
+#&gt; boxcox_trans : function (p, offset = 0)  
+#&gt; date_trans : function ()  
+#&gt; exp_trans : function (base = exp(1))  
+#&gt; hms_trans : function ()  
+#&gt; identity_trans : function ()  
+#&gt; log_trans : function (base = exp(1))  
+#&gt; log10_trans : function ()  
+#&gt; log1p_trans : function ()  
+#&gt; log2_trans : function ()  
+#&gt; logit_trans : function ()  
+#&gt; modulus_trans : function (p, offset = 1)  
+#&gt; probability_trans : function (distribution, ...)  
+#&gt; probit_trans : function ()  
+#&gt; pseudo_log_trans : function (sigma = 1, base = exp(1))  
+#&gt; reciprocal_trans : function ()  
+#&gt; reverse_trans : function ()  
+#&gt; sqrt_trans : function ()  
+#&gt; time_trans : function (tz = NULL)  
+#&gt; yj_trans : function (p)</code></pre>
+<pre class="r"><code>scales::log10_trans()</code></pre>
+<pre><code>#&gt; Transformer:  log-10</code></pre>
+<p>A value of <code>NULL</code> means that no transformation should be used.</p>
+<p>A quantitative parameter function should have these two arguments and, in the function body, a call <code>new_quant_param()</code>. There are a few arguments to this function:</p>
+<pre class="r"><code>library(tidymodels)
+args(new_quant_param)</code></pre>
+<pre><code>#&gt; function (type = c(&quot;double&quot;, &quot;integer&quot;), range, inclusive, default = unknown(), 
+#&gt;     trans = NULL, values = NULL, label = NULL, finalize = NULL) 
+#&gt; NULL</code></pre>
+<ul>
+<li><p>Possible types are double precision and integers. The value of <code>type</code> should agree if the values of <code>range</code> in the function definition.</p></li>
+<li><p>It’s ok for our tuning to include the minimum or maximum, so we’ll use <code>c(TRUE, TRUE)</code> for <code>inclusive</code>. If the value cannot include one end of the range, set one or both of these values to <code>FALSE</code>.</p></li>
+<li><p>The label should be a named character string where the name is the parameter name and the value represents what will be printed automatically.</p></li>
+<li><p><code>finalize</code> is an argument that can set parts of the range. This is discussed more below.</p></li>
+</ul>
+<p>Here’s an example of a basic quantitative parameter object:</p>
+<pre class="r"><code>num_initial_terms &lt;- function(range = c(1L, 10L), trans = NULL) {
+  new_quant_param(
+    type = &quot;integer&quot;,
+    range = range,
+    inclusive = c(TRUE, TRUE),
+    trans = trans,
+    label = c(num_initial_terms = &quot;# Initial MARS Terms&quot;),
+    finalize = NULL
+  )
+}
+
+num_initial_terms()</code></pre>
+<pre><code>#&gt; # Initial MARS Terms  (quantitative)
+#&gt; Range: [1, 10]</code></pre>
+<pre class="r"><code># Sample from the parameter:
+set.seed(4832856)
+num_initial_terms() %&gt;% value_sample(5)</code></pre>
+<pre><code>#&gt; [1]  6  4  9 10  4</code></pre>
+<div id="finalizing-parameters" class="section level2">
+<h2>Finalizing parameters</h2>
+<p>It might be the case that the range of the parameter is unknown. For example, parameters that are related to the number of column in a data set cannot be exactly specified in the absense of data. In those cases, a placeholder of <code>unknown()</code> can be added. This will force the user to “finalize” the parameter object for their particular data set. Let’s redefine our function with an <code>unknown()</code> value:</p>
+<pre class="r"><code>num_initial_terms &lt;- function(range = c(1L, unknown()), trans = NULL) {
+  new_quant_param(
+    type = &quot;integer&quot;,
+    range = range,
+    inclusive = c(TRUE, TRUE),
+    trans = trans,
+    label = c(num_initial_terms = &quot;# Initial MARS Terms&quot;),
+    finalize = NULL
+  )
+}
+num_initial_terms()</code></pre>
+<pre><code>#&gt; # Initial MARS Terms  (quantitative)
+#&gt; Range: [1, ?]</code></pre>
+<pre class="r"><code># Can we sample? 
+num_initial_terms() %&gt;% value_sample(5)</code></pre>
+<pre><code>#&gt; Error: Cannot validate ranges when they contains 1+ unknown values.</code></pre>
+<p>The <code>finalize</code> argument of <code>num_initial_terms()</code> can take a function that uses data to set the range. For example, the package already includes a few functions for finalization:</p>
+<pre class="r"><code>lsf.str(&quot;package:dials&quot;, pattern = &quot;^get_&quot;)</code></pre>
+<pre><code>#&gt; get_batch_sizes : function (object, x, frac = c(1/10, 1/3), ...)  
+#&gt; get_log_p : function (object, x, ...)  
+#&gt; get_n : function (object, x, log_vals = FALSE, ...)  
+#&gt; get_n_frac : function (object, x, log_vals = FALSE, frac = 1/3, ...)  
+#&gt; get_n_frac_range : function (object, x, log_vals = FALSE, frac = c(1/10, 5/10), ...)  
+#&gt; get_p : function (object, x, log_vals = FALSE, ...)  
+#&gt; get_rbf_range : function (object, x, seed = sample.int(10^5, 1), ...)</code></pre>
+<p>These functions generally take a data frame of predictors (in an argument called <code>x</code>) and at the range of the parameter object. Using the formula in the earth package, we might use:</p>
+<pre class="r"><code>get_initial_mars_terms &lt;- function(object, x) {
+  upper_bound &lt;- min(200, max(20, 2 * ncol(x))) + 1
+  upper_bound &lt;- as.integer(upper_bound)
+  bounds &lt;- range_get(object)
+  bounds$upper &lt;- upper_bound
+  range_set(object, bounds)
+}
+
+# Use the mtcars are the finalize the upper bound: 
+num_initial_terms() %&gt;% get_initial_mars_terms(x = mtcars[, -1])</code></pre>
+<pre><code>#&gt; # Initial MARS Terms  (quantitative)
+#&gt; Range: [1, 21]</code></pre>
+<p>Once we add this function to the object, the general <code>finalize()</code> method can be used:</p>
+<pre class="r"><code>num_initial_terms &lt;- function(range = c(1L, unknown()), trans = NULL) {
+  new_quant_param(
+    type = &quot;integer&quot;,
+    range = range,
+    inclusive = c(TRUE, TRUE),
+    trans = trans,
+    label = c(num_initial_terms = &quot;# Initial MARS Terms&quot;),
+    finalize = get_initial_mars_terms
+  )
+}
+
+num_initial_terms() %&gt;% finalize(x = mtcars[, -1])</code></pre>
+<pre><code>#&gt; # Initial MARS Terms  (quantitative)
+#&gt; Range: [1, 21]</code></pre>
+</div>
+</div>
+<div id="qualitative-parameters" class="section level1">
+<h1>Qualitative parameters</h1>
+<p>If a model includes a data aggregation step, we want to allow users to tune how our parameters are aggregated. For example, it embedding methods, possible values might be <code>min</code>, <code>max</code>, <code>mean</code>, <code>sum</code>, or to not aggregate (“none”). Since these cannot be put on a numeric scale, they are a qualitative parameter. We’ll take “character” input (not “logical”), and we must specify the allowed values. By default we won’t aggregate.</p>
+<pre class="r"><code>aggregation &lt;- function(values = c(&quot;none&quot;, &quot;min&quot;, &quot;max&quot;, &quot;mean&quot;, &quot;sum&quot;)) {
+  new_qual_param(
+    type = &quot;character&quot;,
+    values = values,
+    # By default, the first value is selected as default. We&#39;ll specify that to
+    # make it clear.
+    default = &quot;none&quot;,
+    label = c(aggregation = &quot;Aggregation Method&quot;)
+  )
+}</code></pre>
+<p>Within the dials package, the convention is to have the values contained in a separate vector whose name starts with <code>values_</code>. For example:</p>
+<pre class="r"><code>values_aggregation &lt;- c(&quot;none&quot;, &quot;min&quot;, &quot;max&quot;, &quot;mean&quot;, &quot;sum&quot;)
+aggregation &lt;- function(values = values_aggregation) {
+  new_qual_param(
+    type = &quot;character&quot;,
+    values = values,
+    # By default, the first value is selected as default. We&#39;ll specify that to
+    # make it clear.
+    default = &quot;none&quot;,
+    label = c(aggregation = &quot;Aggregation Method&quot;)
+  )
+}</code></pre>
+<p>This may not make sense if you are using the function in a script and not keeping it within a package.</p>
+<p>We can use our <code>aggregation</code> parameters with dials functions.</p>
+<pre class="r"><code>aggregation()</code></pre>
+<pre><code>#&gt; Aggregation Method  (qualitative)
+#&gt; 5 possible value include:
+#&gt; &#39;none&#39;, &#39;min&#39;, &#39;max&#39;, &#39;mean&#39; and &#39;sum&#39;</code></pre>
+<pre class="r"><code>aggregation() %&gt;% value_sample(3)</code></pre>
+<pre><code>#&gt; [1] &quot;min&quot;  &quot;sum&quot;  &quot;mean&quot;</code></pre>
+</div>
+<div id="session-information" class="section level1">
+<h1>Session information</h1>
+<pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────
+#&gt;  setting  value                       
+#&gt;  version  R version 3.6.1 (2019-07-05)
+#&gt;  os       macOS Mojave 10.14.6        
+#&gt;  system   x86_64, darwin15.6.0        
+#&gt;  ui       X11                         
+#&gt;  language (EN)                        
+#&gt;  collate  en_US.UTF-8                 
+#&gt;  ctype    en_US.UTF-8                 
+#&gt;  tz       America/New_York            
+#&gt;  date     2020-03-26                  
+#&gt; 
+#&gt; ─ Packages ───────────────────────────────────────────────────────────────────
+#&gt;  package    * version    date       lib source                             
+#&gt;  broom      * 0.5.4      2020-01-27 [1] CRAN (R 3.6.0)                     
+#&gt;  dials      * 0.0.4.9000 2020-03-21 [1] local                              
+#&gt;  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                     
+#&gt;  ggplot2    * 3.3.0      2020-03-05 [1] CRAN (R 3.6.0)                     
+#&gt;  parsnip    * 0.0.5.9000 2020-03-26 [1] local                              
+#&gt;  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                     
+#&gt;  recipes    * 0.1.10     2020-03-18 [1] CRAN (R 3.6.1)                     
+#&gt;  rlang        0.4.5.9000 2020-03-21 [1] Github (r-lib/rlang@a90b04b)       
+#&gt;  rsample    * 0.0.5.9000 2020-03-23 [1] Github (tidymodels/rsample@4fdbd6c)
+#&gt;  scales     * 1.1.0      2019-11-18 [1] CRAN (R 3.6.0)                     
+#&gt;  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                     
+#&gt;  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                     
+#&gt;  tune       * 0.0.1.9000 2020-03-21 [1] Github (tidymodels/tune@6694258)   
+#&gt;  workflows  * 0.1.0      2019-12-30 [1] CRAN (R 3.6.1)                     
+#&gt;  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                     
+#&gt; 
+#&gt; [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library</code></pre>
+</div>
