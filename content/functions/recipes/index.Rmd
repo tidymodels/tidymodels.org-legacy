@@ -1,0 +1,43 @@
+---
+title: List of Recipe Steps
+---
+
+```{r ex_setup, include=FALSE}
+knitr::opts_chunk$set(
+  message = FALSE,
+  digits = 3,
+  collapse = TRUE,
+  comment = "#>"
+  )
+options(digits = 3)
+script <- here::here("static/code/get_pkgdown_urls.R")
+source(script)
+library(DT)
+pkgs <- c("recipes", "embed", "textrecipes", "themis")
+```
+
+There are many recipe steps in the `recipes` package. Other package that contain steps:
+
+ * [`embed`](https://github.com/tidymodels/embed) contains methods for feature embeddings, effect encoding, UMAP and other methods. 
+
+ * [`textrecipes`](https://github.com/tidymodels/textrecipes) has steps for natural language processing. 
+ 
+ * [`themis`](https://github.com/tidymodels/themis) adds additional steps for dealing with class imbalances. 
+ This table lists the functions in CRAN versions of the tidymodels packages. 
+
+This table contains a list of steps and checking functions across these packages: 
+
+```{r table-compute, include = FALSE}
+pkg_urls <- get_pkgdown_urls(pkgs, fltr = "(^check_)|(^step_)")
+```
+
+```{r table-display, echo = FALSE, results = "asis"}
+DT::datatable(
+  pkg_urls,
+  rownames = FALSE,
+  escape = FALSE,
+  filter = "top",
+  style = 'bootstrap',
+  width = 800
+)
+```

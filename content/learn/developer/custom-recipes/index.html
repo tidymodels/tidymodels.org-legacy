@@ -1,0 +1,279 @@
+---
+title: "Creating Custom Step Functions"
+tags: [recipes]
+categories: []
+type: learn-subsection
+---
+
+
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>The <code>recipes</code> package contains a number of different operations:</p>
+<p>You might need to define your own operations; this page describes how to do that. If you are looking for good examples of existing steps, I would suggest looking at the code for <a href="https://github.com/tidymodels/recipes/blob/master/R/center.R">centering</a> or <a href="https://github.com/tidymodels/recipes/blob/master/R/pca.R">PCA</a> to start.</p>
+<p>For checks, the process is very similar. Notes on this are given at the end of this document.</p>
+</div>
+<div id="a-new-step-definition" class="section level1">
+<h1>A new step definition</h1>
+<p>As an example, let’s create a step that replaces the value of a variable with its percentile from the training set. The date that I’ll use is from the <code>recipes</code> package:</p>
+<pre class="r"><code>library(modeldata)
+data(biomass)
+str(biomass)
+#&gt; &#39;data.frame&#39;:    536 obs. of  8 variables:
+#&gt;  $ sample  : chr  &quot;Akhrot Shell&quot; &quot;Alabama Oak Wood Waste&quot; &quot;Alder&quot; &quot;Alfalfa&quot; ...
+#&gt;  $ dataset : chr  &quot;Training&quot; &quot;Training&quot; &quot;Training&quot; &quot;Training&quot; ...
+#&gt;  $ carbon  : num  49.8 49.5 47.8 45.1 46.8 ...
+#&gt;  $ hydrogen: num  5.64 5.7 5.8 4.97 5.4 5.75 5.99 5.7 5.5 5.9 ...
+#&gt;  $ oxygen  : num  42.9 41.3 46.2 35.6 40.7 ...
+#&gt;  $ nitrogen: num  0.41 0.2 0.11 3.3 1 2.04 2.68 1.7 0.8 1.2 ...
+#&gt;  $ sulfur  : num  0 0 0.02 0.16 0.02 0.1 0.2 0.2 0 0.1 ...
+#&gt;  $ HHV     : num  20 19.2 18.3 18.2 18.4 ...
+
+biomass_tr &lt;- biomass[biomass$dataset == &quot;Training&quot;,]
+biomass_te &lt;- biomass[biomass$dataset == &quot;Testing&quot;,]</code></pre>
+<p>To illustrate the transformation with the <code>carbon</code> variable, the training set distribution of that variables is shown below with a vertical line for the first value of the test set.</p>
+<pre class="r"><code>library(ggplot2)
+theme_set(theme_bw())
+ggplot(biomass_tr, aes(x = carbon)) + 
+  geom_histogram(binwidth = 5, col = &quot;blue&quot;, fill = &quot;blue&quot;, alpha = .5) + 
+  geom_vline(xintercept = biomass_te$carbon[1], lty = 2)</code></pre>
+<p><img src="/learn/developer/custom-recipes/index_files/figure-html/carbon_dist-1.png" width="100%" /></p>
+<p>Based on the training set, 42.1% of the data are less than a value of 46.35. There are some applications where it might be advantageous to represent the predictor values as percentiles rather than their original values.</p>
+<p>Our new step will do this computation for any numeric variables of interest. We will call this <code>step_percentile</code>. The code below is designed for illustration and not speed or best practices. I’ve left out a lot of error trapping that we would want in a real implementation.</p>
+</div>
+<div id="create-the-initial-function" class="section level1">
+<h1>Create the initial function</h1>
+<p>The user-exposed function <code>step_percentile</code> is just a simple wrapper around an internal function called <code>add_step</code>. This function takes the same arguments as your function and simply adds it to a new recipe. The <code>...</code> signifies the variable selectors that can be used.</p>
+<pre class="r"><code>step_percentile &lt;- function(
+  recipe, ..., 
+  role = NA, 
+  trained = FALSE, 
+  ref_dist = NULL,
+  approx = FALSE, 
+  options = list(probs = (0:100)/100, names = TRUE),
+  skip = FALSE,
+  id = rand_id(&quot;percentile&quot;)
+  ) {
+
+  ## The variable selectors are not immediately evaluated by using
+  ##  the `quos` function in `rlang`. `ellipse_check` captures the
+  ##  values and also checks to make sure that they are not empty.  
+  terms &lt;- ellipse_check(...) 
+
+  add_step(
+    recipe, 
+    step_percentile_new(
+      terms = terms, 
+      trained = trained,
+      role = role, 
+      ref_dist = ref_dist,
+      approx = approx,
+      options = options,
+      skip = skip,
+      id = id
+    )
+  )
+}</code></pre>
+<p>You should always keep the first four arguments (<code>recipe</code> though <code>trained</code>) the same as listed above. Some notes:</p>
+<ul>
+<li>the <code>role</code> argument is used when you either 1) create new variables and want their role to be pre-set or 2) replace the existing variables with new values. The latter is what we will be doing and using <code>role = NA</code> will leave the existing role intact.</li>
+<li><code>trained</code> is set by the package when the estimation step has been run. You should default your function definition’s argument to <code>FALSE</code>.</li>
+<li><code>skip</code> is a logical. Whenever a recipe is prepped, each step is trained and then baked. However, there are some steps that should not be applied when a call to <code>bake</code> is used. For example, if a step is applied to the variables with roles of “outcomes”, these data would not be available for new samples.</li>
+<li><code>id</code> is a character string that can be used to identify steps in package code.</li>
+</ul>
+<p>I’ve added extra arguments specific to this step. In order to calculate the percentile, the training data for the relevant columns will need to be saved. This data will be saved in the <code>ref_dist</code> object.
+However, this might be problematic if the data set is large. <code>approx</code> would be used when you want to save a grid of pre-computed percentiles from the training set and use these to estimate the percentile for a new data point. If <code>approx = TRUE</code>, the argument <code>ref_dist</code> will contain the grid for each variable.</p>
+<p>We will use the <code>stats::quantile</code> to compute the grid. However, we might also want to have control over the granularity of this grid, so the <code>options</code> argument will be used to define how that calculations is done. We could just use the ellipses (aka <code>...</code>) so that any options passed to <code>step_percentile</code> that are not one of its arguments will then be passed to <code>stats::quantile</code>. We recommend making a separate list object with the options and use these inside the function.</p>
+</div>
+<div id="initialization-of-new-objects" class="section level1">
+<h1>Initialization of new objects</h1>
+<p>Next, you can utilize the internal function <code>step</code> that sets the class of new objects. Using <code>subclass = &quot;percentile&quot;</code> will set the class of new objects to `“step_percentile”.</p>
+<pre class="r"><code>step_percentile_new &lt;- 
+  function(terms, role, trained, ref_dist, approx, options, skip, id) {
+    step(
+      subclass = &quot;percentile&quot;, 
+      terms = terms,
+      role = role,
+      trained = trained,
+      ref_dist = ref_dist,
+      approx = approx,
+      options = options,
+      skip = skip,
+      id = id
+    )
+  }</code></pre>
+<p>This constructor function should have no default argument values.</p>
+</div>
+<div id="define-the-estimation-procedure" class="section level1">
+<h1>Define the estimation procedure</h1>
+<p>You will need to create a new <code>prep</code> method for your step’s class. To do this, three arguments that the method should have:</p>
+<pre class="r"><code>function(x, training, info = NULL)</code></pre>
+<p>where</p>
+<ul>
+<li><code>x</code> will be the <code>step_percentile</code> object</li>
+<li><code>training</code> will be a <em>tibble</em> that has the training set data</li>
+<li><code>info</code> will also be a tibble that has information on the current set of data available. This information is updated as each step is evaluated by its specific <code>prep</code> method so it may not have the variables from the original data. The columns in this tibble are <code>variable</code> (the variable name), <code>type</code> (currently either “numeric” or “nominal”), <code>role</code> (defining the variable’s role), and <code>source</code> (either “original” or “derived” depending on where it originated).</li>
+</ul>
+<p>You can define other options.</p>
+<p>The first thing that you might want to do in the <code>prep</code> function is to translate the specification listed in the <code>terms</code> argument to column names in the current data. There is an internal function called <code>terms_select</code> that can be used to obtain this.</p>
+<pre class="r"><code>prep.step_percentile &lt;- function(x, training, info = NULL, ...) {
+  col_names &lt;- terms_select(terms = x$terms, info = info) 
+}</code></pre>
+<p>Once we have this, we can either save the original data columns or estimate the approximation grid. For the grid, we will use a helper function that enables us to run <code>do.call</code> on a list of arguments that include the <code>options</code> list.</p>
+<pre class="r"><code>get_pctl &lt;- function(x, args) {
+  args$x &lt;- x
+  do.call(&quot;quantile&quot;, args)
+}
+
+prep.step_percentile &lt;- function(x, training, info = NULL, ...) {
+  col_names &lt;- terms_select(terms = x$terms, info = info) 
+  ## You can add error trapping for non-numeric data here and so on. See the
+  ## `check_type` function to do this for basic types. 
+  
+  ## We&#39;ll use the names later so
+  if (x$options$names == FALSE)
+    rlang::abort(&quot;`names` should be set to TRUE&quot;)
+  
+  if (!x$approx) {
+    ref_dist &lt;- training[, col_names]
+  } else {
+    ref_dist &lt;- purrr::map(training[, col_names],  get_pctl, args = x$options)
+  }
+
+  ## Use the constructor function to return the updated object. 
+  ## Note that `trained` is set to TRUE
+  
+  step_percentile_new(
+    terms = x$terms, 
+    trained = TRUE,
+    role = x$role, 
+    ref_dist = ref_dist,
+    approx = x$approx,
+    options = x$options,
+    skip = x$skip,
+    id = x$id
+  )
+}</code></pre>
+</div>
+<div id="create-the-bake-method" class="section level1">
+<h1>Create the <code>bake</code> method</h1>
+<p>Remember that the <code>prep</code> function does not <em>apply</em> the step to the data; it only estimates any required values such as <code>ref_dist</code>. We will need to create a new method for our <code>step_percentile</code> class. The minimum arguments for this are</p>
+<pre class="r"><code>function(object, new_data, ...)</code></pre>
+<p>where <code>object</code> is the updated step function that has been through the corresponding <code>prep</code> code and <code>new_data</code> is a tibble of data to be processed.</p>
+<p>Here is the code to convert the new data to percentiles. Two initial helper functions handle the two cases (approximation or not). We always return a tibble as the output.</p>
+<pre class="r"><code>## Two helper functions
+pctl_by_mean &lt;- function(x, ref) mean(ref &lt;= x)
+
+pctl_by_approx &lt;- function(x, ref) {
+  ## go from 1 column tibble to vector
+  x &lt;- getElement(x, names(x))
+  ## get the percentiles values from the names (e.g. &quot;10%&quot;)
+  p_grid &lt;- as.numeric(gsub(&quot;%$&quot;, &quot;&quot;, names(ref))) 
+  approx(x = ref, y = p_grid, xout = x)$y/100
+}
+
+bake.step_percentile &lt;- function(object, new_data, ...) {
+  require(tibble)
+  ## For illustration (and not speed), we will loop through the affected variables
+  ## and do the computations
+  vars &lt;- names(object$ref_dist)
+  
+  for (i in vars) {
+    if (!object$approx) {
+      ## We can use `apply` since tibbles do not drop dimensions:
+      new_data[, i] &lt;- apply(new_data[, i], 1, pctl_by_mean, 
+                            ref = object$ref_dist[, i])
+    } else 
+      new_data[, i] &lt;- pctl_by_approx(new_data[, i], object$ref_dist[[i]])
+  }
+  ## Always convert to tibbles on the way out
+  as_tibble(new_data)
+}</code></pre>
+</div>
+<div id="running-the-example" class="section level1">
+<h1>Running the example</h1>
+<p>Let’s use the example data to make sure that it works:</p>
+<pre class="r"><code>library(purrr)
+rec_obj &lt;- 
+  recipe(HHV ~ ., data = biomass_tr[, -(1:2)]) %&gt;%
+  step_percentile(all_predictors(), approx = TRUE) %&gt;%
+  prep(training = biomass_tr)
+#&gt; Warning in regularize.values(x, y, ties, missing(ties)): collapsing to unique &#39;x&#39; values
+
+#&gt; Warning in regularize.values(x, y, ties, missing(ties)): collapsing to unique &#39;x&#39; values
+
+#&gt; Warning in regularize.values(x, y, ties, missing(ties)): collapsing to unique &#39;x&#39; values
+
+percentiles &lt;- bake(rec_obj, biomass_te)
+#&gt; Warning in regularize.values(x, y, ties, missing(ties)): collapsing to unique &#39;x&#39; values
+
+#&gt; Warning in regularize.values(x, y, ties, missing(ties)): collapsing to unique &#39;x&#39; values
+
+#&gt; Warning in regularize.values(x, y, ties, missing(ties)): collapsing to unique &#39;x&#39; values
+percentiles
+#&gt; # A tibble: 80 x 6
+#&gt;    carbon hydrogen oxygen nitrogen sulfur   HHV
+#&gt;     &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;
+#&gt;  1 0.421    0.45   0.903     0.215  0.735  18.3
+#&gt;  2 0.18     0.385  0.922     0.928  0.839  17.6
+#&gt;  3 0.156    0.385  0.945     0.9    0.805  17.2
+#&gt;  4 0.423    0.775  0.28      0.845  0.902  18.9
+#&gt;  5 0.666    0.867  0.631     0.155  0.09   20.5
+#&gt;  6 0.218    0.385  0.536     0.495  0.7    18.5
+#&gt;  7 0.0803   0.271  0.986     0.695  0.903  15.1
+#&gt;  8 0.139    0.126  0.160     0.606  0.7    16.2
+#&gt;  9 0.0226   0.103  0.131     0.126  0.996  11.1
+#&gt; 10 0.0178   0.0821 0.0987    0.972  0.974  10.8
+#&gt; # … with 70 more rows</code></pre>
+<p>The plot below shows how the original data line up with the percentiles for each split of the data for one of the predictors:</p>
+<p><img src="/learn/developer/custom-recipes/index_files/figure-html/cdf_plot-1.png" width="100%" /></p>
+</div>
+<div id="custom-check-operations" class="section level1">
+<h1>Custom check operations</h1>
+<p>The process here is exactly the same as steps; the internal functions have a similar naming convention:</p>
+<ul>
+<li><code>add_check</code> instead of <code>add_step</code></li>
+<li><code>check</code> instead of <code>step</code>, and so on.</li>
+</ul>
+<p>It is strongly recommended that:</p>
+<ol style="list-style-type: decimal">
+<li>The operations start with <code>check_</code> (i.e. <code>check_range</code> and <code>check_range_new</code>)</li>
+<li>The check uses <code>rlang::abort(paste0(...))</code> when the conditions are not met</li>
+<li>The original data are returned (unaltered) by the check when the conditions are satisfied.</li>
+</ol>
+</div>
+<div id="session-information" class="section level1">
+<h1>Session information</h1>
+<pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────────────────────────
+#&gt;  setting  value                       
+#&gt;  version  R version 3.6.0 (2019-04-26)
+#&gt;  os       macOS  10.15.3              
+#&gt;  system   x86_64, darwin15.6.0        
+#&gt;  ui       X11                         
+#&gt;  language (EN)                        
+#&gt;  collate  en_US.UTF-8                 
+#&gt;  ctype    en_US.UTF-8                 
+#&gt;  tz       America/New_York            
+#&gt;  date     2020-03-22                  
+#&gt; 
+#&gt; ─ Packages ───────────────────────────────────────────────────────────────────────────────────────
+#&gt;  package    * version date       lib source                               
+#&gt;  broom      * 0.5.5   2020-02-29 [1] CRAN (R 3.6.0)                       
+#&gt;  dials      * 0.0.4   2019-12-02 [1] CRAN (R 3.6.0)                       
+#&gt;  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)                       
+#&gt;  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)                       
+#&gt;  modeldata  * 0.0.1   2020-01-24 [1] Github (tidymodels/modeldata@aa91bb1)
+#&gt;  parsnip    * 0.0.5   2020-01-07 [1] CRAN (R 3.6.0)                       
+#&gt;  purrr      * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)                       
+#&gt;  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)                       
+#&gt;  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)                       
+#&gt;  rsample    * 0.0.5   2019-07-12 [1] CRAN (R 3.6.0)                       
+#&gt;  tibble     * 2.1.3   2019-06-06 [2] CRAN (R 3.6.0)                       
+#&gt;  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)                       
+#&gt;  tune       * 0.0.1   2020-01-24 [1] Github (tidymodels/tune@ba56ec5)     
+#&gt;  workflows  * 0.1.1   2020-03-17 [1] CRAN (R 3.6.0)                       
+#&gt;  yardstick  * 0.0.6   2020-03-17 [1] CRAN (R 3.6.0)                       
+#&gt; 
+#&gt; [1] /Users/desireedeleon/Library/R/3.6/library
+#&gt; [2] /Library/Frameworks/R.framework/Versions/3.6/Resources/library</code></pre>
+</div>

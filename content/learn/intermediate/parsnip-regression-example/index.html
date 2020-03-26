@@ -1,0 +1,353 @@
+---
+title: "Using parsnip for Regression Models"
+tags: [rsample, parsnip]
+categories: [model fitting]
+---
+
+
+
+<p>This article requires that you have the following packages installed: <code>AmesHousing</code>, <code>glmnet</code>, <code>randomForest</code>, <code>ranger</code>, and <code>tidymodels</code>.</p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>This article demonstrates how to use <code>parsnip</code> for creating regression models using a few different data sets. The first model that it fit (random forest), does <em>not</em> require all numeric input (see discussion <a href="https://bookdown.org/max/FES/categorical-trees.html">here</a>) and the effect of using <code>fit()</code> and <code>fit_xy()</code> are discussed as well as <em>data descriptors</em>.</p>
+<p>Another model (regularized linear regression) is also used to demonstrate how easy it is to move between different types of models using <code>parsnip</code>.</p>
+</div>
+<div id="the-ames-housing-data" class="section level1">
+<h1>The Ames housing data</h1>
+<p>The Ames housing data will be used to to demonstrate how regression models can be made using <code>parsnip</code>. We’ll create the data set and create a simple training/test set split:</p>
+<pre class="r"><code>library(AmesHousing)
+ames &lt;- make_ames()
+
+library(tidymodels)
+
+set.seed(4595)
+data_split &lt;- initial_split(ames, strata = &quot;Sale_Price&quot;, p = 0.75)
+
+ames_train &lt;- training(data_split)
+ames_test  &lt;- testing(data_split)</code></pre>
+<p>The use of the test set here is <em>only for illustration</em>; normally in a data analysis these data would be saved to the very end after many models have been evaluated.</p>
+</div>
+<div id="random-forests" class="section level1">
+<h1>Random Forests</h1>
+<p>We’ll start by fitting a random forest model to a small set of parameters. Let’s say that the model would include predictors: <code>Longitude</code>, <code>Latitude</code>, <code>Lot_Area</code>, <code>Neighborhood</code>, and <code>Year_Sold</code>. A simple random forest model can be specified via</p>
+<pre class="r"><code>rf_defaults &lt;- rand_forest(mode = &quot;regression&quot;)
+rf_defaults
+#&gt; Random Forest Model Specification (regression)</code></pre>
+<p>The model will be fit with the <code>ranger</code> package. Since we didn’t add any extra arguments to <code>fit</code>, <em>many</em> of the arguments will be set to their defaults from the specific function that is used by <code>ranger::ranger</code>. The help pages for the model function describes the changes to the default parameters that are made and the <code>translate</code> function can also be used.</p>
+<p><code>parsnip</code> gives two different interfaces to the models: the formula and non-formula interfaces. Let’s start with the non-formula interface:</p>
+<pre class="r"><code>preds &lt;- c(&quot;Longitude&quot;, &quot;Latitude&quot;, &quot;Lot_Area&quot;, &quot;Neighborhood&quot;, &quot;Year_Sold&quot;)
+
+rf_xy_fit &lt;- 
+  rf_defaults %&gt;%
+  set_engine(&quot;ranger&quot;) %&gt;%
+  fit_xy(
+    x = ames_train[, preds],
+    y = log10(ames_train$Sale_Price)
+  )
+rf_xy_fit
+#&gt; parsnip model object
+#&gt; 
+#&gt; Fit time:  999ms 
+#&gt; Ranger result
+#&gt; 
+#&gt; Call:
+#&gt;  ranger::ranger(formula = formula, data = data, num.threads = 1,      verbose = FALSE, seed = sample.int(10^5, 1)) 
+#&gt; 
+#&gt; Type:                             Regression 
+#&gt; Number of trees:                  500 
+#&gt; Sample size:                      2199 
+#&gt; Number of independent variables:  5 
+#&gt; Mtry:                             2 
+#&gt; Target node size:                 5 
+#&gt; Variable importance mode:         none 
+#&gt; Splitrule:                        variance 
+#&gt; OOB prediction error (MSE):       0.0084303 
+#&gt; R squared (OOB):                  0.7361609</code></pre>
+<p>The non-formula interface doesn’t do anything to the predictors before giving it to the underlying model function. This particular model does <em>not</em> require indicator variables to be create prior to the model (note that the output shows “Number of independent variables: 5”).</p>
+<p>For regression models, the basic <code>predict()</code> method can be used and returns a tibble with a column named <code>.pred</code>:</p>
+<pre class="r"><code>test_results &lt;- ames_test %&gt;%
+  select(Sale_Price) %&gt;%
+  mutate(Sale_Price = log10(Sale_Price)) %&gt;%
+  bind_cols(
+    predict(rf_xy_fit, new_data = ames_test[, preds])
+  )
+test_results %&gt;% slice(1:5)
+#&gt; # A tibble: 5 x 2
+#&gt;   Sale_Price .pred
+#&gt;        &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1       5.33  5.22
+#&gt; 2       5.02  5.21
+#&gt; 3       5.27  5.25
+#&gt; 4       5.60  5.51
+#&gt; 5       5.28  5.25
+
+# summarize performance
+test_results %&gt;% metrics(truth = Sale_Price, estimate = .pred) 
+#&gt; # A tibble: 3 x 3
+#&gt;   .metric .estimator .estimate
+#&gt;   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+#&gt; 1 rmse    standard      0.0916
+#&gt; 2 rsq     standard      0.715 
+#&gt; 3 mae     standard      0.0663</code></pre>
+<p>Note that:</p>
+<ul>
+<li>If the model required indicator variables, we would have to create them manually prior to using <code>fit()</code> (perhaps using the <code>recipes</code> package).</li>
+<li>We had to manually log the outcome prior to modeling.</li>
+</ul>
+<p>Now, for illustration, let’s use the formula method using some new parameter values:</p>
+<pre class="r"><code>rand_forest(mode = &quot;regression&quot;, mtry = 3, trees = 1000) %&gt;%
+  set_engine(&quot;ranger&quot;) %&gt;%
+  fit(
+    log10(Sale_Price) ~ Longitude + Latitude + Lot_Area + Neighborhood + Year_Sold,
+    data = ames_train
+  )
+#&gt; parsnip model object
+#&gt; 
+#&gt; Fit time:  2.8s 
+#&gt; Ranger result
+#&gt; 
+#&gt; Call:
+#&gt;  ranger::ranger(formula = formula, data = data, mtry = ~3, num.trees = ~1000,      num.threads = 1, verbose = FALSE, seed = sample.int(10^5,          1)) 
+#&gt; 
+#&gt; Type:                             Regression 
+#&gt; Number of trees:                  1000 
+#&gt; Sample size:                      2199 
+#&gt; Number of independent variables:  5 
+#&gt; Mtry:                             3 
+#&gt; Target node size:                 5 
+#&gt; Variable importance mode:         none 
+#&gt; Splitrule:                        variance 
+#&gt; OOB prediction error (MSE):       0.008492892 
+#&gt; R squared (OOB):                  0.734202</code></pre>
+<p>Suppose that there was some feature in the <code>randomForest</code> package that we’d like to evaluate. To do so, the only part of the syntaxt that needs to change is the <code>set_engine</code> argument:</p>
+<pre class="r"><code>rand_forest(mode = &quot;regression&quot;, mtry = 3, trees = 1000) %&gt;%
+  set_engine(&quot;randomForest&quot;) %&gt;%
+  fit(
+    log10(Sale_Price) ~ Longitude + Latitude + Lot_Area + Neighborhood + Year_Sold,
+    data = ames_train
+  )
+#&gt; parsnip model object
+#&gt; 
+#&gt; Fit time:  1.9s 
+#&gt; 
+#&gt; Call:
+#&gt;  randomForest(x = as.data.frame(x), y = y, ntree = ~1000, mtry = ~3) 
+#&gt;                Type of random forest: regression
+#&gt;                      Number of trees: 1000
+#&gt; No. of variables tried at each split: 3
+#&gt; 
+#&gt;           Mean of squared residuals: 0.01297109
+#&gt;                     % Var explained: 59.39</code></pre>
+<p>Look at the formula code that was printed out, one function uses the argument name <code>ntree</code> and the other uses <code>num.trees</code>. <code>parsnip</code> doesn’t require you to know the specific names of the main arguments.</p>
+<p>Now suppose that we want to modify the value of <code>mtry</code> based on the number of predictors in the data. Usually, the default value would be <code>floor(sqrt(num_predictors))</code>. To use a pure bagging model would require an <code>mtry</code> value equal to the total number of parameters. There may be cases where you may not know how many predictors are going to be present (perhaps due to the generation of indicator variables or a variable filter) so that might be difficult to know exactly.</p>
+<p>When the model it being fit by <code>parsnip</code>, <a href="https://tidymodels.github.io/parsnip/reference/descriptors.html"><em>data descriptors</em></a> are made available. These attempt to let you know what you will have available when the model is fit. When a model object is created (say using <code>rand_forest()</code>), the values of the arguments that you give it are <em>immediately evaluated</em>… unless you delay them. To delay the evaluation of any argument, you can used <code>rlang::expr()</code> to make an expression.</p>
+<p>Two relevant descriptors for what we are about to do are:</p>
+<ul>
+<li><code>.preds()</code>: the number of predictor <em>variables</em> in the data set that are associated with the predictors <strong>prior to dummy variable creation</strong>.</li>
+<li><code>.cols()</code>: the number of predictor <em>columns</em> after dummy variables (or other encodings) are created.</li>
+</ul>
+<p>Since <code>ranger</code> won’t create indicator values, <code>.preds()</code> would be appropriate for using <code>mtry</code> for a bagging model.</p>
+<p>For example, let’s use an expression with the <code>.preds()</code> descriptor to fit a bagging model:</p>
+<pre class="r"><code>rand_forest(mode = &quot;regression&quot;, mtry = .preds(), trees = 1000) %&gt;%
+  set_engine(&quot;ranger&quot;) %&gt;%
+  fit(
+    log10(Sale_Price) ~ Longitude + Latitude + Lot_Area + Neighborhood + Year_Sold,
+    data = ames_train
+  )
+#&gt; parsnip model object
+#&gt; 
+#&gt; Fit time:  3.8s 
+#&gt; Ranger result
+#&gt; 
+#&gt; Call:
+#&gt;  ranger::ranger(formula = formula, data = data, mtry = ~.preds(),      num.trees = ~1000, num.threads = 1, verbose = FALSE, seed = sample.int(10^5,          1)) 
+#&gt; 
+#&gt; Type:                             Regression 
+#&gt; Number of trees:                  1000 
+#&gt; Sample size:                      2199 
+#&gt; Number of independent variables:  5 
+#&gt; Mtry:                             5 
+#&gt; Target node size:                 5 
+#&gt; Variable importance mode:         none 
+#&gt; Splitrule:                        variance 
+#&gt; OOB prediction error (MSE):       0.008700081 
+#&gt; R squared (OOB):                  0.7277177</code></pre>
+</div>
+<div id="penalized-logistic-regression" class="section level1">
+<h1>Penalized Logistic Regression</h1>
+<p>A linear model might work here too. The <code>linear_reg</code> model can be used. To use regularization/penalization, there are two engines that can do that here: the <code>glmnet</code> and <code>sparklyr</code> packages. The former will be used here and it only implements the non-formula method. <code>parsnip</code> will allow either to be used though.</p>
+<p>When regularization is used, the predictors should first be centered and scaled before given to the model. The formula method won’t do that so some other methods will be required. We’ll use <code>recipes</code> package for that (more information <a href="https://tidymodels.github.io/recipes/">here</a>).</p>
+<pre class="r"><code>norm_recipe &lt;- 
+  recipe(
+    Sale_Price ~ Longitude + Latitude + Lot_Area + Neighborhood + Year_Sold, 
+    data = ames_train
+  ) %&gt;%
+  step_other(Neighborhood) %&gt;% 
+  step_dummy(all_nominal()) %&gt;%
+  step_center(all_predictors()) %&gt;%
+  step_scale(all_predictors()) %&gt;%
+  step_log(Sale_Price, base = 10) %&gt;% 
+  # estimate the means and standard deviations
+  prep(training = ames_train, retain = TRUE)
+
+# Now let&#39;s fit the model using the processed version of the data
+
+glmn_fit &lt;- 
+  linear_reg(penalty = 0.001, mixture = 0.5) %&gt;% 
+  set_engine(&quot;glmnet&quot;) %&gt;%
+  fit(Sale_Price ~ ., data = juice(norm_recipe))
+glmn_fit
+#&gt; parsnip model object
+#&gt; 
+#&gt; Fit time:  10ms 
+#&gt; 
+#&gt; Call:  glmnet::glmnet(x = as.matrix(x), y = y, family = &quot;gaussian&quot;,      alpha = ~0.5) 
+#&gt; 
+#&gt;    Df    %Dev   Lambda
+#&gt; 1   0 0.00000 0.137200
+#&gt; 2   1 0.01877 0.125000
+#&gt; 3   1 0.03552 0.113900
+#&gt; 4   1 0.05039 0.103800
+#&gt; 5   2 0.06804 0.094590
+#&gt; 6   4 0.09334 0.086190
+#&gt; 7   5 0.12540 0.078530
+#&gt; 8   5 0.15320 0.071550
+#&gt; 9   7 0.18370 0.065200
+#&gt; 10  7 0.21380 0.059410
+#&gt; 11  7 0.23950 0.054130
+#&gt; 12  8 0.26190 0.049320
+#&gt; 13  8 0.28550 0.044940
+#&gt; 14  8 0.30580 0.040950
+#&gt; 15  8 0.32300 0.037310
+#&gt; 16  8 0.33780 0.033990
+#&gt; 17  8 0.35030 0.030970
+#&gt; 18  8 0.36090 0.028220
+#&gt; 19  9 0.37010 0.025720
+#&gt; 20  9 0.37860 0.023430
+#&gt; 21  9 0.38570 0.021350
+#&gt; 22  9 0.39170 0.019450
+#&gt; 23  9 0.39680 0.017720
+#&gt; 24  9 0.40110 0.016150
+#&gt; 25  9 0.40470 0.014720
+#&gt; 26  9 0.40770 0.013410
+#&gt; 27 10 0.41040 0.012220
+#&gt; 28 11 0.41270 0.011130
+#&gt; 29 11 0.41490 0.010140
+#&gt; 30 11 0.41670 0.009242
+#&gt; 31 12 0.41830 0.008421
+#&gt; 32 12 0.41970 0.007673
+#&gt; 33 12 0.42090 0.006991
+#&gt; 34 12 0.42190 0.006370
+#&gt; 35 12 0.42280 0.005804
+#&gt; 36 12 0.42350 0.005288
+#&gt; 37 12 0.42400 0.004819
+#&gt; 38 12 0.42450 0.004390
+#&gt; 39 12 0.42500 0.004000
+#&gt; 40 12 0.42530 0.003645
+#&gt; 41 12 0.42560 0.003321
+#&gt; 42 12 0.42580 0.003026
+#&gt; 43 12 0.42600 0.002757
+#&gt; 44 12 0.42620 0.002512
+#&gt; 45 12 0.42630 0.002289
+#&gt; 46 12 0.42650 0.002086
+#&gt; 47 12 0.42660 0.001901
+#&gt; 48 12 0.42660 0.001732
+#&gt; 49 12 0.42670 0.001578
+#&gt; 50 12 0.42680 0.001438
+#&gt; 51 12 0.42680 0.001310
+#&gt; 52 12 0.42690 0.001194
+#&gt; 53 12 0.42690 0.001088
+#&gt; 54 12 0.42690 0.000991
+#&gt; 55 12 0.42690 0.000903
+#&gt; 56 12 0.42700 0.000823
+#&gt; 57 12 0.42700 0.000750
+#&gt; 58 12 0.42700 0.000683
+#&gt; 59 12 0.42700 0.000622
+#&gt; 60 12 0.42700 0.000567
+#&gt; 61 12 0.42700 0.000517
+#&gt; 62 12 0.42700 0.000471
+#&gt; 63 12 0.42700 0.000429
+#&gt; 64 12 0.42700 0.000391
+#&gt; 65 12 0.42700 0.000356</code></pre>
+<p>If <code>penalty</code> were not specified, all of the <code>lambda</code> values would be computed.</p>
+<p>To get the predictions for this specific value of <code>lambda</code> (aka <code>penalty</code>):</p>
+<pre class="r"><code># First, get the processed version of the test set predictors:
+test_normalized &lt;- bake(norm_recipe, new_data = ames_test, all_predictors())
+
+test_results &lt;- 
+  test_results %&gt;%
+  rename(`random forest` = .pred) %&gt;%
+  bind_cols(
+    predict(glmn_fit, new_data = test_normalized) %&gt;%
+      rename(glmnet = .pred)
+  )
+test_results
+#&gt; # A tibble: 731 x 3
+#&gt;    Sale_Price `random forest` glmnet
+#&gt;         &lt;dbl&gt;           &lt;dbl&gt;  &lt;dbl&gt;
+#&gt;  1       5.33            5.22   5.27
+#&gt;  2       5.02            5.21   5.17
+#&gt;  3       5.27            5.25   5.23
+#&gt;  4       5.60            5.51   5.25
+#&gt;  5       5.28            5.25   5.25
+#&gt;  6       5.17            5.19   5.19
+#&gt;  7       5.02            4.97   5.19
+#&gt;  8       5.46            5.50   5.49
+#&gt;  9       5.44            5.46   5.48
+#&gt; 10       5.33            5.50   5.47
+#&gt; # … with 721 more rows
+
+test_results %&gt;% metrics(truth = Sale_Price, estimate = glmnet) 
+#&gt; # A tibble: 3 x 3
+#&gt;   .metric .estimator .estimate
+#&gt;   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+#&gt; 1 rmse    standard      0.132 
+#&gt; 2 rsq     standard      0.410 
+#&gt; 3 mae     standard      0.0956
+
+test_results %&gt;% 
+  gather(model, prediction, -Sale_Price) %&gt;% 
+  ggplot(aes(x = prediction, y = Sale_Price)) + 
+  geom_abline(col = &quot;green&quot;, lty = 2) + 
+  geom_point(alpha = .4) + 
+  facet_wrap(~model) + 
+  coord_fixed()</code></pre>
+<p><img src="figs/glmn-pred-1.svg" width="672" /></p>
+</div>
+<div id="session-information" class="section level1">
+<h1>Session information</h1>
+<pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────
+#&gt;  setting  value                       
+#&gt;  version  R version 3.6.1 (2019-07-05)
+#&gt;  os       macOS Catalina 10.15.3      
+#&gt;  system   x86_64, darwin15.6.0        
+#&gt;  ui       X11                         
+#&gt;  language (EN)                        
+#&gt;  collate  en_US.UTF-8                 
+#&gt;  ctype    en_US.UTF-8                 
+#&gt;  tz       America/Los_Angeles         
+#&gt;  date     2020-03-23                  
+#&gt; 
+#&gt; ─ Packages ───────────────────────────────────────────────────────────────────
+#&gt;  package      * version    date       lib source                               
+#&gt;  AmesHousing  * 0.0.3      2017-12-17 [1] CRAN (R 3.6.0)                       
+#&gt;  broom        * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
+#&gt;  dials        * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
+#&gt;  dplyr        * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
+#&gt;  ggplot2      * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
+#&gt;  glmnet       * 3.0-2      2019-12-11 [1] CRAN (R 3.6.0)                       
+#&gt;  parsnip      * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
+#&gt;  purrr        * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
+#&gt;  randomForest * 4.6-14     2018-03-25 [1] CRAN (R 3.6.0)                       
+#&gt;  ranger       * 0.11.2     2019-03-07 [1] CRAN (R 3.6.0)                       
+#&gt;  recipes      * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
+#&gt;  rlang          0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
+#&gt;  rsample      * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
+#&gt;  tibble       * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
+#&gt;  tidymodels   * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
+#&gt;  tune         * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
+#&gt;  workflows    * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
+#&gt;  yardstick    * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
+#&gt; 
+#&gt; [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library</code></pre>
+</div>

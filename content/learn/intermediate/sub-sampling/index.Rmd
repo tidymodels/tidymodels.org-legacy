@@ -1,0 +1,187 @@
+---
+title: "Subsampling for Class Imbalances"
+tags: [recipes, themis, discrim, parsnip]
+categories: [model fitting, pre-processing]
+---
+
+```{r setup, include = FALSE, message = FALSE, warning = FALSE}
+source(here::here("content/learn/common.R"))
+```
+
+```{r load, include = FALSE, message = FALSE, warning = FALSE}
+library(readr)
+library(klaR)
+library(tidymodels)
+library(discrim)
+library(themis)
+library(ROSE)
+
+
+pkgs <- c("tidymodels", "klaR", "themis", "discrim", "readr", "ROSE")
+
+req_pkgs <- function(x, what = "This article") {
+  x <- sort(x)
+  x <- paste0("`", x, "`")
+  x <- knitr::combine_words(x, and = " and ")
+  paste0(
+    what,
+    " requires that you have the following packages installed: ",
+    x, "." 
+  )
+}
+
+small_session <- function(pkgs = NULL) {
+  pkgs <- c(pkgs, "recipes", "parsnip", "tune", "workflows", "dials", "dplyr",
+            "broom", "ggplot2", "purrr", "rlang", "rsample", "tibble", 
+            "yardstick", "tidymodels")
+  pkgs <- unique(pkgs)
+  library(sessioninfo)
+  library(dplyr)
+  sinfo <- sessioninfo::session_info()
+  cls <- class(sinfo$packages)
+  sinfo$packages <- 
+    sinfo$packages %>% 
+    dplyr::filter(package %in% pkgs)
+  class(sinfo$packages) <- cls
+  sinfo
+}
+
+theme_set(theme_bw() + theme(legend.position = "top"))
+```
+
+
+`r req_pkgs(pkgs)`
+
+# Introduction
+
+
+Subsampling a training set can be a helpful approach to dealing will classification data where one or more classes occur very infrequently. Often, most models will overfit to the majority class and produce very good statistics for the class containing the frequently occurring classes while the minority classes have poor performance. 
+
+The analysis below describes this method for dealing with class imbalances. For better understanding, some knowledge of classification metrics like sensitivity, specificity, and receiver operating characteristic curves is required. See Section 3.2.2 for [Kuhn and Johnson (2019)](https://bookdown.org/max/FES/measuring-performance.html) for more information on these metrics.  
+
+# Simulated data
+
+Consider a two-class problem where the first class has a very low rate of occurrence. The data were simulated and can be imported into R using the code below:
+
+```{r load-data, message = FALSE}
+imbal_data <- 
+  readr::read_csv("https://bit.ly/imbal_data") %>% 
+  mutate(Class = factor(Class))
+dim(imbal_data)
+table(imbal_data$Class)
+```
+
+If "Class1" is the event of interest, it is very likely that a classification model would be able to achieve very good _specificity_ since almost all of the data are the second class. _Sensitivity_ will often be poor since the models will optimize accuracy (or other loss functions) by predicting everything to be the majority class. 
+
+When there are two classes, the results is that the default probability cutoff of 50% is inappropriate; a different cutoff that is more extreme might be able to achieve good performance. 
+
+# Subsampling the data
+
+One way to alleviate this issue is to _subsample_ the data. There are a number of ways to do this but the most simple one is to _sample down_ the majority class data until it occurs with the same frequency as the minority class. While counterintuitive, throwing out a large percentage of the data can be effective at producing a results. In some cases, this means that the overall performance of the model is better (e.g. improved area under the ROC curve). However, subsampling almost always produces models that are _better calibrated_, meaning that the distributions of the class probabilities are model well behaved. As a result, the default 50% cutoff is much model likely to produce better sensitivity and specificity values than they would otherwise. 
+
+To demonstrate this, `themis::step_rose()` will be used in a recipe for the simulated data. It uses the ROSE (random over sampling examples) method from [Menardi, G. and Torelli, N. (2014)](https://scholar.google.com/scholar?hl=en&q=%22training+and+assessing+classification+rules+with+imbalanced+data%22). 
+
+In terms of workflow:
+
+ * It is extremely important that subsampling occurs _inside of resampling_. Otherwise, the resampling process can produce [poor estimates of model performance](https://topepo.github.io/caret/subsampling-for-class-imbalances.html#resampling). 
+ * The subsampling process should only be applied to the analysis set. The assessment set should reflect the event rates seen "in the wild" and, for this reason, the `skip` argument to `step_downsample` is defaulted to `TRUE`. 
+
+Here is a simple recipe: 
+
+```{r rec}
+library(tidymodels)
+library(themis)
+imbal_rec <- 
+  recipe(Class ~ ., data = imbal_data) %>%
+  step_rose(Class)
+```
+For a model, a [quadratic discriminant analysis](https://en.wikipedia.org/wiki/Quadratic_classifier#Quadratic_discriminant_analysis) (QDA) model will be used. From the `discrim` package, this model can be specified using
+
+```{r qda}
+library(discrim)
+qda_mod <- 
+  discrim_regularized(frac_common_cov = 0, frac_identity = 0) %>% 
+  set_engine("klaR")
+```
+
+To keep these objects bound together, they are combined in a workflow:
+
+```{r wflw}
+qda_rose_wflw <- 
+  workflow() %>% 
+  add_model(qda_mod) %>% 
+  add_recipe(imbal_rec)
+qda_rose_wflw
+```
+
+Stratified, repeated 10-fold cross-validation is used to resample the model:
+
+```{r cv}
+set.seed(5732)
+cv_folds <- vfold_cv(imbal_data, strata = "Class", repeats = 5)
+```
+
+To measure model effectiveness, two metrics are used:
+
+ * The area under the [ROC curve](https://en.wikipedia.org/wiki/Receiver_operating_characteristic) is an overall assessment of performance across _all_ cutoffs. Values near one indicate very good results while values near 0.05 would imply that the model is very poor. 
+ * The _J_ index (a.k.a. [Youden's _J_](https://en.wikipedia.org/wiki/Youden%27s_J_statistic) statistic) is `sensitivity + specificity - 1`. Values near one are once again best. 
+
+If a model is poorly calibrated, the ROC curve value might not show diminished performance. However, the _J_ index would be lower for models with pathological distributions for the class probabilities. The `yardstick` package will be used to compute these metrics. 
+
+```{r metrics}
+cls_metrics <- metric_set(roc_auc, j_index)
+```
+
+Now, we train the models and generate the results using `tune::fit_resamples()`:
+
+```{r resample-rose}
+set.seed(2180)
+qda_rose_res <- fit_resamples(qda_rose_wflw, resamples = cv_folds, metrics = cls_metrics)
+collect_metrics(qda_rose_res)
+```
+
+What do the results look like without using ROSE? We can create another workflow and fit the QDA model along the same resamples:
+
+```{r qda-only}
+qda_wflw <- 
+  workflow() %>% 
+  add_model(qda_mod) %>% 
+  add_formula(Class ~ .)
+
+set.seed(2180)
+qda_only_res <- fit_resamples(qda_wflw, resamples = cv_folds, metrics = cls_metrics)
+collect_metrics(qda_only_res)
+```
+
+It looks like ROSE helped a lot, especially with the J-index. Class imbalance sampling methods tends to greatly improve metrics based on the hard class predictions (i.e., the categorical predictions) because the default cutoff tends to be a better balance of sensitivity and specificity. 
+
+Let's plot the metrics for each resample to see how the individual results changed. 
+
+```{r merge-metrics}
+no_sampling <- 
+  qda_only_res %>% 
+  collect_metrics(summarize = FALSE) %>% 
+  dplyr::select(-.estimator) %>% 
+  mutate(sampling = "no_sampling")
+
+with_sampling <- 
+  qda_rose_res %>% 
+  collect_metrics(summarize = FALSE) %>% 
+  dplyr::select(-.estimator) %>% 
+  mutate(sampling = "rose")
+
+bind_rows(no_sampling, with_sampling) %>% 
+  mutate(label = paste(id2, id)) %>%  
+  ggplot(aes(x = sampling, y = .estimate, group = label)) + 
+  geom_line(alpha = .4) + 
+  facet_wrap(~ .metric, scales = "free_y")
+```
+
+This visually demonstrates that the subsampling mostly affects metrics that use the hard class predictions. 
+
+# Session information
+
+```{r si, echo = FALSE}
+small_session(pkgs)
+```
+

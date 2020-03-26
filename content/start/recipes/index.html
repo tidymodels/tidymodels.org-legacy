@@ -1,0 +1,501 @@
+---
+title: "Preprocess your data with recipes"
+weight: 2
+tags: [recipes, parsnip, workflows, yardstick]
+categories: [pre-processing]
+output:
+  blogdown::html_page:
+    toc: true
+---
+
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#the-new-york-city-flight-data">The New York City flight data</a><ul>
+<li><a href="#creating-the-predictor-definitions">Creating the predictor definitions</a></li>
+</ul></li>
+<li><a href="#using-a-recipe-with-a-model">Using a recipe with a model</a></li>
+<li><a href="#session-information">Session information</a></li>
+</ul>
+</div>
+
+<p>This article requires that you have the following packages installed: <code>nycflights13</code>, <code>skimr</code>, and <code>tidymodels</code>.</p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>After reviewing our <a href="linkTODO">first steps with models</a>, let’s explore how to use the <code>recipes</code> package.</p>
+<p>Recipes are tools primarily used for data pre-processing prior to creating a model. Such pre-processing might consist of:</p>
+<ul>
+<li><p>converting qualitative predictors to indicator variables (also known as dummy variables),</p></li>
+<li><p>transforming data to be on a different scale (e.g., taking the logarithm of a variable),</p></li>
+<li><p>transforming whole groups of predictors together,</p></li>
+</ul>
+<p>and so on. This might sound an awful lot like a model formula, if you have used R’s formula interface. Recipes can be used to do many of the same things, but they have a much wider range of possibilities. This guide shows how to use recipes for modeling.</p>
+</div>
+<div id="the-new-york-city-flight-data" class="section level1">
+<h1>The New York City flight data</h1>
+<p>In this example, let’s use the <code>nycflights13</code> data. This data set contains information on flights departing near New York City in 2013. We will try to predict if a plane arrives more than 30 minutes late. Let’s start by loading the data and making a few changes to the variables:</p>
+<pre class="r"><code>library(nycflights13)
+library(tidymodels)
+
+set.seed(25213)
+flight_data &lt;- 
+  flights %&gt;% 
+  mutate(
+    # Convert the arrival delay to a factor
+    arr_delay = ifelse(arr_delay &gt;= 30, &quot;late&quot;, &quot;on_time&quot;),
+    arr_delay = factor(arr_delay),
+    # We will use the date (not date-time) in the recipe below
+    date = as.Date(time_hour)
+  ) %&gt;% 
+  # Include the weather data
+  inner_join(weather, by = c(&quot;origin&quot;, &quot;time_hour&quot;)) %&gt;% 
+  # Only retain the specific columns we will use
+  select(dep_time, flight, origin, dest, air_time, distance, 
+         carrier, date, arr_delay, time_hour) %&gt;% 
+  # Exclude missing data
+  na.omit() %&gt;% 
+  # For creating models, it is better to have qualitative columns
+  # encoded as factors (instead of character strings)
+  mutate_if(is.character, as.factor)</code></pre>
+<p>Using this estimate, about 16% of the flights in this data set had late arrivals. A summary of the variables are:</p>
+<pre class="r"><code>skimr::skim(flight_data)</code></pre>
+<table>
+<caption><span id="tab:skim">Table 1: </span>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">flight_data</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">325819</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">10</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">Date</td>
+<td align="left">1</td>
+</tr>
+<tr class="odd">
+<td align="left">factor</td>
+<td align="left">4</td>
+</tr>
+<tr class="even">
+<td align="left">numeric</td>
+<td align="left">4</td>
+</tr>
+<tr class="odd">
+<td align="left">POSIXct</td>
+<td align="left">1</td>
+</tr>
+<tr class="even">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Group variables</td>
+<td align="left">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: Date</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="left">min</th>
+<th align="left">max</th>
+<th align="left">median</th>
+<th align="right">n_unique</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">date</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="left">2013-01-01</td>
+<td align="left">2013-12-30</td>
+<td align="left">2013-07-03</td>
+<td align="right">364</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: factor</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="left">ordered</th>
+<th align="right">n_unique</th>
+<th align="left">top_counts</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">origin</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="left">FALSE</td>
+<td align="right">3</td>
+<td align="left">EWR: 116504, JFK: 108539, LGA: 100776</td>
+</tr>
+<tr class="even">
+<td align="left">dest</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="left">FALSE</td>
+<td align="right">104</td>
+<td align="left">ATL: 16771, ORD: 16507, LAX: 15942, BOS: 14948</td>
+</tr>
+<tr class="odd">
+<td align="left">carrier</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="left">FALSE</td>
+<td align="right">16</td>
+<td align="left">UA: 57489, B6: 53715, EV: 50868, DL: 47465</td>
+</tr>
+<tr class="even">
+<td align="left">arr_delay</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="left">FALSE</td>
+<td align="right">2</td>
+<td align="left">on_: 273279, lat: 52540</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">p0</th>
+<th align="right">p25</th>
+<th align="right">p50</th>
+<th align="right">p75</th>
+<th align="right">p100</th>
+<th align="left">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">dep_time</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1348.15</td>
+<td align="right">487.92</td>
+<td align="right">1</td>
+<td align="right">907</td>
+<td align="right">1400</td>
+<td align="right">1743</td>
+<td align="right">2400</td>
+<td align="left">▁▇▆▇▃</td>
+</tr>
+<tr class="even">
+<td align="left">flight</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1943.54</td>
+<td align="right">1621.73</td>
+<td align="right">1</td>
+<td align="right">544</td>
+<td align="right">1471</td>
+<td align="right">3416</td>
+<td align="right">8500</td>
+<td align="left">▇▃▃▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">air_time</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">150.63</td>
+<td align="right">93.66</td>
+<td align="right">20</td>
+<td align="right">82</td>
+<td align="right">129</td>
+<td align="right">191</td>
+<td align="right">695</td>
+<td align="left">▇▂▂▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">distance</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1048.18</td>
+<td align="right">735.86</td>
+<td align="right">80</td>
+<td align="right">509</td>
+<td align="right">888</td>
+<td align="right">1389</td>
+<td align="right">4983</td>
+<td align="left">▇▃▂▁▁</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: POSIXct</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="left">min</th>
+<th align="left">max</th>
+<th align="left">median</th>
+<th align="right">n_unique</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">time_hour</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="left">2013-01-01 05:00:00</td>
+<td align="left">2013-12-30 18:00:00</td>
+<td align="left">2013-07-03 15:00:00</td>
+<td align="right">6885</td>
+</tr>
+</tbody>
+</table>
+<p>There are some interesting things to notice from this output. First, the flight number is a numeric value. In our analyses below, this column won’t be used as a predictor but retained as an identification variable (along with <code>time_hour</code>) that can be used to troubleshoot poorly predicted data points.</p>
+<p>Second, there are 104 destination values contained in <code>dest</code> as well as 16 carriers. In the initial analysis, these will be converted to simple <a href="https://bookdown.org/max/FES/creating-dummy-variables-for-unordered-categories.html">dummy variables</a>. However, some of these values do not occur very frequently and this could complicate our analysis, as we discuss more below.</p>
+<p>To get started, let’s split these data into two subsets. We’ll keep most of the data (subset chosen randomly) in a <em>training set</em>. This subset of the data is used create the model. The remainder of the data are used as a <em>test set</em> and this subset is only used to measure model performance<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>.</p>
+<p>To do this, we can use the <code>rsample</code> package to create an object that contains the information on <em>how</em> to split the data, and then two more <code>rsample</code> functions to create data frames for the training and testing sets:</p>
+<pre class="r"><code># Fix the random numbers by setting the seed 
+# This enables the analysis to be reproducible when random numbers are used 
+set.seed(5970)
+# Put 3/4 of the data into the training set 
+data_split &lt;- initial_split(flight_data, prop = 3/4)
+
+# Create data frames for the two sets:
+train_data &lt;- training(data_split)
+test_data  &lt;- testing(data_split)</code></pre>
+<div id="creating-the-predictor-definitions" class="section level2">
+<h2>Creating the predictor definitions</h2>
+<p>To get started, let’s create a simple logistic regression model. Before creating the model fit object, we can use a recipe to create a few new predictors and conduct some pre-processing required by the model.</p>
+<p>To get started, an initial recipe declares the roles of the columns of the data:</p>
+<pre class="r"><code>flights_rec &lt;- 
+  recipe(arr_delay ~ ., data = train_data) %&gt;% 
+  update_role(flight, time_hour, new_role = &quot;ID&quot;) </code></pre>
+<p>The <code>recipe()</code> command enumerates the columns in the data, their type (e.g. categorical, numeric), and their role. For the latter, any variable on the left-hand side of the tilde (<code>~</code>) is considered the model outcome (<code>arr_delay</code> in this case) and the others are initially considered to be predictors.</p>
+<p>After defining the initial recipe, a series of data processing steps can be added. For example, <code>update_role()</code> tells the recipe that two of the columns are not predictors <em>or</em> outcomes. The role of these columns is changed to <code>&quot;ID&quot;</code> (a role can have any character value). The purpose of changing this characteristic for these columns is that they can be retained in the data but not included in the model. This can be convenient when, after the model is fit, we want to investigate some poorly predicted value. These ID columns will be available and can be used to try to understand what went wrong.</p>
+<p>To get the current set of variables and roles, use the <code>summary()</code> function:</p>
+<pre class="r"><code>summary(flights_rec)
+#&gt; # A tibble: 10 x 4
+#&gt;    variable  type    role      source  
+#&gt;    &lt;chr&gt;     &lt;chr&gt;   &lt;chr&gt;     &lt;chr&gt;   
+#&gt;  1 dep_time  numeric predictor original
+#&gt;  2 flight    numeric ID        original
+#&gt;  3 origin    nominal predictor original
+#&gt;  4 dest      nominal predictor original
+#&gt;  5 air_time  numeric predictor original
+#&gt;  6 distance  numeric predictor original
+#&gt;  7 carrier   nominal predictor original
+#&gt;  8 date      date    predictor original
+#&gt;  9 time_hour date    ID        original
+#&gt; 10 arr_delay nominal outcome   original</code></pre>
+<p>A value of “nominal” means that the column is either of type factor or character.</p>
+<p>Note that a recipe is always associated with the data set used to create the model; we used <code>data = train_data</code> when specifying it. A recipe is associated with a training set, as opposed to a test set.</p>
+<p>We can add many other operations to the recipe. Perhaps it is reasonable for the date of the flight to have an effect on the likelihood of a late arrival. A little bit of <em>feature engineering</em> might go a long way to improving our model. How should the date be encoded into the model? The <code>date</code> column has an R <code>date</code> object so including that column as it exists now in the model will just convert it to a numeric format that is the number of days after a reference date:</p>
+<pre class="r"><code>days &lt;- 
+  flight_data %&gt;% 
+  distinct(date) %&gt;% 
+  slice(1:3) %&gt;% 
+  pull(date)
+
+days
+#&gt; [1] &quot;2013-01-01&quot; &quot;2013-01-02&quot; &quot;2013-01-03&quot;
+as.numeric(days)
+#&gt; [1] 15706 15707 15708</code></pre>
+<p>It’s possible this is a good option for modeling; perhaps the model would benefit from a linear trend between the log-odds of a late arrival and the day number. However, it might be better to add model terms <em>derived</em> from the date that have a better potential to be important to the model. For example, we could use the date to derive:</p>
+<ul>
+<li><p>the day of the week,</p></li>
+<li><p>the month,</p></li>
+<li><p>whether or not the date corresponds to a holiday,</p></li>
+</ul>
+<p>and so on. To do this, let’s add two more steps to the recipe:</p>
+<pre class="r"><code>flights_rec &lt;- 
+  recipe(arr_delay ~ ., data = train_data) %&gt;% 
+  update_role(flight, time_hour, new_role = &quot;ID&quot;) %&gt;% 
+  step_date(date, features = c(&quot;dow&quot;, &quot;month&quot;)) %&gt;% 
+  step_holiday(date, holidays = timeDate::listHolidays(&quot;US&quot;)) %&gt;% 
+  step_rm(date)</code></pre>
+<p><code>step_date()</code> creates basic date-oriented features. In this case, two factor columns are added with the appropriate day of the week and the month. <code>step_holiday()</code> creates binary indicator variables detailing if the current date is a holiday or not. The argument value of <code>timeDate::listHolidays(&quot;US&quot;)</code> uses the <code>timeDate</code> package to list the 17 standard US holidays. Finally, since we longer want the date column itself in the model, <code>step_rm()</code> eliminates it from the data set.</p>
+<p>To train this model, each predictor will need to be in a numeric format<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>. For columns like <code>dest</code> and <code>origin</code>, which are currently factor columns, the standard method to convert them to be numeric is to create <em>dummy</em> or <em>indicator</em> variables. These are binary values for the levels of the factors. For example, since <code>origin</code> has values of <code>&quot;EWR&quot;</code>, <code>&quot;JFK&quot;</code>, and <code>&quot;LGA&quot;</code>, the standard dummy variable encoding will create <em>two</em> numeric columns of the data that are 1 when the originating airport is <code>&quot;JFK&quot;</code> or <code>&quot;LGA&quot;</code> and zero otherwise, respectively<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a>.</p>
+<p>Unlike the standard model formula methods in R, a recipe <strong>does not</strong> automatically create dummy variables<a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a>. Instead, <code>step_dummy()</code> can be used for this purpose:</p>
+<pre class="r"><code>flights_rec &lt;- 
+  recipe(arr_delay ~ ., data = train_data) %&gt;% 
+  update_role(flight, time_hour, new_role = &quot;ID&quot;) %&gt;% 
+  step_date(date, features = c(&quot;dow&quot;, &quot;month&quot;)) %&gt;% 
+  step_holiday(date, holidays = timeDate::listHolidays(&quot;US&quot;)) %&gt;% 
+  step_rm(date) %&gt;% 
+  step_dummy(all_nominal(), -all_outcomes())</code></pre>
+<p>Note that the <code>dplyr</code> selectors don’t have to use column <em>names</em>. Since a recipe knows the <em>role</em> of each column, they can also be selected using this information. The selectors above translate to</p>
+<blockquote>
+<p>Create dummy variables for all of the factor or character columns <em>unless</em> they are outcomes.</p>
+</blockquote>
+<p>At this stage in the recipe, this selects columns <code>origin</code>, <code>dest</code>, <code>carrier</code>, <code>date_dow</code>, and <code>date_month</code> (the latter two were created by <code>step_date()</code>).</p>
+<p>One final step is added to the recipe; since <code>carrier</code> and <code>dest</code> have some infrequently occurring values, it is possible that dummy variables might be created for values that don’t exist in the training set. For example, there is one destination that is only in the test set:</p>
+<pre class="r"><code>setdiff(flight_data$dest, train_data$dest)
+#&gt; [1] &quot;LEX&quot;</code></pre>
+<p>When the recipe is applied to the training set, a column is made for LEX but it will contain all zeros. This is a “zero-variance predictor” that has no information within the column. While some R functions will not produce an error for such predictors, it usually causes warnings and other issues. <code>step_zv()</code> will remove columns from the data when the training set data have a single value, so it is added to the recipe:</p>
+<pre class="r"><code>flights_rec &lt;- 
+  recipe(arr_delay ~ ., data = train_data) %&gt;% 
+  update_role(flight, time_hour, new_role = &quot;ID&quot;) %&gt;% 
+  step_date(date, features = c(&quot;dow&quot;, &quot;month&quot;)) %&gt;% 
+  step_holiday(date, holidays = timeDate::listHolidays(&quot;US&quot;)) %&gt;% 
+  step_rm(date) %&gt;% 
+  step_dummy(all_nominal(), -all_outcomes()) %&gt;% 
+  step_zv(all_predictors())</code></pre>
+<p>Now that we’ve created this <em>specification</em> of what should be done with the data, how do we use it?</p>
+</div>
+</div>
+<div id="using-a-recipe-with-a-model" class="section level1">
+<h1>Using a recipe with a model</h1>
+<p>Let’s use straightforward logistic regression to model the flight data. We can build a model specification using the <code>parsnip</code> package:</p>
+<pre class="r"><code>lr_mod &lt;- 
+  logistic_reg() %&gt;% 
+  set_engine(&quot;glm&quot;)</code></pre>
+<p>How will we evaluate our model performance? Let’s stick with the area under the <a href="https://bookdown.org/max/FES/measuring-performance.html#class-metrics">ROC curve</a>, computed using the <code>yardstick</code> package functions called <code>roc_curve()</code> and <code>roc_auc()</code>.</p>
+<p>During our modeling process, we will use our recipe in multiple steps. We will:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Process the recipe using the training set</strong>: This involves any estimation or calculations on these data. For our recipe, the training set would be used to determine what dummy variable columns should be created and which zero-variance predictors are slated for removal.</p></li>
+<li><p><strong>Apply the recipe to the training set</strong>: We create the final predictor set on the training set.</p></li>
+<li><p><strong>Apply the recipe to the test set</strong>: We create the final predictor set on the test set. Nothing is recomputed; the dummy variable and zero-variance results from the training set are applied to the test set.</p></li>
+</ol>
+<p>There are a few methods for doing this. One straightforward and simple approach is to use a <em>model workflow</em> which pairs a model and recipe together.</p>
+<pre class="r"><code>flights_wflow &lt;- 
+  workflow() %&gt;% 
+  add_model(lr_mod) %&gt;% 
+  add_recipe(flights_rec)
+flights_wflow
+#&gt; ══ Workflow ════════════════════════════════════════════════════════
+#&gt; Preprocessor: Recipe
+#&gt; Model: logistic_reg()
+#&gt; 
+#&gt; ── Preprocessor ────────────────────────────────────────────────────
+#&gt; 5 Recipe Steps
+#&gt; 
+#&gt; ● step_date()
+#&gt; ● step_holiday()
+#&gt; ● step_rm()
+#&gt; ● step_dummy()
+#&gt; ● step_zv()
+#&gt; 
+#&gt; ── Model ───────────────────────────────────────────────────────────
+#&gt; Logistic Regression Model Specification (classification)
+#&gt; 
+#&gt; Computational engine: glm</code></pre>
+<p>There are two nice properties of using a <code>workflow()</code>. First, the model and recipe are bundled so that you can more easily keep track of them. Second, there is a single function that can be used to prepare the recipe and create the model from the resulting predictors:</p>
+<pre class="r"><code>flights_fit &lt;- fit(flights_wflow, data = train_data)</code></pre>
+<p>This object has the finalized recipe and model objects inside. To extract those objects, use the functions <code>pull_workflow_fit()</code> and <code>pull_workflow_recipe()</code>. For example, use the <code>broom::tidy()</code> function to get data on the model coefficients:</p>
+<pre class="r"><code>flights_fit %&gt;% 
+  pull_workflow_fit() %&gt;% 
+  tidy()
+#&gt; # A tibble: 157 x 5
+#&gt;    term                         estimate std.error statistic  p.value
+#&gt;    &lt;chr&gt;                           &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+#&gt;  1 (Intercept)                   4.80    2.73           1.76 7.90e- 2
+#&gt;  2 dep_time                     -0.00166 0.0000141   -118.   0.      
+#&gt;  3 air_time                     -0.0441  0.000562     -78.5  0.      
+#&gt;  4 distance                      0.00648 0.00151        4.30 1.71e- 5
+#&gt;  5 date_USChristmasDay           1.26    0.181          6.94 3.82e-12
+#&gt;  6 date_USColumbusDay            0.661   0.173          3.83 1.27e- 4
+#&gt;  7 date_USCPulaskisBirthday      0.732   0.132          5.56 2.68e- 8
+#&gt;  8 date_USDecorationMemorialDay  0.262   0.111          2.36 1.82e- 2
+#&gt;  9 date_USElectionDay            0.861   0.187          4.61 4.02e- 6
+#&gt; 10 date_USGoodFriday             1.22    0.162          7.51 5.91e-14
+#&gt; # … with 147 more rows</code></pre>
+<p>There is also a single interface for getting predictions on new data. The <code>predict()</code> method applies the recipe to the new data, then passes them to the fitted model. For the ROC curve, we need the predicted class probabilities (along with the true outcome column):</p>
+<pre class="r"><code>flights_pred &lt;- 
+  predict(flights_fit, test_data, type = &quot;prob&quot;) %&gt;% 
+  bind_cols(test_data %&gt;% select(arr_delay, time_hour, flight)) 
+
+# The data look like: 
+flights_pred %&gt;% slice(1:5)
+#&gt; # A tibble: 5 x 5
+#&gt;   .pred_late .pred_on_time arr_delay time_hour           flight
+#&gt;        &lt;dbl&gt;         &lt;dbl&gt; &lt;fct&gt;     &lt;dttm&gt;               &lt;int&gt;
+#&gt; 1    0.0570          0.943 on_time   2013-01-01 05:00:00   1714
+#&gt; 2    0.00853         0.991 on_time   2013-01-01 05:00:00    725
+#&gt; 3    0.0193          0.981 on_time   2013-01-01 06:00:00    461
+#&gt; 4    0.0368          0.963 on_time   2013-01-01 06:00:00    507
+#&gt; 5    0.0263          0.974 on_time   2013-01-01 06:00:00     79</code></pre>
+<p>We can create the ROC curve with these values, using <code>roc_curve()</code> and then piping to the <code>autoplot()</code> method:</p>
+<pre class="r"><code>flights_pred %&gt;% 
+  roc_curve(truth = arr_delay, .pred_late) %&gt;% 
+  autoplot()</code></pre>
+<p><img src="figs/roc-plot-1.svg" width="672" /></p>
+<p>Similarly, <code>roc_auc()</code> estimates the area under the curve:</p>
+<pre class="r"><code>flights_pred %&gt;% roc_auc(truth = arr_delay, .pred_late)
+#&gt; # A tibble: 1 x 3
+#&gt;   .metric .estimator .estimate
+#&gt;   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+#&gt; 1 roc_auc binary         0.763</code></pre>
+<p>Not too bad!</p>
+</div>
+<div id="session-information" class="section level1">
+<h1>Session information</h1>
+<pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────
+#&gt;  setting  value                       
+#&gt;  version  R version 3.6.1 (2019-07-05)
+#&gt;  os       macOS Catalina 10.15.3      
+#&gt;  system   x86_64, darwin15.6.0        
+#&gt;  ui       X11                         
+#&gt;  language (EN)                        
+#&gt;  collate  en_US.UTF-8                 
+#&gt;  ctype    en_US.UTF-8                 
+#&gt;  tz       America/Los_Angeles         
+#&gt;  date     2020-03-23                  
+#&gt; 
+#&gt; ─ Packages ───────────────────────────────────────────────────────────────────
+#&gt;  package      * version    date       lib source                               
+#&gt;  broom        * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
+#&gt;  dials        * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
+#&gt;  dplyr        * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
+#&gt;  ggplot2      * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
+#&gt;  nycflights13 * 1.0.1      2019-09-16 [1] CRAN (R 3.6.0)                       
+#&gt;  parsnip      * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
+#&gt;  purrr        * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
+#&gt;  recipes      * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
+#&gt;  rlang          0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
+#&gt;  rsample      * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
+#&gt;  skimr        * 2.0.2      2019-11-26 [1] CRAN (R 3.6.0)                       
+#&gt;  tibble       * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
+#&gt;  tidymodels   * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
+#&gt;  tune         * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
+#&gt;  workflows    * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
+#&gt;  yardstick    * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
+#&gt; 
+#&gt; [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library</code></pre>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>This straightforward split of data into two subsets is fairly common. However, it is inadvisable to directly predict the training set one time after fitting the model. Instead, <a href="https://bookdown.org/max/FES/resampling.html">resampling methods</a> can be used to estimate how well the model performs on the training set.<a href="#fnref1" class="footnote-back">↩</a></p></li>
+<li id="fn2"><p>When computing the model coefficients, the equations that logistic regression uses required numbers (as opposed for factor variables). In other words, there may be a difference in how we store our data (in factors inside a data frame) and how the underlying equations require them (a purely numeric matrix). Luckily, it is easy to go between these two formats in R.<a href="#fnref2" class="footnote-back">↩</a></p></li>
+<li id="fn3"><p>Why two and not three? If you know the value of two of the columns, the third can be inferred. The standard in R is to leave out the dummy variable column for the first level of the factor which, in this case, corresponds to <code>&quot;EWR&quot;</code>.<a href="#fnref3" class="footnote-back">↩</a></p></li>
+<li id="fn4"><p>We don’t make the assumption that dummy variables are going to be used. For one reason: <a href="https://bookdown.org/max/FES/categorical-trees.html">not all models require the predictors to be numeric</a>. For another reason, recipes can be used to prepare the data for other, non-model purposes what prefer factors (such as a table or plot).<a href="#fnref4" class="footnote-back">↩</a></p></li>
+</ol>
+</div>

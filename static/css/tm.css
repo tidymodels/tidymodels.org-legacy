@@ -1,5 +1,301 @@
 body, button, input, textarea {
   font-family: 'Lato', sans-serif;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: normal;
   -webkit-font-smoothing: antialiased; }
+
+
+.listItem .itemDetails .itemMeta .itemDate, .listItem .itemDetails .itemMeta .itemInfo {
+  font-size: .875rem;
+}    
+
+.listItem .itemDetails .itemHeader .itemTag {
+  font-size: .875rem;
+}
+
+
+
+/* ----WHITE SPACE ----*/
+
+.article-content h1 {
+  margin-bottom: 1.5em; /* increased from 0.5 main-site.css */
+}
+
+.bandContent{
+  max-width: 1100px; /*Main container width with page content */
+}
+
+.splitColumns {
+  display: flex;
+  justify-content: space-between;
+  display: -ms-flexbox;
+  -ms-flex-pack: justify;
+  display: -webkit-box;
+  display: -webkit-flex;
+  -webkit-justify-content: space-between;
+  align-items: flex-start; }
+  .splitColumns .column75 {
+    width: 70%; } /* Change from main-site's 73% > 70% */
+  .splitColumns .column67 {
+    width: 65%; }
+  .splitColumns .column50 {
+    width: 48%; }
+  .splitColumns .column33 {
+    width: 31%; }
+  .splitColumns .column25 {
+    width: 23%; }
+    .splitColumns .column25 .columnImage {
+      width: 276px; }
+  .splitColumns .columnImage {
+    max-width: 100%;
+    margin-bottom: 1em;
+    background-repeat: no-repeat;
+    background-size: cover; }
+
+@media screen and (max-width: 1023px) { /* Same as main-site, but ensures that media query is not overrident by above rule */
+  .splitColumns {
+    flex-wrap: wrap;
+    -ms-flex-wrap: wrap; }
+    .splitColumns .column75, .splitColumns .column67, .splitColumns .column50, .splitColumns .column33, .splitColumns .column25 {
+      width: 100%; }
+    .splitColumns.withMobileMargins .column75, .splitColumns.withMobileMargins .column67, .splitColumns.withMobileMargins .column50, .splitColumns.withMobileMargins .column33, .splitColumns.withMobileMargins .column25 {
+      margin-bottom: 30px; } }
+
+
+#TOC {
+  margin: 1.5em 0 3em 0; /*around TOC for Getting Started */
+}
+
+
+/*----- general LINKS ----- */
+
+a {
+  transition: color 0.3s;
+}
+
+/*----- COLORED LIST BULLET----*/
+
+.article-content ul {
+  list-style: none; /* Remove default bullets */
+}
+
+.article-content ul li::before {
+  content: "\2022";  /* Add content: \2022 is the CSS Code/unicode for a bullet */
+  color: #CA225E; /* Change the color */
+  font-weight: bold; /* If you want it to be bold */
+  display: inline-block; /* Needed to add space between the bullet and the text */
+  width: 1.5em; /* Also needed for space (tweak if needed) */
+  margin-left: -1.7em; /* Also needed for space (tweak if needed) */
+}
+
+.article-content ul > li > p {
+  display: inline; /* to have content show up next to bullet */
+}
+
+.article-content ul > li { /*to add back in space between bullet items that I took away by making p display inline */
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+
+
+/*--------- BODY HEADERS -------*/
+
+div.tagline {
+  font-family: 'Lato', sans-serif !important;
+  text-transform: uppercase;
+  font-size: 1.2rem !important;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.article-title,               /* Most page titles */
+.column75 div.sectionTitle {  /* Learn page section title */
+  font-family: 'Lato', sans-serif;
+  color: #CA225E;
+  font-weight: normal;
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 2.4em; /* same as main-site, but duplicated here so it applies to Learn .sectionTitle */
+}
+
+h1, h2, .itemTitle {         /* adding h2 in here for now until packages h2 gets sorted out */
+  font-family: 'Lato', sans-serif;
+  font-weight: normal;
+  font-size: 1.25em;
+  text-transform: uppercase;
+  letter-spacing: 1.5pt;
+}
+
+h1, h2 {
+  color: #1a162d;
+}
+
+.itemTitle a { /* For Learn Page headers */
+  color: #1a162d99;
+}
+
+.itemTitle a:hover { /* For Learn Page headers */
+  color: #1a162d;
+  text-decoration: none;
+}
+
+
+
+
+/*---------TOC----------*/
+
+/*TOC header font attributes*/
+/*#TOC is for Getting Started body content TOC */
+/*.column25 .sectionTitle is for right sidebar TOC headers */
+
+#TOC, .column25 .sectionTitle, .sectionTitle a {
+  text-transform: uppercase;
+  letter-spacing: 2pt;
+  font-size: 0.8rem !important;
+  font-weight: bold;
+}
+
+  .sectionTitle, .sectionTitle a{
+    color: #CA225E;
+  }
+  
+  #TOC a { /* Get Started Page TOC */
+    color: #CA225E90;
+  }
+
+
+/*Sidebar TOC links for Learn and Packages pages */
+#TableOfContents a, 
+.articleCategory a {
+  font-family: 'Lato', sans-serif;
+  color: #1a162d99;
+  transition: color 0.3s;
+  font-size: 15px;
+  letter-spacing: 1pt;
+}
+
+#TableOfContents a:hover,
+.articleCategory a:hover {
+  color: #1a162dde;
+  text-decoration: none;
+
+}
+
+/*-- Getting Started Page Left Sidebar -- */
+
+.column25-left .sectionTitle { /* Numbered content sections, hanging indent */
+  display: flex; 
+  text-transform: uppercase;
+  letter-spacing: 2pt;
+  font-size: 0.8rem !important;
+  font-weight: bold;
+}
+
+.column25-left .sectionTitle a{
+  font-family: 'Lato', sans-serif;
+  color: #1a162d99;
+  transition: color 0.3s;
+  font-size: 15px !important;
+  text-transform: none;
+  letter-spacing: 1pt; /* do we like? */
+  font-weight: normal;
+}
+
+.column25-left .sectionTitle a:hover {
+  color: #1a162dde;
+  text-decoration: none;
+}
+
+.column25-left .sectionTitle a:active {
+  color: #CA225E;
+}
+
+
+.column25 {
+  padding-left: 3em;
+  border-left: solid #d9d9d9 1pt;
+}
+
+.column25-left {
+  padding-top: 20px;
+  padding-right: 3em;
+  position: fixed;
+  border-right: solid #d9d9d9 1pt;
+  max-width: 250px;
+}
+
+#page-wrap { 
+  width: 600px; 
+  margin: 15px auto; 
+  position: relative; 
+}
+
+
+/*-------- NAVBAR --------- */
+
+/*navbar header items */
+
+a.productName {
+  transition: color 0.3s; /*is this being applied? */
+}
+
+#menu {
+  text-transform: uppercase;
+  letter-spacing: 2pt;
+  font-size: 0.8rem !important;
+}
+ 
+#rStudioHeader {
+  -moz-box-shadow: 0 1px 0px 0px rgba(0, 0, 0, 0.15);
+  -webkit-box-shadow: 0 1px 0px 0px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 1px 0px 0px rgba(0, 0, 0, 0.15);
+}
+
+/*---- HOME BAND TEXT COLOR -----*/
+/*first band*/
+
+#homeContent .band.first a{
+ } 
+  
+#homeContent .band.first a:hover {
+  } 
+
+/*second band*/
+#homeContent .band.second {
+  color: black;
+  border-bottom: solid 1pt #d9d9d9;
+  border-top: solid 1pt #d9d9d9;
+} 
+
+#homeContent .band.second a{
+  } 
+  
+#homeContent .band.second a:hover {
+  } 
+  
+#homeContent .bee1 {
+  display: none;
+}
+
+/*-----TABLES-----*/
+
+.article-content {
+  overflow-x: scroll; /*we probably want to create a parent container around only tables*/
+}
+
+table tbody tr td:last-child {
+  padding: 15px 13px;
+}
+
+table thead tr th:last-child {
+    padding: 15px 13px;
+}
+
+/* MISC */
+/* This is to specifically target the package tag links within GEtting Started.*/
+/* This is a pretty brittle style rule and should probably get replaced */
+
+.column75 > a {
+  color: #1a162d80;
+}

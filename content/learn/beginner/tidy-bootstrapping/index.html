@@ -1,0 +1,197 @@
+---
+title: "Tidy bootstrapping"
+tags: [rsample]
+categories: [resampling]
+type: learn-subsection
+---
+
+
+
+<p>This article only requires that the <code>tidymodels</code> package be installed.</p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Another place where combining model fits in a tidy way becomes useful is when performing bootstrapping or permutation tests. These approaches have been explored before, for instance by <a href="http://rstudio-pubs-static.s3.amazonaws.com/19698_a4c472606e3c43e4b94720506e49bb7b.html">Andrew MacDonald here</a>, and <a href="https://github.com/hadley/dplyr/issues/269">Hadley has explored efficient support for bootstrapping</a> as a potential enhancement to <code>dplyr</code>. <code>broom</code> fits naturally with <code>dplyr</code> in performing these analyses.</p>
+<p>Bootstrapping consists of randomly sampling a dataset with replacement, then performing the analysis individually on each bootstrapped replicate. The variation in the resulting estimate is then a reasonable approximation of the variance in our estimate.</p>
+<p>Let’s say we want to fit a nonlinear model to the weight/mileage relationship in the <code>mtcars</code> dataset.</p>
+<pre class="r"><code>library(tidymodels)
+
+ggplot(mtcars, aes(mpg, wt)) + 
+    geom_point()</code></pre>
+<p><img src="figs/unnamed-chunk-1-1.svg" width="672" /></p>
+<p>We might use the method of nonlinear least squares (via the <code>nls()</code> function) to fit a model.</p>
+<pre class="r"><code>nlsfit &lt;- nls(mpg ~ k / wt + b, mtcars, start = list(k = 1, b = 0))
+summary(nlsfit)
+#&gt; 
+#&gt; Formula: mpg ~ k/wt + b
+#&gt; 
+#&gt; Parameters:
+#&gt;   Estimate Std. Error t value Pr(&gt;|t|)    
+#&gt; k   45.829      4.249  10.786 7.64e-12 ***
+#&gt; b    4.386      1.536   2.855  0.00774 ** 
+#&gt; ---
+#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+#&gt; 
+#&gt; Residual standard error: 2.774 on 30 degrees of freedom
+#&gt; 
+#&gt; Number of iterations to convergence: 1 
+#&gt; Achieved convergence tolerance: 2.877e-08
+
+ggplot(mtcars, aes(wt, mpg)) +
+    geom_point() +
+    geom_line(aes(y = predict(nlsfit)))</code></pre>
+<p><img src="figs/unnamed-chunk-2-1.svg" width="672" /></p>
+<p>While this does provide a p-value and confidence intervals for the parameters, these are based on model assumptions that may not hold in real data. Bootstrapping is a popular method for providing confidence intervals and predictions that are more robust to the nature of the data.</p>
+</div>
+<div id="bootstrapping-models" class="section level1">
+<h1>Bootstrapping models</h1>
+<p>We can use the <code>bootstraps()</code> function in the <code>rsample</code> package to sample bootstrap replications. First, we construct 100 bootstrap replications of the data, each of which has been randomly sampled with replacement. The resulting object is an <code>rset</code>, which is a data frame with a column of <code>rsplit</code> objects.</p>
+<p>An <code>rsplit</code> object has two main components: an analysis dataset and an assessment dataset, accessible via <code>analysis(rsplit)</code> and <code>assessment(rsplit)</code> respectively. For bootstrap samples, the analysis dataset is the bootstrap sample itself, and the assessment dataset consists of all the out of bag samples.</p>
+<pre class="r"><code>set.seed(27)
+boots &lt;- bootstraps(mtcars, times = 2000)
+boots
+#&gt; # Bootstrap sampling 
+#&gt; # A tibble: 2,000 x 2
+#&gt;    splits          id           
+#&gt;    &lt;list&gt;          &lt;chr&gt;        
+#&gt;  1 &lt;split [32/13]&gt; Bootstrap0001
+#&gt;  2 &lt;split [32/10]&gt; Bootstrap0002
+#&gt;  3 &lt;split [32/13]&gt; Bootstrap0003
+#&gt;  4 &lt;split [32/11]&gt; Bootstrap0004
+#&gt;  5 &lt;split [32/9]&gt;  Bootstrap0005
+#&gt;  6 &lt;split [32/10]&gt; Bootstrap0006
+#&gt;  7 &lt;split [32/11]&gt; Bootstrap0007
+#&gt;  8 &lt;split [32/13]&gt; Bootstrap0008
+#&gt;  9 &lt;split [32/11]&gt; Bootstrap0009
+#&gt; 10 &lt;split [32/11]&gt; Bootstrap0010
+#&gt; # … with 1,990 more rows</code></pre>
+<p>We create a helper function to fit an <code>nls()</code> model on each bootstrap sample, and then use <code>purrr::map()</code> to apply this function to all the bootstrap samples at once. Similarly, we create a column of tidy coefficient information by unnesting.</p>
+<pre class="r"><code>fit_nls_on_bootstrap &lt;- function(split) {
+    nls(mpg ~ k / wt + b, analysis(split), start = list(k = 1, b = 0))
+}
+
+boot_models &lt;-
+  boots %&gt;% 
+  mutate(model = map(splits, fit_nls_on_bootstrap),
+         coef_info = map(model, tidy))
+
+boot_coefs &lt;- 
+  boot_models %&gt;% 
+  unnest(coef_info)</code></pre>
+<p>The unnested coefficient information contains a summary of each replication combined in a single data frame:</p>
+<pre class="r"><code>boot_coefs
+#&gt; # A tibble: 4,000 x 8
+#&gt;    splits         id           model term  estimate std.error statistic  p.value
+#&gt;    &lt;list&gt;         &lt;chr&gt;        &lt;lis&gt; &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+#&gt;  1 &lt;split [32/13… Bootstrap00… &lt;nls&gt; k        42.1       4.05     10.4  1.91e-11
+#&gt;  2 &lt;split [32/13… Bootstrap00… &lt;nls&gt; b         5.39      1.43      3.78 6.93e- 4
+#&gt;  3 &lt;split [32/10… Bootstrap00… &lt;nls&gt; k        49.9       5.66      8.82 7.82e-10
+#&gt;  4 &lt;split [32/10… Bootstrap00… &lt;nls&gt; b         3.73      1.92      1.94 6.13e- 2
+#&gt;  5 &lt;split [32/13… Bootstrap00… &lt;nls&gt; k        37.8       2.68     14.1  9.01e-15
+#&gt;  6 &lt;split [32/13… Bootstrap00… &lt;nls&gt; b         6.73      1.17      5.75 2.78e- 6
+#&gt;  7 &lt;split [32/11… Bootstrap00… &lt;nls&gt; k        45.6       4.45     10.2  2.70e-11
+#&gt;  8 &lt;split [32/11… Bootstrap00… &lt;nls&gt; b         4.75      1.62      2.93 6.38e- 3
+#&gt;  9 &lt;split [32/9]&gt; Bootstrap00… &lt;nls&gt; k        43.6       4.63      9.41 1.85e-10
+#&gt; 10 &lt;split [32/9]&gt; Bootstrap00… &lt;nls&gt; b         5.89      1.68      3.51 1.44e- 3
+#&gt; # … with 3,990 more rows</code></pre>
+</div>
+<div id="bootstrap-confidence-intervals" class="section level1">
+<h1>Bootstrap confidence intervals</h1>
+<p>We can then calculate confidence intervals (using what is called the <a href="https://www.uvm.edu/~dhowell/StatPages/Randomization%20Tests/ResamplingWithR/BootstMeans/bootstrapping_means.html">percentile method</a>):</p>
+<pre class="r"><code>percentile_intervals &lt;- int_pctl(boot_models, coef_info)
+percentile_intervals
+#&gt; # A tibble: 2 x 6
+#&gt;   term   .lower .estimate .upper .alpha .method   
+#&gt;   &lt;chr&gt;   &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;     
+#&gt; 1 b      0.0475      4.12   7.31   0.05 percentile
+#&gt; 2 k     37.6        46.7   59.8    0.05 percentile</code></pre>
+<p>Or we can use histograms to get a more detailed idea of the uncertainty in each estimate:</p>
+<pre class="r"><code>ggplot(boot_coefs, aes(estimate)) +
+  geom_histogram(bins = 30) +
+  facet_wrap( ~ term, scales = &quot;free&quot;) +
+  geom_vline(aes(xintercept = .lower), data = percentile_intervals, col = &quot;blue&quot;) +
+  geom_vline(aes(xintercept = .upper), data = percentile_intervals, col = &quot;blue&quot;)</code></pre>
+<p><img src="figs/unnamed-chunk-6-1.svg" width="672" /></p>
+<p><code>rsample</code> also has functions for other types of confidence intervals.</p>
+</div>
+<div id="showing-possible-model-fits" class="section level1">
+<h1>Showing possible model fits</h1>
+<p>Or we can use <code>augment()</code> to visualize the uncertainty in the curve. Since there are so many bootstrap samples, we’ll show a sample of the model fits:</p>
+<pre class="r"><code>boot_aug &lt;- 
+  boot_models %&gt;% 
+  sample_n(200) %&gt;% 
+  mutate(augmented = map(model, augment)) %&gt;% 
+  unnest(augmented)
+
+boot_aug
+#&gt; # A tibble: 6,400 x 8
+#&gt;    splits         id            model coef_info         mpg    wt .fitted .resid
+#&gt;    &lt;list&gt;         &lt;chr&gt;         &lt;lis&gt; &lt;list&gt;          &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;
+#&gt;  1 &lt;split [32/11… Bootstrap1644 &lt;nls&gt; &lt;tibble [2 × 5…  16.4  4.07    15.6  0.829
+#&gt;  2 &lt;split [32/11… Bootstrap1644 &lt;nls&gt; &lt;tibble [2 × 5…  19.7  2.77    21.9 -2.21 
+#&gt;  3 &lt;split [32/11… Bootstrap1644 &lt;nls&gt; &lt;tibble [2 × 5…  19.2  3.84    16.4  2.84 
+#&gt;  4 &lt;split [32/11… Bootstrap1644 &lt;nls&gt; &lt;tibble [2 × 5…  21.4  2.78    21.8 -0.437
+#&gt;  5 &lt;split [32/11… Bootstrap1644 &lt;nls&gt; &lt;tibble [2 × 5…  26    2.14    27.8 -1.75 
+#&gt;  6 &lt;split [32/11… Bootstrap1644 &lt;nls&gt; &lt;tibble [2 × 5…  33.9  1.84    32.0  1.88 
+#&gt;  7 &lt;split [32/11… Bootstrap1644 &lt;nls&gt; &lt;tibble [2 × 5…  32.4  2.2     27.0  5.35 
+#&gt;  8 &lt;split [32/11… Bootstrap1644 &lt;nls&gt; &lt;tibble [2 × 5…  30.4  1.62    36.1 -5.70 
+#&gt;  9 &lt;split [32/11… Bootstrap1644 &lt;nls&gt; &lt;tibble [2 × 5…  21.5  2.46    24.4 -2.86 
+#&gt; 10 &lt;split [32/11… Bootstrap1644 &lt;nls&gt; &lt;tibble [2 × 5…  26    2.14    27.8 -1.75 
+#&gt; # … with 6,390 more rows</code></pre>
+<pre class="r"><code>ggplot(boot_aug, aes(wt, mpg)) +
+  geom_line(aes(y = .fitted, group = id), alpha = .2, col = &quot;blue&quot;) +
+  geom_point()</code></pre>
+<p><img src="figs/unnamed-chunk-8-1.svg" width="672" /></p>
+<p>With only a few small changes, we could easily perform bootstrapping with other kinds of predictive or hypothesis testing models, since the <code>tidy()</code> and <code>augment()</code> functions works for many statistical outputs. As another example, we could use <code>smooth.spline()</code>, which fits a cubic smoothing spline to data:</p>
+<pre class="r"><code>fit_spline_on_bootstrap &lt;- function(split) {
+    data &lt;- analysis(split)
+    smooth.spline(data$wt, data$mpg, df = 4)
+}
+
+boot_splines &lt;- 
+  boots %&gt;% 
+  sample_n(200) %&gt;% 
+  mutate(spline = map(splits, fit_spline_on_bootstrap),
+         aug_train = map(spline, augment))
+
+splines_aug &lt;- 
+  boot_splines %&gt;% 
+  unnest(aug_train)
+
+ggplot(splines_aug, aes(x, y)) +
+  geom_line(aes(y = .fitted, group = id), alpha = 0.2, col = &quot;blue&quot;) +
+  geom_point()</code></pre>
+<p><img src="figs/unnamed-chunk-9-1.svg" width="672" /></p>
+</div>
+<div id="session-information" class="section level1">
+<h1>Session information</h1>
+<pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────
+#&gt;  setting  value                       
+#&gt;  version  R version 3.6.1 (2019-07-05)
+#&gt;  os       macOS Catalina 10.15.3      
+#&gt;  system   x86_64, darwin15.6.0        
+#&gt;  ui       X11                         
+#&gt;  language (EN)                        
+#&gt;  collate  en_US.UTF-8                 
+#&gt;  ctype    en_US.UTF-8                 
+#&gt;  tz       America/Los_Angeles         
+#&gt;  date     2020-03-23                  
+#&gt; 
+#&gt; ─ Packages ───────────────────────────────────────────────────────────────────
+#&gt;  package    * version    date       lib source                               
+#&gt;  broom      * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
+#&gt;  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
+#&gt;  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
+#&gt;  ggplot2    * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
+#&gt;  parsnip    * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
+#&gt;  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
+#&gt;  recipes    * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
+#&gt;  rlang        0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
+#&gt;  rsample    * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
+#&gt;  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
+#&gt;  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
+#&gt;  tune       * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
+#&gt;  workflows  * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
+#&gt;  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
+#&gt; 
+#&gt; [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library</code></pre>
+</div>

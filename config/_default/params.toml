@@ -25,8 +25,8 @@ MathJaxCDN = "//cdn.bootcss.com"
 MathJaxVersion = "2.7.1"
 
 [footer]
-    github_url = "https://github.com/tidymodels"
-    twitter_url = "https://twitter.com/hashtag/rstats"
+    github_url = ""
+    twitter_url = ""
     support = "Proudly supported by"
 
 # leave blank in quotes for the default = true
@@ -47,28 +47,28 @@ MathJaxVersion = "2.7.1"
 # then, the layouts/partials/head_includes.html uses that partial
 # the partial head_includes.html is called in the partial header.html everywhere!
 [colors]
-    text = "#1a1917" # black
+    text = "#404040" # off-black
     # Links
-    link = "#38577f" # same as tidyverse.org
-    link_hover = "#42709b" # same as tidyverse.org
+    link = "#CA225E" # main accent
+    link_hover = "#cc3168" #lighter
     # Footer
-    footer_primary = "#767381" # same as tidyverse.org
-    footer_text = "#e3eef8" # same as tidyverse.org
+    footer_primary = "#CA225E40"
+    footer_text = "#CA225E" 
     # Backgrounds
-    background = "white"
-    home_section_odd = "white"
-    home_section_even = "#fdeba4"
+    background = "#ffffff" 
+    home_section_odd = "#ffffff"
+    home_section_even = "#fcfcfc" 
     # Menu
-    menu_primary = "#1a162d" # same as tidyverse.org
-    menu_text = "#fff"
-    menu_text_active = "#fff"
-    menu_text_current = "#1a162d" # same as tidyverse.org
+    menu_primary = "#ffffff" 
+    menu_text = "black"
+    menu_text_active = "#CA225E"
+    menu_text_current = "#CA225E"
     menu_decorate_current = "none"
-    menu_title = "#fff"
-    menu_title_active = "#fdeba4" # same as tidyverse.org
-    menu_box_hover = "#484557" # same as tidyverse.org
-    menu_box_active = "#fff" # same as tidyverse.org
+    menu_title = "#CA225E" # Tidymodels
+    menu_title_active = "#00000075" 
+    menu_box_hover = "white" 
+    menu_box_active = "#fcfcfc" 
     # Tables
-    header_background = "#dfe3eb"
-    table_row_even = "#f7faff"
-    table_row_odd = "#fff"
+    header_background = "#1a162d80"
+    table_row_even = "#fcfcfc"
+    table_row_odd = "#1a162d10"

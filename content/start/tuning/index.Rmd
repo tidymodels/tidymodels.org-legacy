@@ -1,0 +1,148 @@
+---
+title: "Tune model parameters"
+weight: 4
+tags: [regression models]
+output:
+  blogdown::html_page:
+    toc: true
+---
+
+```{r setup, include = FALSE, message = FALSE, warning = FALSE}
+source(here::here("content/start/common.R"))
+```
+
+```{r load, include = FALSE, message = FALSE, warning = FALSE}
+library(tidymodels)
+library(ranger)
+library(modeldata)
+library(kableExtra)
+theme_set(theme_bw())
+doParallel::registerDoParallel()
+```
+
+Some model parameters cannot be learned directly from a data set during model training; these kinds of parameters are called **hyperparameters**. Some examples of hyperparameters include the number of predictors that are sampled at splits in a tree-based model (we call this `mtry` in tidymodels) or the learning rate in a boosted tree model (we call this `learn_rate`). Instead of learning these kinds of hyperparameters during model training, we can estimate the best values for these values by training many models on resampled data sets and exploring how well all these models perform. This process is called **tuning**.
+
+## Predicting image segmentation, but better
+
+In our [article on resampling](LINKTODO), we introduced a data set of images of cells that were labeled by experts as well-segmented (`WS`) or poorly segmented (`PS`). We trained a random forest model to predict which images are segmented well vs. poorly, so that a biologist could filter out poorly segmented cell images in their analysis. We used resampling to estimate the performance of our model on this data.
+
+```{r cell-import}
+data(cells, package = "modeldata")
+cells
+```
+
+Random forest models typically perform well with defaults, but there are several hyperparameters that can be tuned for better performance. The two hyperparameters that have the largest impact on predictive accuracy are
+
+- the number of features considered at any given split (which we call `mtry` in tidymodels), and
+- the minimum node size for the node to be split further (which we call `min_n`).
+
+Before we start the tuning process, we split our data into training and testing sets, just like when we trained the model with one set of hyperparameters. We can use `strata = class` if we want our training and testing sets to be created using stratified sampling so that both have the same proportion of both kinds of segmentation.
+
+```{r cell-split}
+library(tidymodels) 
+
+set.seed(123)
+cell_split <- initial_split(cells %>% select(-case), strata = class)
+cell_train <- training(cell_split)
+cell_test  <- testing(cell_split)
+```
+
+We use the training data for tuning the model.
+
+## Tuning hyperparameters
+
+To tune the random forest hyperparameters `mtry` and `min_n`, we create a model specification that identifies which hyperparameters we will `tune()`.
+
+```{r tune-spec}
+tune_spec <- 
+  rand_forest(
+    mtry = tune(),
+    trees = 1000,
+    min_n = tune()
+  ) %>% 
+  set_engine("ranger") %>% 
+  set_mode("classification")
+
+tune_spec
+```
+
+We can't train this specification on a single data set (such as the entire training set) and learn what the hyperparameter values should be, but we can train many models using resampled data and see which models turn out best. We can create a grid of values to try using `crossing()` from `tidyr`:
+
+```{r}
+rf_grid <- crossing(mtry = floor(ncol(cells) * c(0.1, 0.2, 0.3, 0.5)),
+                    min_n = c(2, 4, 8, 16))
+```
+
+Let's create cross-validation folds for tuning, and then use `tune_grid()` to fit models at all the different values we chose for each tuned hyperparameter.
+
+```{r rf-res, dependson=c("tune-spec", "wine-split")}
+set.seed(234)
+cell_folds <- vfold_cv(cell_train)
+
+rf_res <- tune_spec %>%
+  tune_grid(
+    class ~ .,
+    resamples = cell_folds,
+    grid = rf_grid
+  )
+
+rf_res
+```
+
+Once we have our tuning results, we can both explore them through visualization and then select the best result.
+
+```{r best-rf, dependson="rf-res", fig.width=8, fig.height=7}
+rf_res %>%
+  collect_metrics() %>%
+  mutate(min_n = factor(min_n)) %>%
+  ggplot(aes(mtry, mean, color = min_n)) +
+  geom_errorbar(aes(
+    ymin = mean - std_err,
+    ymax = mean + std_err
+  ),
+  alpha = 0.5
+  ) +
+  geom_line(size = 1.5, alpha = 0.8) +
+  facet_wrap(~ .metric, scales = "free", nrow = 2)
+  
+best_rf <- rf_res %>%
+  select_best("accuracy")
+
+best_rf
+```
+
+These are the values for `mtry` and `min_n` that maximize AUC in this data set of cell images. We can update (or "finalize") our model with these values.
+
+```{r final-rf, dependson="best-rf"}
+final_rf <- finalize_model(
+  tune_spec,
+  best_rf
+)
+
+final_rf
+```
+
+Perhaps we would also like to understand what variables are important in this final model. We can use the [vip](https://koalaverse.github.io/vip/) package to estimate variable importance, and we can update the engine of our final model with `importance = "permutation"` so that the correct quantities are computed when growing the forest.
+
+```{r vip, dependson="final-rf", fig.width=6, fig.height=5}
+library(vip)
+
+final_rf %>%
+  set_engine("ranger", importance = "permutation") %>% 
+  fit(class ~ .,
+      data = cell_train) %>%
+  vip(geom = "point")
+```
+
+These are the automated image analysis measurements that are the most important in driving segmentation quality predictions.
+
+Finally, let's return to our test data and estimate the model performance we expect to see on new data. We can use the function `last_fit()` with our finalized model; this function _fits_ the finalized model on the training data and _evaluates_ the finalized model on the testing data.
+
+```{r last-fit, dependson=c("final-rf", "wine-split")}
+final_rf %>%
+  last_fit(class ~ ., 
+           cell_split) %>%
+  collect_metrics
+```
+
+The performance metrics from the test set indicate that we did not overfit during our tuning procedure.

@@ -6,22 +6,23 @@
     url = "/packages/"
     weight = 1
 [[main]]
-    name = "tm blog"
-    url = "/blog/"
+    name = "Get Started"
+    url = "/start/"
     weight = 2
 [[main]]
-    name = "tv blog"
-    url = "https://www.tidyverse.org/blog/"
-    weight = 3
-[[main]]
     name = "Learn"
-    url = "https://www.tidyverse.org/learn/"
-    weight = 4
+    url = "/learn/"
+    weight = 7
 [[main]]
     name = "Help"
-    url = "https://www.tidyverse.org/help/"
-    weight = 5
+    url = "/help/"
+    weight = 8
 [[main]]
     name = "Contribute"
-    url = "https://www.tidyverse.org/contribute/"
-    weight = 6
+    url = "/contribute/"
+    weight = 9
+[[main]]
+    pre = "<i class=\"fab fa-github fa-lg\"></i>"
+    name = ""
+    url = "https://github.com/tidymodels/"
+    weight = 10

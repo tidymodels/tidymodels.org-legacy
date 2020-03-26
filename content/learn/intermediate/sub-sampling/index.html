@@ -1,0 +1,165 @@
+---
+title: "Subsampling for Class Imbalances"
+tags: [recipes, themis, discrim, parsnip]
+categories: [model fitting, pre-processing]
+---
+
+
+
+<p>This article requires that you have the following packages installed: <code>discrim</code>, <code>klaR</code>, <code>readr</code>, <code>ROSE</code>, <code>themis</code>, and <code>tidymodels</code>.</p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Subsampling a training set can be a helpful approach to dealing will classification data where one or more classes occur very infrequently. Often, most models will overfit to the majority class and produce very good statistics for the class containing the frequently occurring classes while the minority classes have poor performance.</p>
+<p>The analysis below describes this method for dealing with class imbalances. For better understanding, some knowledge of classification metrics like sensitivity, specificity, and receiver operating characteristic curves is required. See Section 3.2.2 for <a href="https://bookdown.org/max/FES/measuring-performance.html">Kuhn and Johnson (2019)</a> for more information on these metrics.</p>
+</div>
+<div id="simulated-data" class="section level1">
+<h1>Simulated data</h1>
+<p>Consider a two-class problem where the first class has a very low rate of occurrence. The data were simulated and can be imported into R using the code below:</p>
+<pre class="r"><code>imbal_data &lt;- 
+  readr::read_csv(&quot;https://bit.ly/imbal_data&quot;) %&gt;% 
+  mutate(Class = factor(Class))
+dim(imbal_data)
+#&gt; [1] 1200   16
+table(imbal_data$Class)
+#&gt; 
+#&gt; Class1 Class2 
+#&gt;     60   1140</code></pre>
+<p>If “Class1” is the event of interest, it is very likely that a classification model would be able to achieve very good <em>specificity</em> since almost all of the data are the second class. <em>Sensitivity</em> will often be poor since the models will optimize accuracy (or other loss functions) by predicting everything to be the majority class.</p>
+<p>When there are two classes, the results is that the default probability cutoff of 50% is inappropriate; a different cutoff that is more extreme might be able to achieve good performance.</p>
+</div>
+<div id="subsampling-the-data" class="section level1">
+<h1>Subsampling the data</h1>
+<p>One way to alleviate this issue is to <em>subsample</em> the data. There are a number of ways to do this but the most simple one is to <em>sample down</em> the majority class data until it occurs with the same frequency as the minority class. While counterintuitive, throwing out a large percentage of the data can be effective at producing a results. In some cases, this means that the overall performance of the model is better (e.g. improved area under the ROC curve). However, subsampling almost always produces models that are <em>better calibrated</em>, meaning that the distributions of the class probabilities are model well behaved. As a result, the default 50% cutoff is much model likely to produce better sensitivity and specificity values than they would otherwise.</p>
+<p>To demonstrate this, <code>themis::step_rose()</code> will be used in a recipe for the simulated data. It uses the ROSE (random over sampling examples) method from <a href="https://scholar.google.com/scholar?hl=en&amp;q=%22training+and+assessing+classification+rules+with+imbalanced+data%22">Menardi, G. and Torelli, N. (2014)</a>.</p>
+<p>In terms of workflow:</p>
+<ul>
+<li>It is extremely important that subsampling occurs <em>inside of resampling</em>. Otherwise, the resampling process can produce <a href="https://topepo.github.io/caret/subsampling-for-class-imbalances.html#resampling">poor estimates of model performance</a>.</li>
+<li>The subsampling process should only be applied to the analysis set. The assessment set should reflect the event rates seen “in the wild” and, for this reason, the <code>skip</code> argument to <code>step_downsample</code> is defaulted to <code>TRUE</code>.</li>
+</ul>
+<p>Here is a simple recipe:</p>
+<pre class="r"><code>library(tidymodels)
+library(themis)
+imbal_rec &lt;- 
+  recipe(Class ~ ., data = imbal_data) %&gt;%
+  step_rose(Class)</code></pre>
+<p>For a model, a <a href="https://en.wikipedia.org/wiki/Quadratic_classifier#Quadratic_discriminant_analysis">quadratic discriminant analysis</a> (QDA) model will be used. From the <code>discrim</code> package, this model can be specified using</p>
+<pre class="r"><code>library(discrim)
+qda_mod &lt;- 
+  discrim_regularized(frac_common_cov = 0, frac_identity = 0) %&gt;% 
+  set_engine(&quot;klaR&quot;)</code></pre>
+<p>To keep these objects bound together, they are combined in a workflow:</p>
+<pre class="r"><code>qda_rose_wflw &lt;- 
+  workflow() %&gt;% 
+  add_model(qda_mod) %&gt;% 
+  add_recipe(imbal_rec)
+qda_rose_wflw
+#&gt; ══ Workflow ════════════════════════════════════════════════════════
+#&gt; Preprocessor: Recipe
+#&gt; Model: discrim_regularized()
+#&gt; 
+#&gt; ── Preprocessor ────────────────────────────────────────────────────
+#&gt; 1 Recipe Step
+#&gt; 
+#&gt; ● step_rose()
+#&gt; 
+#&gt; ── Model ───────────────────────────────────────────────────────────
+#&gt; Regularized Discriminant Model Specification (classification)
+#&gt; 
+#&gt; Main Arguments:
+#&gt;   frac_common_cov = 0
+#&gt;   frac_identity = 0
+#&gt; 
+#&gt; Computational engine: klaR</code></pre>
+<p>Stratified, repeated 10-fold cross-validation is used to resample the model:</p>
+<pre class="r"><code>set.seed(5732)
+cv_folds &lt;- vfold_cv(imbal_data, strata = &quot;Class&quot;, repeats = 5)</code></pre>
+<p>To measure model effectiveness, two metrics are used:</p>
+<ul>
+<li>The area under the <a href="https://en.wikipedia.org/wiki/Receiver_operating_characteristic">ROC curve</a> is an overall assessment of performance across <em>all</em> cutoffs. Values near one indicate very good results while values near 0.05 would imply that the model is very poor.</li>
+<li>The <em>J</em> index (a.k.a. <a href="https://en.wikipedia.org/wiki/Youden%27s_J_statistic">Youden’s <em>J</em></a> statistic) is <code>sensitivity + specificity - 1</code>. Values near one are once again best.</li>
+</ul>
+<p>If a model is poorly calibrated, the ROC curve value might not show diminished performance. However, the <em>J</em> index would be lower for models with pathological distributions for the class probabilities. The <code>yardstick</code> package will be used to compute these metrics.</p>
+<pre class="r"><code>cls_metrics &lt;- metric_set(roc_auc, j_index)</code></pre>
+<p>Now, we train the models and generate the results using <code>tune::fit_resamples()</code>:</p>
+<pre class="r"><code>set.seed(2180)
+qda_rose_res &lt;- fit_resamples(qda_rose_wflw, resamples = cv_folds, metrics = cls_metrics)
+collect_metrics(qda_rose_res)
+#&gt; # A tibble: 2 x 5
+#&gt;   .metric .estimator  mean     n std_err
+#&gt;   &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
+#&gt; 1 j_index binary     0.791    50 0.0177 
+#&gt; 2 roc_auc binary     0.950    50 0.00513</code></pre>
+<p>What do the results look like without using ROSE? We can create another workflow and fit the QDA model along the same resamples:</p>
+<pre class="r"><code>qda_wflw &lt;- 
+  workflow() %&gt;% 
+  add_model(qda_mod) %&gt;% 
+  add_formula(Class ~ .)
+
+set.seed(2180)
+qda_only_res &lt;- fit_resamples(qda_wflw, resamples = cv_folds, metrics = cls_metrics)
+collect_metrics(qda_only_res)
+#&gt; # A tibble: 2 x 5
+#&gt;   .metric .estimator  mean     n std_err
+#&gt;   &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
+#&gt; 1 j_index binary     0.250    50 0.0288 
+#&gt; 2 roc_auc binary     0.953    50 0.00479</code></pre>
+<p>It looks like ROSE helped a lot, especially with the J-index. Class imbalance sampling methods tends to greatly improve metrics based on the hard class predictions (i.e., the categorical predictions) because the default cutoff tends to be a better balance of sensitivity and specificity.</p>
+<p>Let’s plot the metrics for each resample to see how the individual results changed.</p>
+<pre class="r"><code>no_sampling &lt;- 
+  qda_only_res %&gt;% 
+  collect_metrics(summarize = FALSE) %&gt;% 
+  dplyr::select(-.estimator) %&gt;% 
+  mutate(sampling = &quot;no_sampling&quot;)
+
+with_sampling &lt;- 
+  qda_rose_res %&gt;% 
+  collect_metrics(summarize = FALSE) %&gt;% 
+  dplyr::select(-.estimator) %&gt;% 
+  mutate(sampling = &quot;rose&quot;)
+
+bind_rows(no_sampling, with_sampling) %&gt;% 
+  mutate(label = paste(id2, id)) %&gt;%  
+  ggplot(aes(x = sampling, y = .estimate, group = label)) + 
+  geom_line(alpha = .4) + 
+  facet_wrap(~ .metric, scales = &quot;free_y&quot;)</code></pre>
+<p><img src="figs/merge-metrics-1.svg" width="672" /></p>
+<p>This visually demonstrates that the subsampling mostly affects metrics that use the hard class predictions.</p>
+</div>
+<div id="session-information" class="section level1">
+<h1>Session information</h1>
+<pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────
+#&gt;  setting  value                       
+#&gt;  version  R version 3.6.1 (2019-07-05)
+#&gt;  os       macOS Catalina 10.15.3      
+#&gt;  system   x86_64, darwin15.6.0        
+#&gt;  ui       X11                         
+#&gt;  language (EN)                        
+#&gt;  collate  en_US.UTF-8                 
+#&gt;  ctype    en_US.UTF-8                 
+#&gt;  tz       America/Los_Angeles         
+#&gt;  date     2020-03-23                  
+#&gt; 
+#&gt; ─ Packages ───────────────────────────────────────────────────────────────────
+#&gt;  package    * version    date       lib source                               
+#&gt;  broom      * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
+#&gt;  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
+#&gt;  discrim    * 0.0.1      2019-10-11 [1] CRAN (R 3.6.0)                       
+#&gt;  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
+#&gt;  ggplot2    * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
+#&gt;  klaR       * 0.6-15     2020-02-19 [1] CRAN (R 3.6.0)                       
+#&gt;  parsnip    * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
+#&gt;  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
+#&gt;  readr      * 1.3.1      2018-12-21 [1] CRAN (R 3.6.0)                       
+#&gt;  recipes    * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
+#&gt;  rlang        0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
+#&gt;  ROSE       * 0.0-3      2014-07-15 [1] CRAN (R 3.6.0)                       
+#&gt;  rsample    * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
+#&gt;  themis     * 0.1.0      2020-01-13 [1] CRAN (R 3.6.0)                       
+#&gt;  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
+#&gt;  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
+#&gt;  tune       * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
+#&gt;  workflows  * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
+#&gt;  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
+#&gt; 
+#&gt; [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library</code></pre>
+</div>

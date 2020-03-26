@@ -1,0 +1,154 @@
+---
+title: "Using parsnip for Classification Models"
+tags: [rsample, parsnip]
+categories: [model fitting]
+type: learn-subsection
+---
+
+
+
+<p>This article requires that you have the following packages installed: <code>keras</code> and <code>tidymodels</code>.</p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>This article focuses on fitting models using the <code>parsnip</code> package. For a classification problem, a single model is fit and evaluated using a validation set. While the <code>tune</code> package has functionality to also do this, the <code>parsnip</code> package is the center of attention so that we can better understand its usage.</p>
+</div>
+<div id="fitting-a-neural-network-model" class="section level1">
+<h1>Fitting a neural network model</h1>
+<p>A small, two predictor classification data set is used to fit the model. The data are in the <code>workflows</code> package and have been split into a training, validation, and test data sets. In this analysis, the test set is left untouched; the code here is trying to emulate a good data usage methodology where the test set would only be evaluated once a variety of models were considered.</p>
+<pre class="r"><code>data(bivariate)
+nrow(bivariate_train)
+#&gt; [1] 1009
+nrow(bivariate_val)
+#&gt; [1] 300</code></pre>
+<p>A plot of the data shows two right-skewed predictors:</p>
+<pre class="r"><code>ggplot(bivariate_train, aes(x = A, y = B, col = Class)) + 
+  geom_point(alpha = .2)</code></pre>
+<p><img src="figs/biv-plot-1.svg" width="672" /></p>
+<p>A single hidden layer neural network will be used to predict the outcome. To do so, the columns of the predictor are transformed to be more symmetric (via the <code>step_BoxCox()</code> function) and on a common scale (using <code>step_normalize()</code>). <code>recipes</code> will be used to do so:</p>
+<pre class="r"><code>biv_rec &lt;- 
+  recipe(Class ~ ., data = bivariate_train) %&gt;%
+  # There are some missing values to be imputed: 
+  step_BoxCox(all_predictors())%&gt;%
+  step_normalize(all_predictors()) %&gt;%
+  # Estimate the means and standard deviations for the columns as well as
+  # the two transformation parameters: 
+  prep(training = bivariate_train, retain = TRUE)
+
+# juice() will be used to get the processed training set back
+
+val_normalized &lt;- bake(biv_rec, new_data = bivariate_val, all_predictors())
+# For when we arrive at a final model: 
+test_normalized &lt;- bake(biv_rec, new_data = bivariate_test, all_predictors())</code></pre>
+<p>The <code>keras</code> package will be used to fit a model with 5 hidden units and uses a 10% dropout rate to regularize the model:</p>
+<pre class="r"><code>set.seed(57974)
+nnet_fit &lt;-
+  mlp(epochs = 100, hidden_units = 5, dropout = 0.1) %&gt;%
+  set_mode(&quot;classification&quot;) %&gt;% 
+  # Also set engine-specific argument to prevent logging the results: 
+  set_engine(&quot;keras&quot;, verbose = 0) %&gt;%
+  fit(Class ~ ., data = juice(biv_rec))
+
+nnet_fit
+#&gt; parsnip model object
+#&gt; 
+#&gt; Fit time:  9.2s 
+#&gt; Model
+#&gt; Model: &quot;sequential&quot;
+#&gt; ________________________________________________________________________________
+#&gt; Layer (type)                        Output Shape                    Param #     
+#&gt; ================================================================================
+#&gt; dense (Dense)                       (None, 5)                       15          
+#&gt; ________________________________________________________________________________
+#&gt; dense_1 (Dense)                     (None, 5)                       30          
+#&gt; ________________________________________________________________________________
+#&gt; dropout (Dropout)                   (None, 5)                       0           
+#&gt; ________________________________________________________________________________
+#&gt; dense_2 (Dense)                     (None, 2)                       12          
+#&gt; ================================================================================
+#&gt; Total params: 57
+#&gt; Trainable params: 57
+#&gt; Non-trainable params: 0
+#&gt; ________________________________________________________________________________</code></pre>
+<p>In <code>parsnip</code>, the <code>predict()</code> function can be used to characterize performance on the validation set. Since <code>parsnip</code> always produces tibble outputs, these can just be column bound to the original data:</p>
+<pre class="r"><code>val_results &lt;- 
+  bivariate_val %&gt;%
+  bind_cols(
+    predict(nnet_fit, new_data = val_normalized),
+    predict(nnet_fit, new_data = val_normalized, type = &quot;prob&quot;)
+  )
+val_results %&gt;% slice(1:5)
+#&gt; # A tibble: 5 x 6
+#&gt;       A     B Class .pred_class .pred_One .pred_Two
+#&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt; &lt;fct&gt;           &lt;dbl&gt;     &lt;dbl&gt;
+#&gt; 1 1061.  74.5 One   Two             0.467    0.533 
+#&gt; 2 1241.  83.4 One   Two             0.481    0.519 
+#&gt; 3  939.  71.9 One   One             0.628    0.372 
+#&gt; 4  813.  77.1 One   One             0.923    0.0767
+#&gt; 5 1706.  92.8 Two   Two             0.356    0.644
+
+val_results %&gt;% roc_auc(truth = Class, .pred_One)
+#&gt; # A tibble: 1 x 3
+#&gt;   .metric .estimator .estimate
+#&gt;   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+#&gt; 1 roc_auc binary         0.814
+val_results %&gt;% accuracy(truth = Class, .pred_class)
+#&gt; # A tibble: 1 x 3
+#&gt;   .metric  .estimator .estimate
+#&gt;   &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;
+#&gt; 1 accuracy binary         0.737
+val_results %&gt;% conf_mat(truth = Class, .pred_class)
+#&gt;           Truth
+#&gt; Prediction One Two
+#&gt;        One 150  27
+#&gt;        Two  52  71</code></pre>
+<p>Let’s also create a grid to get a visual sense of the class boundary for the validation set.</p>
+<pre class="r"><code>x_grid &lt;-
+  expand.grid(A = seq(min(bivariate_train$A), max(bivariate_train$A), length.out = 100),
+              B = seq(min(bivariate_train$B), max(bivariate_train$B), length.out = 100))
+x_grid_trans &lt;- bake(biv_rec, x_grid)
+
+# Make predictions using the transformed predictors but 
+# attach them to the predictors in the original units: 
+x_grid &lt;- 
+  x_grid %&gt;% 
+  bind_cols(predict(nnet_fit, x_grid_trans, type = &quot;prob&quot;))
+
+ggplot(x_grid, aes(x = A, y = B)) + 
+  geom_contour(aes(z = .pred_One), breaks = .5, col = &quot;black&quot;) + 
+  geom_point(data = bivariate_val, aes(col = Class), alpha = 0.3)</code></pre>
+<p><img src="figs/biv-boundary-1.svg" width="672" /></p>
+</div>
+<div id="session-information" class="section level1">
+<h1>Session information</h1>
+<pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────
+#&gt;  setting  value                       
+#&gt;  version  R version 3.6.1 (2019-07-05)
+#&gt;  os       macOS Catalina 10.15.3      
+#&gt;  system   x86_64, darwin15.6.0        
+#&gt;  ui       X11                         
+#&gt;  language (EN)                        
+#&gt;  collate  en_US.UTF-8                 
+#&gt;  ctype    en_US.UTF-8                 
+#&gt;  tz       America/Los_Angeles         
+#&gt;  date     2020-03-23                  
+#&gt; 
+#&gt; ─ Packages ───────────────────────────────────────────────────────────────────
+#&gt;  package    * version    date       lib source                               
+#&gt;  broom      * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
+#&gt;  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
+#&gt;  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
+#&gt;  ggplot2    * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
+#&gt;  keras        2.2.5.0    2019-10-08 [1] CRAN (R 3.6.0)                       
+#&gt;  parsnip    * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
+#&gt;  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
+#&gt;  recipes    * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
+#&gt;  rlang        0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
+#&gt;  rsample    * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
+#&gt;  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
+#&gt;  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
+#&gt;  tune       * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
+#&gt;  workflows  * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
+#&gt;  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
+#&gt; 
+#&gt; [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library</code></pre>
+</div>

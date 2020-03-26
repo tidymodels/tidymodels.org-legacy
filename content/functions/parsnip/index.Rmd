@@ -1,0 +1,87 @@
+---
+title: List of parsnip models
+---
+
+```{r ex_setup, include=FALSE}
+knitr::opts_chunk$set(
+  message = FALSE,
+  digits = 3,
+  collapse = TRUE,
+  comment = "#>"
+  )
+options(digits = 3)
+script <- here::here("static/code/get_pkgdown_urls.R")
+source(script)
+library(DT)
+pkgs <- c("parsnip", "discrim")
+library(discrim)
+```
+
+`parsnip` contains wrappers for a number of models. For example, the `parsnip` function `rand_forest()` can be used to create a random forest model. The **mode** of a model is related to its goal. Examples would be regression and classification. 
+
+Since there are many models available in R, there are also "side packages" that wrap groups of models: 
+
+ * [`discrim`](https://github.com/tidymodels/discrim) contains discriminant analysis models. 
+
+
+```{r model-table, include = FALSE}
+mod_names <- get_from_env("models")
+
+model_info <-
+  map_dfr(mod_names, ~ get_from_env(paste0(.x, "_predict")) %>% mutate(alias = .x))
+
+model_modes <- 
+  model_info %>% 
+  distinct(alias, mode) %>% 
+  group_by(alias) %>% 
+  summarize(mode = paste0(sort(mode), collapse = ", "))
+
+model_eng <- 
+  model_info %>% 
+  distinct(alias, engine) %>% 
+  group_by(alias) %>% 
+  summarize(engine = paste0("<tt>", sort(engine), "</tt>", collapse = ", "))
+
+pkg_urls <- 
+  get_pkgdown_urls(pkgs) %>% 
+  dplyr::filter(alias %in% mod_names) %>% 
+  mutate(title = str_remove(title, "General Interface for ")) %>% 
+  full_join(model_modes, by = "alias") %>% 
+  full_join(model_eng, by = "alias") %>% 
+  dplyr::select(-alias)
+```
+
+_How_ the model is created is related to the **engine**. In many cases, this is an R modeling package. In others, it may be a connection to an external system (such as Spark or Tensorflow). The tables below list the engines for each model type. 
+
+Models can be added by the user too. See the ["Making a {parsnip} model from scratch" vignette](https://tidymodels.github.io/parsnip/articles/articles/Scratch.html).
+
+
+```{r table-display, echo = FALSE, results = "asis"}
+DT::datatable(
+  pkg_urls,
+  rownames = FALSE,
+  escape = FALSE,
+  filter = "top",
+  style = 'bootstrap',
+  width = 800
+)
+```
+
+Tidymodels use standardized parameter names to have some consistency between models and engines. The mapping between the `parsnip` arguments and their original names is: 
+
+```{r params, echo = FALSE, results = "asis"}
+envir <- parsnip::get_model_env()
+
+args <- 
+  ls(envir) %>% 
+  tibble(name = .) %>% 
+  filter(str_detect(name, "args")) %>% 
+  mutate(model = str_replace(name, "_args", ""),
+         args  = map(name, ~envir[[.x]])) %>% 
+  unnest(args) %>% 
+  select(model:original)
+
+DT::datatable(args, filter = "top", style = 'bootstrap')
+```
+
+
