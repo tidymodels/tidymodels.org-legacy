@@ -31,12 +31,12 @@ data(cells, package = "modeldata")
 cells
 ```
 
-Random forest models typically perform well with defaults, but there are several hyperparameters that can be tuned for better performance. The two hyperparameters that have the largest impact on predictive accuracy are
+Random forest models typically perform well with defaults, but the accuracy of some other kinds of models, such as boosted tree models or decision tree models, can be sensitive to the values of hyperparameters. In this article we will train a **decision tree** model. There are several hyperparameters for decision tree models that can be tuned for better performance. Let's explore:
 
-- the number of features considered at any given split (which we call `mtry` in tidymodels), and
-- the minimum node size for the node to be split further (which we call `min_n`).
+- the complexity parameter (which we call `cost_complexity` in tidymodels) for the tree, and
+- the maximum `tree_depth`.
 
-Before we start the tuning process, we split our data into training and testing sets, just like when we trained the model with one set of hyperparameters. We can use `strata = class` if we want our training and testing sets to be created using stratified sampling so that both have the same proportion of both kinds of segmentation.
+Before we start the tuning process, we split our data into training and testing sets, just like when we trained the model with one default set of hyperparameters. We can use `strata = class` if we want our training and testing sets to be created using stratified sampling so that both have the same proportion of both kinds of segmentation.
 
 ```{r cell-split}
 library(tidymodels) 
@@ -51,86 +51,104 @@ We use the training data for tuning the model.
 
 ## Tuning hyperparameters
 
-To tune the random forest hyperparameters `mtry` and `min_n`, we create a model specification that identifies which hyperparameters we will `tune()`.
+To tune the decision tree hyperparameters `cost_complexity` and `tree_depth`, we create a model specification that identifies which model parameters we will `tune()`.
 
 ```{r tune-spec}
 tune_spec <- 
-  rand_forest(
-    mtry = tune(),
-    trees = 1000,
-    min_n = tune()
+  decision_tree(
+    cost_complexity = tune(),
+    tree_depth = tune()
   ) %>% 
-  set_engine("ranger") %>% 
+  set_engine("rpart") %>% 
   set_mode("classification")
 
 tune_spec
 ```
 
-We can't train this specification on a single data set (such as the entire training set) and learn what the hyperparameter values should be, but we can train many models using resampled data and see which models turn out best. We can create a grid of values to try using `crossing()` from `tidyr`:
+We can't train this specification on a single data set (such as the entire training set) and learn what the hyperparameter values should be, but we can train many models using resampled data and see which models turn out best. We can create a regular grid of values to try using some convenience functions for each hyperparameter:
 
-```{r}
-rf_grid <- crossing(mtry = floor(ncol(cells) * c(0.1, 0.2, 0.3, 0.5)),
-                    min_n = c(2, 4, 8, 16))
+```{r tree-grid}
+tree_grid <- grid_regular(cost_complexity(),
+                          tree_depth(),
+                          levels = 5)
 ```
 
 Let's create cross-validation folds for tuning, and then use `tune_grid()` to fit models at all the different values we chose for each tuned hyperparameter.
 
-```{r rf-res, dependson=c("tune-spec", "wine-split")}
+```{r tree-res, dependson=c("tune-spec", "cell-split")}
 set.seed(234)
 cell_folds <- vfold_cv(cell_train)
 
-rf_res <- tune_spec %>%
+set.seed(345)
+tree_res <- tune_spec %>%
   tune_grid(
     class ~ .,
     resamples = cell_folds,
-    grid = rf_grid
+    grid = tree_grid
   )
 
-rf_res
+tree_res
 ```
 
 Once we have our tuning results, we can both explore them through visualization and then select the best result.
 
-```{r best-rf, dependson="rf-res", fig.width=8, fig.height=7}
-rf_res %>%
+```{r best-tree, dependson="tree-res", fig.width=8, fig.height=7}
+tree_res %>%
   collect_metrics() %>%
-  mutate(min_n = factor(min_n)) %>%
-  ggplot(aes(mtry, mean, color = min_n)) +
-  geom_errorbar(aes(
-    ymin = mean - std_err,
-    ymax = mean + std_err
-  ),
-  alpha = 0.5
-  ) +
-  geom_line(size = 1.5, alpha = 0.8) +
-  facet_wrap(~ .metric, scales = "free", nrow = 2)
-  
-best_rf <- rf_res %>%
-  select_best("accuracy")
+  mutate(tree_depth = factor(tree_depth)) %>%
+  ggplot(aes(cost_complexity, mean, color = tree_depth)) +
+  geom_line(size = 1.5, alpha = 0.5) +
+  geom_point() +
+  facet_wrap(~ .metric, scales = "free", nrow = 2) +
+  scale_x_log10()
 
-best_rf
+best_tree <- tree_res %>%
+  select_best("roc_auc")
+
+best_tree
 ```
 
-These are the values for `mtry` and `min_n` that maximize AUC in this data set of cell images. We can update (or "finalize") our model with these values.
+These are the values for `tree_depth` and `cost_complexity` that maximize AUC in this data set of cell images. We can update (or "finalize") our model with these values.
 
-```{r final-rf, dependson="best-rf"}
-final_rf <- finalize_model(
+```{r final-mod, dependson="best-tree"}
+final_mod <- finalize_model(
   tune_spec,
-  best_rf
+  best_tree
 )
 
-final_rf
+final_mod
 ```
 
-Perhaps we would also like to understand what variables are important in this final model. We can use the [vip](https://koalaverse.github.io/vip/) package to estimate variable importance, and we can update the engine of our final model with `importance = "permutation"` so that the correct quantities are computed when growing the forest.
+Our tuning is done!
 
-```{r vip, dependson="final-rf", fig.width=6, fig.height=5}
+## Exploring results
+
+Let's fit this final model to the training data. What does the decision tree look like?
+
+```{r final-tree, dependson="final-mod"}
+final_tree <- final_mod %>%
+  fit(class ~ .,
+      data = cell_train) 
+
+final_tree
+```
+
+We can also visualize the decision tree using the [partykit](http://partykit.r-forge.r-project.org/partykit/) package.
+
+```{r eval=FALSE}
+library(partykit)
+
+tree_party <- as.party(final_tree$fit) ## currently broken
+plot(tree_party)
+```
+
+
+Perhaps we would also like to understand what variables are important in this final model. We can use the [vip](https://koalaverse.github.io/vip/) package to estimate variable importance.
+
+```{r vip, dependson="final-tree", fig.width=6, fig.height=5}
 library(vip)
 
-final_rf %>%
-  set_engine("ranger", importance = "permutation") %>% 
-  fit(class ~ .,
-      data = cell_train) %>%
+final_tree %>%
   vip(geom = "point")
 ```
 
@@ -138,11 +156,12 @@ These are the automated image analysis measurements that are the most important 
 
 Finally, let's return to our test data and estimate the model performance we expect to see on new data. We can use the function `last_fit()` with our finalized model; this function _fits_ the finalized model on the training data and _evaluates_ the finalized model on the testing data.
 
-```{r last-fit, dependson=c("final-rf", "wine-split")}
-final_rf %>%
+```{r last-fit, dependson=c("final_mod", "cell-split")}
+final_mod %>%
   last_fit(class ~ ., 
            cell_split) %>%
   collect_metrics
 ```
 
 The performance metrics from the test set indicate that we did not overfit during our tuning procedure.
+
