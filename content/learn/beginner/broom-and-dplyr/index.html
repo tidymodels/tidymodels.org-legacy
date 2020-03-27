@@ -4,12 +4,13 @@ tags: [broom, dplyr]
 type: learn-subsection
 ---
 
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 
-<p>This article requires that you have the <code>tidymodels</code> packages installed.</p>
+<p>This article requires that you have the tidymodels packages installed.</p>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
-<p>While <code>broom</code> is useful for summarizing the result of a single analysis in a consistent format, it is really designed for high-throughput applications, where you must combine results from multiple analyses. These could be subgroups of data, analyses using different models, bootstrap replicates, permutations, and so on. In particular, it plays well with the <code>nest()/unnest()</code> functions in <code>tidyr</code> and the <code>map()</code> function in <code>purrr</code>.</p>
+<p>While broom is useful for summarizing the result of a single analysis in a consistent format, it is really designed for high-throughput applications, where you must combine results from multiple analyses. These could be subgroups of data, analyses using different models, bootstrap replicates, permutations, and so on. In particular, it plays well with the <code>nest()/unnest()</code> functions in tidyr and the <code>map()</code> function in purrr.</p>
 </div>
 <div id="correlation-analysis" class="section level1">
 <h1>Correlation analysis</h1>
@@ -43,7 +44,7 @@ library(ggplot2)
 ggplot(Orange, aes(age, circumference, color = Tree)) +
   geom_line()</code></pre>
 <p><img src="figs/unnamed-chunk-2-1.svg" width="672" /></p>
-<p>Suppose you want to test for correlations individually <em>within</em> each tree. You can do this with <code>dplyr</code>’s <code>group_by</code>:</p>
+<p>Suppose you want to test for correlations individually <em>within</em> each tree. You can do this with dplyr’s <code>group_by</code>:</p>
 <pre class="r"><code>Orange %&gt;% 
   group_by(Tree) %&gt;%
   summarize(correlation = cor(age, circumference))
@@ -281,31 +282,32 @@ regressions %&gt;%
 <pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────
 #&gt;  setting  value                       
 #&gt;  version  R version 3.6.1 (2019-07-05)
-#&gt;  os       macOS Catalina 10.15.3      
+#&gt;  os       macOS Mojave 10.14.6        
 #&gt;  system   x86_64, darwin15.6.0        
 #&gt;  ui       X11                         
 #&gt;  language (EN)                        
 #&gt;  collate  en_US.UTF-8                 
 #&gt;  ctype    en_US.UTF-8                 
-#&gt;  tz       America/Los_Angeles         
-#&gt;  date     2020-03-23                  
+#&gt;  tz       America/New_York            
+#&gt;  date     2020-03-26                  
 #&gt; 
 #&gt; ─ Packages ───────────────────────────────────────────────────────────────────
-#&gt;  package    * version    date       lib source                               
-#&gt;  broom      * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
-#&gt;  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
-#&gt;  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
-#&gt;  ggplot2    * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
-#&gt;  parsnip    * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
-#&gt;  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
-#&gt;  recipes    * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
-#&gt;  rlang        0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
-#&gt;  rsample    * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
-#&gt;  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
-#&gt;  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
-#&gt;  tune       * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
-#&gt;  workflows  * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
-#&gt;  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
+#&gt;  package    * version    date       lib source                             
+#&gt;  broom      * 0.5.4      2020-01-27 [1] CRAN (R 3.6.0)                     
+#&gt;  dials      * 0.0.4.9000 2020-03-21 [1] local                              
+#&gt;  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                     
+#&gt;  ggplot2    * 3.3.0      2020-03-05 [1] CRAN (R 3.6.0)                     
+#&gt;  infer      * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                     
+#&gt;  parsnip    * 0.0.5.9000 2020-03-26 [1] local                              
+#&gt;  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                     
+#&gt;  recipes    * 0.1.10     2020-03-18 [1] CRAN (R 3.6.1)                     
+#&gt;  rlang        0.4.5.9000 2020-03-21 [1] Github (r-lib/rlang@a90b04b)       
+#&gt;  rsample    * 0.0.5.9000 2020-03-23 [1] Github (tidymodels/rsample@4fdbd6c)
+#&gt;  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                     
+#&gt;  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                     
+#&gt;  tune       * 0.0.1.9000 2020-03-21 [1] Github (tidymodels/tune@6694258)   
+#&gt;  workflows  * 0.1.0      2019-12-30 [1] CRAN (R 3.6.1)                     
+#&gt;  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                     
 #&gt; 
 #&gt; [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library</code></pre>
 </div>

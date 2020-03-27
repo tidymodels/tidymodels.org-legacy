@@ -5,9 +5,10 @@ categories: [post-processing]
 type: learn-subsection
 ---
 
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 
-<p>This article requires that you have the following packages installed: <code>probably</code> and <code>tidymodels</code>.</p>
+<p>This article requires that you have the following packages installed: probably and tidymodels.</p>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
 <p>In some fields, class probability predictions must meet certain standards before a firm decision can be made using them. If they fail these standards, the prediction can be marked as <em>equivocal</em>, which just means that you are unsure of the true result. You might want to further investigate these equivocal values, or rerun whatever process generated them before proceeding.</p>
@@ -78,9 +79,7 @@ segment_logistic_thresh
 #&gt;  9    0.995      0.00458 poor        poor
 #&gt; 10    0.765      0.235   poor        poor
 #&gt; # … with 1,000 more rows</code></pre>
-<p>If a <code>buffer</code> is used, an equivocal zone is created around the threshold of
-<code>threshold +/- buffer</code> and any values inside the zone are automatically marked
-as equivocal.</p>
+<p>If a <code>buffer</code> is used, an equivocal zone is created around the threshold of <code>threshold +/- buffer</code> and any values inside the zone are automatically marked as equivocal.</p>
 <pre class="r"><code># Convert probabilities into predictions
 #        x &gt; 0.55 = good
 #        x &lt; 0.45 = poor
@@ -111,9 +110,7 @@ segment_pred %&gt;%
 #&gt;   reportable
 #&gt;        &lt;dbl&gt;
 #&gt; 1      0.955</code></pre>
-<p>Equivocal values in <code>class_pred</code> objects are converted to <code>NA</code> when the object
-is converted to a factor. It’s also worth noting that the <code>[EQ]</code> label is not
-treated as a separate level.</p>
+<p>Equivocal values in <code>class_pred</code> objects are converted to <code>NA</code> when the object is converted to a factor. It’s also worth noting that the <code>[EQ]</code> label is not treated as a separate level.</p>
 <pre class="r"><code>segment_pred %&gt;%
   mutate(.pred_fct = as.factor(.pred)) %&gt;%
   count(.pred, .pred_fct)
@@ -128,10 +125,7 @@ treated as a separate level.</p>
 
 levels(segment_pred$.pred)
 #&gt; [1] &quot;good&quot; &quot;poor&quot;</code></pre>
-<p>This <code>NA</code> behavior feeds into how probably can be used with yardstick. Generally,
-equivocal values are removed completely from performance evaluation. So converting
-them to <code>NA</code> and then leaving the default <code>na_rm = TRUE</code> in any yardstick metric
-removes them from consideration.</p>
+<p>This <code>NA</code> behavior feeds into how probably can be used with yardstick. Generally, equivocal values are removed completely from performance evaluation. So converting them to <code>NA</code> and then leaving the default <code>na_rm = TRUE</code> in any yardstick metric removes them from consideration.</p>
 <pre class="r"><code># No equivocal zone
 segment_logistic_thresh %&gt;%
   mutate(.pred_fct = as.factor(.pred)) %&gt;%
@@ -156,32 +150,33 @@ segment_pred %&gt;%
 <pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────
 #&gt;  setting  value                       
 #&gt;  version  R version 3.6.1 (2019-07-05)
-#&gt;  os       macOS Catalina 10.15.3      
+#&gt;  os       macOS Mojave 10.14.6        
 #&gt;  system   x86_64, darwin15.6.0        
 #&gt;  ui       X11                         
 #&gt;  language (EN)                        
 #&gt;  collate  en_US.UTF-8                 
 #&gt;  ctype    en_US.UTF-8                 
-#&gt;  tz       America/Los_Angeles         
-#&gt;  date     2020-03-23                  
+#&gt;  tz       America/New_York            
+#&gt;  date     2020-03-26                  
 #&gt; 
 #&gt; ─ Packages ───────────────────────────────────────────────────────────────────
-#&gt;  package    * version    date       lib source                               
-#&gt;  broom      * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
-#&gt;  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
-#&gt;  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
-#&gt;  ggplot2    * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
-#&gt;  parsnip    * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
-#&gt;  probably   * 0.0.4      2020-01-13 [1] CRAN (R 3.6.0)                       
-#&gt;  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
-#&gt;  recipes    * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
-#&gt;  rlang        0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
-#&gt;  rsample    * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
-#&gt;  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
-#&gt;  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
-#&gt;  tune       * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
-#&gt;  workflows  * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
-#&gt;  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
+#&gt;  package    * version    date       lib source                             
+#&gt;  broom      * 0.5.4      2020-01-27 [1] CRAN (R 3.6.0)                     
+#&gt;  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.1)                     
+#&gt;  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                     
+#&gt;  ggplot2    * 3.3.0      2020-03-05 [1] CRAN (R 3.6.0)                     
+#&gt;  infer      * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                     
+#&gt;  parsnip    * 0.0.5.9000 2020-03-26 [1] local                              
+#&gt;  probably   * 0.0.4      2020-01-13 [1] CRAN (R 3.6.0)                     
+#&gt;  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                     
+#&gt;  recipes    * 0.1.10     2020-03-18 [1] CRAN (R 3.6.1)                     
+#&gt;  rlang        0.4.5.9000 2020-03-21 [1] Github (r-lib/rlang@a90b04b)       
+#&gt;  rsample    * 0.0.5.9000 2020-03-23 [1] Github (tidymodels/rsample@4fdbd6c)
+#&gt;  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                     
+#&gt;  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                     
+#&gt;  tune       * 0.0.1.9000 2020-03-21 [1] Github (tidymodels/tune@6694258)   
+#&gt;  workflows  * 0.1.0      2019-12-30 [1] CRAN (R 3.6.1)                     
+#&gt;  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                     
 #&gt; 
 #&gt; [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library</code></pre>
 </div>

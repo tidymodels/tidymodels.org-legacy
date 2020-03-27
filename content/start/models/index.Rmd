@@ -1,7 +1,7 @@
 ---
 title: "Building a model"
 weight: 1
-tags: [parsnip]
+tags: [parsnip, broom]
 categories: [model fitting]
 output:
   blogdown::html_page:
@@ -19,33 +19,6 @@ library(tidymodels)
 
 pkgs <- c("tidymodels", "readr", "rstanarm")
 
-req_pkgs <- function(x, what = "This article") {
-  x <- sort(x)
-  x <- paste0("`", x, "`")
-  x <- knitr::combine_words(x, and = " and ")
-  paste0(
-    what,
-    " requires that you have the following packages installed: ",
-    x, "." 
-  )
-}
-
-small_session <- function(pkgs = NULL) {
-  pkgs <- c(pkgs, "recipes", "parsnip", "tune", "workflows", "dials", "dplyr",
-            "broom", "ggplot2", "purrr", "rlang", "rsample", "tibble", 
-            "yardstick", "tidymodels")
-  pkgs <- unique(pkgs)
-  library(sessioninfo)
-  library(dplyr)
-  sinfo <- sessioninfo::session_info()
-  cls <- class(sinfo$packages)
-  sinfo$packages <- 
-    sinfo$packages %>% 
-    dplyr::filter(package %in% pkgs)
-  class(sinfo$packages) <- cls
-  sinfo
-}
-
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
@@ -59,7 +32,7 @@ How do you create a statistical model using the tidymodels packages? Start with 
 
 Let's use the data from [Constable (1993)](https://link.springer.com/article/10.1007/BF00349318) to explore how three different feeding regimes affect the size of sea urchins over time. The initial size of the sea urchins at the beginning of the experiment probably affects how big they grow as they are fed. 
 
-To start, let's load the tidymodels packages, along with `readr` to read our urchins data into R. For each urchin, we know their initial size (volume), the feeding regime of the experiment, and the suture width at the end of the experiment:
+To start, let's load the tidymodels packages, along with readr to read our urchins data into R. For each urchin, we know their initial size (volume), the feeding regime of the experiment, and the suture width at the end of the experiment:
 
 ```{r data}
 library(tidymodels)
@@ -167,7 +140,7 @@ ggplot(plot_data, aes(x = food_regime)) +
 
 Every one on your team is happy with that plot _except_ that one person who just read their first book on [Bayesian analysis](https://bayesian.org/what-is-bayesian-analysis/). They are interested in knowing if the results would be different if the model were estimated using a Bayesian approach. In such an analysis, a [_prior distribution_](https://towardsdatascience.com/introduction-to-bayesian-linear-regression-e66e60791ea7) needs to be declared for each model parameter that represents the possible values of the parameters (before being exposed to the observed data). After some discussion, the group agrees that the priors should be bell-shaped but, since no one has any idea what the range of values should be, to take a conservative approach and make the priors _wide_ using a Cauchy distribution (which is the same as a t-distribution with a single degree of freedom).
 
-The [documentation](http://mc-stan.org/rstanarm/articles/priors.html) on the `rstanarm` package shows us that the `stan_glm()` function can be used to estimate this model, and that the function arguments that need to be specified are called `prior` and `prior_intercept`. It turns out that `linear_reg()` has a `stan` engine. Since these prior distribution arguments are specific to the Stan software, they are passed when the engine is set. After that, the same exact `fit()` call is used:
+The [documentation](http://mc-stan.org/rstanarm/articles/priors.html) on the rstanarm package shows us that the `stan_glm()` function can be used to estimate this model, and that the function arguments that need to be specified are called `prior` and `prior_intercept`. It turns out that `linear_reg()` has a `stan` engine. Since these prior distribution arguments are specific to the Stan software, they are passed when the engine is set. After that, the same exact `fit()` call is used:
 
 ```{r go-stan, message = FALSE}
 library(rstanarm)
@@ -212,7 +185,7 @@ The extra step of defining the model using a function like `linear_reg()` might 
 
 Also, from a tidy point of view, we can do some interesting things by incrementally creating a model (instead of using single function call). Model tuning, the tidy way, uses the specification of the model (e.g. `linear_reg()` plus `set_engine()`) to declare what parts of the model should be tuned. That would be very difficult to do if `linear_reg()` immediately fit the model. 
 
-If you are familiar with the tidyverse, you may have noticed that our modeling code uses the `magrittr` pipe (`%>%`). With `dplyr` and other tidyverse packages, the pipe works well because all of the functions take the _data_ as the first argument. For example: 
+If you are familiar with the tidyverse, you may have noticed that our modeling code uses the magrittr pipe (`%>%`). With dplyr and other tidyverse packages, the pipe works well because all of the functions take the _data_ as the first argument. For example: 
 
 ```{r tidy-data, eval = FALSE}
 iris %>% 
@@ -233,7 +206,7 @@ linear_reg() %>%
   fit(width ~ (initial_volume + food_regime)^2, data = urchins)
 ```
 
-This may seem jarring if you have used dplyr a lot, but it is extremely similar to how `ggplot2` operates:
+This may seem jarring if you have used dplyr a lot, but it is extremely similar to how ggplot2 operates:
 
 ```{r ggplot-ex, eval = FALSE}
 ggplot(iris, aes(Sepal.Width, Sepal.Length)) + # returns a ggplot object 

@@ -16,35 +16,7 @@ library(discrim)
 library(themis)
 library(ROSE)
 
-
 pkgs <- c("tidymodels", "klaR", "themis", "discrim", "readr", "ROSE")
-
-req_pkgs <- function(x, what = "This article") {
-  x <- sort(x)
-  x <- paste0("`", x, "`")
-  x <- knitr::combine_words(x, and = " and ")
-  paste0(
-    what,
-    " requires that you have the following packages installed: ",
-    x, "." 
-  )
-}
-
-small_session <- function(pkgs = NULL) {
-  pkgs <- c(pkgs, "recipes", "parsnip", "tune", "workflows", "dials", "dplyr",
-            "broom", "ggplot2", "purrr", "rlang", "rsample", "tibble", 
-            "yardstick", "tidymodels")
-  pkgs <- unique(pkgs)
-  library(sessioninfo)
-  library(dplyr)
-  sinfo <- sessioninfo::session_info()
-  cls <- class(sinfo$packages)
-  sinfo$packages <- 
-    sinfo$packages %>% 
-    dplyr::filter(package %in% pkgs)
-  class(sinfo$packages) <- cls
-  sinfo
-}
 
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
@@ -84,7 +56,7 @@ To demonstrate this, `themis::step_rose()` will be used in a recipe for the simu
 In terms of workflow:
 
  * It is extremely important that subsampling occurs _inside of resampling_. Otherwise, the resampling process can produce [poor estimates of model performance](https://topepo.github.io/caret/subsampling-for-class-imbalances.html#resampling). 
- * The subsampling process should only be applied to the analysis set. The assessment set should reflect the event rates seen "in the wild" and, for this reason, the `skip` argument to `step_downsample` is defaulted to `TRUE`. 
+ * The subsampling process should only be applied to the analysis set. The assessment set should reflect the event rates seen "in the wild" and, for this reason, the `skip` argument to `step_downsample()` is defaulted to `TRUE`. 
 
 Here is a simple recipe: 
 
@@ -95,7 +67,7 @@ imbal_rec <-
   recipe(Class ~ ., data = imbal_data) %>%
   step_rose(Class)
 ```
-For a model, a [quadratic discriminant analysis](https://en.wikipedia.org/wiki/Quadratic_classifier#Quadratic_discriminant_analysis) (QDA) model will be used. From the `discrim` package, this model can be specified using
+For a model, a [quadratic discriminant analysis](https://en.wikipedia.org/wiki/Quadratic_classifier#Quadratic_discriminant_analysis) (QDA) model will be used. From the discrim package, this model can be specified using
 
 ```{r qda}
 library(discrim)
@@ -126,7 +98,7 @@ To measure model effectiveness, two metrics are used:
  * The area under the [ROC curve](https://en.wikipedia.org/wiki/Receiver_operating_characteristic) is an overall assessment of performance across _all_ cutoffs. Values near one indicate very good results while values near 0.05 would imply that the model is very poor. 
  * The _J_ index (a.k.a. [Youden's _J_](https://en.wikipedia.org/wiki/Youden%27s_J_statistic) statistic) is `sensitivity + specificity - 1`. Values near one are once again best. 
 
-If a model is poorly calibrated, the ROC curve value might not show diminished performance. However, the _J_ index would be lower for models with pathological distributions for the class probabilities. The `yardstick` package will be used to compute these metrics. 
+If a model is poorly calibrated, the ROC curve value might not show diminished performance. However, the _J_ index would be lower for models with pathological distributions for the class probabilities. The yardstick package will be used to compute these metrics. 
 
 ```{r metrics}
 cls_metrics <- metric_set(roc_auc, j_index)

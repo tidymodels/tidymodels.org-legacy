@@ -9,6 +9,7 @@ knitr::opts_chunk$set(
 )
 options(width = 80, digits = 3)
 
+
 req_pkgs <- function(x, what = "This article") {
   x <- sort(x)
   x <- knitr::combine_words(x, and = " and ")

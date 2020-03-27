@@ -18,33 +18,6 @@ registerDoMC(cores = parallel::detectCores())
 
 pkgs <- c("tidymodels", "mlbench", "kernlab")
 
-req_pkgs <- function(x, what = "This article") {
-  x <- sort(x)
-  x <- paste0("`", x, "`")
-  x <- knitr::combine_words(x, and = " and ")
-  paste0(
-    what,
-    " requires that you have the following packages installed: ",
-    x, "." 
-  )
-}
-
-small_session <- function(pkgs = NULL) {
-  pkgs <- c(pkgs, "recipes", "parsnip", "tune", "workflows", "dials", "dplyr",
-            "broom", "ggplot2", "purrr", "rlang", "rsample", "tibble", 
-            "yardstick", "tidymodels")
-  pkgs <- unique(pkgs)
-  library(sessioninfo)
-  library(dplyr)
-  sinfo <- sessioninfo::session_info()
-  cls <- class(sinfo$packages)
-  sinfo$packages <- 
-    sinfo$packages %>% 
-    dplyr::filter(package %in% pkgs)
-  class(sinfo$packages) <- cls
-  sinfo
-}
-
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
@@ -56,7 +29,7 @@ This article provides another example of tuning a model using grid search.
 
 # Example data
 
-To demonstrate model tuning, we'll use the Ionosphere data in the `mlbench` package:
+To demonstrate model tuning, we'll use the Ionosphere data in the mlbench package:
 
 ```{r load-data}
 library(tidymodels)
@@ -117,7 +90,7 @@ iono_rec <-
   step_range(matches("V1_"))
 ```
 
-The only other required item for tuning is a resampling strategy as defined by an `rsample` object. Let's demonstrate using basic bootstrapping:
+The only other required item for tuning is a resampling strategy as defined by an rsample object. Let's demonstrate using basic bootstrapping:
 
 ```{r rs}
 set.seed(4943)
@@ -126,7 +99,7 @@ iono_rs <- bootstraps(Ionosphere, times = 30)
 
 # Optional Inputs
 
-An _optional_ step for model tuning is to specify which metrics should be computed using the out-of-sample predictions. For classification, the default is to calculate the log-likelihood statistic and overall accuracy. Instead of the defaults, the area under the ROC curve will be used. To do this, a `yardstick` function can be used to create a metric set:
+An _optional_ step for model tuning is to specify which metrics should be computed using the out-of-sample predictions. For classification, the default is to calculate the log-likelihood statistic and overall accuracy. Instead of the defaults, the area under the ROC curve will be used. To do this, a yardstick package function can be used to create a metric set:
 
 ```{r roc}
 roc_vals <- metric_set(roc_auc)

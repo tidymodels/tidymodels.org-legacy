@@ -5,16 +5,17 @@ categories: [model tuning]
 type: learn-subsection
 ---
 
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 
-<p>This article requires that you have the following packages installed: <code>kernlab</code>, <code>mlbench</code>, and <code>tidymodels</code>.</p>
+<p>This article requires that you have the following packages installed: kernlab, mlbench, and tidymodels.</p>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
 <p>This article provides another example of tuning a model using grid search.</p>
 </div>
 <div id="example-data" class="section level1">
 <h1>Example data</h1>
-<p>To demonstrate model tuning, we’ll use the Ionosphere data in the <code>mlbench</code> package:</p>
+<p>To demonstrate model tuning, we’ll use the Ionosphere data in the mlbench package:</p>
 <pre class="r"><code>library(tidymodels)
 library(mlbench)
 data(Ionosphere)</code></pre>
@@ -61,13 +62,13 @@ glm(Class ~ . - V2, data = Ionosphere, family = binomial)
   step_dummy(V1) %&gt;%
   # Scale it the same as the others
   step_range(matches(&quot;V1_&quot;))</code></pre>
-<p>The only other required item for tuning is a resampling strategy as defined by an <code>rsample</code> object. Let’s demonstrate using basic bootstrapping:</p>
+<p>The only other required item for tuning is a resampling strategy as defined by an rsample object. Let’s demonstrate using basic bootstrapping:</p>
 <pre class="r"><code>set.seed(4943)
 iono_rs &lt;- bootstraps(Ionosphere, times = 30)</code></pre>
 </div>
 <div id="optional-inputs" class="section level1">
 <h1>Optional Inputs</h1>
-<p>An <em>optional</em> step for model tuning is to specify which metrics should be computed using the out-of-sample predictions. For classification, the default is to calculate the log-likelihood statistic and overall accuracy. Instead of the defaults, the area under the ROC curve will be used. To do this, a <code>yardstick</code> function can be used to create a metric set:</p>
+<p>An <em>optional</em> step for model tuning is to specify which metrics should be computed using the out-of-sample predictions. For classification, the default is to calculate the log-likelihood statistic and overall accuracy. Instead of the defaults, the area under the ROC curve will be used. To do this, a yardstick package function can be used to create a metric set:</p>
 <pre class="r"><code>roc_vals &lt;- metric_set(roc_auc)</code></pre>
 <p>If no grid or parameters are provided, a set of 10 are created using a space-filling design (via a Latin hypercube). A grid can be given in a data frame where the parameters are in columns and parameter combinations are in rows. Here, the default will be used.</p>
 <p>Also, a control object can be passed that specifies different aspects of the search. Here, the verbose option is turned off.</p>
@@ -188,33 +189,34 @@ recipe_res
 <pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────
 #&gt;  setting  value                       
 #&gt;  version  R version 3.6.1 (2019-07-05)
-#&gt;  os       macOS Catalina 10.15.3      
+#&gt;  os       macOS Mojave 10.14.6        
 #&gt;  system   x86_64, darwin15.6.0        
 #&gt;  ui       X11                         
 #&gt;  language (EN)                        
 #&gt;  collate  en_US.UTF-8                 
 #&gt;  ctype    en_US.UTF-8                 
-#&gt;  tz       America/Los_Angeles         
-#&gt;  date     2020-03-23                  
+#&gt;  tz       America/New_York            
+#&gt;  date     2020-03-26                  
 #&gt; 
 #&gt; ─ Packages ───────────────────────────────────────────────────────────────────
-#&gt;  package    * version    date       lib source                               
-#&gt;  broom      * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
-#&gt;  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
-#&gt;  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
-#&gt;  ggplot2    * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
-#&gt;  kernlab    * 0.9-29     2019-11-12 [1] CRAN (R 3.6.0)                       
-#&gt;  mlbench    * 2.1-1      2012-07-10 [1] CRAN (R 3.6.0)                       
-#&gt;  parsnip    * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
-#&gt;  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
-#&gt;  recipes    * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
-#&gt;  rlang        0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
-#&gt;  rsample    * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
-#&gt;  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
-#&gt;  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
-#&gt;  tune       * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
-#&gt;  workflows  * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
-#&gt;  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
+#&gt;  package    * version    date       lib source                             
+#&gt;  broom      * 0.5.4      2020-01-27 [1] CRAN (R 3.6.0)                     
+#&gt;  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.1)                     
+#&gt;  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                     
+#&gt;  ggplot2    * 3.3.0      2020-03-05 [1] CRAN (R 3.6.0)                     
+#&gt;  infer      * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                     
+#&gt;  kernlab    * 0.9-29     2019-11-12 [1] CRAN (R 3.6.0)                     
+#&gt;  mlbench    * 2.1-1      2012-07-10 [1] CRAN (R 3.6.0)                     
+#&gt;  parsnip    * 0.0.5.9000 2020-03-26 [1] local                              
+#&gt;  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                     
+#&gt;  recipes    * 0.1.10     2020-03-18 [1] CRAN (R 3.6.1)                     
+#&gt;  rlang        0.4.5.9000 2020-03-21 [1] Github (r-lib/rlang@a90b04b)       
+#&gt;  rsample    * 0.0.5.9000 2020-03-23 [1] Github (tidymodels/rsample@4fdbd6c)
+#&gt;  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                     
+#&gt;  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                     
+#&gt;  tune       * 0.0.1.9000 2020-03-21 [1] Github (tidymodels/tune@6694258)   
+#&gt;  workflows  * 0.1.0      2019-12-30 [1] CRAN (R 3.6.1)                     
+#&gt;  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                     
 #&gt; 
 #&gt; [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library</code></pre>
 </div>

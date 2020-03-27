@@ -3,12 +3,13 @@ title: "Time Series Analysis Example"
 tags: [rsample]
 ---
 
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 
-<p>This article requires that you have the following packages installed: <code>forecast</code>, <code>sweep</code>, <code>tidymodels</code>, <code>timetk</code>, and <code>zoo</code>.</p>
+<p>This article requires that you have the following packages installed: forecast, sweep, tidymodels, timetk, and zoo.</p>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
-<p>“<a href="http://www.business-science.io/code-tools/2017/10/25/demo_week_sweep.html">Demo Week: Tidy Forecasting with <code>sweep</code></a>” is an excellent article that uses tidy methods with time series. This article uses their analysis with <code>rsample</code> to get performance estimates for future observations using <a href="https://robjhyndman.com/hyndsight/crossvalidation/">rolling forecast origin resampling</a>.</p>
+<p>“<a href="http://www.business-science.io/code-tools/2017/10/25/demo_week_sweep.html">Demo Week: Tidy Forecasting with sweep</a>” is an excellent article that uses tidy methods with time series. This article uses their analysis with rsample to get performance estimates for future observations using <a href="https://robjhyndman.com/hyndsight/crossvalidation/">rolling forecast origin resampling</a>.</p>
 </div>
 <div id="example-data" class="section level1">
 <h1>Example data</h1>
@@ -63,7 +64,7 @@ roll_rs$start_date &lt;- do.call(&quot;c&quot;, start_date)
 head(roll_rs$start_date)
 #&gt; [1] &quot;2012-01-01&quot; &quot;2012-02-01&quot; &quot;2012-03-01&quot; &quot;2012-04-01&quot; &quot;2012-05-01&quot;
 #&gt; [6] &quot;2012-06-01&quot;</code></pre>
-<p>This resampling scheme has 58 splits of the data so that there will be 58 ARIMA models that are fit. To create the models, the <code>auto.arima()</code> function from the <code>forecast</code> package is used. The functions <code>analysis()</code> and <code>assessment()</code> return the data frame, so another step converts the data in to a <code>ts</code> object called <code>mod_dat</code> using a function in the <code>timetk</code> package.</p>
+<p>This resampling scheme has 58 splits of the data so that there will be 58 ARIMA models that are fit. To create the models, the <code>auto.arima()</code> function from the forecast package is used. The functions <code>analysis()</code> and <code>assessment()</code> return the data frame, so another step converts the data in to a <code>ts</code> object called <code>mod_dat</code> using a function in the timetk package.</p>
 <pre class="r"><code>library(forecast)  # for `auto.arima`
 library(timetk)    # for `tk_ts`
 library(zoo)       # for `as.yearmon`
@@ -100,7 +101,7 @@ roll_rs$arima[[1]]
 <li><em>interpolation</em> error will measure how well the model fits to the data that were used to create the model. This is most likely optimistic since no holdout method is used.</li>
 <li><em>extrapolation</em> or <em>forecast</em> error evaluates the efficacy of the model on the data from the following year (that were not used in the model fit).</li>
 </ul>
-<p>In each case, the mean absolute percent error (MAPE) is the statistic used to characterize the model fits. The interpolation error can be computed from the <code>Arima</code> object. to make things easy, the <code>sweep</code> package’s <code>sw_glance</code> function is used:</p>
+<p>In each case, the mean absolute percent error (MAPE) is the statistic used to characterize the model fits. The interpolation error can be computed from the <code>Arima</code> object. to make things easy, the sweep package’s <code>sw_glance()</code> function is used:</p>
 <pre class="r"><code>library(sweep)
 
 roll_rs$interpolation &lt;- map_dbl(
@@ -197,35 +198,36 @@ each analysis set together.</p>
 <pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────
 #&gt;  setting  value                       
 #&gt;  version  R version 3.6.1 (2019-07-05)
-#&gt;  os       macOS Catalina 10.15.3      
+#&gt;  os       macOS Mojave 10.14.6        
 #&gt;  system   x86_64, darwin15.6.0        
 #&gt;  ui       X11                         
 #&gt;  language (EN)                        
 #&gt;  collate  en_US.UTF-8                 
 #&gt;  ctype    en_US.UTF-8                 
-#&gt;  tz       America/Los_Angeles         
-#&gt;  date     2020-03-23                  
+#&gt;  tz       America/New_York            
+#&gt;  date     2020-03-26                  
 #&gt; 
 #&gt; ─ Packages ───────────────────────────────────────────────────────────────────
-#&gt;  package    * version    date       lib source                               
-#&gt;  broom      * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
-#&gt;  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
-#&gt;  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
-#&gt;  forecast   * 8.11       2020-02-09 [1] CRAN (R 3.6.0)                       
-#&gt;  ggplot2    * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
-#&gt;  parsnip    * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
-#&gt;  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
-#&gt;  recipes    * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
-#&gt;  rlang        0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
-#&gt;  rsample    * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
-#&gt;  sweep      * 0.2.2      2019-10-08 [1] CRAN (R 3.6.0)                       
-#&gt;  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
-#&gt;  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
-#&gt;  timetk     * 0.1.3      2020-03-18 [1] CRAN (R 3.6.0)                       
-#&gt;  tune       * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
-#&gt;  workflows  * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
-#&gt;  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
-#&gt;  zoo        * 1.8-7      2020-01-10 [1] CRAN (R 3.6.0)                       
+#&gt;  package    * version    date       lib source                             
+#&gt;  broom      * 0.5.4      2020-01-27 [1] CRAN (R 3.6.0)                     
+#&gt;  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.1)                     
+#&gt;  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                     
+#&gt;  forecast   * 8.9        2019-08-22 [1] CRAN (R 3.6.0)                     
+#&gt;  ggplot2    * 3.3.0      2020-03-05 [1] CRAN (R 3.6.0)                     
+#&gt;  infer      * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                     
+#&gt;  parsnip    * 0.0.5.9000 2020-03-26 [1] local                              
+#&gt;  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                     
+#&gt;  recipes    * 0.1.10     2020-03-18 [1] CRAN (R 3.6.1)                     
+#&gt;  rlang        0.4.5.9000 2020-03-21 [1] Github (r-lib/rlang@a90b04b)       
+#&gt;  rsample    * 0.0.5.9000 2020-03-23 [1] Github (tidymodels/rsample@4fdbd6c)
+#&gt;  sweep      * 0.2.2      2019-10-08 [1] CRAN (R 3.6.0)                     
+#&gt;  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                     
+#&gt;  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                     
+#&gt;  timetk     * 0.1.2      2019-09-25 [1] CRAN (R 3.6.0)                     
+#&gt;  tune       * 0.0.1.9000 2020-03-21 [1] Github (tidymodels/tune@6694258)   
+#&gt;  workflows  * 0.1.0      2019-12-30 [1] CRAN (R 3.6.1)                     
+#&gt;  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                     
+#&gt;  zoo        * 1.8-7      2020-01-10 [1] CRAN (R 3.6.0)                     
 #&gt; 
 #&gt; [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library</code></pre>
 </div>
