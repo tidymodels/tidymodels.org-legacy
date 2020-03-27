@@ -10,44 +10,15 @@ source(here::here("content/learn/common.R"))
 
 ```{r load, include = FALSE}
 library(tidymodels)
-
 pkgs <- c("tidymodels")
-
-req_pkgs <- function(x, what = "This article") {
-  x <- sort(x)
-  x <- paste0("`", x, "`")
-  x <- knitr::combine_words(x, and = " and ")
-  paste0(
-    what,
-    " requires that you have the following packages installed: ",
-    x, "." 
-  )
-}
-
-small_session <- function(pkgs = NULL) {
-  pkgs <- c(pkgs, "recipes", "parsnip", "tune", "workflows", "dials", "dplyr",
-            "broom", "ggplot2", "purrr", "rlang", "rsample", "tibble", 
-            "yardstick", "tidymodels")
-  pkgs <- unique(pkgs)
-  library(sessioninfo)
-  library(dplyr)
-  sinfo <- sessioninfo::session_info()
-  cls <- class(sinfo$packages)
-  sinfo$packages <- 
-    sinfo$packages %>% 
-    dplyr::filter(package %in% pkgs)
-  class(sinfo$packages) <- cls
-  sinfo
-}
-
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
-This article requires that you have the `tidymodels` packages installed.
+This article requires that you have the tidymodels packages installed.
 
 # Introduction
 
-While `broom` is useful for summarizing the result of a single analysis in a consistent format, it is really designed for high-throughput applications, where you must combine results from multiple analyses. These could be subgroups of data, analyses using different models, bootstrap replicates, permutations, and so on. In particular, it plays well with the `nest()/unnest()` functions in `tidyr` and the `map()` function in `purrr`.
+While broom is useful for summarizing the result of a single analysis in a consistent format, it is really designed for high-throughput applications, where you must combine results from multiple analyses. These could be subgroups of data, analyses using different models, bootstrap replicates, permutations, and so on. In particular, it plays well with the `nest()/unnest()` functions in tidyr and the `map()` function in purrr.
 
 # Correlation analysis
 
@@ -73,7 +44,7 @@ ggplot(Orange, aes(age, circumference, color = Tree)) +
   geom_line()
 ```
 
-Suppose you want to test for correlations individually *within* each tree. You can do this with `dplyr`'s `group_by`:
+Suppose you want to test for correlations individually *within* each tree. You can do this with dplyr's `group_by`:
 
 ```{r}
 Orange %>% 
