@@ -7,7 +7,8 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   cache.path = "cache/"
 )
-options(width = 80)
+options(width = 80, digits = 3)
+
 
 req_pkgs <- function(x, what = "This article") {
   x <- sort(x)
@@ -18,6 +19,7 @@ req_pkgs <- function(x, what = "This article") {
     x, "." 
   )
 }
+
 small_session <- function(pkgs = NULL) {
   pkgs <- c(pkgs, "recipes", "parsnip", "tune", "workflows", "dials", "dplyr",
             "broom", "ggplot2", "purrr", "rlang", "rsample", "tibble", "infer",
