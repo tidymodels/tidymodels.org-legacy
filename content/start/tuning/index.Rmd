@@ -1,7 +1,8 @@
 ---
 title: "Tune model parameters"
 weight: 4
-tags: [regression models]
+tags: [rsample, parsnip, tune, dials, yardstick]
+categories: [tuning]
 output:
   blogdown::html_page:
     toc: true
