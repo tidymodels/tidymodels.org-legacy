@@ -1,0 +1,564 @@
+---
+title: "Custom parsnip model functions"
+tags: [parsnip]
+categories: []
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<p>This article requires that you have the following packages installed: mda, modeldata, and tidymodels.</p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>parsnip constructs models and predictions by representing those actions in expressions. There are a few reasons for this:</p>
+<ul>
+<li>It eliminates a lot of duplicate code.</li>
+<li>Since the expressions are not evaluated until fitting, it eliminates a large amount of package dependencies.</li>
+</ul>
+<p>A parsnip model function is itself very general. For example, the <code>logistic_reg()</code> function itself doesn’t have any model code within it. Instead, each model function is associated with one or more computational <em>engines</em>. These might be different R packages or some function in another language (that can be evaluated by R).</p>
+<p>This vignette describes the process of creating a new model function. Before proceeding, take a minute and read our <a href="https://tidymodels.github.io/model-implementation-principles/">guidelines on creating modeling packages</a> to get the general themes and conventions that we use.</p>
+</div>
+<div id="mixture-discriminant-analysis" class="section level1">
+<h1>Mixture discriminant analysis</h1>
+<p>As an example, we’ll create a function for <em>mixture discriminant analysis</em>. There are <a href="http://search.r-project.org/cgi-bin/namazu.cgi?query=%22mixture+discriminant%22&amp;max=100&amp;result=normal&amp;sort=score&amp;idxname=functions">a few packages</a> that do this but we’ll focus on <code>mda::mda</code>:</p>
+<pre class="r"><code>str(mda::mda)
+#&gt; function (formula = formula(data), data = sys.frame(sys.parent()), subclasses = 3, 
+#&gt;     sub.df = NULL, tot.df = NULL, dimension = sum(subclasses) - 1, eps = .Machine$double.eps, 
+#&gt;     iter = 5, weights = mda.start(x, g, subclasses, trace, ...), method = polyreg, 
+#&gt;     keep.fitted = (n * dimension &lt; 5000), trace = FALSE, ...)</code></pre>
+<p>The main hyper-parameter is the number of subclasses. We’ll name our function <code>discrim_mixture</code>.</p>
+<div id="aspects-of-models" class="section level2">
+<h2>Aspects of Models</h2>
+<p>Before proceeding, it helps to to review how parsnip categorizes models:</p>
+<ul>
+<li><p>The model <em>type</em> is related to the structural aspect of the model. For example, the model type <code>linear_reg</code> represents linear models (slopes and intercepts) that model a numeric outcome. Other model types in the package are <code>nearest_neighbor</code>, <code>decision_tree</code>, and so on.</p></li>
+<li><p>Within a model type is the <em>mode</em>. This relates to the modeling goal. Currently the two modes in the package are “regression” and “classification”. Some models have methods for both models (e.g. nearest neighbors) while others are specific to a single mode (e.g. logistic regression).</p></li>
+<li><p>The computation <em>engine</em> is a combination of the estimation method and the implementation. For example, for linear regression, one engine is <code>"lm"</code> and this uses ordinary least squares analysis using the <code>lm()</code> function. Another engine is <code>"stan"</code> which uses the Stan infrastructure to estimate parameters using Bayes rule.</p></li>
+</ul>
+<p>When adding a model into parsnip, the user has to specific which modes and engines are used. The package also enables users to add a new mode or engine to an existing model.</p>
+</div>
+</div>
+<div id="the-general-process" class="section level1">
+<h1>The General Process</h1>
+<p>parsnip stores information about the models in an internal environment object. The environment can be accessed via the function <code>get_model_env()</code>. The package includes a variety of functions that can get or set the different aspects of the models.</p>
+<p>If you are adding a new model from your own package, you can use these functions to add new entries into the model environment.</p>
+<div id="step-1.-register-the-model-modes-and-arguments." class="section level2">
+<h2>Step 1. Register the Model, Modes, and Arguments.</h2>
+<p>We will add the MDA model using the model type <code>discrim_mixture</code>. Since this is a classification method, we only have to register a single mode:</p>
+<pre class="r"><code>library(tidymodels)
+set_new_model(&quot;discrim_mixture&quot;)
+set_model_mode(model = &quot;discrim_mixture&quot;, mode = &quot;classification&quot;)
+set_model_engine(
+  &quot;discrim_mixture&quot;, 
+  mode = &quot;classification&quot;, 
+  eng = &quot;mda&quot;
+)
+set_dependency(&quot;discrim_mixture&quot;, eng = &quot;mda&quot;, pkg = &quot;mda&quot;)</code></pre>
+<p>These functions should silently finish. There is also a function that can be used to show what aspects of the model have been added to parsnip:</p>
+<pre class="r"><code>show_model_info(&quot;discrim_mixture&quot;)
+#&gt; Information for `discrim_mixture`
+#&gt;  modes: unknown, classification 
+#&gt; 
+#&gt;  engines: 
+#&gt;    classification: mda
+#&gt; 
+#&gt;  no registered arguments.
+#&gt; 
+#&gt;  no registered fit modules.
+#&gt; 
+#&gt;  no registered prediction modules.</code></pre>
+<p>The next step would be the declare the main arguments to the model. These are declared independent of the mode. To specify the argument, there are a few slots to fill in:</p>
+<ul>
+<li><p>The name that parsnip uses for the argument. In general, we try to use non-jargony names for arguments (e.g. “penalty” instead of “lambda” for regularized regression). We recommend consulting <a href="">this page</a> to see if an existing argument name can be used before creating a new one.</p></li>
+<li><p>The argument name that is used by the underlying modeling function.</p></li>
+<li><p>A function reference for a <em>constructor</em> that will be used to generate tuning parameter values. This should be a character vector that has a named element called <code>fun</code> that is the constructor function. There is an optional element <code>pkg</code> that can be used to call the function using its namespace. If referencing functions from the dials package, quantitative parameters can have additional arguments in the list for <code>trans</code> and <code>range</code> while qualitative parameters can pass <code>values</code> via this list.</p></li>
+<li><p>A logical value for whether the argument can be used to generate multiple predictions for a single R object. For example, for boosted trees, if a model is fit with 10 boosting iterations, many modeling packages allow the model object to make predictions for any iterations less than the one used to fit the model. In general this is not the case so one would use <code>has_submodels = FALSE</code>.</p></li>
+</ul>
+<p>For <code>mda::mda()</code>, the main tuning parameter is <code>subclasses</code> which we will rewrite as <code>sub_classes</code>.</p>
+<pre class="r"><code>set_model_arg(
+  model = &quot;discrim_mixture&quot;,
+  eng = &quot;mda&quot;,
+  parsnip = &quot;sub_classes&quot;,
+  original = &quot;subclasses&quot;,
+  func = list(pkg = &quot;foo&quot;, fun = &quot;bar&quot;),
+  has_submodel = FALSE
+)
+show_model_info(&quot;discrim_mixture&quot;)
+#&gt; Information for `discrim_mixture`
+#&gt;  modes: unknown, classification 
+#&gt; 
+#&gt;  engines: 
+#&gt;    classification: mda
+#&gt; 
+#&gt;  arguments: 
+#&gt;    mda: 
+#&gt;       sub_classes --&gt; subclasses
+#&gt; 
+#&gt;  no registered fit modules.
+#&gt; 
+#&gt;  no registered prediction modules.</code></pre>
+</div>
+<div id="step-2.-create-the-model-function" class="section level2">
+<h2>Step 2. Create the model function</h2>
+<p>This is a fairly simple function that can follow a basic template. The main arguments to our function will be:</p>
+<ul>
+<li><p>The mode. If the model can do more than one mode, you might default this to “unknown”. In our case, since it is only a classification model, it makes sense to default it to that mode so that the users won’t have to specify it.</p></li>
+<li><p>The argument names (<code>sub_classes</code> here). These should be defaulted to <code>NULL</code>.</p></li>
+</ul>
+<p>A basic version of the function is:</p>
+<pre class="r"><code>discrim_mixture &lt;-
+  function(mode = &quot;classification&quot;,  sub_classes = NULL) {
+    # Check for correct mode
+    if (mode  != &quot;classification&quot;) {
+      stop(&quot;`mode` should be &#39;classification&#39;&quot;, call. = FALSE)
+    }
+    
+    # Capture the arguments in quosures
+    args &lt;- list(sub_classes = rlang::enquo(sub_classes))
+
+    # Save some empty slots for future parts of the specification
+    out &lt;- list(args = args, eng_args = NULL,
+                mode = mode, method = NULL, engine = NULL)
+    
+    # set classes in the correct order
+    class(out) &lt;- make_classes(&quot;discrim_mixture&quot;)
+    out
+  }</code></pre>
+<p>This is pretty simple since the data are not exposed to this function.</p>
+</div>
+<div id="step-3.-add-a-fit-module" class="section level2">
+<h2>Step 3. Add a Fit Module</h2>
+<p>Now that parsnip knows about the model, mode, and engine, we can give it the information on fitting the model for our engine. The information needed to fit the model is contained in another list. The elements are:</p>
+<ul>
+<li><p><code>interface</code> a single character value that could be “formula”, “data.frame”, or “matrix”. This defines the type of interface used by the underlying fit function (<code>mda::mda</code>, in this case). This helps the translation of the data to be in an appropriate format for the that function.</p></li>
+<li><p><code>protect</code> is an optional list of function arguments that <strong>should not be changeable</strong> by the user. In this case, we probably don’t want users to pass data values to these arguments (until the <code>fit()</code> function is called).</p></li>
+<li><p><code>func</code> is the package and name of the function that will be called. If you are using a locally defined function, only <code>fun</code> is required.</p></li>
+<li><p><code>defaults</code> is an optional list of arguments to the fit function that the user can change, but whose defaults can be set here. This isn’t needed in this case, but is described later in this document.</p></li>
+</ul>
+<p>For the first engine:</p>
+<pre class="r"><code>set_fit(
+  model = &quot;discrim_mixture&quot;,
+  eng = &quot;mda&quot;,
+  mode = &quot;classification&quot;,
+  value = list(
+    interface = &quot;formula&quot;,
+    protect = c(&quot;formula&quot;, &quot;data&quot;),
+    func = c(pkg = &quot;mda&quot;, fun = &quot;mda&quot;),
+    defaults = list()
+  )
+)
+show_model_info(&quot;discrim_mixture&quot;)
+#&gt; Information for `discrim_mixture`
+#&gt;  modes: unknown, classification 
+#&gt; 
+#&gt;  engines: 
+#&gt;    classification: mda
+#&gt; 
+#&gt;  arguments: 
+#&gt;    mda: 
+#&gt;       sub_classes --&gt; subclasses
+#&gt; 
+#&gt;  fit modules:
+#&gt;  engine           mode
+#&gt;     mda classification
+#&gt; 
+#&gt;  no registered prediction modules.</code></pre>
+</div>
+<div id="step-4.-add-modules-for-prediction" class="section level2">
+<h2>Step 4. Add Modules for Prediction</h2>
+<p>Similar to the fitting module, we specify the code for making different types of predictions. To make hard class predictions, the <code>class</code> object contains the details. The elements of the list are:</p>
+<ul>
+<li><code>pre</code> and <code>post</code> are optional functions that can preprocess the data being fed to the prediction code and to postprocess the raw output of the predictions. These won’t be need for this example, but a section below has examples of how these can be used when the model code is not easy to use. If the data being predicted has a simple type requirement, you can avoid using a <code>pre</code> function with the <code>args</code> below.</li>
+<li><code>func</code> is the prediction function (in the same format as above). In many cases, packages have a predict method for their model’s class but this is typically not exported. In this case (and the example below), it is simple enough to make a generic call to <code>predict()</code> with no associated package.</li>
+<li><code>args</code> is a list of arguments to pass to the prediction function. These will mostly likely be wrapped in <code>rlang::expr()</code> so that they are not evaluated when defining the method. For mda, the code would be <code>predict(object, newdata, type = "class")</code>. What is actually given to the function is the parsnip model fit object, which includes a sub-object called <code>fit()</code> and this houses the mda model object. If the data need to be a matrix or data frame, you could also use <code>newdata = quote(as.data.frame(newdata))</code> and so on.</li>
+</ul>
+<p>The parsnip prediction code will expect the result to be an unnamed character string or factor. This will be coerced to a factor with the same levels as the original data.</p>
+<p>To add this method to the model environment, a similar <code>set()</code> function is used:</p>
+<pre class="r"><code>class_info &lt;- 
+  list(
+    pre = NULL,
+    post = NULL,
+    func = c(fun = &quot;predict&quot;),
+    args =
+      # These lists should be of the form:
+      # {predict.mda argument name} = {values provided from parsnip objects}
+      list(
+        # We don&#39;t want the first two arguments evaluated right now
+        # since they don&#39;t exist yet. `type` is a simple object that
+        # doesn&#39;t need to have its evaluation deferred. 
+        object = quote(object$fit),
+        newdata = quote(new_data),
+        type = &quot;class&quot;
+      )
+  )
+
+set_pred(
+  model = &quot;discrim_mixture&quot;,
+  eng = &quot;mda&quot;,
+  mode = &quot;classification&quot;,
+  type = &quot;class&quot;,
+  value = class_info
+)</code></pre>
+<p>A similar call can be used to define the class probability module (if they can be computed). The format is identical to the <code>class</code> module but the output is expected to be a tibble with columns for each factor level.</p>
+<p>As an example of the <code>post</code> function, the data frame created by <code>mda:::predict.mda()</code> will be converted to a tibble. The arguments are <code>x</code> (the raw results coming from the predict method) and <code>object</code> (the parsnip model fit object). The latter has a sub-object called <code>lvl</code> which is a character string of the outcome’s factor levels (if any).</p>
+<p>We register the probability module. There is a template function that makes this slightly easier to format the objects:</p>
+<pre class="r"><code>prob_info &lt;-
+  pred_value_template(
+    post = function(x, object) {
+      tibble::as_tibble(x)
+    },
+    func = c(fun = &quot;predict&quot;),
+    # Now everything else is put into the `args` slot
+    object = quote(object$fit),
+    newdata = quote(new_data),
+    type = &quot;posterior&quot;
+  )
+
+set_pred(
+  model = &quot;discrim_mixture&quot;,
+  eng = &quot;mda&quot;,
+  mode = &quot;classification&quot;,
+  type = &quot;prob&quot;,
+  value = prob_info
+)
+
+show_model_info(&quot;discrim_mixture&quot;)
+#&gt; Information for `discrim_mixture`
+#&gt;  modes: unknown, classification 
+#&gt; 
+#&gt;  engines: 
+#&gt;    classification: mda
+#&gt; 
+#&gt;  arguments: 
+#&gt;    mda: 
+#&gt;       sub_classes --&gt; subclasses
+#&gt; 
+#&gt;  fit modules:
+#&gt;  engine           mode
+#&gt;     mda classification
+#&gt; 
+#&gt;  prediction modules:
+#&gt;              mode engine     methods
+#&gt;    classification    mda class, prob</code></pre>
+<p>If this model could be used for regression situations, we could also add a “numeric” module. The convention used here is very similar to the two that are detailed in the next section. For <code>pred</code>, the model requires an unnamed numeric vector output (usually).</p>
+<p>Examples are <a href="https://github.com/topepo/parsnip/blob/master/R/linear_reg_data.R">here</a> and <a href="https://github.com/topepo/parsnip/blob/master/R/rand_forest_data.R">here</a>.</p>
+</div>
+<div id="does-it-work" class="section level2">
+<h2>Does it Work?</h2>
+<p>As a developer, one thing that may come in handy is the <code>translate()</code> function. This will tell you what the model’s eventual syntax will be.</p>
+<p>For example:</p>
+<pre class="r"><code>discrim_mixture(sub_classes = 2) %&gt;%
+  translate(engine = &quot;mda&quot;)
+#&gt; Model Specification (classification)
+#&gt; 
+#&gt; Main Arguments:
+#&gt;   sub_classes = 2
+#&gt; 
+#&gt; Computational engine: mda 
+#&gt; 
+#&gt; Model fit template:
+#&gt; mda::mda(formula = missing_arg(), data = missing_arg(), subclasses = 2)</code></pre>
+<p>Let’s try it on a data set from the modeldata package:</p>
+<pre class="r"><code>data(&quot;two_class_dat&quot;, package = &quot;modeldata&quot;)
+set.seed(4622)
+example_split &lt;- initial_split(two_class_dat, prop = 0.99)
+example_train &lt;- training(example_split)
+example_test  &lt;-  testing(example_split)
+
+mda_spec &lt;- discrim_mixture(sub_classes = 2) %&gt;% 
+  set_engine(&quot;mda&quot;)
+
+mda_fit &lt;- mda_spec %&gt;%
+  fit(Class ~ ., data = example_train, engine = &quot;mda&quot;)
+mda_fit
+#&gt; parsnip model object
+#&gt; 
+#&gt; Fit time:  22ms 
+#&gt; Call:
+#&gt; mda::mda(formula = formula, data = data, subclasses = ~2)
+#&gt; 
+#&gt; Dimension: 2 
+#&gt; 
+#&gt; Percent Between-Group Variance Explained:
+#&gt;    v1    v2 
+#&gt;  82.5 100.0 
+#&gt; 
+#&gt; Degrees of Freedom (per dimension): 3 
+#&gt; 
+#&gt; Training Misclassification Error: 0.17 ( N = 784 )
+#&gt; 
+#&gt; Deviance: 674
+
+predict(mda_fit, new_data = example_test, type = &quot;prob&quot;) %&gt;%
+  bind_cols(example_test %&gt;% select(Class))
+#&gt; # A tibble: 7 x 3
+#&gt;   .pred_Class1 .pred_Class2 Class 
+#&gt;          &lt;dbl&gt;        &lt;dbl&gt; &lt;fct&gt; 
+#&gt; 1       0.586        0.414  Class1
+#&gt; 2       0.968        0.0321 Class1
+#&gt; 3       0.0155       0.984  Class2
+#&gt; 4       0.670        0.330  Class1
+#&gt; 5       0.837        0.163  Class1
+#&gt; 6       0.898        0.102  Class1
+#&gt; 7       0.676        0.324  Class2
+
+predict(mda_fit, new_data = example_test) %&gt;% 
+ bind_cols(example_test %&gt;% select(Class))
+#&gt; # A tibble: 7 x 2
+#&gt;   .pred_class Class 
+#&gt;   &lt;fct&gt;       &lt;fct&gt; 
+#&gt; 1 Class1      Class1
+#&gt; 2 Class1      Class1
+#&gt; 3 Class2      Class2
+#&gt; 4 Class1      Class1
+#&gt; 5 Class1      Class1
+#&gt; 6 Class1      Class1
+#&gt; 7 Class1      Class2</code></pre>
+</div>
+</div>
+<div id="adding-an-engine-to-an-existing-model" class="section level1">
+<h1>Adding an engine to an existing model</h1>
+<p>The process here is <em>almost</em> the same but more simple. You would only need to add the engine-specific aspects of the model. For example, if we wanted to fit a linear regression model using M-estimation, we could only add a new engine. The code for the <code>rlm()</code> function in MASS is pretty similar to <code>lm()</code>, so we can copy that code and change the package/function names:</p>
+<pre class="r"><code>set_model_engine(&quot;linear_reg&quot;, &quot;regression&quot;, eng = &quot;rlm&quot;)
+set_dependency(&quot;linear_reg&quot;, eng = &quot;rlm&quot;, pkg = &quot;MASS&quot;)
+
+set_fit(
+  model = &quot;linear_reg&quot;,
+  eng = &quot;rlm&quot;,
+  mode = &quot;regression&quot;,
+  value = list(
+    interface = &quot;formula&quot;,
+    protect = c(&quot;formula&quot;, &quot;data&quot;, &quot;weights&quot;),
+    func = c(pkg = &quot;MASS&quot;, fun = &quot;rlm&quot;),
+    defaults = list()
+  )
+)
+
+set_pred(
+  model = &quot;linear_reg&quot;,
+  eng = &quot;rlm&quot;,
+  mode = &quot;regression&quot;,
+  type = &quot;numeric&quot;,
+  value = list(
+    pre = NULL,
+    post = NULL,
+    func = c(fun = &quot;predict&quot;),
+    args =
+      list(
+        object = expr(object$fit),
+        newdata = expr(new_data),
+        type = &quot;response&quot;
+      )
+  )
+)
+
+# testing:
+linear_reg() %&gt;% 
+  set_engine(&quot;rlm&quot;) %&gt;% 
+  fit(mpg ~ ., data = mtcars)
+#&gt; parsnip model object
+#&gt; 
+#&gt; Fit time:  4ms 
+#&gt; Call:
+#&gt; rlm(formula = formula, data = data)
+#&gt; Converged in 8 iterations
+#&gt; 
+#&gt; Coefficients:
+#&gt; (Intercept)         cyl        disp          hp        drat          wt 
+#&gt;     17.8225     -0.2788      0.0159     -0.0254      0.4639     -4.1436 
+#&gt;        qsec          vs          am        gear        carb 
+#&gt;      0.6531      0.2498      1.4341      0.8594     -0.0108 
+#&gt; 
+#&gt; Degrees of freedom: 32 total; 21 residual
+#&gt; Scale estimate: 2.15</code></pre>
+</div>
+<div id="adding-parsnip-models-to-another-package" class="section level1">
+<h1>Adding parsnip models to another package</h1>
+<p>The process here is almost the same. All of the previous functions are still required but their execution is a little different.</p>
+<p>For parsnip to register them, that package must already be loaded. For this reason, it makes sense to have parsnip in the “Depends” category.</p>
+<p>The first difference is that the functions that define the model must be inside of a wrapper function that is called when your package is loaded. For our example here, this might look like:</p>
+<pre class="r"><code>make_discrim_mixture_mda &lt;- function() {
+  parsnip::set_new_model(&quot;discrim_mixture&quot;)
+
+  parsnip::set_model_mode(&quot;discrim_mixture&quot;, &quot;classification&quot;)
+
+  # and so one...
+}</code></pre>
+<p>This function is then executed when your package is loaded:</p>
+<pre class="r"><code>.onLoad &lt;- function(libname, pkgname) {
+  # This defines discrim_mixture in the model database
+  make_discrim_mixture_mda()
+}</code></pre>
+<p>For an example package that uses parsnip definitions, take a look at the <a href="https://github.com/tidymodels/discrim">discrim</a> package.</p>
+</div>
+<div id="your-model-tuning-parameters-and-you" class="section level1">
+<h1>Your model, tuning parameters, and you</h1>
+<p>The tune package can be used to find reasonable values of model arguments via tuning. There are some S3 methods that are useful to define for your model. <code>discrim_mixture()</code> has one main tuning parameter: <code>sub_classes</code>. To work with tune it is <em>helpful</em> (but not required) to use an S3 method called <code>tunable()</code> to define which arguments should be tuned and how values of those arguments should be generated.</p>
+<p><code>tunable()</code> takes the model specification as its argument and returns a tibble with columns:</p>
+<ul>
+<li><p><code>name</code>: The name of the argument.</p></li>
+<li><p><code>call_info</code>: A list that describes how to call a function that returns a dials parameter object.</p></li>
+<li><p><code>source</code>: A character string that indicates where the tuning value comes from (i.e., a model, a recipe etc.). Here, it is just <code>"model_spec"</code>.</p></li>
+<li><p><code>component</code>: A character string with more information about the source. For models, this is just the name of the function (e.g. <code>"discrim_mixture"</code>).</p></li>
+<li><p><code>component_id</code>: A character string to indicate where a unique identifier is for the object. For a model, this is indicates the type of model argument (e.g. “main”).</p></li>
+</ul>
+<p>The main piece of information that requires some detail is <code>call_info</code>. This is a list column in the tibble. Each element of the list is a list that describes the package and function that can be used to create a dials parameter object.</p>
+<p>For example, for a nearest-neighbors <code>neighbors</code> parameter, this value is just:</p>
+<pre class="r"><code>info &lt;- list(pkg = &quot;dials&quot;, fun = &quot;neighbors&quot;)
+
+# FYI: how it is used under-the-hood: 
+new_param_call &lt;- rlang::call2(.fn = info$fun, .ns = info$pkg)
+rlang::eval_tidy(new_param_call)
+#&gt; # Nearest Neighbors  (quantitative)
+#&gt; Range: [1, 10]</code></pre>
+<p>For <code>discrim_mixture()</code>, a dials object is needed that returns an integer that is the number of sub-classes that should be create. We can create a dials parameter function for this:</p>
+<pre class="r"><code>sub_classes &lt;- function(range = c(1L, 10L), trans = NULL) {
+  new_quant_param(
+    type = &quot;integer&quot;,
+    range = range,
+    inclusive = c(TRUE, TRUE),
+    trans = trans,
+    label = c(sub_classes = &quot;# Sub-Classes&quot;),
+    finalize = NULL
+  )
+}</code></pre>
+<p>If this were in the dials package, we could use:</p>
+<pre class="r"><code>tunable.discrim_mixture &lt;- function(x, ...) {
+  tibble::tibble(
+    name = c(&quot;sub_classes&quot;),
+    call_info = list(list(pkg = NULL, fun = &quot;sub_classes&quot;)),
+    source = &quot;model_spec&quot;,
+    component = &quot;discrim_mixture&quot;,
+    component_id = &quot;main&quot;
+  )
+}</code></pre>
+<p>Once this method is in-place, the tuning functions can be used:</p>
+<pre class="r"><code>mda_spec &lt;- 
+  discrim_mixture(sub_classes = tune()) %&gt;% 
+  set_engine(&quot;mda&quot;)
+
+set.seed(452)
+cv &lt;- vfold_cv(example_train)
+mda_tune_res &lt;- tune_grid(Class ~ ., mda_spec, cv, grid = 4)
+#&gt; Warning: `tune_grid.formula()` is deprecated as of lifecycle 0.1.0.
+#&gt; The first argument to `tune_grid()` should be either a model or a workflow. In the future, you can use:
+#&gt; tune_grid(mda_spec, Class ~ ., resamples = cv, grid = 4)
+#&gt; This warning is displayed once every 8 hours.
+#&gt; Call `lifecycle::last_warnings()` to see where this warning was generated.
+show_best(mda_tune_res, metric = &quot;roc_auc&quot;)
+#&gt; # A tibble: 4 x 6
+#&gt;   sub_classes .metric .estimator  mean     n std_err
+#&gt;         &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
+#&gt; 1           2 roc_auc binary     0.885    10  0.0143
+#&gt; 2           3 roc_auc binary     0.884    10  0.0140
+#&gt; 3           6 roc_auc binary     0.879    10  0.0146
+#&gt; 4           8 roc_auc binary     0.878    10  0.0141</code></pre>
+</div>
+<div id="pro-tips-what-ifs-exceptions-faq-and-minutiae" class="section level1">
+<h1>Pro-tips, what-ifs, exceptions, FAQ, and minutiae</h1>
+<p>There are various things that came to mind while writing this document.</p>
+<div id="do-i-have-to-return-a-simple-vector-for-predict-and-predict_class" class="section level3">
+<h3>Do I have to return a simple vector for <code>predict</code> and <code>predict_class</code>?</h3>
+<p>Previously, when discussing the <code>pred</code> information:</p>
+<blockquote>
+<p>For <code>pred</code>, the model requires an unnamed numeric vector output <strong>(usually)</strong>.</p>
+</blockquote>
+<p>There are some models (e.g. <code>glmnet</code>, <code>plsr</code>, <code>Cubust</code>, etc.) that can make predictions for different models from the same fitted model object. We want to facilitate that here so that, for these cases, the current convention is to return a tibble with the prediction in a column called <code>values</code> and have extra columns for any parameters that define the different sub-models.</p>
+<p>For example, if I fit a linear regression model via <code>glmnet</code> and get four values of the regularization parameter (<code>lambda</code>):</p>
+<pre class="r"><code>linear_reg() %&gt;%
+  set_engine(&quot;glmnet&quot;, nlambda = 4) %&gt;% 
+  fit(mpg ~ ., data = mtcars) %&gt;%
+  multi_predict(new_data = mtcars[1:3, -1])</code></pre>
+<p><em>However</em>, the api is still being developed. Currently, there is not an interface in the prediction functions to pass in the values of the parameters to make predictions with (<code>lambda</code>, in this case).</p>
+</div>
+<div id="what-is-defaults-slot-and-why-do-i-need-it" class="section level3">
+<h3>What is <code>defaults</code> slot and why do I need it?</h3>
+<p>You might want to set defaults that can be overridden by the user. For example, for logistic regression with <code>glm</code>, it make sense to default <code>family = binomial</code>. However, if someone wants to use a different link function, they should be able to do that. For that model/engine definition, it has</p>
+<pre class="r"><code>defaults = list(family = expr(binomial))</code></pre>
+<p>so that is the default:</p>
+<pre class="r"><code>logistic_reg() %&gt;% translate(engine = &quot;glm&quot;)
+
+# but you can change it:
+
+logistic_reg() %&gt;%
+  set_engine(&quot;glm&quot;, family = expr(binomial(link = &quot;probit&quot;))) %&gt;% 
+  translate()</code></pre>
+<p>That’s what <code>defaults</code> are for.</p>
+<p>Note that I wrapped <code>binomial</code> inside of <code>expr()</code>. If I didn’t, it would substitute the results of executing <code>binomial()</code> inside of the expression (and that’s a mess).</p>
+</div>
+<div id="what-if-i-want-more-complex-defaults" class="section level3">
+<h3>What if I want more complex defaults?</h3>
+<p>The <code>translate</code> function can be used to check values or set defaults once the model’s mode is known. To do this, you can create a model-specific S3 method that first calls the general method (<code>translate.model_spec()</code>) and then makes modifications or conducts error traps.</p>
+<p>For example, the ranger and <code>randomForest</code> package functions have arguments for calculating importance. One is a logical and the other is a string. Since this is likely to lead to a bunch of frustration and GH issues, we can put in a check:</p>
+<pre class="r"><code># Simplified version
+translate.rand_forest &lt;- function (x, engine, ...){
+  # Run the general method to get the real arguments in place
+  x &lt;- translate.default(x, engine, ...)
+  
+  # Check and see if they make sense for the engine and/or mode:
+  if (x$engine == &quot;ranger&quot;) {
+    if (any(names(x$method$fit$args) == &quot;importance&quot;)) 
+      if (is.logical(x$method$fit$args$importance)) 
+        stop(&quot;`importance` should be a character value. See ?ranger::ranger.&quot;, 
+             call. = FALSE)
+  }
+  x
+}</code></pre>
+<p>As another example, <code>nnet::nnet</code> has an option for the final layer to be linear (called <code>linout</code>). If <code>mode = "regression"</code>, that should probably be set to <code>TRUE</code>. You couldn’t do this with the <code>args</code> (described above) since you need the function translated first.</p>
+</div>
+<div id="my-model-fit-requires-more-than-one-function-call.-so." class="section level3">
+<h3>My model fit requires more than one function call. So….?</h3>
+<p>The best course of action is to write wrapper so that it can be one call. This was the case with xgboost and keras.</p>
+</div>
+<div id="why-would-i-preprocess-my-data" class="section level3">
+<h3>Why would I preprocess my data?</h3>
+<p>There might be non-trivial transformations that the model prediction code requires (such as converting to a sparse matrix representation, etc.)</p>
+<p>This would <strong>not</strong> include making dummy variables and <code>model.matrix</code> stuff. parsnip already does that for you.</p>
+</div>
+<div id="why-would-i-post-process-my-predictions" class="section level3">
+<h3>Why would I post-process my predictions?</h3>
+<p>What comes back from some R functions may be somewhat… arcane or problematic. As an example, for xgboost, if you fit a multi-class boosted tree, you might expect the class probabilities to come back as a matrix (narrator: they don’t). If you have four classes and make predictions on three samples, you get a vector of 12 probability values. You need to convert these to a rectangular data set.</p>
+<p>Another example is the predict method for ranger, which encapsulates the actual predictions in a more complex object structure.</p>
+<p>These are the types of problems that the post-processor will solve.</p>
+</div>
+<div id="are-there-other-modes" class="section level3">
+<h3>Are there other modes?</h3>
+<p>Not yet but there will be. For example, it might make sense to have a different mode when doing risk-based modeling via Cox regression models. That would enable different classes of objects and those might be needed since the types of models don’t make direct predictions of the outcome.</p>
+<p>If you have a suggestion, please ad a GitHub issue to discuss it.</p>
+</div>
+</div>
+<div id="session-information" class="section level1">
+<h1>Session information</h1>
+<pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────
+#&gt;  setting  value                       
+#&gt;  version  R version 3.6.1 (2019-07-05)
+#&gt;  os       macOS Mojave 10.14.6        
+#&gt;  system   x86_64, darwin15.6.0        
+#&gt;  ui       X11                         
+#&gt;  language (EN)                        
+#&gt;  collate  en_US.UTF-8                 
+#&gt;  ctype    en_US.UTF-8                 
+#&gt;  tz       America/New_York            
+#&gt;  date     2020-03-26                  
+#&gt; 
+#&gt; ─ Packages ───────────────────────────────────────────────────────────────────
+#&gt;  package    * version    date       lib source                             
+#&gt;  broom      * 0.5.4      2020-01-27 [1] CRAN (R 3.6.0)                     
+#&gt;  dials      * 0.0.4.9000 2020-03-21 [1] local                              
+#&gt;  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                     
+#&gt;  ggplot2    * 3.3.0      2020-03-05 [1] CRAN (R 3.6.0)                     
+#&gt;  infer      * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                     
+#&gt;  mda        * 0.4-10     2017-11-02 [1] CRAN (R 3.6.0)                     
+#&gt;  parsnip    * 0.0.5.9000 2020-03-26 [1] local                              
+#&gt;  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                     
+#&gt;  recipes    * 0.1.10     2020-03-18 [1] CRAN (R 3.6.1)                     
+#&gt;  rlang        0.4.5.9000 2020-03-21 [1] Github (r-lib/rlang@a90b04b)       
+#&gt;  rsample    * 0.0.5.9000 2020-03-23 [1] Github (tidymodels/rsample@4fdbd6c)
+#&gt;  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                     
+#&gt;  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                     
+#&gt;  tune       * 0.0.1.9000 2020-03-21 [1] Github (tidymodels/tune@6694258)   
+#&gt;  workflows  * 0.1.0      2019-12-30 [1] CRAN (R 3.6.1)                     
+#&gt;  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                     
+#&gt; 
+#&gt; [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library</code></pre>
+</div>
