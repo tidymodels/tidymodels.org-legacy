@@ -1,6 +1,6 @@
 ---
 title: "Iterative Optimization of a Classification Model"
-tags: [tune, dials, parsnip, recipes]
+tags: [tune, dials, parsnip, recipes, workflows]
 categories: [model tuning]
 type: learn-subsection
 ---
@@ -18,33 +18,6 @@ library(doMC)
 registerDoMC(cores = parallel::detectCores())
 
 pkgs <- c("modeldata", "kernlab", "tidymodels")
-
-req_pkgs <- function(x, what = "This article") {
-  x <- sort(x)
-  x <- paste0("`", x, "`")
-  x <- knitr::combine_words(x, and = " and ")
-  paste0(
-    what,
-    " requires that you have the following packages installed: ",
-    x, "." 
-  )
-}
-
-small_session <- function(pkgs = NULL) {
-  pkgs <- c(pkgs, "recipes", "parsnip", "tune", "workflows", "dials", "dplyr",
-            "broom", "ggplot2", "purrr", "rlang", "rsample", "tibble", 
-            "yardstick", "tidymodels")
-  pkgs <- unique(pkgs)
-  library(sessioninfo)
-  library(dplyr)
-  sinfo <- sessioninfo::session_info()
-  cls <- class(sinfo$packages)
-  sinfo$packages <- 
-    sinfo$packages %>% 
-    dplyr::filter(package %in% pkgs)
-  class(sinfo$packages) <- cls
-  sinfo
-}
 
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
@@ -107,7 +80,7 @@ svm_mod <-
   set_engine("kernlab")
 ```
 
-These two objects will be combined into a single object via the `workflow()` function from the `workflows` package and this object will be used to fuel the optimization process. 
+These two objects will be combined into a single object via the `workflow()` function from the workflows package and this object will be used to fuel the optimization process. 
 
 ```{r workflow}
 svm_wflow <-
@@ -126,7 +99,7 @@ svm_set
 The default range for the number of PCA components is rather small for this data set. A member of the parameter set can be modified using the `update()` function. Let's constrain the search to one to twenty components by updating the `num_comp` parameter. Additionally, the lower bound of this parameter is set to zero which signifies that the original predictor set should also be evaluated (i.e., no PCA step): 
 
 ```{r update}
-svm_set <- svm_set %>% update(num_comp = num_comp(c(0, 20)))
+svm_set <- svm_set %>% update(num_comp = num_comp(c(0L, 20L)))
 ```
 
 # Sequential tuning 
@@ -160,7 +133,7 @@ search_res <-
   )
 ```
 
-The resulting tibble is a stacked set of rows of the `rsample` object with an additional column for the iteration number:
+The resulting tibble is a stacked set of rows of the rsample object with an additional column for the iteration number:
 
 ```{r show-iters}
 search_res
@@ -188,7 +161,7 @@ autoplot(search_res, type = "performance")
 
 There are many parameter combinations have roughly equivalent results. 
 
-How did the parameters change over iterations? Since two of the parameters are usually treated on the log scale, a `ggplot` is constructed:  
+How did the parameters change over iterations? Since two of the parameters are usually treated on the log scale, a ggplot is constructed:  
 
 
 ```{r bo-param-plot}

@@ -19,33 +19,6 @@ library(furrr)
 
 pkgs <- c("tidymodels", "scales", "mlbench", "kernlab", "furrr")
 
-req_pkgs <- function(x, what = "This article") {
-  x <- sort(x)
-  x <- paste0("`", x, "`")
-  x <- knitr::combine_words(x, and = " and ")
-  paste0(
-    what,
-    " requires that you have the following packages installed: ",
-    x, "." 
-  )
-}
-
-small_session <- function(pkgs = NULL) {
-  pkgs <- c(pkgs, "recipes", "parsnip", "tune", "workflows", "dials", "dplyr",
-            "broom", "ggplot2", "purrr", "rlang", "rsample", "tibble", 
-            "yardstick", "tidymodels")
-  pkgs <- unique(pkgs)
-  library(sessioninfo)
-  library(dplyr)
-  sinfo <- sessioninfo::session_info()
-  cls <- class(sinfo$packages)
-  sinfo$packages <- 
-    sinfo$packages %>% 
-    dplyr::filter(package %in% pkgs)
-  class(sinfo$packages) <- cls
-  sinfo
-}
-
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
@@ -57,7 +30,7 @@ In this article, an alternative method for evaluating and tuning models is discu
 
 # Resampling models
 
-A typical scheme for splitting the data when developing a predictive model is to create an initial split of the data into a training and test set. If resampling is used, it is executed on the training set. A series of binary splits is created. In `rsample`, we use the term _analysis set_ for the data that are used to fit the model and the _assessment set_ is used to compute performance: 
+A typical scheme for splitting the data when developing a predictive model is to create an initial split of the data into a training and test set. If resampling is used, it is executed on the training set. A series of binary splits is created. In rsample, we use the term _analysis set_ for the data that are used to fit the model and the _assessment set_ is used to compute performance: 
 
 ```{r resampling-fig, echo = FALSE, fig.align='center', out.width="70%"}
 knitr::include_graphics(here::here("static/images/resampling.svg"))
@@ -71,7 +44,7 @@ Nested resampling does an additional layer of resampling that separates the tuni
 
 Once the tuning results are complete, a model is fit to each of the outer resampling splits using the best parameter associated with that resample. The average of the outer method's assessment sets are a unbiased estimate of the model.  
 
-We will simulate some regression data to illustrate the methods. The `mlbench` function `mlbench::mlbench.friedman1()` can simulate a complex regression data structure from the [original MARS publication](https://scholar.google.com/scholar?hl=en&q=%22Multivariate+adaptive+regression+splines%22&btnG=&as_sdt=1%2C7&as_sdtp=). A training set size of 100 data points are generated as well as a large set that will be used to characterize how well the resampling procedure performed.  
+We will simulate some regression data to illustrate the methods. The mlbench package has a function `mlbench::mlbench.friedman1()` that can simulate a complex regression data structure from the [original MARS publication](https://scholar.google.com/scholar?hl=en&q=%22Multivariate+adaptive+regression+splines%22&btnG=&as_sdt=1%2C7&as_sdtp=). A training set size of 100 data points are generated as well as a large set that will be used to characterize how well the resampling procedure performed.  
 
 ```{r sim-data}
 library(mlbench)
@@ -181,7 +154,7 @@ Now that those functions are defined, we can execute all the inner resampling lo
 tuning_results <- map(results$inner_resamples, summarize_tune_results) 
 ```
 
-Alternatively, since these computations can be run in parallel, the `furrr` package can be used to do so. Instead of using `map()`, the function `future_map()` will parallelize using the [`future` package](https://cran.r-project.org/web/packages/future/vignettes/future-1-overview.html). The `multisession` plan uses the a local cores to process the inner resampling loop. The ends results are the same as the sequential computations. 
+Alternatively, since these computations can be run in parallel, the furrr package can be used to do so. Instead of using `map()`, the function `future_map()` will parallelize using the [future package](https://cran.r-project.org/web/packages/future/vignettes/future-1-overview.html). The `multisession` plan uses the a local cores to process the inner resampling loop. The ends results are the same as the sequential computations. 
 
 ```{r inner-runs-parallel}
 library(furrr)
