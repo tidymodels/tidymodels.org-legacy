@@ -94,11 +94,11 @@ The tidymodels framework also includes many other packages designed for speciali
 
 * [hardhat](https://tidymodels.github.io/hardhat/) helps beginners setup high-quality R packages for modeling. 
 
-* There are several add-on packages for creating recipes. [embed](https://tidymodels.github.io/embed/) contains steps to create embeddings or projections of predictors. [textrecipes](https://tidymodels.github.io/textrecipes/) has extra steps for text processing, and [themis](https://tidymodels.github.io/themis/) can help alleviate class imbalances using sampling methods. 
+* There are several add-on packages for creating recipes. [embed](https://tidymodels.github.io/embed/) contains steps to create embeddings or projections of predictors. [textrecipes](https://tidymodels.github.io/textrecipes/) has extra steps for text processing, and [themis](https://tidymodels.github.io/themis/) can help alleviate class imbalance using sampling methods. 
 
-* parsnip also has additional packages that contain model definitions. [discrim](https://tidymodels.github.io/discrim/) contains definitions for discriminant analysis models and [rules](https://tidymodels.github.io/rules/) does the same for rule-based classification and regression models. 
+* parsnip also has additional packages that contain more model definitions. [discrim](https://tidymodels.github.io/discrim/) contains definitions for discriminant analysis models and [rules](https://tidymodels.github.io/rules/) does the same for rule-based classification and regression models. 
 
-* Some R objects become abnormally large when saved to disk. The [butcher](https://tidymodels.github.io/butcher/) package can reduce the size of those objects by removing the sub-components. 
+* Some R objects become inconveniently large when saved to disk. The [butcher](https://tidymodels.github.io/butcher/) package can reduce the size of those objects by removing the sub-components. 
 
 * To know whether the data that you are predicting are _extrapolations_ from the training set, [applicable](https://tidymodels.github.io/applicable/) can produce metrics the measure extrapolation. 
 
@@ -106,4 +106,4 @@ The tidymodels framework also includes many other packages designed for speciali
 
 * [probably](https://tidymodels.github.io/probably/) has tools for post-processing class probability estimates.
 
-* The [tidyposterior](https://tidymodels.github.io/tidyposterior/) package can let users make formal statistical comparisons between models using resampling and Bayesian methods. 
+* The [tidyposterior](https://tidymodels.github.io/tidyposterior/) package enables users to make formal statistical comparisons between models using resampling and Bayesian methods. 

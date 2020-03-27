@@ -1,7 +1,7 @@
 ---
-title: Need help?
+title: Stay up to date
 ---
 
-First learn how to make a [reprex](/help/#reprex) then [share it](/help/#where-to-ask) with others.
+Hear about the latest tidymodels news at the [tidyverse blog](https://www.tidyverse.org/tags/tidymodels/).
 
    

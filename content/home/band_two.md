@@ -1,6 +1,6 @@
 ---
-title: Learn the tidyverse
+title: Learn tidymodels
 ---
 
-See how the tidyverse makes data science faster, easier, and more fun with "R for Data Science". Read it [online](http://r4ds.had.co.nz/), buy [the book](http://amzn.to/2aHLAQ1), or try another [resource](/learn/) from the community.
+Whether you are just starting out today or have years of experience with modeling, tidymodels offers a consistent, flexible framework for your workflows. See what you need to know to [get started now](/start/), or [learn more and go deeper](/learn/) with tidymodels for your modeling and machine learning tasks.
    
