@@ -14,31 +14,8 @@ library(pls)
 library(tidymodels)
 library(sessioninfo)
 pkgs <- c("modeldata", "pls", "tidymodels")
-req_pkgs <- function(x, what = "This article") {
-  x <- sort(x)
-  x <- paste0("`", x, "`")
-  x <- knitr::combine_words(x, and = " and ")
-  paste0(
-    what,
-    " requires that you have the following packages installed: ",
-    x, "." 
-  )
-}
-small_session <- function(pkgs = NULL) {
-  pkgs <- c(pkgs, "recipes", "parsnip", "tune", "workflows", "dials", "dplyr",
-            "broom", "ggplot2", "purrr", "rlang", "rsample", "tibble", 
-            "yardstick", "tidymodels")
-  pkgs <- unique(pkgs)
-  library(sessioninfo)
-  library(dplyr)
-  sinfo <- sessioninfo::session_info()
-  cls <- class(sinfo$packages)
-  sinfo$packages <- 
-    sinfo$packages %>% 
-    dplyr::filter(package %in% pkgs)
-  class(sinfo$packages) <- cls
-  sinfo
-}
+
+theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
 `r req_pkgs(pkgs)`
@@ -52,9 +29,9 @@ _Multivariate Analysis_ usually refers to the situation where multiple _outcomes
 lm(cbind(y1, y2) ~ ., data = dat)
 ```
 
-The `cbind()` call is pretty awkward and is a consequence of how the traditional formula infrastructure works. `recipes` is a lot easter to work with and this document shows an example to illustrate how to use multiple outcomes.   
+The `cbind()` call is pretty awkward and is a consequence of how the traditional formula infrastructure works. The recipes package is a lot easier to work with and this document shows an example to illustrate how to use multiple outcomes.   
 
-The data that we'll use has three outcomes. From `?meats`:
+The data that we'll use has three outcomes. From `?modeldata::meats`:
 
 > "These data are recorded on a Tecator Infratec Food and Feed Analyzer working in the wavelength range 850 - 1050 nm by the Near Infrared Transmission (NIT) principle. Each sample contains finely chopped pure meat with different moisture, fat and protein contents.
 
@@ -79,7 +56,7 @@ PLS, unlike PCA, also incorporates the outcome data when creating the PLS compon
 
 Since we are working with variances and covariances, it makes sense to standardize the data. The recipe will center and scale all of the variables. 
 
-Many base R functions that deal with multivariate outcomes using the formula require the use of `cbind()` on the left-hand side of the formula to work with the traditional formula methods. `recipes` do not; the outcomes can be symbolically "added" together on the left-hand side:
+Many base R functions that deal with multivariate outcomes using the formula require the use of `cbind()` on the left-hand side of the formula to work with the traditional formula methods. recipes do not; the outcomes can be symbolically "added" together on the left-hand side:
 
 ```{r recipe}
 norm_rec <- 
@@ -104,12 +81,12 @@ folds <-
 
 The complicated part here is:
 
-1. Formatting the predictors and outcomes into the format that the `pls` package requires, and
+1. Formatting the predictors and outcomes into the format that the pls package requires, and
 2. Estimating the proportions. 
 
 For the first part, the standardized outcomes and predictors will need to be formatted into two separate matrices. Since we used `retain = TRUE` when prepping the recipes, the `juice()` function can be used. To save the data as a matrix, the option `composition = "matrix"` will avoid saving the data as tibbles and use the required format. 
 
-The `pls` package wants to use a simple formula to specify the model but each side of the formula should _represent a matrix_. In other words, we need a data from with two columns and each column is a matrix. The secret to doing this is to "protect" the two matrices using `I()` when adding them to the data frame.
+The pls package wants to use a simple formula to specify the model but each side of the formula should _represent a matrix_. In other words, we need a data from with two columns and each column is a matrix. The secret to doing this is to "protect" the two matrices using `I()` when adding them to the data frame.
 
 The calculation for the proportion of variance explained is simple for the predictors; the function `pls::explvar()` will compute that. For the outcomes, the process is more complicated. I didn't see a ready-made function to compute these but there is some code inside of the summary function to do the computation (see below). 
 
@@ -182,9 +159,7 @@ The plot below shows that, if the protein measurement is important, you might re
 ```{r plot, fig.width=6, fig.height=4.25,  out.width = '100%'}
 ggplot(variance_data, aes(x = components, y = proportion, col = source)) + 
   geom_line() + 
-  geom_point() + 
-  theme_bw() + 
-  theme(legend.position = "top")
+  geom_point() 
 ```
 
 

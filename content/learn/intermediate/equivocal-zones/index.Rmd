@@ -15,33 +15,6 @@ library(probably)
 
 pkgs <- c("tidymodels", "probably")
 
-req_pkgs <- function(x, what = "This article") {
-  x <- sort(x)
-  x <- paste0("`", x, "`")
-  x <- knitr::combine_words(x, and = " and ")
-  paste0(
-    what,
-    " requires that you have the following packages installed: ",
-    x, "." 
-  )
-}
-
-small_session <- function(pkgs = NULL) {
-  pkgs <- c(pkgs, "recipes", "parsnip", "tune", "workflows", "dials", "dplyr",
-            "broom", "ggplot2", "purrr", "rlang", "rsample", "tibble", 
-            "yardstick", "tidymodels")
-  pkgs <- unique(pkgs)
-  library(sessioninfo)
-  library(dplyr)
-  sinfo <- sessioninfo::session_info()
-  cls <- class(sinfo$packages)
-  sinfo$packages <- 
-    sinfo$packages %>% 
-    dplyr::filter(package %in% pkgs)
-  class(sinfo$packages) <- cls
-  sinfo
-}
-
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
@@ -95,9 +68,7 @@ segment_logistic_thresh <-
 segment_logistic_thresh
 ```
 
-If a `buffer` is used, an equivocal zone is created around the threshold of 
-`threshold +/- buffer` and any values inside the zone are automatically marked
-as equivocal.
+If a `buffer` is used, an equivocal zone is created around the threshold of  `threshold +/- buffer` and any values inside the zone are automatically marked as equivocal.
 
 ```{r}
 # Convert probabilities into predictions
@@ -122,9 +93,7 @@ segment_pred %>%
   summarise(reportable = reportable_rate(.pred))
 ```
 
-Equivocal values in `class_pred` objects are converted to `NA` when the object
-is converted to a factor. It's also worth noting that the `[EQ]` label is not
-treated as a separate level.
+Equivocal values in `class_pred` objects are converted to `NA` when the object is converted to a factor. It's also worth noting that the `[EQ]` label is not treated as a separate level.
 
 ```{r}
 segment_pred %>%
@@ -134,10 +103,7 @@ segment_pred %>%
 levels(segment_pred$.pred)
 ```
 
-This `NA` behavior feeds into how probably can be used with yardstick. Generally,
-equivocal values are removed completely from performance evaluation. So converting
-them to `NA` and then leaving the default `na_rm = TRUE` in any yardstick metric
-removes them from consideration.
+This `NA` behavior feeds into how probably can be used with yardstick. Generally, equivocal values are removed completely from performance evaluation. So converting them to `NA` and then leaving the default `na_rm = TRUE` in any yardstick metric removes them from consideration.
 
 ```{r}
 # No equivocal zone
