@@ -82,7 +82,7 @@ title: Tidymodels packages
 </div>
 </div>
 
-Learn more about the tidymodels packages at <http://tidymodels.tidymodels.org>.
+Learn more about the tidymodels metapackage itself at <http://tidymodels.tidymodels.org>.
 
 ## Specialized packages
 
