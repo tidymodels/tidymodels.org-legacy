@@ -1,7 +1,7 @@
 ---
-title: "Nested Resampling"
+title: "Nested resampling"
 tags: [rsample, parsnip]
-categories: [resampling]
+categories: [tuning]
 type: learn-subsection
 ---
 
@@ -26,7 +26,7 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 
 # Introduction
 
-In this article, an alternative method for evaluating and tuning models is discussed, called [nested resampling](https://scholar.google.com/scholar?hl=en&as_sdt=0%2C7&q=%22nested+resampling%22+inner+outer&btnG=). While it is more computationally taxing than other resampling methods, it has the potential to produce better estimates of model performance. 
+In this article, an alternative method for evaluating and tuning models is discussed, called [nested resampling](https://scholar.google.com/scholar?hl=en&as_sdt=0%2C7&q=%22nested+resampling%22+inner+outer&btnG=). While it is more computationally taxing and challenging to implement than other resampling methods, it has the potential to produce better estimates of model performance. 
 
 # Resampling models
 

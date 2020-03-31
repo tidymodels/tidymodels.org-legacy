@@ -28,30 +28,30 @@ If you are new to hypothesis testing, take a look at
 * [Section 9.2 of _Statistical Inference via Data Science_](https://moderndive.com/9-hypothesis-testing.html#understanding-ht)
 * The American Statistical Association's recent [statement on p-values](https://doi.org/10.1080/00031305.2016.1154108) 
 
-The workflow of this package is designed around this idea. Starting out with some dataset,
+The workflow of this package is designed around these ideas. Starting from some data set,
 
 + `specify()` allows you to specify the variable, or relationship between variables, that you're interested in.
 + `hypothesize()` allows you to declare the null hypothesis.
 + `generate()` allows you to generate data reflecting the null hypothesis.
 + `calculate()` allows you to calculate a distribution of statistics from the generated data to form the null distribution.
 
-Throughout this vignette, we make use of `gss`, a dataset supplied by infer containing a sample of 500 observations of 11 variables from the *General Social Survey*. 
+Throughout this vignette, we make use of `gss`, a data set supplied by infer containing a sample of 500 observations of 11 variables from the *General Social Survey*. 
 
 ```{r load-gss, warning = FALSE, message = FALSE}
 library(tidymodels) # Includes the infer package
 
-# load in the dataset
+# load in the data set
 data(gss)
 
 # take a look at its structure
 dplyr::glimpse(gss)
 ```
 
-Each row is an individual survey response, containing some basic demographic information on the respondent as well as some additional variables. See `?gss` for more information on the variables included and their source. Note that this data (and our examples on it) are for demonstration purposes only, and will not necessarily provide accurate estimates unless weighted properly. For these examples, let's suppose that this dataset is a representative sample of a population we want to learn about: American adults.
+Each row is an individual survey response, containing some basic demographic information on the respondent as well as some additional variables. See `?gss` for more information on the variables included and their source. Note that this data (and our examples on it) are for demonstration purposes only, and will not necessarily provide accurate estimates unless weighted properly. For these examples, let's suppose that this data set is a representative sample of a population we want to learn about: American adults.
 
 # specify(): Specifying Response (and Explanatory) Variables
 
-The `specify` function can be used to specify which of the variables in the dataset you're interested in. If you're only interested in, say, the `age` of the respondents, you might write:
+The `specify` function can be used to specify which of the variables in the data set you're interested in. If you're only interested in, say, the `age` of the respondents, you might write:
 
 ```{r specify-example, warning = FALSE, message = FALSE}
 gss %>%

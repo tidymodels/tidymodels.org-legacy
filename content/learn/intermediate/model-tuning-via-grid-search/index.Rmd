@@ -1,5 +1,5 @@
 ---
-title: "Model Tuning via Grid Search"
+title: "Model tuning via grid search"
 tags: [rsample, parsnip, tune, yardstick]
 categories: [model tuning]
 type: learn-subsection
@@ -25,7 +25,7 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 
 # Introduction
 
-This article provides another example of tuning a model using grid search. 
+This article demonstrates how to tune a model using grid search. 
 
 # Example data
 

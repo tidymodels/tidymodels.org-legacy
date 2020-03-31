@@ -1,6 +1,6 @@
 ---
-title: "Multivariate Analysis using Partial Least Squares"
-tags: [recipes]
+title: "Multivariate analysis using partial least squares"
+tags: [recipes,rsample]
 categories: [pre-processing]
 type: learn-subsection
 ---
@@ -23,13 +23,13 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 
 # Introduction
 
-_Multivariate Analysis_ usually refers to the situation where multiple _outcomes_ are being modeled, analyzed, and/or predicted. There are multivariate versions of many common statistical tools. For example, suppose there was a data set with columns `y1` and `y2` containing two outcomes to be predicted. The `lm()` function would look something like:
+"Multivariate analysis" usually refers to the situation where multiple _outcomes_ are being modeled, analyzed, and/or predicted. There are multivariate versions of many common statistical tools. For example, suppose there was a data set with columns `y1` and `y2` containing two outcomes to be predicted. The `lm()` function would look something like:
 
 ```{r lm, eval = FALSE}
 lm(cbind(y1, y2) ~ ., data = dat)
 ```
 
-The `cbind()` call is pretty awkward and is a consequence of how the traditional formula infrastructure works. The recipes package is a lot easier to work with and this document shows an example to illustrate how to use multiple outcomes.   
+The `cbind()` call is pretty awkward and is a consequence of how the traditional formula infrastructure works. The recipes package is a lot easier to work with and this article shows an example to illustrate how to model multiple outcomes.   
 
 The data that we'll use has three outcomes. From `?modeldata::meats`:
 

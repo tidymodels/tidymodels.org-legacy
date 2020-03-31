@@ -1,6 +1,7 @@
 ---
-title: "broom and dplyr"
+title: "Statistical analysis fundamentals with tidy data principles"
 tags: [broom, dplyr]
+categories: [statistical analysis]
 type: learn-subsection
 ---
 
@@ -104,8 +105,6 @@ Orange %>%
   unnest(cols = tidied) %>% 
   select(-data, -test)
 ```
-
-Note that the `.drop` argument to `tidyr::unnest()` is often useful.
 
 # Regression models
 

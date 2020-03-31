@@ -1,6 +1,7 @@
 ---
-title: "K-Means Clustering with dplyr and broom"
+title: "K-means clustering with tidy data principles"
 tags: [broom]
+categories: [statistical analysis]
 type: learn-subsection
 ---
 

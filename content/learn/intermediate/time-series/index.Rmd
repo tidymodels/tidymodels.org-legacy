@@ -1,6 +1,8 @@
 ---
-title: "Time Series Analysis Example"
+title: "Modeling time series with tidy resampling"
 tags: [rsample]
+categories: [model fitting, resampling]
+type: learn-subsection
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}

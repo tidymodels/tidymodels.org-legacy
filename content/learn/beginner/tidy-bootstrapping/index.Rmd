@@ -1,7 +1,7 @@
 ---
-title: "Tidy bootstrapping"
-tags: [rsample]
-categories: [resampling]
+title: "Bootstrap resampling and tidy regression models"
+tags: [rsample, broom]
+categories: [statistical analysis, resampling]
 type: learn-subsection
 ---
 
