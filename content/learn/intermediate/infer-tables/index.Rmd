@@ -1,5 +1,5 @@
 ---
-title: "Statistical analysis of contingency tables with infer"
+title: "Statistical analysis of contingency tables"
 tags: [infer]
 categories: [statistical analysis]
 type: learn-subsection
@@ -15,15 +15,18 @@ library(sessioninfo)
 pkgs <- c("tidymodels", "modeldata")
 ```
 
-`r req_pkgs(pkgs)`
+
+# Learning objective
+
+Use tests of independence and goodness of fit to analyze tables of counts
 
 # Introduction
 
-### Introduction
+`r req_pkgs(pkgs)`
 
 In this vignette, we'll walk through conducting a $\chi^2$ (chi-squared) test of independence and a chi-squared goodness of fit test using `infer`. We'll start out with a  chi-squared test of independence, which can be used to test the association between two categorical variables. Then, we'll move on to a chi-squared goodness of fit test, which tests how well the distribution of one categorical variable can be approximated by some theoretical distribution.
 
-Throughout this vignette, we'll make use of the `ad_data` dataset supplied by the `modedata` package, which contains data related to cognitive impairment in 333 patients from [Craig-Schapiro _et al_ (2011)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3079734/). See `?ad_data` for more information on the variables included and their source. One of the main research questions in these data were how does a person's genetics related to the Apolipoprotein E gene affect their cognitive skills (as had been reported in the literature). The data shows: 
+Throughout this vignette, we'll make use of the `ad_data` dataset (available in the modeldata package,) which contains data related to cognitive impairment in 333 patients from [Craig-Schapiro _et al_ (2011)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3079734/). See `?ad_data` for more information on the variables included and their source. One of the main research questions in these data were how does a person's genetics related to the Apolipoprotein E gene affect their cognitive skills (as had been reported in the literature). The data shows: 
 
 ```{r glimpse-ad_data-actual, warning = FALSE, message = FALSE}
 library(tidymodels) # Includes the infer package
@@ -33,22 +36,21 @@ data(ad_data, package = "modeldata")
 
 The three main genetic variants are called E2, E3, and E4. The values above represent the genetic makeup of patients based on what they inherited from their parents (i.e, a value of "E2E4" means E2 from one parent and E4 from the other). 
 
-### Test of Independence
+# Test of independence
 
 To carry out a chi-squared test of independence, we'll examine the association between their cognitive ability (impaired and healthy) and the genetic makeup. This is what the relationship looks like in the sample data:
 
 ```{r plot-indep, echo = FALSE}
 ad_data %>%
   ggplot() +
-  aes(x = Genotype, fill = Class) +
+  aes(y = Genotype, fill = Class) +
   geom_bar(position = "fill") +
   scale_fill_brewer(type = "qual") +
-  theme(axis.text.x = element_text(angle = 45, vjust = .5)) +
-  labs(x = "Genotype: Apolipoprotein E Genetics",
-       y = "Proportion")
+  labs(y = "Genotype: Apolipoprotein E Genetics",
+       x = "Proportion") 
 ```
 
-If there were no relationship, we would expect to see the purple bars reaching to the same height, regardless of cognitive ability. Are the differences we see here, though, just due to random noise?
+If there were no relationship, we would expect to see the purple bars reaching to the same length, regardless of cognitive ability. Are the differences we see here, though, just due to random noise?
 
 First, to calculate the observed statistic, we can use `specify()` and `calculate()`.
 
@@ -135,7 +137,7 @@ chisq_test(ad_data, Genotype ~ Class)
 ```
 
 
-### Goodness of Fit
+# Goodness of fit
 
 Now, moving on to a chi-squared goodness of fit test, we'll take a look at just the genotype data. Many papers have investigated the relationship of Apolipoprotein E to diseases. For example, [Song _et al_ (2004)](https://annals.org/aim/article-abstract/717641/meta-analysis-apolipoprotein-e-genotypes-risk-coronary-heart-disease) conducted a meta-analysis of numerous studies that looked at this gene and heart disease. In their paper, they describe the frequency of the different genotypes across many samples. For the cognition study, it might be interesting to see if our sample of genotypes was consistent with this literature (treating the rates, for this analysis, as known). 
 

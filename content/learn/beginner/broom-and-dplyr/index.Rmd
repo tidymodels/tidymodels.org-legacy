@@ -1,6 +1,6 @@
 ---
-title: "Statistical analysis fundamentals with tidy data principles"
-tags: [broom, dplyr]
+title: "Correlation and regression fundamentals with tidy data principles"
+tags: [broom]
 categories: [statistical analysis]
 type: learn-subsection
 ---
@@ -15,15 +15,19 @@ pkgs <- c("tidymodels")
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
-This article requires that you have the tidymodels packages installed.
+# Learning objective
+
+Analyze the results of correlation tests and simple regression models for many data sets at once
 
 # Introduction
 
-While broom is useful for summarizing the result of a single analysis in a consistent format, it is really designed for high-throughput applications, where you must combine results from multiple analyses. These could be subgroups of data, analyses using different models, bootstrap replicates, permutations, and so on. In particular, it plays well with the `nest()/unnest()` functions in tidyr and the `map()` function in purrr.
+This article only requires that you have the tidymodels package installed.
+
+While the tidymodels package [broom](https://broom.tidyverse.org/) is useful for summarizing the result of a single analysis in a consistent format, it is really designed for high-throughput applications, where you must combine results from multiple analyses. These could be subgroups of data, analyses using different models, bootstrap replicates, permutations, and so on. In particular, it plays well with the `nest()/unnest()` functions in tidyr and the `map()` function in purrr.
 
 # Correlation analysis
 
-Let's try this on a simple dataset, the built-in `Orange`. We start by coercing `Orange` to a `tibble`. This gives a nicer print method that will especially useful later on when we start working with list-columns.
+Let's try this on a simple data set, the built-in `Orange`. We start by coercing `Orange` to a `tibble`. This gives a nicer print method that will especially useful later on when we start working with list-columns.
 
 ```{r}
 library(tidymodels)
@@ -108,7 +112,7 @@ Orange %>%
 
 # Regression models
 
-This workflow becomes even more useful when applied to regressions. Untidy ouput for a regression looks like:
+This workflow becomes even more useful when applied to regressions. Untidy output for a regression looks like:
 
 ```{r}
 lm_fit <- lm(age ~ circumference, data = Orange)
