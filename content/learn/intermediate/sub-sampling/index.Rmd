@@ -21,15 +21,17 @@ pkgs <- c("tidymodels", "klaR", "themis", "discrim", "readr", "ROSE")
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
+# Learning objective
 
-`r req_pkgs(pkgs)`
+Improve model performance in imbalanced data sets through undersampling or oversampling
 
 # Introduction
 
+`r req_pkgs(pkgs)`
 
-Subsampling a training set can be a helpful approach to dealing will classification data where one or more classes occur very infrequently. Often, most models will overfit to the majority class and produce very good statistics for the class containing the frequently occurring classes while the minority classes have poor performance. 
+Subsampling a training set (either undersampling or oversampling the appropriate class or classes) can be a helpful approach to dealing with classification data where one or more classes occur very infrequently. With such an approach, most models will overfit to the majority class and produce very good statistics for the class containing the frequently occurring classes while the minority classes have poor performance. 
 
-The analysis below describes this method for dealing with class imbalances. For better understanding, some knowledge of classification metrics like sensitivity, specificity, and receiver operating characteristic curves is required. See Section 3.2.2 for [Kuhn and Johnson (2019)](https://bookdown.org/max/FES/measuring-performance.html) for more information on these metrics.  
+This article describes this method for dealing with class imbalances. For better understanding, some knowledge of classification metrics like sensitivity, specificity, and receiver operating characteristic curves is required. See Section 3.2.2 for [Kuhn and Johnson (2019)](https://bookdown.org/max/FES/measuring-performance.html) for more information on these metrics.  
 
 # Simulated data
 
@@ -43,22 +45,22 @@ dim(imbal_data)
 table(imbal_data$Class)
 ```
 
-If "Class1" is the event of interest, it is very likely that a classification model would be able to achieve very good _specificity_ since almost all of the data are the second class. _Sensitivity_ will often be poor since the models will optimize accuracy (or other loss functions) by predicting everything to be the majority class. 
+If "Class1" is the event of interest, it is very likely that a classification model would be able to achieve very good _specificity_ since almost all of the data are of the second class. _Sensitivity_, however, would likely be poor since the models will optimize accuracy (or other loss functions) by predicting everything to be the majority class. 
 
-When there are two classes, the results is that the default probability cutoff of 50% is inappropriate; a different cutoff that is more extreme might be able to achieve good performance. 
+When there are two classes, one result of class imbalance is that the default probability cutoff of 50% is inappropriate; a different cutoff that is more extreme might be able to achieve good performance. 
 
 # Subsampling the data
 
-One way to alleviate this issue is to _subsample_ the data. There are a number of ways to do this but the most simple one is to _sample down_ the majority class data until it occurs with the same frequency as the minority class. While counterintuitive, throwing out a large percentage of the data can be effective at producing a model that can recognize both the majority and minority class. In some cases, this means that the overall performance of the model is better (e.g. improved area under the ROC curve). However, subsampling almost always produces models that are _better calibrated_, meaning that the distributions of the class probabilities are more well behaved. As a result, the default 50% cutoff is much more likely to produce better sensitivity and specificity values than they would otherwise. 
+One way to alleviate this issue is to _subsample_ the data. There are a number of ways to do this but the most simple one is to _sample down_ (undersample) the majority class data until it occurs with the same frequency as the minority class. While it may seem counterintuitive, throwing out a large percentage of your data can be effective at producing a useful model that can recognize both the majority and minority class. In some cases, this even means that the overall performance of the model is better (e.g. improved area under the ROC curve). However, subsampling almost always produces models that are _better calibrated_, meaning that the distributions of the class probabilities are more well behaved. As a result, the default 50% cutoff is much more likely to produce better sensitivity and specificity values than they would otherwise. 
 
-To demonstrate this, `themis::step_rose()` will be used in a recipe for the simulated data. It uses the ROSE (random over sampling examples) method from [Menardi, G. and Torelli, N. (2014)](https://scholar.google.com/scholar?hl=en&q=%22training+and+assessing+classification+rules+with+imbalanced+data%22). 
+To demonstrate this, `themis::step_rose()` will be used in a recipe for the simulated data. It uses the ROSE (random over sampling examples) method from [Menardi, G. and Torelli, N. (2014)](https://scholar.google.com/scholar?hl=en&q=%22training+and+assessing+classification+rules+with+imbalanced+data%22). This is an example of an oversampling strategy, rather than undersampling.
 
 In terms of workflow:
 
  * It is extremely important that subsampling occurs _inside of resampling_. Otherwise, the resampling process can produce [poor estimates of model performance](https://topepo.github.io/caret/subsampling-for-class-imbalances.html#resampling). 
- * The subsampling process should only be applied to the analysis set. The assessment set should reflect the event rates seen "in the wild" and, for this reason, the `skip` argument to `step_downsample()` is defaulted to `TRUE`. 
+ * The subsampling process should only be applied to the analysis set. The assessment set should reflect the event rates seen "in the wild" and, for this reason, the `skip` argument to `step_downsample()` has a default of `TRUE`. 
 
-Here is a simple recipe: 
+Here is a simple recipe implementing oversampling: 
 
 ```{r rec}
 library(tidymodels)
@@ -67,7 +69,8 @@ imbal_rec <-
   recipe(Class ~ ., data = imbal_data) %>%
   step_rose(Class)
 ```
-For a model, a [quadratic discriminant analysis](https://en.wikipedia.org/wiki/Quadratic_classifier#Quadratic_discriminant_analysis) (QDA) model will be used. From the discrim package, this model can be specified using
+
+For a model, let's use a [quadratic discriminant analysis](https://en.wikipedia.org/wiki/Quadratic_classifier#Quadratic_discriminant_analysis) (QDA) model. From the discrim package, this model can be specified using:
 
 ```{r qda}
 library(discrim)
@@ -86,6 +89,8 @@ qda_rose_wflw <-
 qda_rose_wflw
 ```
 
+## Model performance
+
 Stratified, repeated 10-fold cross-validation is used to resample the model:
 
 ```{r cv}
@@ -93,7 +98,7 @@ set.seed(5732)
 cv_folds <- vfold_cv(imbal_data, strata = "Class", repeats = 5)
 ```
 
-To measure model effectiveness, two metrics are used:
+To measure model performance, let's use two metrics:
 
  * The area under the [ROC curve](https://en.wikipedia.org/wiki/Receiver_operating_characteristic) is an overall assessment of performance across _all_ cutoffs. Values near one indicate very good results while values near 0.05 would imply that the model is very poor. 
  * The _J_ index (a.k.a. [Youden's _J_](https://en.wikipedia.org/wiki/Youden%27s_J_statistic) statistic) is `sensitivity + specificity - 1`. Values near one are once again best. 
@@ -125,7 +130,7 @@ qda_only_res <- fit_resamples(qda_wflw, resamples = cv_folds, metrics = cls_metr
 collect_metrics(qda_only_res)
 ```
 
-It looks like ROSE helped a lot, especially with the J-index. Class imbalance sampling methods tends to greatly improve metrics based on the hard class predictions (i.e., the categorical predictions) because the default cutoff tends to be a better balance of sensitivity and specificity. 
+It looks like ROSE helped a lot, especially with the J-index. Class imbalance sampling methods tend to greatly improve metrics based on the hard class predictions (i.e., the categorical predictions) because the default cutoff tends to be a better balance of sensitivity and specificity. 
 
 Let's plot the metrics for each resample to see how the individual results changed. 
 
