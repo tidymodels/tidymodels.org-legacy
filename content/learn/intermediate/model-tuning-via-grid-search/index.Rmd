@@ -21,11 +21,15 @@ pkgs <- c("tidymodels", "mlbench", "kernlab")
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
-`r req_pkgs(pkgs)`
+# Learning objective
+
+Choose hyperparameters for a model by training on a grid of many possible parameter values
 
 # Introduction
 
-This article demonstrates how to tune a model using grid search. 
+`r req_pkgs(pkgs)`
+
+This article demonstrates how to tune a model using grid search. Many models have **hyperparameters** that can't be learned directly from a single data set when training the model. Instead, we can train many models in a grid of possible hyperparameter values and see which ones turn out best. 
 
 # Example data
 
@@ -66,7 +70,7 @@ At a minimum, let's get rid of the most problematic variable:
 Ionosphere <- Ionosphere %>% select(-V2)
 ```
 
-# Inputs for the Search
+# Inputs for the search
 
 To demonstrate, we'll fit a radial basis function support vector machine to these data and tune the SVM cost parameter and the $\sigma$ parameter in the kernel function:
 
