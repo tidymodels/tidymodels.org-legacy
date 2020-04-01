@@ -15,10 +15,10 @@ Now that you've made a reprex, you need to share it in an appropriate forum. Her
 
 * [__community.rstudio.com__](https://community.rstudio.com/c/ml/15): This is a warm
   and welcoming place to ask any questions you might have about
-  tidymodels or more generally about modeling, machine learning, and deep learning (and you can also ask questions about tidyverse and RStudio there too!)
+  tidymodels or more generally about modeling, machine learning, and deep learning. (You can also ask questions about the tidyverse and RStudio there, too!)
   
 * [__Stack Overflow__](https://stackoverflow.com/questions/tagged/tidymodels). You're probably already familiar
-  with Stack Overflow from googling: it's a frequent source of answers to
+  with Stack Overflow from googling; it's a frequent source of answers to
   coding related questions. Asking a question on Stack Overflow can be 
   intimidating, but if you've taken the time to create a reprex, you're much
   more likely to get a useful answer. Make sure to [tag your question](https://stackoverflow.com/help/tagging) with `r`

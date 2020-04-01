@@ -26,7 +26,7 @@ These goals are guided by our [principles for creating modeling packages](https:
 
 You can help others use and learn tidymodels by answering questions on the [RStudio community site](https://community.rstudio.com/tag/tidymodels), [Stack Overflow](https://stackoverflow.com/questions/tagged/tidymodels?sort=newest), and [Twitter](https://twitter.com/search?q=%23tidymodels&f=live). Many people asking for help with tidymodels don't know what a [reprex](https://www.tidyverse.org/help#reprex) is or how to craft one. Acknowledging an individual's problem, showing them how to build a reprex, and pointing them to helpful resources are all enormously beneficial, even if you don't immediately solve their problem.
 
-Remember that while you might have seen a problem a hundred times before, its new to the person asking it. Be patient, polite, and empathic.
+Remember that while you might have seen a problem a hundred times before, it's new to the person asking it. Be patient, polite, and empathic.
 
 ## File issues
 
@@ -43,14 +43,15 @@ Documentation is a high priority for tidymodels, and pull requests to correct or
 
 If you are a more experienced R programmer, you may have the inclination, interest, and ability to contribute directly to package development. Before you submit a pull request on a tidymodels package, always file an issue and confirm the tidymodels team agrees with your idea and is happy with your basic proposal.
 
-The tidymodels packages are explicitly built to support the creation of other modeling packages, and we would love to hear about what you build! Check out [all our developer sources](/learn/), and read to learn about:
-
-- [Making a parsnip model from scratch](https://tidymodels.github.io/parsnip/articles/articles/Scratch.html)
-
-- [Creating custom recipe step functions](https://tidymodels.github.io/recipes/articles/Custom_Steps.html)
-
-- [Making custom yardstick metrics](https://tidymodels.github.io/yardstick/articles/custom-metrics.html)
-
 In tidymodels packages, we use the [tidyverse style guide](http://style.tidyverse.org/) which will make sure that your new code and documentation matches the existing style. This makes the review process much smoother.
+
+The tidymodels packages are explicitly built to support the creation of other modeling packages, and we would love to hear about what you build yourself! Check out [all our developer sources](/learn/TODO/), and read to learn about:
+
+- [Making a parsnip model from scratch](/learn/TODO/)
+
+- [Creating custom recipe step functions](/learn/TODO/)
+
+- [Making custom yardstick metrics](/learn/TODO/)
+
 
 
