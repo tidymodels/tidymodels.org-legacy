@@ -1,7 +1,8 @@
 ---
-title: "Custom tuning parameter functions"
+title: "How to create a tuning parameter function"
 tags: [dials]
 categories: []
+type: learn-subsection
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}
@@ -14,20 +15,23 @@ library(tidymodels)
 pkgs <- c("dials", "scales")
 ```
 
+# Learning objective
 
-`r req_pkgs(pkgs)`
+Build functions to use in tuning both quantitative and qualitative parameters
 
 # Introduction
+
+`r req_pkgs(pkgs)`
 
 Some models and recipe steps contain parameters that dials does not know about. You can construct new quantitative and qualitative parameters using `new_quant_param()` or `new_qual_param()`, respectively.  This article is a guide to creating new parameters. 
 
 # Quantitative parameters
 
-As an example, the multivariate adaptive regression spline ([MARS](https://en.wikipedia.org/wiki/Multivariate_adaptive_regression_spline)) model creates nonlinear features from predictors and adds them to a linear regression models. The earth pacakge is an excellent implementation of this method. 
+As an example, the multivariate adaptive regression spline ([MARS](https://en.wikipedia.org/wiki/Multivariate_adaptive_regression_spline)) model creates nonlinear features from predictors and adds them to a linear regression models. The earth package is an excellent implementation of this method. 
 
 MARS creates an initial set of features and then prunes them back to an appropriate size. This can be done automatically by `earth::earth()` or the number of final terms can be set by the user. The parsnip function `mars()` has a parameter called `num_terms` that defines this. 
 
-What if we want to create a parameter for the number of _initial terms_ included in the model. There is not argument in `parsnip::mars()` for this but we will make one. The argument name in `earth::earth()` is `nk`, which is not very descriptive. Our parameter will be called `num_initial_terms`. 
+What if we want to create a parameter for the number of _initial terms_ included in the model. There is no argument in `parsnip::mars()` for this but we will make one now. The argument name in `earth::earth()` is `nk`, which is not very descriptive. Our parameter will be called `num_initial_terms`. 
  
 We use the `new_quant_param()` function since this is a numeric parameter. The main two arguments to a numeric parameter function are `range` and `trans`. 
 
@@ -89,7 +93,7 @@ num_initial_terms() %>% value_sample(5)
 
 ## Finalizing parameters
 
-It might be the case that the range of the parameter is unknown. For example, parameters that are related to the number of column in a data set cannot be exactly specified in the absense of data. In those cases, a placeholder of `unknown()` can be added. This will force the user to "finalize" the parameter object for their particular data set. Let's redefine our function with an `unknown()` value: 
+It might be the case that the range of the parameter is unknown. For example, parameters that are related to the number of columns in a data set cannot be exactly specified in the absence of data. In those cases, a placeholder of `unknown()` can be added. This will force the user to "finalize" the parameter object for their particular data set. Let's redefine our function with an `unknown()` value: 
 
 ```{r num-initial-terms-unk, error = TRUE}
 num_initial_terms <- function(range = c(1L, unknown()), trans = NULL) {
@@ -114,7 +118,7 @@ The `finalize` argument of `num_initial_terms()` can take a function that uses d
 lsf.str("package:dials", pattern = "^get_")
 ```
 
-These functions generally take a data frame of predictors (in an argument called `x`) and at the range of the parameter object. Using the formula in the earth package, we might use: 
+These functions generally take a data frame of predictors (in an argument called `x`) and add the range of the parameter object. Using the formula in the earth package, we might use: 
 
 ```{r earth-range}
 get_initial_mars_terms <- function(object, x) {
@@ -148,7 +152,7 @@ num_initial_terms() %>% finalize(x = mtcars[, -1])
 
 # Qualitative parameters
 
-If a model includes a data aggregation step, we want to allow users to tune how our parameters are aggregated.  For example, it embedding methods, possible values might be `min`, `max`, `mean`, `sum`, or to not aggregate ("none"). Since these cannot be put on a numeric scale, they are a qualitative parameter. We'll take "character" input (not "logical"), and we must specify the allowed values. By default we won't aggregate.
+Now let's look at an example of a qualitative parameter. If a model includes a data aggregation step, we want to allow users to tune how our parameters are aggregated.  For example, in embedding methods, possible values might be `min`, `max`, `mean`, `sum`, or to not aggregate at all ("none"). Since these cannot be put on a numeric scale, they are possible values of a qualitative parameter. We'll take "character" input (not "logical"), and we must specify the allowed values. By default we won't aggregate.
 
 ```{r aggregation}
 aggregation <- function(values = c("none", "min", "max", "mean", "sum")) {
@@ -180,7 +184,7 @@ aggregation <- function(values = values_aggregation) {
 }
 ```
 
-This may not make sense if you are using the function in a script and not keeping it within a package. 
+This step may not make sense if you are using the function in a script and not keeping it within a package. 
 
 We can use our `aggregation` parameters with dials functions.
 
