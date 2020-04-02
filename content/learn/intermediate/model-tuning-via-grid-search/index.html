@@ -1,17 +1,20 @@
 ---
-title: "Model Tuning via Grid Search"
+title: "Model tuning via grid search"
 tags: [rsample, parsnip, tune, yardstick]
 categories: [model tuning]
 type: learn-subsection
 ---
 
-<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 
-<p>This article requires that you have the following packages installed: kernlab, mlbench, and tidymodels.</p>
+<div id="learning-objective" class="section level1">
+<h1>Learning objective</h1>
+<p>Choose hyperparameters for a model by training on a grid of many possible parameter values</p>
+</div>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
-<p>This article provides another example of tuning a model using grid search.</p>
+<p>This article requires that you have the following packages installed: kernlab, mlbench, and tidymodels.</p>
+<p>This article demonstrates how to tune a model using grid search. Many models have <strong>hyperparameters</strong> that can’t be learned directly from a single data set when training the model. Instead, we can train many models in a grid of possible hyperparameter values and see which ones turn out best.</p>
 </div>
 <div id="example-data" class="section level1">
 <h1>Example data</h1>
@@ -47,7 +50,7 @@ glm(Class ~ . - V2, data = Ionosphere, family = binomial)
 <pre class="r"><code>Ionosphere &lt;- Ionosphere %&gt;% select(-V2)</code></pre>
 </div>
 <div id="inputs-for-the-search" class="section level1">
-<h1>Inputs for the Search</h1>
+<h1>Inputs for the search</h1>
 <p>To demonstrate, we’ll fit a radial basis function support vector machine to these data and tune the SVM cost parameter and the <span class="math inline">\(\sigma\)</span> parameter in the kernel function:</p>
 <pre class="r"><code>svm_mod &lt;-
   svm_rbf(cost = tune(), rbf_sigma = tune()) %&gt;%
@@ -87,18 +90,32 @@ formula_res &lt;-
     control = ctrl
   )
 formula_res
+#&gt; Warning: This tuning result has notes.
+#&gt; Example notes on model fitting include:
+#&gt; formula: The `x` argument of `as_tibble.matrix()` must have column names if `.name_repair` is omitted as of tibble 2.0.0.
+#&gt; Using compatibility `.name_repair`.
+#&gt; This warning is displayed once every 8 hours.
+#&gt; Call `lifecycle::last_warnings()` to see where this warning was generated.
+#&gt; formula: The `x` argument of `as_tibble.matrix()` must have column names if `.name_repair` is omitted as of tibble 2.0.0.
+#&gt; Using compatibility `.name_repair`.
+#&gt; This warning is displayed once every 8 hours.
+#&gt; Call `lifecycle::last_warnings()` to see where this warning was generated.
+#&gt; formula: The `x` argument of `as_tibble.matrix()` must have column names if `.name_repair` is omitted as of tibble 2.0.0.
+#&gt; Using compatibility `.name_repair`.
+#&gt; This warning is displayed once every 8 hours.
+#&gt; Call `lifecycle::last_warnings()` to see where this warning was generated.
 #&gt; # Bootstrap sampling 
 #&gt; # A tibble: 30 x 4
 #&gt;    splits            id          .metrics          .notes          
-#&gt;  * &lt;list&gt;            &lt;chr&gt;       &lt;list&gt;            &lt;list&gt;          
-#&gt;  1 &lt;split [351/120]&gt; Bootstrap01 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
-#&gt;  2 &lt;split [351/130]&gt; Bootstrap02 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
-#&gt;  3 &lt;split [351/137]&gt; Bootstrap03 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
-#&gt;  4 &lt;split [351/141]&gt; Bootstrap04 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
-#&gt;  5 &lt;split [351/131]&gt; Bootstrap05 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
-#&gt;  6 &lt;split [351/131]&gt; Bootstrap06 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
-#&gt;  7 &lt;split [351/127]&gt; Bootstrap07 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
-#&gt;  8 &lt;split [351/123]&gt; Bootstrap08 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
+#&gt;    &lt;list&gt;            &lt;chr&gt;       &lt;list&gt;            &lt;list&gt;          
+#&gt;  1 &lt;split [351/120]&gt; Bootstrap01 &lt;tibble [10 × 5]&gt; &lt;tibble [1 × 1]&gt;
+#&gt;  2 &lt;split [351/130]&gt; Bootstrap02 &lt;tibble [10 × 5]&gt; &lt;tibble [1 × 1]&gt;
+#&gt;  3 &lt;split [351/137]&gt; Bootstrap03 &lt;tibble [10 × 5]&gt; &lt;tibble [1 × 1]&gt;
+#&gt;  4 &lt;split [351/141]&gt; Bootstrap04 &lt;tibble [10 × 5]&gt; &lt;tibble [1 × 1]&gt;
+#&gt;  5 &lt;split [351/131]&gt; Bootstrap05 &lt;tibble [10 × 5]&gt; &lt;tibble [1 × 1]&gt;
+#&gt;  6 &lt;split [351/131]&gt; Bootstrap06 &lt;tibble [10 × 5]&gt; &lt;tibble [1 × 1]&gt;
+#&gt;  7 &lt;split [351/127]&gt; Bootstrap07 &lt;tibble [10 × 5]&gt; &lt;tibble [1 × 1]&gt;
+#&gt;  8 &lt;split [351/123]&gt; Bootstrap08 &lt;tibble [10 × 5]&gt; &lt;tibble [1 × 1]&gt;
 #&gt;  9 &lt;split [351/131]&gt; Bootstrap09 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
 #&gt; 10 &lt;split [351/117]&gt; Bootstrap10 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
 #&gt; # … with 20 more rows</code></pre>
@@ -161,7 +178,7 @@ recipe_res
 #&gt; # Bootstrap sampling 
 #&gt; # A tibble: 30 x 4
 #&gt;    splits            id          .metrics          .notes          
-#&gt;  * &lt;list&gt;            &lt;chr&gt;       &lt;list&gt;            &lt;list&gt;          
+#&gt;    &lt;list&gt;            &lt;chr&gt;       &lt;list&gt;            &lt;list&gt;          
 #&gt;  1 &lt;split [351/120]&gt; Bootstrap01 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
 #&gt;  2 &lt;split [351/130]&gt; Bootstrap02 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
 #&gt;  3 &lt;split [351/137]&gt; Bootstrap03 &lt;tibble [10 × 5]&gt; &lt;tibble [0 × 1]&gt;
@@ -188,35 +205,35 @@ recipe_res
 <h1>Session information</h1>
 <pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────
 #&gt;  setting  value                       
-#&gt;  version  R version 3.6.1 (2019-07-05)
+#&gt;  version  R version 3.6.2 (2019-12-12)
 #&gt;  os       macOS Mojave 10.14.6        
 #&gt;  system   x86_64, darwin15.6.0        
 #&gt;  ui       X11                         
 #&gt;  language (EN)                        
 #&gt;  collate  en_US.UTF-8                 
 #&gt;  ctype    en_US.UTF-8                 
-#&gt;  tz       America/New_York            
-#&gt;  date     2020-03-26                  
+#&gt;  tz       America/Denver              
+#&gt;  date     2020-04-01                  
 #&gt; 
 #&gt; ─ Packages ───────────────────────────────────────────────────────────────────
-#&gt;  package    * version    date       lib source                             
-#&gt;  broom      * 0.5.4      2020-01-27 [1] CRAN (R 3.6.0)                     
-#&gt;  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.1)                     
-#&gt;  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                     
-#&gt;  ggplot2    * 3.3.0      2020-03-05 [1] CRAN (R 3.6.0)                     
-#&gt;  infer      * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                     
-#&gt;  kernlab    * 0.9-29     2019-11-12 [1] CRAN (R 3.6.0)                     
-#&gt;  mlbench    * 2.1-1      2012-07-10 [1] CRAN (R 3.6.0)                     
-#&gt;  parsnip    * 0.0.5.9000 2020-03-26 [1] local                              
-#&gt;  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                     
-#&gt;  recipes    * 0.1.10     2020-03-18 [1] CRAN (R 3.6.1)                     
-#&gt;  rlang        0.4.5.9000 2020-03-21 [1] Github (r-lib/rlang@a90b04b)       
-#&gt;  rsample    * 0.0.5.9000 2020-03-23 [1] Github (tidymodels/rsample@4fdbd6c)
-#&gt;  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                     
-#&gt;  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                     
-#&gt;  tune       * 0.0.1.9000 2020-03-21 [1] Github (tidymodels/tune@6694258)   
-#&gt;  workflows  * 0.1.0      2019-12-30 [1] CRAN (R 3.6.1)                     
-#&gt;  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                     
+#&gt;  package    * version      date       lib source                               
+#&gt;  broom      * 0.5.5        2020-02-29 [1] CRAN (R 3.6.0)                       
+#&gt;  dials      * 0.0.4.9000   2020-03-20 [1] local                                
+#&gt;  dplyr      * 0.8.5        2020-03-07 [1] CRAN (R 3.6.0)                       
+#&gt;  ggplot2    * 3.3.0        2020-03-05 [1] CRAN (R 3.6.0)                       
+#&gt;  infer      * 0.5.1        2019-11-19 [1] CRAN (R 3.6.0)                       
+#&gt;  kernlab    * 0.9-29       2019-11-12 [1] CRAN (R 3.6.0)                       
+#&gt;  mlbench    * 2.1-1        2012-07-10 [1] CRAN (R 3.6.0)                       
+#&gt;  parsnip    * 0.0.5        2020-01-07 [1] CRAN (R 3.6.2)                       
+#&gt;  purrr      * 0.3.3        2019-10-18 [1] CRAN (R 3.6.0)                       
+#&gt;  recipes    * 0.1.10       2020-03-18 [1] CRAN (R 3.6.0)                       
+#&gt;  rlang        0.4.5.9000   2020-03-20 [1] Github (r-lib/rlang@a90b04b)         
+#&gt;  rsample    * 0.0.5        2019-07-12 [1] CRAN (R 3.6.0)                       
+#&gt;  tibble     * 2.99.99.9014 2020-03-26 [1] Github (tidyverse/tibble@2448bb0)    
+#&gt;  tidymodels * 0.1.0        2020-02-16 [1] CRAN (R 3.6.0)                       
+#&gt;  tune       * 0.0.1.9000   2020-03-23 [1] local                                
+#&gt;  workflows  * 0.1.1.9000   2020-03-20 [1] Github (tidymodels/workflows@e995c18)
+#&gt;  yardstick  * 0.0.5.9000   2020-03-20 [1] Github (tidymodels/yardstick@6a9a69a)
 #&gt; 
 #&gt; [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library</code></pre>
 </div>

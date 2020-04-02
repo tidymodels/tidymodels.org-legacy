@@ -8,7 +8,6 @@ output:
     toc: true
 ---
 
-<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 <script src="/rmarkdown-libs/kePrint/kePrint.js"></script>
 
 <div id="TOC">
@@ -35,7 +34,7 @@ output:
 <p><img src="img/cells.png" width="242" style="display: block; margin: auto;" /></p>
 <p>Using these colors, the cells in an image can be <em>segmented</em> so that we know which pixels belong to which cell. If this is done well, the cell can be measured in different ways that are important to the biology. Sometimes the shape of the cell matters and different mathematical tools are used to summarize characteristics like the size or “oblongness” of the cell.</p>
 <p>The bottom panel shows some segmentation results. Cells 1 and 5 are fairly well segmented. However, cells 2 to 4 are bunched up together because the segmentation was not very good. The consequence of bad segmentation is data contamination; when the biologist analyzes the shape or size of these cells, the data are inaccurate and could lead to the wrong conclusion.</p>
-<p>A cell-based experiment might involve millions of cells so it is unfeasible to visually assessment all. Instead, a subsample can be created and the cells can be manually labeled by experts as either poorly segmented (<code>PS</code>) or well-segmented (<code>WS</code>). If we can predict these labels accurately, the larger data set can be improved by filtering out the cells most likely to be poorly segmented.</p>
+<p>A cell-based experiment might involve millions of cells so it is unfeasible to visually assess them all. Instead, a subsample can be created and these cells can be manually labeled by experts as either poorly segmented (<code>PS</code>) or well-segmented (<code>WS</code>). If we can predict these labels accurately, the larger data set can be improved by filtering out the cells most likely to be poorly segmented.</p>
 <p>An example data set called <code>cells</code> is contained in the modeldata package. It has labeled data for 2019 cells. Each also has a total of 56 predictors based on automated image analysis measurements. For example, <code>avg_inten_ch_1</code> is the mean intensity of the data contained in the nucleus, <code>area_ch_1</code> is the total size of the cell, and so on (some predictors are fairly arcane in nature).</p>
 <pre class="r"><code>data(cells, package = &quot;modeldata&quot;)
 cells
@@ -92,7 +91,7 @@ class_rates
 <p>There are different ways to create these partitions of the data. The most common approach is to use a random sample. Suppose that one quarter of the data were reserved for the test set. Random sampling would randomly select 25% for the test set and use the remainder for the training set. We can use the rsample package for this purpose. In the original analysis, the authors made their own training/test set and that information is contained in the column <code>case</code>. To demonstrate how to make a split, we’ll remove this column before we make our own split.</p>
 <p>Since random sampling uses random numbers, it is important to set the random number seed. This ensures that the random numbers can be reproduced at a later time (if needed).</p>
 <p><code>rsample::initial_split()</code> takes the original data and saves the information on how to make the partitions. After that, the <code>training()</code> and <code>testing()</code> functions return the actual data sets:</p>
-<pre class="r"><code>library(tidymodels) # Load the rsample package
+<pre class="r"><code>library(tidymodels) # Load the rsample package, along with the rest of tidymodels
 
 set.seed(123)
 cell_split &lt;- initial_split(cells %&gt;% select(-case), strata = class)
@@ -107,20 +106,20 @@ nrow(cell_train)/nrow(cells)
 </div>
 <div id="modeling" class="section level1">
 <h1>Modeling</h1>
-<p>Random forest models are ensembles of decisions trees. A large number of tree models are created for the ensemble based on slightly different versions of the training set. When creating the individual decision trees, the fitting process encourages then to be as diverse as possible. The collection of trees are combined into the random forest model and, when a new sample is predicted, the votes from each tree are used to calculate the final predicted value for the new sample.</p>
+<p>Random forest models are ensembles of decisions trees. A large number of tree models are created for the ensemble based on slightly different versions of the training set. When creating the individual decision trees, the fitting process encourages them to be as diverse as possible. The collection of trees are combined into the random forest model and, when a new sample is predicted, the votes from each tree are used to calculate the final predicted value for the new sample.</p>
 <p>This model is very low maintenance; it requires very little pre-processing of the data and, while it can be tuned, the default parameters tend to give reasonable results. At the same time, the number of trees in the ensemble should be large (in the thousands) and this makes the model moderately expensive to compute.</p>
-<p>To fit a random forest model on the training set, use the parsnip package in conjunction with the ranger package. We first define the model that we want to create:</p>
+<p>To fit a random forest model on the training set, let’s use the parsnip package in conjunction with the ranger package. We first define the model that we want to create:</p>
 <pre class="r"><code>rf_mod &lt;- 
   rand_forest(trees = 1000) %&gt;% 
   set_engine(&quot;ranger&quot;) %&gt;% 
   set_mode(&quot;classification&quot;)</code></pre>
-<p>From this, the <code>fit()</code> function can be used with a simple model formula. Since random forest uses random numbers, we again set the seed prior to computing:</p>
+<p>From this, the <code>fit()</code> function can be used with a simple model formula. Since random forest models use random numbers, we again set the seed prior to computing:</p>
 <pre class="r"><code>set.seed(5273)
 rf_fit &lt;- rf_mod %&gt;% fit(class ~ ., data = cell_train)
 rf_fit
 #&gt; parsnip model object
 #&gt; 
-#&gt; Fit time:  2.3s 
+#&gt; Fit time:  2.4s 
 #&gt; Ranger result
 #&gt; 
 #&gt; Call:
@@ -138,7 +137,7 @@ rf_fit
 </div>
 <div id="estimating-performance" class="section level1">
 <h1>Estimating performance</h1>
-<p>In the course of any modeling project, we might create a variety of different models. To choose between them, we need to consider some performance statistics. In our example in this tutorial, we could compute:</p>
+<p>During a modeling project, we might create a variety of different models. To choose between them, we need to consider how well these models do, as measured by some performance statistics. In our example in this article, some options we could use are:</p>
 <ul>
 <li><p>the area under the Receiver Operating Characteristic (ROC) curve, and</p></li>
 <li><p>overall classification accuracy.</p></li>
@@ -356,7 +355,7 @@ Fold10
 </table>
 <p>From these resampling statistics, the final estimate of performance for this random forest model would be 0.9023028 for the area under the ROC curve and 0.8257842 for accuracy.</p>
 <p>These resampling statistics are an effective method for measuring model performance <em>without</em> predicting the training set directly as a whole.</p>
-<p>To generate these results, the first step is to create a resampling object using rsample. There are several resampling methods implemented and cross-validation folds can be created using <code>vfold_cv()</code>:</p>
+<p>To generate these results, the first step is to create a resampling object using rsample. There are several resampling methods implemented in rsample and cross-validation folds can be created using <code>vfold_cv()</code>:</p>
 <pre class="r"><code>set.seed(1697)
 folds &lt;- vfold_cv(cell_train, v = 10)
 folds
@@ -383,7 +382,7 @@ rf_fit_rs &lt;- rf_mod %&gt;%
 #&gt; #  10-fold cross-validation 
 #&gt; # A tibble: 10 x 4
 #&gt;    splits             id     .metrics         .notes          
-#&gt;  * &lt;list&gt;             &lt;chr&gt;  &lt;list&gt;           &lt;list&gt;          
+#&gt;    &lt;list&gt;             &lt;chr&gt;  &lt;list&gt;           &lt;list&gt;          
 #&gt;  1 &lt;split [1.4K/152]&gt; Fold01 &lt;tibble [2 × 3]&gt; &lt;tibble [0 × 1]&gt;
 #&gt;  2 &lt;split [1.4K/152]&gt; Fold02 &lt;tibble [2 × 3]&gt; &lt;tibble [0 × 1]&gt;
 #&gt;  3 &lt;split [1.4K/152]&gt; Fold03 &lt;tibble [2 × 3]&gt; &lt;tibble [0 × 1]&gt;
@@ -418,35 +417,35 @@ roc_auc(rf_testing_pred,  truth = class, .pred_PS)
 <h1>Session information</h1>
 <pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────
 #&gt;  setting  value                       
-#&gt;  version  R version 3.6.1 (2019-07-05)
+#&gt;  version  R version 3.6.2 (2019-12-12)
 #&gt;  os       macOS Mojave 10.14.6        
 #&gt;  system   x86_64, darwin15.6.0        
 #&gt;  ui       X11                         
 #&gt;  language (EN)                        
 #&gt;  collate  en_US.UTF-8                 
 #&gt;  ctype    en_US.UTF-8                 
-#&gt;  tz       America/New_York            
-#&gt;  date     2020-03-26                  
+#&gt;  tz       America/Denver              
+#&gt;  date     2020-04-01                  
 #&gt; 
 #&gt; ─ Packages ───────────────────────────────────────────────────────────────────
-#&gt;  package    * version    date       lib source                             
-#&gt;  broom      * 0.5.4      2020-01-27 [1] CRAN (R 3.6.0)                     
-#&gt;  dials      * 0.0.4.9000 2020-03-21 [1] local                              
-#&gt;  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                     
-#&gt;  ggplot2    * 3.3.0      2020-03-05 [1] CRAN (R 3.6.0)                     
-#&gt;  infer      * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                     
-#&gt;  modeldata  * 0.0.1      2019-12-06 [1] CRAN (R 3.6.0)                     
-#&gt;  parsnip    * 0.0.5.9000 2020-03-26 [1] local                              
-#&gt;  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                     
-#&gt;  ranger     * 0.12.1     2020-01-10 [1] CRAN (R 3.6.0)                     
-#&gt;  recipes    * 0.1.10     2020-03-18 [1] CRAN (R 3.6.1)                     
-#&gt;  rlang        0.4.5.9000 2020-03-21 [1] Github (r-lib/rlang@a90b04b)       
-#&gt;  rsample    * 0.0.5.9000 2020-03-23 [1] Github (tidymodels/rsample@4fdbd6c)
-#&gt;  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                     
-#&gt;  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                     
-#&gt;  tune       * 0.0.1.9000 2020-03-21 [1] Github (tidymodels/tune@6694258)   
-#&gt;  workflows  * 0.1.0      2019-12-30 [1] CRAN (R 3.6.1)                     
-#&gt;  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                     
+#&gt;  package    * version      date       lib source                               
+#&gt;  broom      * 0.5.5        2020-02-29 [1] CRAN (R 3.6.0)                       
+#&gt;  dials      * 0.0.4.9000   2020-03-20 [1] local                                
+#&gt;  dplyr      * 0.8.5        2020-03-07 [1] CRAN (R 3.6.0)                       
+#&gt;  ggplot2    * 3.3.0        2020-03-05 [1] CRAN (R 3.6.0)                       
+#&gt;  infer      * 0.5.1        2019-11-19 [1] CRAN (R 3.6.0)                       
+#&gt;  modeldata  * 0.0.1        2019-12-06 [1] CRAN (R 3.6.0)                       
+#&gt;  parsnip    * 0.0.5        2020-01-07 [1] CRAN (R 3.6.2)                       
+#&gt;  purrr      * 0.3.3        2019-10-18 [1] CRAN (R 3.6.0)                       
+#&gt;  ranger     * 0.12.1       2020-01-10 [1] CRAN (R 3.6.0)                       
+#&gt;  recipes    * 0.1.10       2020-03-18 [1] CRAN (R 3.6.0)                       
+#&gt;  rlang        0.4.5.9000   2020-03-20 [1] Github (r-lib/rlang@a90b04b)         
+#&gt;  rsample    * 0.0.5        2019-07-12 [1] CRAN (R 3.6.0)                       
+#&gt;  tibble     * 2.99.99.9014 2020-03-26 [1] Github (tidyverse/tibble@2448bb0)    
+#&gt;  tidymodels * 0.1.0        2020-02-16 [1] CRAN (R 3.6.0)                       
+#&gt;  tune       * 0.0.1.9000   2020-03-23 [1] local                                
+#&gt;  workflows  * 0.1.1.9000   2020-03-20 [1] Github (tidymodels/workflows@e995c18)
+#&gt;  yardstick  * 0.0.5.9000   2020-03-20 [1] Github (tidymodels/yardstick@6a9a69a)
 #&gt; 
 #&gt; [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library</code></pre>
 </div>

@@ -1,39 +1,47 @@
 ---
-title: "Time Series Analysis Example"
+title: "Modeling time series with tidy resampling"
 tags: [rsample]
+categories: [model fitting, resampling]
+type: learn-subsection
 ---
 
-<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 
-<p>This article requires that you have the following packages installed: forecast, sweep, tidymodels, timetk, and zoo.</p>
+<div id="learning-objective" class="section level1">
+<h1>Learning objective</h1>
+<p>Calculate performance estimates for time series forecasts using resampling</p>
+</div>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
-<p>“<a href="http://www.business-science.io/code-tools/2017/10/25/demo_week_sweep.html">Demo Week: Tidy Forecasting with sweep</a>” is an excellent article that uses tidy methods with time series. This article uses their analysis with rsample to get performance estimates for future observations using <a href="https://robjhyndman.com/hyndsight/crossvalidation/">rolling forecast origin resampling</a>.</p>
+<p>This article requires that you have the following packages installed: forecast, sweep, tidymodels, timetk, and zoo.</p>
+<p>“<a href="http://www.business-science.io/code-tools/2017/10/25/demo_week_sweep.html">Demo Week: Tidy Forecasting with sweep</a>” is an excellent article that uses tidy methods with time series. This article uses their analysis with rsample to find performance estimates for future observations using <a href="https://robjhyndman.com/hyndsight/crossvalidation/">rolling forecast origin resampling</a>.</p>
 </div>
 <div id="example-data" class="section level1">
 <h1>Example data</h1>
-<p>The data are sales of alcoholic beverages originally from <a href="https://fred.stlouisfed.org/series/S4248SM144NCEN">the Federal Reserve Bank of St. Louis website</a>.</p>
+<p>The data for this article are sales of alcoholic beverages originally from <a href="https://fred.stlouisfed.org/series/S4248SM144NCEN">the Federal Reserve Bank of St. Louis website</a>.</p>
 <pre class="r"><code>library(tidymodels)
 library(modeldata)
 data(&quot;drinks&quot;)
-str(drinks, give.att = FALSE)
-#&gt; Classes &#39;tbl_df&#39;, &#39;tbl&#39; and &#39;data.frame&#39;:    309 obs. of  2 variables:
-#&gt;  $ date          : Date, format: &quot;1992-01-01&quot; &quot;1992-02-01&quot; ...
-#&gt;  $ S4248SM144NCEN: num  3459 3458 4002 4564 4221 ...</code></pre>
-<p>Each row is a month of sales (in millions of US dollars).</p>
+glimpse(drinks)
+#&gt; Rows: 309
+#&gt; Columns: 2
+#&gt; $ date           &lt;date&gt; 1992-01-01, 1992-02-01, 1992-03-01, 1992-04-01, 1992-…
+#&gt; $ S4248SM144NCEN &lt;dbl&gt; 3459, 3458, 4002, 4564, 4221, 4529, 4466, 4137, 4126, …</code></pre>
+<p>Each row represents one month of sales (in millions of US dollars).</p>
 </div>
 <div id="time-series-resampling" class="section level1">
 <h1>Time series resampling</h1>
-<p>Suppose that predictions for one year ahead were needed and the model should use the most recent data from the last 20 years. To setup this resampling scheme:</p>
+<p>Suppose that we need predictions for one year ahead and our model should use the most recent data from the last 20 years. To set up this resampling scheme:</p>
 <pre class="r"><code>roll_rs &lt;- rolling_origin(
   drinks, 
   initial = 12 * 20, 
   assess = 12,
   cumulative = FALSE
   )
+
 nrow(roll_rs)
 #&gt; [1] 58
+
 roll_rs
 #&gt; # Rolling origin forecast resampling 
 #&gt; # A tibble: 58 x 2
@@ -52,7 +60,6 @@ roll_rs
 #&gt; # … with 48 more rows</code></pre>
 <p>Each <code>split</code> element contains the information about that resample:</p>
 <pre class="r"><code>roll_rs$splits[[1]]
-#&gt; &lt;Training/Validation/Total&gt;
 #&gt; &lt;240/12/309&gt;</code></pre>
 <p>For plotting, let’s index each split by the first day of the assessment set:</p>
 <pre class="r"><code>get_date &lt;- function(x) {
@@ -64,7 +71,7 @@ roll_rs$start_date &lt;- do.call(&quot;c&quot;, start_date)
 head(roll_rs$start_date)
 #&gt; [1] &quot;2012-01-01&quot; &quot;2012-02-01&quot; &quot;2012-03-01&quot; &quot;2012-04-01&quot; &quot;2012-05-01&quot;
 #&gt; [6] &quot;2012-06-01&quot;</code></pre>
-<p>This resampling scheme has 58 splits of the data so that there will be 58 ARIMA models that are fit. To create the models, the <code>auto.arima()</code> function from the forecast package is used. The functions <code>analysis()</code> and <code>assessment()</code> return the data frame, so another step converts the data in to a <code>ts</code> object called <code>mod_dat</code> using a function in the timetk package.</p>
+<p>This resampling scheme has 58 splits of the data so that there will be 58 ARIMA models that are fit. To create the models, we use the <code>auto.arima()</code> function from the forecast package. The rsample functions <code>analysis()</code> and <code>assessment()</code> return a data frame, so another step converts the data to a <code>ts</code> object called <code>mod_dat</code> using a function in the timetk package.</p>
 <pre class="r"><code>library(forecast)  # for `auto.arima`
 library(timetk)    # for `tk_ts`
 library(zoo)       # for `as.yearmon`
@@ -80,7 +87,7 @@ fit_model &lt;- function(x, ...) {
           silent = TRUE) %&gt;%
     auto.arima(...)
 }</code></pre>
-<p>Each model is saved in a new column:</p>
+<p>Save each model in a new column:</p>
 <pre class="r"><code>roll_rs$arima &lt;- map(roll_rs$splits, fit_model)
 
 # For example:
@@ -89,19 +96,22 @@ roll_rs$arima[[1]]
 #&gt; ARIMA(4,1,1)(0,1,2)[12] 
 #&gt; 
 #&gt; Coefficients:
-#&gt;           ar1      ar2     ar3      ar4      ma1    sma1     sma2
-#&gt;       -0.1852  -0.0238  0.3577  -0.1517  -0.8311  -0.193  -0.3244
-#&gt; s.e.   0.1466   0.1656  0.1440   0.0809   0.1377   0.067   0.0640
+#&gt;          ar1     ar2    ar3     ar4     ma1    sma1    sma2
+#&gt;       -0.185  -0.024  0.358  -0.152  -0.831  -0.193  -0.324
+#&gt; s.e.   0.147   0.166  0.144   0.081   0.138   0.067   0.064
 #&gt; 
-#&gt; sigma^2 estimated as 72198:  log likelihood=-1591.15
-#&gt; AIC=3198.3   AICc=3198.97   BIC=3225.7</code></pre>
-<p>(There are some warnings produced by these first regarding extra columns in the data that can be ignored)</p>
-<p>Using the model fits, performance will be measured in two ways:</p>
+#&gt; sigma^2 estimated as 72198:  log likelihood=-1591
+#&gt; AIC=3198   AICc=3199   BIC=3226</code></pre>
+<p>(There are some warnings produced by these regarding extra columns in the data that can be ignored.)</p>
+</div>
+<div id="model-performance" class="section level1">
+<h1>Model performance</h1>
+<p>Using the model fits, let’s measure performance in two ways:</p>
 <ul>
-<li><em>interpolation</em> error will measure how well the model fits to the data that were used to create the model. This is most likely optimistic since no holdout method is used.</li>
-<li><em>extrapolation</em> or <em>forecast</em> error evaluates the efficacy of the model on the data from the following year (that were not used in the model fit).</li>
+<li><em>Interpolation</em> error will measure how well the model fits to the data that were used to create the model. This is most likely optimistic since no holdout method is used.</li>
+<li><em>Extrapolation</em> or <em>forecast</em> error evaluates the efficacy of the model on the data from the following year (that were not used in the model fit).</li>
 </ul>
-<p>In each case, the mean absolute percent error (MAPE) is the statistic used to characterize the model fits. The interpolation error can be computed from the <code>Arima</code> object. to make things easy, the sweep package’s <code>sw_glance()</code> function is used:</p>
+<p>In each case, the mean absolute percent error (MAPE) is the statistic used to characterize the model fits. The interpolation error can be computed from the <code>Arima</code> object. To make things easy, let’s use the sweep package’s <code>sw_glance()</code> function:</p>
 <pre class="r"><code>library(sweep)
 
 roll_rs$interpolation &lt;- map_dbl(
@@ -109,9 +119,10 @@ roll_rs$interpolation &lt;- map_dbl(
   function(x) 
     sw_glance(x)[[&quot;MAPE&quot;]]
   )
+
 summary(roll_rs$interpolation)
 #&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-#&gt;   2.841   2.921   2.950   2.947   2.969   3.135</code></pre>
+#&gt;    2.84    2.92    2.95    2.95    2.97    3.13</code></pre>
 <p>For the extrapolation error, the model and split objects are required. Using these:</p>
 <pre class="r"><code>get_extrap &lt;- function(split, mod) {
   n &lt;- nrow(assessment(split))
@@ -129,7 +140,7 @@ roll_rs$extrapolation &lt;-
 
 summary(roll_rs$extrapolation)
 #&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-#&gt;   2.371   3.227   3.629   3.653   4.113   5.453</code></pre>
+#&gt;    2.37    3.23    3.63    3.65    4.11    5.45</code></pre>
 <p>What do these error estimates look like over time?</p>
 <pre class="r"><code>roll_rs %&gt;%
   select(interpolation, extrapolation, start_date) %&gt;%
@@ -138,9 +149,9 @@ summary(roll_rs$extrapolation)
   geom_point() + 
   geom_line()</code></pre>
 <p><img src="figs/plot-1.svg" width="672" /></p>
-<p>It is likely that the interpolation error is an underestimate to some degree.</p>
+<p>It is likely that the interpolation error is an underestimate to some degree, as mentioned above.</p>
 <p>It is also worth noting that <code>rolling_origin()</code> can be used over calendar periods, rather than just over a fixed window size. This is especially useful for irregular series where a fixed window size might not make sense because of missing data points, or because of calendar features like different months having a different number of days.</p>
-<p>The example below demonstrates this idea by splitting <code>drinks</code> into a nested set of 26 years, and rolling over years rather than months. Note that the end result accomplishes a different task than the original example, in this case, each slice moves forward an entire year, rather than just one month.</p>
+<p>The example below demonstrates this idea by splitting <code>drinks</code> into a nested set of 26 years, and rolling over years rather than months. Note that the end result accomplishes a different task than the original example; in this new case, each slice moves forward an entire year, rather than just one month.</p>
 <pre class="r"><code># The idea is to nest by the period to roll over,
 # which in this case is the year.
 roll_rs_annual &lt;- drinks %&gt;%
@@ -197,37 +208,37 @@ each analysis set together.</p>
 <h1>Session information</h1>
 <pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────
 #&gt;  setting  value                       
-#&gt;  version  R version 3.6.1 (2019-07-05)
+#&gt;  version  R version 3.6.2 (2019-12-12)
 #&gt;  os       macOS Mojave 10.14.6        
 #&gt;  system   x86_64, darwin15.6.0        
 #&gt;  ui       X11                         
 #&gt;  language (EN)                        
 #&gt;  collate  en_US.UTF-8                 
 #&gt;  ctype    en_US.UTF-8                 
-#&gt;  tz       America/New_York            
-#&gt;  date     2020-03-26                  
+#&gt;  tz       America/Denver              
+#&gt;  date     2020-04-01                  
 #&gt; 
 #&gt; ─ Packages ───────────────────────────────────────────────────────────────────
-#&gt;  package    * version    date       lib source                             
-#&gt;  broom      * 0.5.4      2020-01-27 [1] CRAN (R 3.6.0)                     
-#&gt;  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.1)                     
-#&gt;  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                     
-#&gt;  forecast   * 8.9        2019-08-22 [1] CRAN (R 3.6.0)                     
-#&gt;  ggplot2    * 3.3.0      2020-03-05 [1] CRAN (R 3.6.0)                     
-#&gt;  infer      * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                     
-#&gt;  parsnip    * 0.0.5.9000 2020-03-26 [1] local                              
-#&gt;  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                     
-#&gt;  recipes    * 0.1.10     2020-03-18 [1] CRAN (R 3.6.1)                     
-#&gt;  rlang        0.4.5.9000 2020-03-21 [1] Github (r-lib/rlang@a90b04b)       
-#&gt;  rsample    * 0.0.5.9000 2020-03-23 [1] Github (tidymodels/rsample@4fdbd6c)
-#&gt;  sweep      * 0.2.2      2019-10-08 [1] CRAN (R 3.6.0)                     
-#&gt;  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                     
-#&gt;  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                     
-#&gt;  timetk     * 0.1.2      2019-09-25 [1] CRAN (R 3.6.0)                     
-#&gt;  tune       * 0.0.1.9000 2020-03-21 [1] Github (tidymodels/tune@6694258)   
-#&gt;  workflows  * 0.1.0      2019-12-30 [1] CRAN (R 3.6.1)                     
-#&gt;  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                     
-#&gt;  zoo        * 1.8-7      2020-01-10 [1] CRAN (R 3.6.0)                     
+#&gt;  package    * version      date       lib source                               
+#&gt;  broom      * 0.5.5        2020-02-29 [1] CRAN (R 3.6.0)                       
+#&gt;  dials      * 0.0.4.9000   2020-03-20 [1] local                                
+#&gt;  dplyr      * 0.8.5        2020-03-07 [1] CRAN (R 3.6.0)                       
+#&gt;  forecast   * 8.11         2020-02-09 [1] CRAN (R 3.6.0)                       
+#&gt;  ggplot2    * 3.3.0        2020-03-05 [1] CRAN (R 3.6.0)                       
+#&gt;  infer      * 0.5.1        2019-11-19 [1] CRAN (R 3.6.0)                       
+#&gt;  parsnip    * 0.0.5        2020-01-07 [1] CRAN (R 3.6.2)                       
+#&gt;  purrr      * 0.3.3        2019-10-18 [1] CRAN (R 3.6.0)                       
+#&gt;  recipes    * 0.1.10       2020-03-18 [1] CRAN (R 3.6.0)                       
+#&gt;  rlang        0.4.5.9000   2020-03-20 [1] Github (r-lib/rlang@a90b04b)         
+#&gt;  rsample    * 0.0.5        2019-07-12 [1] CRAN (R 3.6.0)                       
+#&gt;  sweep      * 0.2.2        2019-10-08 [1] CRAN (R 3.6.0)                       
+#&gt;  tibble     * 2.99.99.9014 2020-03-26 [1] Github (tidyverse/tibble@2448bb0)    
+#&gt;  tidymodels * 0.1.0        2020-02-16 [1] CRAN (R 3.6.0)                       
+#&gt;  timetk     * 0.1.3        2020-03-18 [1] CRAN (R 3.6.0)                       
+#&gt;  tune       * 0.0.1.9000   2020-03-23 [1] local                                
+#&gt;  workflows  * 0.1.1.9000   2020-03-20 [1] Github (tidymodels/workflows@e995c18)
+#&gt;  yardstick  * 0.0.5.9000   2020-03-20 [1] Github (tidymodels/yardstick@6a9a69a)
+#&gt;  zoo        * 1.8-7        2020-01-10 [1] CRAN (R 3.6.0)                       
 #&gt; 
 #&gt; [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library</code></pre>
 </div>

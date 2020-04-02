@@ -1,16 +1,25 @@
 ---
-title: "K-Means Clustering with dplyr and broom"
+title: "K-means clustering with tidy data principles"
 tags: [broom]
+categories: [statistical analysis]
 type: learn-subsection
 ---
 
-<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 
-<p>This article only requires that the tidymodels package be installed.</p>
+<div id="learning-objective" class="section level1">
+<h1>Learning objective</h1>
+<p>Summarize clustering characteristics and estimate the best number of clusters for a data set</p>
+</div>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
-<p>K-means clustering serves as a very useful example of tidy data, and especially the distinction between the three tidying functions: <code>tidy()</code>, <code>augment()</code>, and <code>glance()</code>.</p>
+<p>This article only requires that the tidymodels package be installed.</p>
+<p>K-means clustering serves as a very useful example of applying tidy data principles to statistical analysis, and especially the distinction between the three tidying functions:</p>
+<ul>
+<li><code>tidy()</code></li>
+<li><code>augment()</code></li>
+<li><code>glance()</code></li>
+</ul>
 <p>Let’s start by generating some random two-dimensional data with three clusters. Data in each cluster will come from a multivariate gaussian distribution, with different means for each cluster:</p>
 <pre class="r"><code>library(tidymodels)
 
@@ -45,10 +54,10 @@ kclust
 #&gt; K-means clustering with 3 clusters of sizes 148, 51, 101
 #&gt; 
 #&gt; Cluster means:
-#&gt;            x1        x2
-#&gt; 1  0.08853475  1.045461
-#&gt; 2 -3.14292460 -2.000043
-#&gt; 3  5.00401249 -1.045811
+#&gt;        x1    x2
+#&gt; 1  0.0885  1.05
+#&gt; 2 -3.1429 -2.00
+#&gt; 3  5.0040 -1.05
 #&gt; 
 #&gt; Clustering vector:
 #&gt;   [1] 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
@@ -62,7 +71,7 @@ kclust
 #&gt; [297] 2 2 2 2
 #&gt; 
 #&gt; Within cluster sum of squares by cluster:
-#&gt; [1] 298.9415 108.8112 243.2092
+#&gt; [1] 299 109 243
 #&gt;  (between_SS / total_SS =  82.5 %)
 #&gt; 
 #&gt; Available components:
@@ -80,14 +89,14 @@ summary(kclust)
 #&gt; size           3    -none- numeric
 #&gt; iter           1    -none- numeric
 #&gt; ifault         1    -none- numeric</code></pre>
-<p>The output is a list of vectors, where each component has a different length. There’s one of length 300: the same as our original dataset. There are a number of elements of length 3: <code>withinss</code>, <code>tot.withinss</code>, and <code>betweenss</code>- and <code>centers</code> is a matrix with 3 rows. And then there are the elements of length 1: <code>totss</code>, <code>tot.withinss</code>, <code>betweenss</code>, and <code>iter</code>.</p>
-<p>These differing lengths have a deeper meaning when we want to tidy our dataset: they signify that each type of component communicates a <em>different kind</em> of information.</p>
+<p>The output is a list of vectors, where each component has a different length. There’s one of length 300: the same as our original data set. There are a number of elements of length 3: <code>withinss</code>, <code>tot.withinss</code>, and <code>betweenss</code>- and <code>centers</code> is a matrix with 3 rows. And then there are the elements of length 1: <code>totss</code>, <code>tot.withinss</code>, <code>betweenss</code>, and <code>iter</code>.</p>
+<p>These differing lengths have a deeper meaning when we want to tidy our data set: they signify that each type of component communicates a <em>different kind</em> of information.</p>
 <ul>
 <li><code>cluster</code> (300 values) contains information about each <em>point</em></li>
 <li><code>centers</code>, <code>withinss</code> and <code>size</code> (3 values) contain information about each <em>cluster</em></li>
 <li><code>totss</code>, <code>tot.withinss</code>, <code>betweenss</code>, and <code>iter</code> (1 value) contain information about the <em>full clustering</em></li>
 </ul>
-<p>Which of these do we want to extract? There is no right answer: each of them may be interesting to an analyst. Because they communicate entirely different information (not to mention there’s no straightforward way to combine them), they are extracted by separate functions. <code>augment</code> adds the point classifications to the original dataset:</p>
+<p>Which of these do we want to extract? There is no right answer: each of them may be interesting to an analyst. Because they communicate entirely different information (not to mention there’s no straightforward way to combine them), they are extracted by separate functions. <code>augment</code> adds the point classifications to the original data set:</p>
 <pre class="r"><code>augment(kclust, points)
 #&gt; # A tibble: 300 x 3
 #&gt;       x1     x2 .cluster
@@ -120,7 +129,7 @@ summary(kclust)
 </div>
 <div id="broom-and-dplyr-for-exploratory-clustering" class="section level1">
 <h1>{broom} and {dplyr} for exploratory clustering</h1>
-<p>While these summaries are useful, they would not have been too difficult to extract out from the dataset yourself. The real power comes from combining these analyses with dplyr.</p>
+<p>While these summaries are useful, they would not have been too difficult to extract out from the data set yourself. The real power comes from combining these analyses with dplyr.</p>
 <p>Let’s say we want to explore the effect of different choices of <code>k</code>, from 1 to 9, on this clustering. First cluster the data 9 times, each using a different value of <code>k</code>, then create columns containing the tidied, glanced and augmented data:</p>
 <pre class="r"><code>kclusts &lt;- 
   tibble(k = 1:9) %&gt;%
@@ -144,8 +153,8 @@ kclusts
 #&gt; 7     7 &lt;kmeans&gt; &lt;tibble [7 × 5]&gt; &lt;tibble [1 × 4]&gt; &lt;tibble [300 × 3]&gt;
 #&gt; 8     8 &lt;kmeans&gt; &lt;tibble [8 × 5]&gt; &lt;tibble [1 × 4]&gt; &lt;tibble [300 × 3]&gt;
 #&gt; 9     9 &lt;kmeans&gt; &lt;tibble [9 × 5]&gt; &lt;tibble [1 × 4]&gt; &lt;tibble [300 × 3]&gt;</code></pre>
-<p>We can turn these into three separate datasets each representing a different type of data:
-Then tidy the clusterings three ways: using <code>tidy()</code>, using <code>augment()</code>, and using <code>glance()</code>. Each of these goes into a separate dataset as they represent different types of data.</p>
+<p>We can turn these into three separate data sets each representing a different type of data:
+Then tidy the clusterings three ways: using <code>tidy()</code>, using <code>augment()</code>, and using <code>glance()</code>. Each of these goes into a separate data set as they represent different types of data.</p>
 <pre class="r"><code>clusters &lt;- 
   kclusts %&gt;%
   unnest(cols = c(tidied))
@@ -179,33 +188,33 @@ p2</code></pre>
 <h1>Session information</h1>
 <pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────
 #&gt;  setting  value                       
-#&gt;  version  R version 3.6.1 (2019-07-05)
+#&gt;  version  R version 3.6.2 (2019-12-12)
 #&gt;  os       macOS Mojave 10.14.6        
 #&gt;  system   x86_64, darwin15.6.0        
 #&gt;  ui       X11                         
 #&gt;  language (EN)                        
 #&gt;  collate  en_US.UTF-8                 
 #&gt;  ctype    en_US.UTF-8                 
-#&gt;  tz       America/New_York            
-#&gt;  date     2020-03-26                  
+#&gt;  tz       America/Denver              
+#&gt;  date     2020-04-01                  
 #&gt; 
 #&gt; ─ Packages ───────────────────────────────────────────────────────────────────
-#&gt;  package    * version    date       lib source                             
-#&gt;  broom      * 0.5.4      2020-01-27 [1] CRAN (R 3.6.0)                     
-#&gt;  dials      * 0.0.4.9000 2020-03-21 [1] local                              
-#&gt;  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                     
-#&gt;  ggplot2    * 3.3.0      2020-03-05 [1] CRAN (R 3.6.0)                     
-#&gt;  infer      * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                     
-#&gt;  parsnip    * 0.0.5.9000 2020-03-26 [1] local                              
-#&gt;  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                     
-#&gt;  recipes    * 0.1.10     2020-03-18 [1] CRAN (R 3.6.1)                     
-#&gt;  rlang        0.4.5.9000 2020-03-21 [1] Github (r-lib/rlang@a90b04b)       
-#&gt;  rsample    * 0.0.5.9000 2020-03-23 [1] Github (tidymodels/rsample@4fdbd6c)
-#&gt;  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                     
-#&gt;  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                     
-#&gt;  tune       * 0.0.1.9000 2020-03-21 [1] Github (tidymodels/tune@6694258)   
-#&gt;  workflows  * 0.1.0      2019-12-30 [1] CRAN (R 3.6.1)                     
-#&gt;  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                     
+#&gt;  package    * version      date       lib source                               
+#&gt;  broom      * 0.5.5        2020-02-29 [1] CRAN (R 3.6.0)                       
+#&gt;  dials      * 0.0.4.9000   2020-03-20 [1] local                                
+#&gt;  dplyr      * 0.8.5        2020-03-07 [1] CRAN (R 3.6.0)                       
+#&gt;  ggplot2    * 3.3.0        2020-03-05 [1] CRAN (R 3.6.0)                       
+#&gt;  infer      * 0.5.1        2019-11-19 [1] CRAN (R 3.6.0)                       
+#&gt;  parsnip    * 0.0.5        2020-01-07 [1] CRAN (R 3.6.2)                       
+#&gt;  purrr      * 0.3.3        2019-10-18 [1] CRAN (R 3.6.0)                       
+#&gt;  recipes    * 0.1.10       2020-03-18 [1] CRAN (R 3.6.0)                       
+#&gt;  rlang        0.4.5.9000   2020-03-20 [1] Github (r-lib/rlang@a90b04b)         
+#&gt;  rsample    * 0.0.5        2019-07-12 [1] CRAN (R 3.6.0)                       
+#&gt;  tibble     * 2.99.99.9014 2020-03-26 [1] Github (tidyverse/tibble@2448bb0)    
+#&gt;  tidymodels * 0.1.0        2020-02-16 [1] CRAN (R 3.6.0)                       
+#&gt;  tune       * 0.0.1.9000   2020-03-23 [1] local                                
+#&gt;  workflows  * 0.1.1.9000   2020-03-20 [1] Github (tidymodels/workflows@e995c18)
+#&gt;  yardstick  * 0.0.5.9000   2020-03-20 [1] Github (tidymodels/yardstick@6a9a69a)
 #&gt; 
 #&gt; [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library</code></pre>
 </div>

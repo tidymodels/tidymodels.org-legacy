@@ -59,7 +59,7 @@ An `rsplit` object has two main components: an analysis data set and an assessme
 
 ```{r}
 set.seed(27)
-boots <- bootstraps(mtcars, times = 2000)
+boots <- bootstraps(mtcars, times = 2000, apparent = TRUE)
 boots
 ```
 

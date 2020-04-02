@@ -2,15 +2,19 @@
 title: "Custom performance metrics"
 tags: [yardstick]
 categories: []
+type: learn-subsection
 ---
 
-<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 
-<p>This article requires that you have the following packages installed: rlang and tidymodels.</p>
+<div id="learning-objective" class="section level1">
+<h1>Learning objective</h1>
+<p>Create a new performance metric and integrate it with yardstick functions</p>
+</div>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
-<p>yardstick already includes a large number of metrics, but there’s obviously a chance that you might have a custom metric that hasn’t been implemented yet. In that case, you can use a few of the tools yardstick exposes to create custom metrics.</p>
+<p>This article requires that you have the following packages installed: rlang and tidymodels.</p>
+<p>The <a href="https://tidymodels.github.io/yardstick/">yardstick</a> package already includes a large number of metrics, but there’s obviously a chance that you might have a custom metric that hasn’t been implemented yet. In that case, you can use a few of the tools yardstick exposes to create custom metrics.</p>
 <p>Why create custom metrics? With the infrastructure yardstick provides, you get:</p>
 <ul>
 <li>Standardization between your metric and other preexisting metrics</li>
@@ -20,10 +24,10 @@ categories: []
 <li>Support for grouped data frames</li>
 <li>Support for use alongside other metrics in <code>metric_set()</code></li>
 </ul>
-<p>The implementation metrics differ slightly depending on whether you are implementing a numeric, class or class probability metric. Examples for numeric and classification metrics are given below. I would encourage you to look into the implementation of <code>roc_auc()</code> after reading this vignette if you want to work on a class probability metric.</p>
+<p>The implementation metrics differ slightly depending on whether you are implementing a numeric, class, or class probability metric. Examples for numeric and classification metrics are given below. We would encourage you to look into the implementation of <code>roc_auc()</code> after reading this vignette if you want to work on a class probability metric.</p>
 </div>
-<div id="numeric-example---mean-squared-error" class="section level1">
-<h1>Numeric example - Mean squared error</h1>
+<div id="numeric-example-mean-squared-error" class="section level1">
+<h1>Numeric example: mean squared error</h1>
 <p>Mean squared error (from here on, <code>mse()</code>) is a numeric metric that measures the average of the squared errors. Numeric metrics are generally the simplest to create with yardstick, as they do not have multiclass implementations. The formula for <code>mse()</code> is:</p>
 <p><span class="math display">\[ MSE = \frac{1}{N} \sum_{i=1}^{N} (truth_i - estimate_i) ^ 2 = mean( (truth - estimate) ^ 2) \]</span></p>
 <p>All metrics should have a data frame version, and a vector version. The data frame version here will be named <code>mse()</code>, and the vector version will be <code>mse_vec()</code>.</p>
@@ -35,7 +39,7 @@ categories: []
 <li>Pass on that implementation function to <code>metric_vec_template()</code>.</li>
 </ol>
 <p>Below, <code>mse_impl()</code> contains the actual implementation of the metric, and takes <code>truth</code> and <code>estimate</code> as arguments along with any metric specific arguments.</p>
-<p><code>metric_vec_template()</code> is a yardstick function that accepts the implementation function along with the other arguments to <code>mse_vec()</code> and actually executes <code>mse_impl()</code>. Additionally, it has a <code>cls</code> argument to specify the allowed class type of <code>truth</code> and <code>estimate</code>. If the classes are the same, a single character class can be passed, and if they are different a character vector of length 2 can be supplied.</p>
+<p>The yardstick function <code>metric_vec_template()</code> accepts the implementation function along with the other arguments to <code>mse_vec()</code> and actually executes <code>mse_impl()</code>. Additionally, it has a <code>cls</code> argument to specify the allowed class type of <code>truth</code> and <code>estimate</code>. If the classes are the same, a single character class can be passed, and if they are different a character vector of length 2 can be supplied.</p>
 <p>The <code>metric_vec_template()</code> helper handles the removal of <code>NA</code> values in your metric, so your implementation function does not have to worry about them. It performs type checking using <code>cls</code> and also checks that the <code>estimator</code> is valid, the second of which is covered in the classification example. This way, all you have to worry about is the core implementation.</p>
 <pre class="r"><code>library(tidymodels)
 
@@ -100,7 +104,7 @@ mse.data.frame &lt;- function(data, truth, estimate, na_rm = TRUE, ...) {
   )
   
 }</code></pre>
-<p>And that’s it. yardstick handles the rest with an internal call to <code>summarise()</code>.</p>
+<p>And that’s it. The yardstick package handles the rest with an internal call to <code>summarise()</code>.</p>
 <pre class="r"><code>mse(solubility_test, truth = solubility, estimate = prediction)
 #&gt; # A tibble: 1 x 3
 #&gt;   .metric .estimator .estimate
@@ -145,8 +149,8 @@ solubility_resampled %&gt;%
 #&gt; 10 9        mse     standard       0.479</code></pre>
 </div>
 </div>
-<div id="class-example---miss-rate" class="section level1">
-<h1>Class example - Miss rate</h1>
+<div id="class-example-miss-rate" class="section level1">
+<h1>Class example: miss rate</h1>
 <p>Miss rate is another name for the False Negative Rate, and is a classification metric in the same family as <code>sens()</code> and <code>spec()</code>. It follows the formula:</p>
 <p><span class="math display">\[ miss\_rate = \frac{FN}{FN + TP} \]</span></p>
 <p>This metric, like other classification metrics, is more easily computed when expressed as a confusion matrix. As you will see in the example, you can achieve this with a call to <code>base::table(estimate, truth)</code> which correctly puts the “correct” result in the columns of the confusion matrix.</p>
@@ -440,33 +444,33 @@ numeric_mets(solubility_test, solubility, prediction)
 <h1>Session information</h1>
 <pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────
 #&gt;  setting  value                       
-#&gt;  version  R version 3.6.1 (2019-07-05)
+#&gt;  version  R version 3.6.2 (2019-12-12)
 #&gt;  os       macOS Mojave 10.14.6        
 #&gt;  system   x86_64, darwin15.6.0        
 #&gt;  ui       X11                         
 #&gt;  language (EN)                        
 #&gt;  collate  en_US.UTF-8                 
 #&gt;  ctype    en_US.UTF-8                 
-#&gt;  tz       America/New_York            
-#&gt;  date     2020-03-26                  
+#&gt;  tz       America/Denver              
+#&gt;  date     2020-04-01                  
 #&gt; 
 #&gt; ─ Packages ───────────────────────────────────────────────────────────────────
-#&gt;  package    * version    date       lib source                             
-#&gt;  broom      * 0.5.4      2020-01-27 [1] CRAN (R 3.6.0)                     
-#&gt;  dials      * 0.0.4.9000 2020-03-21 [1] local                              
-#&gt;  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                     
-#&gt;  ggplot2    * 3.3.0      2020-03-05 [1] CRAN (R 3.6.0)                     
-#&gt;  infer      * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                     
-#&gt;  parsnip    * 0.0.5.9000 2020-03-26 [1] local                              
-#&gt;  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                     
-#&gt;  recipes    * 0.1.10     2020-03-18 [1] CRAN (R 3.6.1)                     
-#&gt;  rlang      * 0.4.5.9000 2020-03-21 [1] Github (r-lib/rlang@a90b04b)       
-#&gt;  rsample    * 0.0.5.9000 2020-03-23 [1] Github (tidymodels/rsample@4fdbd6c)
-#&gt;  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                     
-#&gt;  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                     
-#&gt;  tune       * 0.0.1.9000 2020-03-21 [1] Github (tidymodels/tune@6694258)   
-#&gt;  workflows  * 0.1.0      2019-12-30 [1] CRAN (R 3.6.1)                     
-#&gt;  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                     
+#&gt;  package    * version      date       lib source                               
+#&gt;  broom      * 0.5.5        2020-02-29 [1] CRAN (R 3.6.0)                       
+#&gt;  dials      * 0.0.4.9000   2020-03-20 [1] local                                
+#&gt;  dplyr      * 0.8.5        2020-03-07 [1] CRAN (R 3.6.0)                       
+#&gt;  ggplot2    * 3.3.0        2020-03-05 [1] CRAN (R 3.6.0)                       
+#&gt;  infer      * 0.5.1        2019-11-19 [1] CRAN (R 3.6.0)                       
+#&gt;  parsnip    * 0.0.5        2020-01-07 [1] CRAN (R 3.6.2)                       
+#&gt;  purrr      * 0.3.3        2019-10-18 [1] CRAN (R 3.6.0)                       
+#&gt;  recipes    * 0.1.10       2020-03-18 [1] CRAN (R 3.6.0)                       
+#&gt;  rlang      * 0.4.5.9000   2020-03-20 [1] Github (r-lib/rlang@a90b04b)         
+#&gt;  rsample    * 0.0.5        2019-07-12 [1] CRAN (R 3.6.0)                       
+#&gt;  tibble     * 2.99.99.9014 2020-03-26 [1] Github (tidyverse/tibble@2448bb0)    
+#&gt;  tidymodels * 0.1.0        2020-02-16 [1] CRAN (R 3.6.0)                       
+#&gt;  tune       * 0.0.1.9000   2020-03-23 [1] local                                
+#&gt;  workflows  * 0.1.1.9000   2020-03-20 [1] Github (tidymodels/workflows@e995c18)
+#&gt;  yardstick  * 0.0.5.9000   2020-03-20 [1] Github (tidymodels/yardstick@6a9a69a)
 #&gt; 
 #&gt; [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library</code></pre>
 </div>

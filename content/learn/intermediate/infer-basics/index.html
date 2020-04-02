@@ -1,40 +1,43 @@
 ---
-title: "Hypothesis testing with infer"
+title: "Hypothesis testing using resampling and tidy data"
 tags: [infer]
 categories: [statistical analysis]
 type: learn-subsection
 ---
 
-<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 
-<p>This article only requires the tidymodels package.</p>
+<div id="learning-objective" class="section level1">
+<h1>Learning objective</h1>
+<p>Perform common hypothesis tests for statistical inference using flexible functions</p>
+</div>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
-<p>infer implements an expressive grammar to perform statistical inference that coheres with the <code>tidyverse</code> design framework. Rather than providing methods for specific statistical tests, this package consolidates the principles that are shared among common hypothesis tests into a set of 4 main verbs (functions), supplemented with many utilities to visualize and extract value from their outputs.</p>
+<p>This article only requires the tidymodels package.</p>
+<p>The tidymodels package <a href="https://tidymodels.github.io/infer/">infer</a> implements an expressive grammar to perform statistical inference that coheres with the <code>tidyverse</code> design framework. Rather than providing methods for specific statistical tests, this package consolidates the principles that are shared among common hypothesis tests into a set of 4 main verbs (functions), supplemented with many utilities to visualize and extract value from their outputs.</p>
 <p>Regardless of which hypothesis test we’re using, we’re still asking the same kind of question: is the effect/difference in our observed data real, or due to chance? To answer this question, we start by assuming that the observed data came from some world where “nothing is going on” (i.e. the observed effect was simply due to random chance), and call this assumption our <em>null hypothesis</em>. (In reality, we might not believe in the null hypothesis at all—the null hypothesis is in opposition to the <em>alternate hypothesis</em>, which supposes that the effect present in the observed data is actually due to the fact that “something is going on.”) We then calculate a <em>test statistic</em> from our data that describes the observed effect. We can use this test statistic to calculate a <em>p-value</em>, giving the probability that our observed data could come about if the null hypothesis was true. If this probability is below some pre-defined <em>significance level</em> <span class="math inline">\(\alpha\)</span>, then we can reject our null hypothesis.</p>
 <p>If you are new to hypothesis testing, take a look at</p>
 <ul>
 <li><a href="https://moderndive.com/9-hypothesis-testing.html#understanding-ht">Section 9.2 of <em>Statistical Inference via Data Science</em></a></li>
 <li>The American Statistical Association’s recent <a href="https://doi.org/10.1080/00031305.2016.1154108">statement on p-values</a></li>
 </ul>
-<p>The workflow of this package is designed around this idea. Starting out with some dataset,</p>
+<p>The workflow of this package is designed around these ideas. Starting from some data set,</p>
 <ul>
 <li><code>specify()</code> allows you to specify the variable, or relationship between variables, that you’re interested in.</li>
 <li><code>hypothesize()</code> allows you to declare the null hypothesis.</li>
 <li><code>generate()</code> allows you to generate data reflecting the null hypothesis.</li>
 <li><code>calculate()</code> allows you to calculate a distribution of statistics from the generated data to form the null distribution.</li>
 </ul>
-<p>Throughout this vignette, we make use of <code>gss</code>, a dataset supplied by infer containing a sample of 500 observations of 11 variables from the <em>General Social Survey</em>.</p>
+<p>Throughout this vignette, we make use of <code>gss</code>, a data set supplied by infer containing a sample of 500 observations of 11 variables from the <em>General Social Survey</em>.</p>
 <pre class="r"><code>library(tidymodels) # Includes the infer package
 
-# load in the dataset
+# load in the data set
 data(gss)
 
 # take a look at its structure
 dplyr::glimpse(gss)
-#&gt; Observations: 3,000
-#&gt; Variables: 11
+#&gt; Rows: 3,000
+#&gt; Columns: 11
 #&gt; $ year    &lt;dbl&gt; 2008, 2006, 1985, 1987, 2006, 1986, 1977, 1998, 2012, 1982, 1…
 #&gt; $ age     &lt;dbl&gt; 37, 29, 58, 40, 39, 37, 53, 41, 55, 47, 36, 75, 22, 19, 34, 5…
 #&gt; $ sex     &lt;fct&gt; male, female, male, male, female, male, female, male, male, m…
@@ -45,12 +48,12 @@ dplyr::glimpse(gss)
 #&gt; $ income  &lt;ord&gt; $25000 or more, lt $1000, $25000 or more, $25000 or more, $60…
 #&gt; $ class   &lt;fct&gt; working class, middle class, middle class, middle class, NA, …
 #&gt; $ finrela &lt;fct&gt; below average, below average, far above average, far below av…
-#&gt; $ weight  &lt;dbl&gt; 0.8754895, 0.4297000, 1.5544000, 1.0104000, 0.8593000, 1.0072…</code></pre>
-<p>Each row is an individual survey response, containing some basic demographic information on the respondent as well as some additional variables. See <code>?gss</code> for more information on the variables included and their source. Note that this data (and our examples on it) are for demonstration purposes only, and will not necessarily provide accurate estimates unless weighted properly. For these examples, let’s suppose that this dataset is a representative sample of a population we want to learn about: American adults.</p>
+#&gt; $ weight  &lt;dbl&gt; 0.875, 0.430, 1.554, 1.010, 0.859, 1.007, 0.988, 0.550, 3.496…</code></pre>
+<p>Each row is an individual survey response, containing some basic demographic information on the respondent as well as some additional variables. See <code>?gss</code> for more information on the variables included and their source. Note that this data (and our examples on it) are for demonstration purposes only, and will not necessarily provide accurate estimates unless weighted properly. For these examples, let’s suppose that this data set is a representative sample of a population we want to learn about: American adults.</p>
 </div>
 <div id="specify-specifying-response-and-explanatory-variables" class="section level1">
 <h1>specify(): Specifying Response (and Explanatory) Variables</h1>
-<p>The <code>specify</code> function can be used to specify which of the variables in the dataset you’re interested in. If you’re only interested in, say, the <code>age</code> of the respondents, you might write:</p>
+<p>The <code>specify</code> function can be used to specify which of the variables in the data set you’re interested in. If you’re only interested in, say, the <code>age</code> of the respondents, you might write:</p>
 <pre class="r"><code>gss %&gt;%
   specify(response = age)
 #&gt; Response: age (numeric)
@@ -200,16 +203,16 @@ gss %&gt;%
 #&gt; # Groups:   replicate [5,000]
 #&gt;    replicate hours
 #&gt;        &lt;int&gt; &lt;dbl&gt;
-#&gt;  1         1  49.2
-#&gt;  2         1  39.2
-#&gt;  3         1  34.2
-#&gt;  4         1  39.2
+#&gt;  1         1  39.2
+#&gt;  2         1  14.2
+#&gt;  3         1  69.2
+#&gt;  4         1  51.2
 #&gt;  5         1  39.2
-#&gt;  6         1  28.2
-#&gt;  7         1  59.2
-#&gt;  8         1  59.2
-#&gt;  9         1  39.2
-#&gt; 10         1  30.2
+#&gt;  6         1  39.2
+#&gt;  7         1  24.2
+#&gt;  8         1  23.2
+#&gt;  9         1  59.2
+#&gt; 10         1  42.2
 #&gt; # … with 8,779,990 more rows</code></pre>
 <p>In the above example, we take 1000 bootstrap samples to form our null distribution.</p>
 <p>To generate a null distribution for the independence of two variables, we could also randomly reshuffle the pairings of explanatory and response variables to break any existing association. For instance, to generate 1000 replicates that can be used to create a null distribution under the assumption that political party affiliation is not affected by age:</p>
@@ -224,14 +227,14 @@ gss %&gt;%
 #&gt; # Groups:   replicate [5,000]
 #&gt;    partyid   age replicate
 #&gt;    &lt;fct&gt;   &lt;dbl&gt;     &lt;int&gt;
-#&gt;  1 ind        37         1
-#&gt;  2 rep        29         1
+#&gt;  1 dem        37         1
+#&gt;  2 ind        29         1
 #&gt;  3 rep        58         1
-#&gt;  4 dem        40         1
-#&gt;  5 rep        39         1
-#&gt;  6 ind        37         1
-#&gt;  7 rep        53         1
-#&gt;  8 other      41         1
+#&gt;  4 rep        40         1
+#&gt;  5 ind        39         1
+#&gt;  6 dem        37         1
+#&gt;  7 ind        53         1
+#&gt;  8 dem        41         1
 #&gt;  9 dem        55         1
 #&gt; 10 dem        47         1
 #&gt; # … with 14,814,990 more rows</code></pre>
@@ -247,16 +250,16 @@ gss %&gt;%
 #&gt; # A tibble: 5,000 x 2
 #&gt;    replicate  stat
 #&gt;        &lt;int&gt; &lt;dbl&gt;
-#&gt;  1         1  40.3
+#&gt;  1         1  40.4
 #&gt;  2         2  39.8
-#&gt;  3         3  40.5
-#&gt;  4         4  40.2
+#&gt;  3         3  39.5
+#&gt;  4         4  39.7
 #&gt;  5         5  40.1
-#&gt;  6         6  39.7
-#&gt;  7         7  40.3
-#&gt;  8         8  40.0
-#&gt;  9         9  39.3
-#&gt; 10        10  40.2
+#&gt;  6         6  40.0
+#&gt;  7         7  40.6
+#&gt;  8         8  39.2
+#&gt;  9         9  40.1
+#&gt; 10        10  40.3
 #&gt; # … with 4,990 more rows</code></pre>
 <p>The output of <code>calculate()</code> here shows us the sample statistic (in this case, the mean) for each of our 1000 replicates. If you’re carrying out inference on differences in means, medians, or proportions, or t and z statistics, you will need to supply an <code>order</code> argument, giving the order in which the explanatory variables should be subtracted. For instance, to find the difference in mean age of those that have a college degree and those that don’t, we might write:</p>
 <pre class="r"><code>gss %&gt;%
@@ -265,18 +268,18 @@ gss %&gt;%
   generate(reps = 5000, type = &quot;permute&quot;) %&gt;%
   calculate(&quot;diff in means&quot;, order = c(&quot;degree&quot;, &quot;no degree&quot;))
 #&gt; # A tibble: 5,000 x 2
-#&gt;    replicate   stat
-#&gt;        &lt;int&gt;  &lt;dbl&gt;
-#&gt;  1         1 -1.11 
-#&gt;  2         2  0.790
-#&gt;  3         3 -0.847
-#&gt;  4         4  0.810
-#&gt;  5         5 -0.387
-#&gt;  6         6  0.294
-#&gt;  7         7 -0.812
-#&gt;  8         8 -0.175
-#&gt;  9         9 -0.431
-#&gt; 10        10  0.962
+#&gt;    replicate    stat
+#&gt;        &lt;int&gt;   &lt;dbl&gt;
+#&gt;  1         1  0.320 
+#&gt;  2         2 -1.69  
+#&gt;  3         3 -1.70  
+#&gt;  4         4  0.0954
+#&gt;  5         5 -0.136 
+#&gt;  6         6  0.157 
+#&gt;  7         7  0.298 
+#&gt;  8         8  0.0581
+#&gt;  9         9 -0.445 
+#&gt; 10        10 -0.278 
 #&gt; # … with 4,990 more rows</code></pre>
 </div>
 <div id="other-utilities" class="section level1">
@@ -297,7 +300,7 @@ null_dist &lt;- gss %&gt;%
   calculate(stat = &quot;mean&quot;)
 #&gt; Warning: Removed 1244 rows containing missing values.</code></pre>
 <p>(Notice the warning: <code>Removed 1244 rows containing missing values.</code> This would be worth noting if you were actually carrying out this hypothesis test.)</p>
-<p>Our point estimate 40.7722096 seems <em>pretty</em> close to 40, but a little bit different. We might wonder if this difference is just due to random chance, or if the mean number of hours worked per week in the population really isn’t 40.</p>
+<p>Our point estimate 40.772 seems <em>pretty</em> close to 40, but a little bit different. We might wonder if this difference is just due to random chance, or if the mean number of hours worked per week in the population really isn’t 40.</p>
 <p>We could initially just visualize the null distribution.</p>
 <pre class="r"><code>null_dist %&gt;%
   visualize()</code></pre>
@@ -307,7 +310,7 @@ null_dist &lt;- gss %&gt;%
   visualize() +
   shade_p_value(obs_stat = point_estimate, direction = &quot;two_sided&quot;)</code></pre>
 <p><img src="figs/visualize2-1.svg" width="672" /></p>
-<p>Notice that infer has also shaded the regions of the null distribution that are as (or more) extreme than our observed statistic. (Also, note that we now use the <code>+</code> operator to apply the <code>shade_p_value</code> function. This is because <code>visualize</code> outputs a plot object from <code>ggplot2</code> instead of a data frame, and the <code>+</code> operator is needed to add the p-value layer to the plot object.) The red bar looks like it’s slightly far out on the right tail of the null distribution, so observing a sample mean of 40.7722096 hours would be somewhat unlikely if the mean was actually 40 hours. How unlikely, though?</p>
+<p>Notice that infer has also shaded the regions of the null distribution that are as (or more) extreme than our observed statistic. (Also, note that we now use the <code>+</code> operator to apply the <code>shade_p_value</code> function. This is because <code>visualize</code> outputs a plot object from <code>ggplot2</code> instead of a data frame, and the <code>+</code> operator is needed to add the p-value layer to the plot object.) The red bar looks like it’s slightly far out on the right tail of the null distribution, so observing a sample mean of 40.772 hours would be somewhat unlikely if the mean was actually 40 hours. How unlikely, though?</p>
 <pre class="r"><code># get a two-tailed p-value
 p_value &lt;- null_dist %&gt;%
   get_p_value(obs_stat = point_estimate, direction = &quot;two_sided&quot;)
@@ -316,8 +319,8 @@ p_value
 #&gt; # A tibble: 1 x 1
 #&gt;   p_value
 #&gt;     &lt;dbl&gt;
-#&gt; 1  0.0216</code></pre>
-<p>It looks like the p-value is 0.0216, which is pretty small—if the true mean number of hours worked per week was actually 40, the probability of our sample mean being this far (0.7722096 hours) from 40 would be 0.0216. This may or may not be statistically significantly different, depending on the significance level <span class="math inline">\(\alpha\)</span> you decided on <em>before</em> you ran this analysis. If you had set <span class="math inline">\(\alpha = .05\)</span>, then this difference would be statistically significant, but if you had set <span class="math inline">\(\alpha = .01\)</span>, then it would not be.</p>
+#&gt; 1   0.014</code></pre>
+<p>It looks like the p-value is 0.014, which is pretty small—if the true mean number of hours worked per week was actually 40, the probability of our sample mean being this far (0.772 hours) from 40 would be 0.014. This may or may not be statistically significantly different, depending on the significance level <span class="math inline">\(\alpha\)</span> you decided on <em>before</em> you ran this analysis. If you had set <span class="math inline">\(\alpha = .05\)</span>, then this difference would be statistically significant, but if you had set <span class="math inline">\(\alpha = .01\)</span>, then it would not be.</p>
 <p>To get a confidence interval around our estimate, we can write:</p>
 <pre class="r"><code># start with the null distribution
 null_dist %&gt;%
@@ -365,33 +368,33 @@ null_dist %&gt;%
 <h1>Session information</h1>
 <pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────
 #&gt;  setting  value                       
-#&gt;  version  R version 3.6.1 (2019-07-05)
+#&gt;  version  R version 3.6.2 (2019-12-12)
 #&gt;  os       macOS Mojave 10.14.6        
 #&gt;  system   x86_64, darwin15.6.0        
 #&gt;  ui       X11                         
 #&gt;  language (EN)                        
 #&gt;  collate  en_US.UTF-8                 
 #&gt;  ctype    en_US.UTF-8                 
-#&gt;  tz       America/New_York            
-#&gt;  date     2020-03-26                  
+#&gt;  tz       America/Denver              
+#&gt;  date     2020-04-01                  
 #&gt; 
 #&gt; ─ Packages ───────────────────────────────────────────────────────────────────
-#&gt;  package    * version    date       lib source                             
-#&gt;  broom      * 0.5.4      2020-01-27 [1] CRAN (R 3.6.0)                     
-#&gt;  dials      * 0.0.4.9000 2020-03-21 [1] local                              
-#&gt;  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                     
-#&gt;  ggplot2    * 3.3.0      2020-03-05 [1] CRAN (R 3.6.0)                     
-#&gt;  infer      * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                     
-#&gt;  parsnip    * 0.0.5.9000 2020-03-26 [1] local                              
-#&gt;  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                     
-#&gt;  recipes    * 0.1.10     2020-03-18 [1] CRAN (R 3.6.1)                     
-#&gt;  rlang        0.4.5.9000 2020-03-21 [1] Github (r-lib/rlang@a90b04b)       
-#&gt;  rsample    * 0.0.5.9000 2020-03-23 [1] Github (tidymodels/rsample@4fdbd6c)
-#&gt;  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                     
-#&gt;  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                     
-#&gt;  tune       * 0.0.1.9000 2020-03-21 [1] Github (tidymodels/tune@6694258)   
-#&gt;  workflows  * 0.1.0      2019-12-30 [1] CRAN (R 3.6.1)                     
-#&gt;  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                     
+#&gt;  package    * version      date       lib source                               
+#&gt;  broom      * 0.5.5        2020-02-29 [1] CRAN (R 3.6.0)                       
+#&gt;  dials      * 0.0.4.9000   2020-03-20 [1] local                                
+#&gt;  dplyr      * 0.8.5        2020-03-07 [1] CRAN (R 3.6.0)                       
+#&gt;  ggplot2    * 3.3.0        2020-03-05 [1] CRAN (R 3.6.0)                       
+#&gt;  infer      * 0.5.1        2019-11-19 [1] CRAN (R 3.6.0)                       
+#&gt;  parsnip    * 0.0.5        2020-01-07 [1] CRAN (R 3.6.2)                       
+#&gt;  purrr      * 0.3.3        2019-10-18 [1] CRAN (R 3.6.0)                       
+#&gt;  recipes    * 0.1.10       2020-03-18 [1] CRAN (R 3.6.0)                       
+#&gt;  rlang        0.4.5.9000   2020-03-20 [1] Github (r-lib/rlang@a90b04b)         
+#&gt;  rsample    * 0.0.5        2019-07-12 [1] CRAN (R 3.6.0)                       
+#&gt;  tibble     * 2.99.99.9014 2020-03-26 [1] Github (tidyverse/tibble@2448bb0)    
+#&gt;  tidymodels * 0.1.0        2020-02-16 [1] CRAN (R 3.6.0)                       
+#&gt;  tune       * 0.0.1.9000   2020-03-23 [1] local                                
+#&gt;  workflows  * 0.1.1.9000   2020-03-20 [1] Github (tidymodels/workflows@e995c18)
+#&gt;  yardstick  * 0.0.5.9000   2020-03-20 [1] Github (tidymodels/yardstick@6a9a69a)
 #&gt; 
 #&gt; [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library</code></pre>
 </div>

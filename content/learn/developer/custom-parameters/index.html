@@ -1,22 +1,26 @@
 ---
-title: "Custom tuning parameter functions"
+title: "How to create a tuning parameter function"
 tags: [dials]
 categories: []
+type: learn-subsection
 ---
 
-<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 
-<p>This article requires that you have the following packages installed: dials and scales.</p>
+<div id="learning-objective" class="section level1">
+<h1>Learning objective</h1>
+<p>Build functions to use in tuning both quantitative and qualitative parameters</p>
+</div>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
+<p>This article requires that you have the following packages installed: dials and scales.</p>
 <p>Some models and recipe steps contain parameters that dials does not know about. You can construct new quantitative and qualitative parameters using <code>new_quant_param()</code> or <code>new_qual_param()</code>, respectively. This article is a guide to creating new parameters.</p>
 </div>
 <div id="quantitative-parameters" class="section level1">
 <h1>Quantitative parameters</h1>
-<p>As an example, the multivariate adaptive regression spline (<a href="https://en.wikipedia.org/wiki/Multivariate_adaptive_regression_spline">MARS</a>) model creates nonlinear features from predictors and adds them to a linear regression models. The earth pacakge is an excellent implementation of this method.</p>
+<p>As an example, the multivariate adaptive regression spline (<a href="https://en.wikipedia.org/wiki/Multivariate_adaptive_regression_spline">MARS</a>) model creates nonlinear features from predictors and adds them to a linear regression models. The earth package is an excellent implementation of this method.</p>
 <p>MARS creates an initial set of features and then prunes them back to an appropriate size. This can be done automatically by <code>earth::earth()</code> or the number of final terms can be set by the user. The parsnip function <code>mars()</code> has a parameter called <code>num_terms</code> that defines this.</p>
-<p>What if we want to create a parameter for the number of <em>initial terms</em> included in the model. There is not argument in <code>parsnip::mars()</code> for this but we will make one. The argument name in <code>earth::earth()</code> is <code>nk</code>, which is not very descriptive. Our parameter will be called <code>num_initial_terms</code>.</p>
+<p>What if we want to create a parameter for the number of <em>initial terms</em> included in the model. There is no argument in <code>parsnip::mars()</code> for this but we will make one now. The argument name in <code>earth::earth()</code> is <code>nk</code>, which is not very descriptive. Our parameter will be called <code>num_initial_terms</code>.</p>
 <p>We use the <code>new_quant_param()</code> function since this is a numeric parameter. The main two arguments to a numeric parameter function are <code>range</code> and <code>trans</code>.</p>
 <p>The range specifies the possible values of the parameter. For our example, a minimal value might be one or two. What is the upper limit? The default in the earth package is</p>
 <pre class="r"><code>min(200, max(20, 2 * ncol(x))) + 1</code></pre>
@@ -83,7 +87,7 @@ num_initial_terms() %&gt;% value_sample(5)
 #&gt; [1]  6  4  9 10  4</code></pre>
 <div id="finalizing-parameters" class="section level2">
 <h2>Finalizing parameters</h2>
-<p>It might be the case that the range of the parameter is unknown. For example, parameters that are related to the number of column in a data set cannot be exactly specified in the absense of data. In those cases, a placeholder of <code>unknown()</code> can be added. This will force the user to “finalize” the parameter object for their particular data set. Let’s redefine our function with an <code>unknown()</code> value:</p>
+<p>It might be the case that the range of the parameter is unknown. For example, parameters that are related to the number of columns in a data set cannot be exactly specified in the absence of data. In those cases, a placeholder of <code>unknown()</code> can be added. This will force the user to “finalize” the parameter object for their particular data set. Let’s redefine our function with an <code>unknown()</code> value:</p>
 <pre class="r"><code>num_initial_terms &lt;- function(range = c(1L, unknown()), trans = NULL) {
   new_quant_param(
     type = &quot;integer&quot;,
@@ -110,7 +114,7 @@ num_initial_terms() %&gt;% value_sample(5)
 #&gt; get_n_frac_range : function (object, x, log_vals = FALSE, frac = c(1/10, 5/10), ...)  
 #&gt; get_p : function (object, x, log_vals = FALSE, ...)  
 #&gt; get_rbf_range : function (object, x, seed = sample.int(10^5, 1), ...)</code></pre>
-<p>These functions generally take a data frame of predictors (in an argument called <code>x</code>) and at the range of the parameter object. Using the formula in the earth package, we might use:</p>
+<p>These functions generally take a data frame of predictors (in an argument called <code>x</code>) and add the range of the parameter object. Using the formula in the earth package, we might use:</p>
 <pre class="r"><code>get_initial_mars_terms &lt;- function(object, x) {
   upper_bound &lt;- min(200, max(20, 2 * ncol(x))) + 1
   upper_bound &lt;- as.integer(upper_bound)
@@ -142,7 +146,7 @@ num_initial_terms() %&gt;% finalize(x = mtcars[, -1])
 </div>
 <div id="qualitative-parameters" class="section level1">
 <h1>Qualitative parameters</h1>
-<p>If a model includes a data aggregation step, we want to allow users to tune how our parameters are aggregated. For example, it embedding methods, possible values might be <code>min</code>, <code>max</code>, <code>mean</code>, <code>sum</code>, or to not aggregate (“none”). Since these cannot be put on a numeric scale, they are a qualitative parameter. We’ll take “character” input (not “logical”), and we must specify the allowed values. By default we won’t aggregate.</p>
+<p>Now let’s look at an example of a qualitative parameter. If a model includes a data aggregation step, we want to allow users to tune how our parameters are aggregated. For example, in embedding methods, possible values might be <code>min</code>, <code>max</code>, <code>mean</code>, <code>sum</code>, or to not aggregate at all (“none”). Since these cannot be put on a numeric scale, they are possible values of a qualitative parameter. We’ll take “character” input (not “logical”), and we must specify the allowed values. By default we won’t aggregate.</p>
 <pre class="r"><code>aggregation &lt;- function(values = c(&quot;none&quot;, &quot;min&quot;, &quot;max&quot;, &quot;mean&quot;, &quot;sum&quot;)) {
   new_qual_param(
     type = &quot;character&quot;,
@@ -165,7 +169,7 @@ aggregation &lt;- function(values = values_aggregation) {
     label = c(aggregation = &quot;Aggregation Method&quot;)
   )
 }</code></pre>
-<p>This may not make sense if you are using the function in a script and not keeping it within a package.</p>
+<p>This step may not make sense if you are using the function in a script and not keeping it within a package.</p>
 <p>We can use our <code>aggregation</code> parameters with dials functions.</p>
 <pre class="r"><code>aggregation()
 #&gt; Aggregation Method  (qualitative)
@@ -178,34 +182,34 @@ aggregation() %&gt;% value_sample(3)
 <h1>Session information</h1>
 <pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────
 #&gt;  setting  value                       
-#&gt;  version  R version 3.6.1 (2019-07-05)
+#&gt;  version  R version 3.6.2 (2019-12-12)
 #&gt;  os       macOS Mojave 10.14.6        
 #&gt;  system   x86_64, darwin15.6.0        
 #&gt;  ui       X11                         
 #&gt;  language (EN)                        
 #&gt;  collate  en_US.UTF-8                 
 #&gt;  ctype    en_US.UTF-8                 
-#&gt;  tz       America/New_York            
-#&gt;  date     2020-03-26                  
+#&gt;  tz       America/Denver              
+#&gt;  date     2020-04-01                  
 #&gt; 
 #&gt; ─ Packages ───────────────────────────────────────────────────────────────────
-#&gt;  package    * version    date       lib source                             
-#&gt;  broom      * 0.5.4      2020-01-27 [1] CRAN (R 3.6.0)                     
-#&gt;  dials      * 0.0.4.9000 2020-03-21 [1] local                              
-#&gt;  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                     
-#&gt;  ggplot2    * 3.3.0      2020-03-05 [1] CRAN (R 3.6.0)                     
-#&gt;  infer      * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                     
-#&gt;  parsnip    * 0.0.5.9000 2020-03-26 [1] local                              
-#&gt;  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                     
-#&gt;  recipes    * 0.1.10     2020-03-18 [1] CRAN (R 3.6.1)                     
-#&gt;  rlang        0.4.5.9000 2020-03-21 [1] Github (r-lib/rlang@a90b04b)       
-#&gt;  rsample    * 0.0.5.9000 2020-03-23 [1] Github (tidymodels/rsample@4fdbd6c)
-#&gt;  scales     * 1.1.0      2019-11-18 [1] CRAN (R 3.6.0)                     
-#&gt;  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                     
-#&gt;  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                     
-#&gt;  tune       * 0.0.1.9000 2020-03-21 [1] Github (tidymodels/tune@6694258)   
-#&gt;  workflows  * 0.1.0      2019-12-30 [1] CRAN (R 3.6.1)                     
-#&gt;  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                     
+#&gt;  package    * version      date       lib source                               
+#&gt;  broom      * 0.5.5        2020-02-29 [1] CRAN (R 3.6.0)                       
+#&gt;  dials      * 0.0.4.9000   2020-03-20 [1] local                                
+#&gt;  dplyr      * 0.8.5        2020-03-07 [1] CRAN (R 3.6.0)                       
+#&gt;  ggplot2    * 3.3.0        2020-03-05 [1] CRAN (R 3.6.0)                       
+#&gt;  infer      * 0.5.1        2019-11-19 [1] CRAN (R 3.6.0)                       
+#&gt;  parsnip    * 0.0.5        2020-01-07 [1] CRAN (R 3.6.2)                       
+#&gt;  purrr      * 0.3.3        2019-10-18 [1] CRAN (R 3.6.0)                       
+#&gt;  recipes    * 0.1.10       2020-03-18 [1] CRAN (R 3.6.0)                       
+#&gt;  rlang        0.4.5.9000   2020-03-20 [1] Github (r-lib/rlang@a90b04b)         
+#&gt;  rsample    * 0.0.5        2019-07-12 [1] CRAN (R 3.6.0)                       
+#&gt;  scales     * 1.1.0        2019-11-18 [1] CRAN (R 3.6.0)                       
+#&gt;  tibble     * 2.99.99.9014 2020-03-26 [1] Github (tidyverse/tibble@2448bb0)    
+#&gt;  tidymodels * 0.1.0        2020-02-16 [1] CRAN (R 3.6.0)                       
+#&gt;  tune       * 0.0.1.9000   2020-03-23 [1] local                                
+#&gt;  workflows  * 0.1.1.9000   2020-03-20 [1] Github (tidymodels/workflows@e995c18)
+#&gt;  yardstick  * 0.0.5.9000   2020-03-20 [1] Github (tidymodels/yardstick@6a9a69a)
 #&gt; 
 #&gt; [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library</code></pre>
 </div>
