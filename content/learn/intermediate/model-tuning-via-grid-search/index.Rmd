@@ -137,7 +137,10 @@ formula_res
 The `.metrics` column contains tibbles of the performance metrics for each tuning parameter combination:
 
 ```{r raw-metrics}
-formula_res %>% select(.metrics) %>% slice(1) %>% pull(1)
+formula_res %>% 
+  select(.metrics) %>% 
+  slice(1) %>% 
+  pull(1)
 ```
 
 To get the final resampling estimates, the `collect_metrics()` function can be used on the grid object:
