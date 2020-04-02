@@ -3,6 +3,9 @@ title: "Statistical analysis of contingency tables"
 tags: [infer]
 categories: [statistical analysis]
 type: learn-subsection
+weight: 5
+description: | 
+  Use tests of independence and goodness of fit to analyze tables of counts.
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}

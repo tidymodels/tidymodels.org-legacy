@@ -3,6 +3,9 @@ title: "Hypothesis testing using resampling and tidy data"
 tags: [infer]
 categories: [statistical analysis]
 type: learn-subsection
+weight: 4
+description: | 
+  Perform common hypothesis tests for statistical inference using flexible functions.
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}
