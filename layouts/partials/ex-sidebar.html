@@ -13,7 +13,7 @@
           <div class="sectionTitle">Find by package</div>
           {{ range $key, $value := $.Site.Taxonomies.tags }}
           <div class="articleCategory {{ replace (lower $key) " " "" }}">
-            <a href="{{ (print "/tags/" $key | urlize) | relURL }}">{{ $key }}</a>
+            <a href="{{ (print "/tags/" $key | urlize) | relURL }}">{{ $key }} ({{ .Count }})</a>
           </div>
           {{ end }}
         </div>
