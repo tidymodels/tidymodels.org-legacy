@@ -1,5 +1,5 @@
 ---
-title: "Using parsnip for Classification Models"
+title: "Classification models using a neural network"
 tags: [rsample, parsnip]
 categories: [model fitting]
 type: learn-subsection
@@ -16,16 +16,20 @@ pkgs <- c("tidymodels", "keras")
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
-`r req_pkgs(pkgs)` You will also need the python keras library installed (see `?keras::install_keras()`).
+# Learning objective
+
+Train a classification model and evaluate its performance
 
 # Introduction
 
-This article focuses on fitting models using the parsnip package. For a classification problem, a single model is fit and evaluated using a validation set. While the tune package has functionality to also do this, the parsnip package is the center of attention so that we can better understand its usage. 
+`r req_pkgs(pkgs)` You will also need the python keras library installed (see `?keras::install_keras()`).
+
+We can create classification models with the tidymodels package [parsnip](https://tidymodels.github.io/parsnip/) to predict categorical quantities or class labels. Here, let's fit a single classification model using a neural network and evaluate using a validation set. While the [tune](https://tidymodels.github.io/tune/) package has functionality to also do this, the parsnip package is the center of attention in this article so that we can better understand its usage. 
 
 # Fitting a neural network model
 
 
-A small, two predictor classification data set is used to fit the model. The data are in the workflows package and have been split into a training, validation, and test data sets. In this analysis, the test set is left untouched; the code here is trying to emulate a good data usage methodology where the test set would only be evaluated once a variety of models were considered. 
+Let's fit a model to a small, two predictor classification data set. The data are in the workflows package and have been split into training, validation, and test data sets. In this analysis, the test set is left untouched; this article tries to emulate a good data usage methodology where the test set would only be evaluated once at the end after a variety of models have been considered. 
 
 
 ```{r biv--split}
@@ -41,7 +45,7 @@ ggplot(bivariate_train, aes(x = A, y = B, col = Class)) +
   geom_point(alpha = .2)
 ```
 
-A single hidden layer neural network will be used to predict the outcome. To do so, the columns of the predictor are transformed to be more symmetric (via the `step_BoxCox()` function) and on a common scale (using `step_normalize()`). recipes will be used to do so:
+Let's use a single hidden layer neural network to predict the outcome. To do this, we transform the predictor columns to be more symmetric (via the `step_BoxCox()` function) and on a common scale (using `step_normalize()`). We can use recipes to do so:
 
 ```{r biv--proc}
 biv_rec <- 
@@ -60,7 +64,7 @@ val_normalized <- bake(biv_rec, new_data = bivariate_val, all_predictors())
 test_normalized <- bake(biv_rec, new_data = bivariate_test, all_predictors())
 ```
 
-The keras package will be used to fit a model with 5 hidden units and uses a 10% dropout rate to regularize the model:
+We can use the keras package to fit a model with 5 hidden units and a 10% dropout rate, to regularize the model:
 
 ```{r biv--nnet}
 set.seed(57974)
@@ -74,6 +78,8 @@ nnet_fit <-
 nnet_fit
 ```
 
+## Model performance
+
 In parsnip, the `predict()` function can be used to characterize performance on the validation set. Since parsnip always produces tibble outputs, these can just be column bound to the original data: 
 
 ```{r biv--perf}
@@ -86,7 +92,9 @@ val_results <-
 val_results %>% slice(1:5)
 
 val_results %>% roc_auc(truth = Class, .pred_One)
+
 val_results %>% accuracy(truth = Class, .pred_class)
+
 val_results %>% conf_mat(truth = Class, .pred_class)
 ```
 

@@ -1,5 +1,5 @@
 ---
-title: "Using parsnip for Regression Models"
+title: "Regression models two ways"
 tags: [rsample, parsnip]
 categories: [model fitting]
 ---
@@ -23,18 +23,21 @@ pkgs <- c("tidymodels", "AmesHousing", "ranger", "randomForest", "glmnet")
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
+# Learning objective
 
-`r req_pkgs(pkgs)`
+Create and train different kinds of regression models with different computational engines
 
 # Introduction
 
-This article demonstrates how to use parsnip for creating regression models using a few different data sets. The first model that it fit (random forest), does _not_ require all numeric input (see discussion [here](https://bookdown.org/max/FES/categorical-trees.html)) and the effect of using `fit()` and `fit_xy()` are discussed as well as _data descriptors_. 
+`r req_pkgs(pkgs)`
 
-Another model (regularized linear regression) is also used to demonstrate how easy it is to move between different types of models using parsnip. 
+We can create regression models with the tidymodels package [parsnip](https://tidymodels.github.io/parsnip/) to predict continuous or numeric quantities. Here, let's first fit a random forest model, which does _not_ require all numeric input (see discussion [here](https://bookdown.org/max/FES/categorical-trees.html)) and discuss how to use `fit()` and `fit_xy()`, as well as _data descriptors_. 
+
+Second, let's fit a regularized linear regression model to demonstrate how to move between different types of models using parsnip. 
 
 # The Ames housing data
 
-The Ames housing data will be used to to demonstrate how regression models can be made using parsnip. We'll create the data set and create a simple training/test set split:
+We'll use the Ames housing data to demonstrate how to create regression models using parsnip. First, set up the data set and create a simple training/test set split:
 
 ```{r ames-split}
 library(AmesHousing)
@@ -51,18 +54,23 @@ ames_test  <- testing(data_split)
 
 The use of the test set here is _only for illustration_; normally in a data analysis these data would be saved to the very end after many models have been evaluated. 
 
-# Random Forests
+# Random forests
 
-We'll start by fitting a random forest model to a small set of parameters. Let's say that the model would include predictors: `r knitr::combine_words(pred_names)`. A simple random forest model can be specified via
+We'll start by fitting a random forest model to a small set of parameters. Let's say that the model would include the predictors `r knitr::combine_words(pred_names)`. A simple random forest model can be specified via:
 
 ```{r rf-basic}
 rf_defaults <- rand_forest(mode = "regression")
 rf_defaults
 ```
 
-The model will be fit with the ranger package. Since we didn't add any extra arguments to `fit`, _many_ of the arguments will be set to their defaults from the specific function that is used by `ranger::ranger()`. The help pages for the model function describes the changes to the default parameters that are made and the `translate()` function can also be used. 
+The model will be fit with the ranger package by default. Since we didn't add any extra arguments to `fit`, _many_ of the arguments will be set to their defaults from the specific function that is used by `ranger::ranger()`. The help pages for the model function describes the changes to the default parameters that are made and you can also use the `translate()` function to check out such details. 
 
-parsnip gives two different interfaces to the models: the formula and non-formula interfaces. Let's start with the non-formula interface:
+The parsnip package provides two different interfaces to fit a models: 
+
+- the formula interface (`fit()`), and
+- the non-formula interface (`fit_xy()`).
+
+Let's start with the non-formula interface:
 
 
 ```{r rf-basic-xy}
@@ -75,15 +83,17 @@ rf_xy_fit <-
     x = ames_train[, preds],
     y = log10(ames_train$Sale_Price)
   )
+
 rf_xy_fit
 ```
 
-The non-formula interface doesn't do anything to the predictors before giving it to the underlying model function. This particular model does _not_ require indicator variables to be create prior to the model (note that the output shows "Number of independent variables:  5"). 
+The non-formula interface doesn't do anything to the predictors before passing them to the underlying model function. This particular model does _not_ require indicator variables (sometimes called "dummy variables") to be created prior to fitting the model. Note that the output shows "Number of independent variables:  5".
 
-For regression models, the basic `predict()` method can be used and returns a tibble with a column named `.pred`:
+For regression models, we can use the basic `predict()` method, which returns a tibble with a column named `.pred`:
 
 ```{r rf-basic-xy-pred}
-test_results <- ames_test %>%
+test_results <- 
+  ames_test %>%
   select(Sale_Price) %>%
   mutate(Sale_Price = log10(Sale_Price)) %>%
   bind_cols(
@@ -111,7 +121,7 @@ rand_forest(mode = "regression", mtry = 3, trees = 1000) %>%
   )
 ```
  
-Suppose that there was some feature in the randomForest package that we'd like to evaluate. To do so, the only part of the syntaxt that needs to change is the `set_engine()` argument:
+Suppose that we would like to use the randomForest package instead of ranger. To do so, the only part of the syntax that needs to change is the `set_engine()` argument:
 
 
 ```{r rf-rf}
@@ -123,11 +133,11 @@ rand_forest(mode = "regression", mtry = 3, trees = 1000) %>%
   )
 ```
 
-Look at the formula code that was printed out, one function uses the argument name `ntree` and the other uses `num.trees`. parsnip doesn't require you to know the specific names of the main arguments. 
+Look at the formula code that was printed out; one function uses the argument name `ntree` and the other uses `num.trees`. The parsnip models don't require you to know the specific names of the main arguments. 
 
-Now suppose that we want to modify the value of `mtry` based on the number of predictors in the data. Usually, the default value would be `floor(sqrt(num_predictors))`. To use a pure bagging model would require an `mtry` value equal to the total number of parameters. There may be cases where you may not know how many predictors are going to be present (perhaps due to the generation of indicator variables or a variable filter) so that might be difficult to know exactly. 
+Now suppose that we want to modify the value of `mtry` based on the number of predictors in the data. Usually, a good default value is `floor(sqrt(num_predictors))`. A pure bagging model requires an `mtry` value equal to the total number of parameters. There may be cases where you may not know how many predictors are going to be present when the model will be fit (perhaps due to the generation of indicator variables or a variable filter) so this might be difficult to know exactly. 
 
-When the model it being fit by parsnip, [_data descriptors_](https://tidymodels.github.io/parsnip/reference/descriptors.html) are made available. These attempt to let you know what you will have available when the model is fit. When a model object is created (say  using `rand_forest()`), the values of the arguments that you give it are _immediately evaluated_... unless you delay them. To delay the evaluation of any argument, you can used `rlang::expr()` to make an expression. 
+When the model it being fit by parsnip, [_data descriptors_](https://tidymodels.github.io/parsnip/reference/descriptors.html) are made available. These attempt to let you know what you will have available when the model is fit. When a model object is created (say using `rand_forest()`), the values of the arguments that you give it are _immediately evaluated_... unless you delay them. To delay the evaluation of any argument, you can used `rlang::expr()` to make an expression. 
 
 Two relevant descriptors for what we are about to do are:
 
@@ -148,11 +158,11 @@ rand_forest(mode = "regression", mtry = .preds(), trees = 1000) %>%
 ```
 
 
-# Penalized Logistic Regression
+# Penalized logistic regression
 
-A linear model might work here too. The `linear_reg()` model can be used. To use regularization/penalization, there are two engines that can do that here: the glmnet and sparklyr packages. The former will be used here and it only implements the non-formula method. parsnip will allow either to be used though. 
+A linear model might work for this data set as well. We can use the `linear_reg()` parsnip model. There are two engines that can perform regularization/penalization, the glmnet and sparklyr packages. Let's use the former here. The glmnet package only implements a non-formula method, but parsnip will allow either one to be used. 
 
-When regularization is used, the predictors should first be centered and scaled before given to the model. The formula method won't do that so some other methods will be required. We'll use recipes package for that (more information [here](https://tidymodels.github.io/recipes/)). 
+When regularization is used, the predictors should first be centered and scaled before being passed to the model. The formula method won't do that automatically so we will need to do this ourselves. We'll use recipes package for these steps (more information [here](https://tidymodels.github.io/recipes/)). 
 
 ```{r glmn-form}
 norm_recipe <- 

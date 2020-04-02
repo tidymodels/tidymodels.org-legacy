@@ -1,6 +1,7 @@
 ---
-title: "K-Means Clustering with dplyr and broom"
+title: "K-means clustering with tidy data principles"
 tags: [broom]
+categories: [statistical analysis]
 type: learn-subsection
 ---
 
@@ -15,13 +16,19 @@ pkgs <- c("tidymodels")
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
+# Learning objective
 
-This article only requires that the tidymodels package be installed.
-
+Summarize clustering characteristics and estimate the best number of clusters for a data set
 
 # Introduction
 
-K-means clustering serves as a very useful example of tidy data, and especially the distinction between the three tidying functions: `tidy()`, `augment()`, and `glance()`.
+This article only requires that the tidymodels package be installed.
+
+K-means clustering serves as a very useful example of applying tidy data principles to statistical analysis, and especially the distinction between the three tidying functions: 
+
+- `tidy()`
+- `augment()` 
+- `glance()`
 
 Let's start by generating some random two-dimensional data with three clusters. Data in each cluster will come from a multivariate gaussian distribution, with different means for each cluster:
 
@@ -62,15 +69,15 @@ kclust
 summary(kclust)
 ```
 
-The output is a list of vectors, where each component has a different length. There's one of length `r nrow(points)`: the same as our original dataset. There are a number of elements of length 3: `withinss`, `tot.withinss`, and `betweenss`- and `centers` is a matrix with 3 rows. And then there are the elements of length 1: `totss`, `tot.withinss`, `betweenss`, and `iter`.
+The output is a list of vectors, where each component has a different length. There's one of length `r nrow(points)`: the same as our original data set. There are a number of elements of length 3: `withinss`, `tot.withinss`, and `betweenss`- and `centers` is a matrix with 3 rows. And then there are the elements of length 1: `totss`, `tot.withinss`, `betweenss`, and `iter`.
 
-These differing lengths have a deeper meaning when we want to tidy our dataset: they signify that each type of component communicates a *different kind* of information.
+These differing lengths have a deeper meaning when we want to tidy our data set: they signify that each type of component communicates a *different kind* of information.
 
 - `cluster` (`r nrow(points)` values) contains information about each *point*
 - `centers`, `withinss` and `size` (3 values) contain information about each *cluster*
 - `totss`, `tot.withinss`, `betweenss`, and `iter` (1 value) contain information about the *full clustering*
 
-Which of these do we want to extract? There is no right answer: each of them may be interesting to an analyst. Because they communicate entirely different information (not to mention there's no straightforward way to combine them), they are extracted by separate functions. `augment` adds the point classifications to the original dataset:
+Which of these do we want to extract? There is no right answer: each of them may be interesting to an analyst. Because they communicate entirely different information (not to mention there's no straightforward way to combine them), they are extracted by separate functions. `augment` adds the point classifications to the original data set:
 
 ```{r}
 augment(kclust, points)
@@ -90,7 +97,7 @@ glance(kclust)
 
 # {broom} and {dplyr} for exploratory clustering
 
-While these summaries are useful, they would not have been too difficult to extract out from the dataset yourself. The real power comes from combining these analyses with dplyr.
+While these summaries are useful, they would not have been too difficult to extract out from the data set yourself. The real power comes from combining these analyses with dplyr.
 
 Let's say we want to explore the effect of different choices of `k`, from 1 to 9, on this clustering. First cluster the data 9 times, each using a different value of `k`, then create columns containing the tidied, glanced and augmented data:
 
@@ -107,8 +114,8 @@ kclusts <-
 kclusts
 ```
 
-We can turn these into three separate datasets each representing a different type of data:
-Then tidy the clusterings three ways: using `tidy()`, using `augment()`, and using `glance()`. Each of these goes into a separate dataset as they represent different types of data.
+We can turn these into three separate data sets each representing a different type of data:
+Then tidy the clusterings three ways: using `tidy()`, using `augment()`, and using `glance()`. Each of these goes into a separate data set as they represent different types of data.
 
 ```{r}
 clusters <- 

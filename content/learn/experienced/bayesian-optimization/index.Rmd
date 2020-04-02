@@ -1,5 +1,5 @@
 ---
-title: "Iterative Optimization of a Classification Model"
+title: "Iterative Bayesian optimization of a classification model"
 tags: [tune, dials, parsnip, recipes, workflows]
 categories: [model tuning]
 type: learn-subsection
@@ -22,11 +22,15 @@ pkgs <- c("modeldata", "kernlab", "tidymodels")
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
-`r req_pkgs(pkgs)`
+# Learning objective
+
+Identify the best hyperparameters for a model using Bayesian optimization of iterative search
 
 # Introduction
 
-Many of the examples for model tuning focus on grid search. For that method, all the candidate tuning parameter combinations are defined prior to evaluation. Alternatively, _iterative search_ can be used to analyze the existing tuning parameter results and then _predict_ which tuning parameters to try next. 
+`r req_pkgs(pkgs)`
+
+Many of the examples for model tuning focus on [grid search](TODO). For that method, all the candidate tuning parameter combinations are defined prior to evaluation. Alternatively, _iterative search_ can be used to analyze the existing tuning parameter results and then _predict_ which tuning parameters to try next. 
 
 There are a variety of methods for iterative search and the focus here is on _Bayesian optimization_. For more information on this method, these resources might be helpful:
 
@@ -41,7 +45,7 @@ There are a variety of methods for iterative search and the focus here is on _Ba
 
 # Cell segmentation data (revisted)
 
-To demonstrate this approach to tuning models, the cell segmentation data from the [Getting Started]() page for resampling are once again used: 
+To demonstrate this approach to tuning models, let's return to the cell segmentation data from the [Getting Started](/start/resampling/) article on resampling: 
 
 ```{r import-data}
 library(tidymodels)
@@ -61,7 +65,7 @@ folds <- vfold_cv(cell_train, v = 10)
 
 # Defining the tuning scheme
 
-Since the predictors are highly correlated, we can used a recipe to convert the original predictors to principal component scores. There is also slight class imbalance in these data; about `r floor(mean(cells$class == "PS") * 100)`% of the data are poorly segmented. To mitigate this, the data will be down-sampled at the end of the pre-processing such that the number of poorly and well segmented cells occur with equal frequency. A recipe will be used to process the data. However, the number of principal components will need to be tuned so that we have enough (but not too many) representations of the data. 
+Since the predictors are highly correlated, we can used a recipe to convert the original predictors to principal component scores. There is also slight class imbalance in these data; about `r floor(mean(cells$class == "PS") * 100)`% of the data are poorly segmented. To mitigate this, the data will be down-sampled at the end of the pre-processing such that the number of poorly and well segmented cells occur with equal frequency. We can use a recipe to process the data. However, the number of principal components will need to be _tuned_ so that we have enough (but not too many) representations of the data. 
 
 ```{r recipe}
 cell_pre_proc <-
@@ -72,7 +76,7 @@ cell_pre_proc <-
   step_downsample(class)
 ```
 
-Like the original analysis, a support vector machine will be used to model the data. A radial basis function (RBF) kernel will be used and its main parameter ($\sigma$) will be tuned. Additionally, the main SVM parameter, the cost value, also needs optimization. 
+In this analysis, we will use a support vector machine to model the data. Let's use a radial basis function (RBF) kernel and tune its main parameter ($\sigma$). Additionally, the main SVM parameter, the cost value, also needs optimization. 
 
 ```{r model}
 svm_mod <-
@@ -80,7 +84,7 @@ svm_mod <-
   set_engine("kernlab")
 ```
 
-These two objects will be combined into a single object via the `workflow()` function from the workflows package and this object will be used to fuel the optimization process. 
+These two objects will be combined into a single object via the `workflow()` function from the workflows package; this object will be used in the optimization process. 
 
 ```{r workflow}
 svm_wflow <-
@@ -96,25 +100,27 @@ svm_set <- parameters(svm_wflow)
 svm_set
 ```
 
-The default range for the number of PCA components is rather small for this data set. A member of the parameter set can be modified using the `update()` function. Let's constrain the search to one to twenty components by updating the `num_comp` parameter. Additionally, the lower bound of this parameter is set to zero which signifies that the original predictor set should also be evaluated (i.e., no PCA step): 
+The default range for the number of PCA components is rather small for this data set. A member of the parameter set can be modified using the `update()` function. Let's constrain the search to one to twenty components by updating the `num_comp` parameter. Additionally, the lower bound of this parameter is set to zero which signifies that the original predictor set should also be evaluated (i.e., with no PCA step at all): 
 
 ```{r update}
-svm_set <- svm_set %>% update(num_comp = num_comp(c(0L, 20L)))
+svm_set <- 
+  svm_set %>% 
+  update(num_comp = num_comp(c(0L, 20L)))
 ```
 
 # Sequential tuning 
 
 Bayesian optimization is a sequential method that uses a model to predict new candidate parameters for assessment. When scoring potential parameter value, the mean and variance of performance are predicted. The strategy used to define how these two statistical quantities are used is defined by an _acquisition function_. 
 
-For example, one approach for scoring new candidates is to use a confidence bound. Suppose accuracy is being optimized. For a metric that we want to maximize, a lower confidence bound can be used. The multiplier on the standard error (denoted as $\kappa$) is a value that can be used to make trade-offs between _exploration_ and _exploitation_. 
+For example, one approach for scoring new candidates is to use a confidence bound. Suppose accuracy is being optimized. For a metric that we want to maximize, a lower confidence bound can be used. The multiplier on the standard error (denoted as $\kappa$) is a value that can be used to make trade-offs between **exploration** and **exploitation**. 
 
- * _exploration_ means that the search will consider candidates in untested space
+ * **Exploration** means that the search will consider candidates in untested space.
 
- * _exploitation_ focuses in areas where the previous best results occurred. 
+ * **Exploitation** focuses in areas where the previous best results occurred. 
 
 The variance predicted by the Bayesian model is mostly spatial variation; the value will be large for candidate values that are not close to values that have already been evaluated. If the standard error multiplier is high, the search process will be more likely to avoid areas without candidate values in the vicinity. 
 
-We'll use another acquisition function, _expected improvement_, that calculates the determines which candidates likely to to be helpful relative to the current best results. This is the default acquisition function. More information on these functions can be found in the [package vignette for acquisition functions](https://tidymodels.github.io/tune/articles/acquisition_functions.html). 
+We'll use another acquisition function, _expected improvement_, that determines which candidates are likely to be helpful relative to the current best results. This is the default acquisition function. More information on these functions can be found in the [package vignette for acquisition functions](https://tidymodels.github.io/tune/articles/acquisition_functions.html). 
 
 ```{r search, cache = TRUE}
 set.seed(12)
@@ -142,7 +148,10 @@ search_res
 As with grid search, we can summarize the results over resamples:
 
 ```{r summarize-iters}
-estimates <- collect_metrics(search_res) %>% arrange(.iter)
+estimates <- 
+  collect_metrics(search_res) %>% 
+  arrange(.iter)
+
 estimates
 ```
 
@@ -161,13 +170,14 @@ autoplot(search_res, type = "performance")
 
 There are many parameter combinations have roughly equivalent results. 
 
-How did the parameters change over iterations? Since two of the parameters are usually treated on the log scale, a ggplot is constructed:  
+How did the parameters change over iterations? Since two of the parameters are usually treated on the log scale, we can use `mutate()` to transform them, and then construct a plot using ggplot2:  
 
 
 ```{r bo-param-plot}
 collect_metrics(search_res) %>%
   select(-.metric,-.estimator,-mean,-n,-std_err) %>%
-  mutate(cost = log10(cost), rbf_sigma = log10(rbf_sigma)) %>%
+  mutate(cost = log10(cost), 
+         rbf_sigma = log10(rbf_sigma)) %>%
   pivot_longer(cols = c(-.iter),
                names_to = "parameter",
                values_to = "value") %>%

@@ -1,6 +1,8 @@
 ---
-title: "Time Series Analysis Example"
+title: "Modeling time series with tidy resampling"
 tags: [rsample]
+categories: [model fitting, resampling]
+type: learn-subsection
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}
@@ -18,29 +20,32 @@ pkgs <- c("tidymodels", "timetk", "forecast", "sweep", "zoo")
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
+# Learning objective
 
-`r req_pkgs(pkgs)`
+Calculate performance estimates for time series forecasts using resampling
 
 # Introduction
 
-"[Demo Week: Tidy Forecasting with sweep](http://www.business-science.io/code-tools/2017/10/25/demo_week_sweep.html)" is an excellent article that uses tidy methods with time series. This article uses their analysis with rsample to get performance estimates for future observations using [rolling forecast origin resampling](https://robjhyndman.com/hyndsight/crossvalidation/). 
+`r req_pkgs(pkgs)`
+
+"[Demo Week: Tidy Forecasting with sweep](http://www.business-science.io/code-tools/2017/10/25/demo_week_sweep.html)" is an excellent article that uses tidy methods with time series. This article uses their analysis with rsample to find performance estimates for future observations using [rolling forecast origin resampling](https://robjhyndman.com/hyndsight/crossvalidation/). 
 
 # Example data
 
-The data are sales of alcoholic beverages originally from [the Federal Reserve Bank of St. Louis website](https://fred.stlouisfed.org/series/S4248SM144NCEN).
+The data for this article are sales of alcoholic beverages originally from [the Federal Reserve Bank of St. Louis website](https://fred.stlouisfed.org/series/S4248SM144NCEN).
 
 ```{r read-data}
 library(tidymodels)
 library(modeldata)
 data("drinks")
-str(drinks, give.att = FALSE)
+glimpse(drinks)
 ```
 
-Each row is a month of sales (in millions of US dollars). 
+Each row represents one month of sales (in millions of US dollars). 
 
 # Time series resampling
 
-Suppose that predictions for one year ahead were needed and the model should use the most recent data from the last 20 years. To setup this resampling scheme:
+Suppose that we need predictions for one year ahead and our model should use the most recent data from the last 20 years. To set up this resampling scheme:
 
 ```{r rof}
 roll_rs <- rolling_origin(
@@ -49,7 +54,9 @@ roll_rs <- rolling_origin(
   assess = 12,
   cumulative = FALSE
   )
+
 nrow(roll_rs)
+
 roll_rs
 ```
 
@@ -71,7 +78,7 @@ roll_rs$start_date <- do.call("c", start_date)
 head(roll_rs$start_date)
 ```
 
-This resampling scheme has `r nrow(roll_rs)` splits of the data so that there will be `r nrow(roll_rs)` ARIMA models that are fit. To create the models, the `auto.arima()` function from the forecast package is used. The functions `analysis()` and `assessment()` return the data frame, so another step converts the data in to a `ts` object called `mod_dat` using a function in the timetk package.
+This resampling scheme has `r nrow(roll_rs)` splits of the data so that there will be `r nrow(roll_rs)` ARIMA models that are fit. To create the models, we use the `auto.arima()` function from the forecast package. The rsample functions `analysis()` and `assessment()` return a data frame, so another step converts the data to a `ts` object called `mod_dat` using a function in the timetk package.
 
 ```{r model-fun}
 library(forecast)  # for `auto.arima`
@@ -91,7 +98,7 @@ fit_model <- function(x, ...) {
 }
 ```
 
-Each model is saved in a new column:
+Save each model in a new column:
 
 ```{r model-fit, warning = FALSE, message = FALSE}
 roll_rs$arima <- map(roll_rs$splits, fit_model)
@@ -100,14 +107,16 @@ roll_rs$arima <- map(roll_rs$splits, fit_model)
 roll_rs$arima[[1]]
 ```
 
-(There are some warnings produced by these first regarding extra columns in the data that can be ignored)
+(There are some warnings produced by these regarding extra columns in the data that can be ignored.)
 
-Using the model fits, performance will be measured in two ways:
+# Model performance
 
- * _interpolation_ error will measure how well the model fits to the data that were used to create the model. This is most likely optimistic since no holdout method is used. 
- * _extrapolation_ or _forecast_ error evaluates the efficacy of the model on the data from the following year (that were not used in the model fit).
+Using the model fits, let's measure performance in two ways:
+
+ * _Interpolation_ error will measure how well the model fits to the data that were used to create the model. This is most likely optimistic since no holdout method is used. 
+ * _Extrapolation_ or _forecast_ error evaluates the efficacy of the model on the data from the following year (that were not used in the model fit).
  
-In each case, the mean absolute percent error (MAPE) is the statistic used to characterize the model fits. The interpolation error can be computed from the `Arima` object. to make things easy, the sweep package's `sw_glance()` function is used:
+In each case, the mean absolute percent error (MAPE) is the statistic used to characterize the model fits. The interpolation error can be computed from the `Arima` object. To make things easy, let's use the sweep package's `sw_glance()` function:
 
 ```{r interp}
 library(sweep)
@@ -117,6 +126,7 @@ roll_rs$interpolation <- map_dbl(
   function(x) 
     sw_glance(x)[["MAPE"]]
   )
+
 summary(roll_rs$interpolation)
 ```
 
@@ -151,11 +161,11 @@ roll_rs %>%
   geom_line()
 ```
 
-It is likely that the interpolation error is an underestimate to some degree. 
+It is likely that the interpolation error is an underestimate to some degree, as mentioned above. 
 
 It is also worth noting that `rolling_origin()` can be used over calendar periods, rather than just over a fixed window size. This is especially useful for irregular series where a fixed window size might not make sense because of missing data points, or because of calendar features like different months having a different number of days.
 
-The example below demonstrates this idea by splitting `drinks` into a nested set of 26 years, and rolling over years rather than months. Note that the end result accomplishes a different task than the original example, in this case, each slice moves forward an entire year, rather than just one month.
+The example below demonstrates this idea by splitting `drinks` into a nested set of 26 years, and rolling over years rather than months. Note that the end result accomplishes a different task than the original example; in this new case, each slice moves forward an entire year, rather than just one month.
 
 ```{r rof-annual}
 # The idea is to nest by the period to roll over,
