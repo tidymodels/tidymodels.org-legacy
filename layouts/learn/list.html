@@ -25,12 +25,15 @@
                 </div>
               </div>
               <div class="itemMeta">
-                <div class="author">
+                <div class="author article-content">
                     <ul>
                     <!-- Ranges through content/posts/*.md -->
                     {{ range .Pages }}
                         <li>
                         <a href="{{.Permalink}}">{{.Title}}</a>
+                        {{ with .Description }}
+                        <br><p class= "serif">{{ print "Learning Objective:" | markdownify | upper }} <em>{{ . | markdownify }}</em></p>
+                        {{ end }}
                         </li>
                     {{ end }}
                     </ul>
