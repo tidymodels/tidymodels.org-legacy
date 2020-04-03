@@ -119,15 +119,15 @@ div.tagline {
   font-size: 2.4em; /* same as main-site, but duplicated here so it applies to Learn .sectionTitle */
 }
 
-h1, h2, .itemTitle {         /* adding h2 in here for now until packages h2 gets sorted out */
+h1,.itemTitle {   
   font-family: 'Lato', sans-serif;
   font-weight: normal;
-  font-size: 1.25em;
+  font-size: 1.3em;
   text-transform: uppercase;
   letter-spacing: 1.5pt;
 }
 
-h1, h2 {
+h1 {
   color: #1a162d;
 }
 
@@ -140,7 +140,10 @@ h1, h2 {
   text-decoration: none;
 }
 
-
+h2 {
+  font-size: 1.5em;
+  color: #ca225e;
+}
 
 
 /*---------TOC----------*/
@@ -308,4 +311,30 @@ table thead tr th:last-child {
 
 html {
   scroll-behavior: smooth;
+}
+
+
+/*-----CUSTOM STICKY NOTE EVENTS-----*/
+
+.event {
+  -moz-box-shadow: 0 0px 0px 0px rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: 0 0px 0px 0px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0px 0px 0px rgba(0, 0, 0, 0.1);
+}
+
+  .event:nth-child(2) {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg); }
+    
+  .event:nth-child(3) {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg); }
+
+.section .event {
+    border-top: 7pt solid #a19ea936;
+    background-color: #eab0c41a;
+}
+
+.section .event a{
+    color: #1a162d;
 }
