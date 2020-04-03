@@ -12,10 +12,6 @@ description: |
 
 
 
-# Learning objective
-
-Summarize clustering characteristics and estimate the best number of clusters for a data set
-
 # Introduction
 
 This article only requires that the tidymodels package be installed.
@@ -259,7 +255,7 @@ This represents the variance within the clusters. It decreases as `k` increases,
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Los_Angeles         
-#>  date     2020-04-02                  
+#>  date     2020-04-03                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version    date       lib source                               

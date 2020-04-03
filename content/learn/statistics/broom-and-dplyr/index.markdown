@@ -12,10 +12,6 @@ description: |
 
 
 
-# Learning objective
-
-Analyze the results of correlation tests and simple regression models for many data sets at once
-
 # Introduction
 
 This article only requires that you have the tidymodels package installed.
@@ -372,7 +368,7 @@ In each of these cases, we can easily filter, facet, or distinguish based on the
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Los_Angeles         
-#>  date     2020-04-02                  
+#>  date     2020-04-03                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version    date       lib source                               
