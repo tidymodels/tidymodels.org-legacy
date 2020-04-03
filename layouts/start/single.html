@@ -49,6 +49,11 @@
         {{ partial "pretty_author_names" . }}
       {{ end }}
         </p>
+        
+      <div class="section">
+          <div class="sectionTitle">Contents</div>
+          {{ .TableOfContents }}
+      </div>
 
       <div class="article-content">
       {{ .Content }}
