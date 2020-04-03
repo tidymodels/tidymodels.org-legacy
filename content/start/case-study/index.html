@@ -1,0 +1,194 @@
+<script src="index_files/header-attrs-2.1/header-attrs.js"></script>
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#data-spending">Data Spending</a></li>
+<li><a href="#a-first-model-logistic-regression">A first model: logistic regression</a></li>
+<li><a href="#something-more-complex-random-forest">Something more complex: random forest</a></li>
+<li><a href="#test-set-results">Test set results</a></li>
+</ul>
+</div>
+
+<p>This article requires that you have the following packages installed: glmnet, ranger, readr, tidymodels, and vip.</p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>The previous <em>Getting Started</em> articles have been focused on single tasks related to modeling. This example is a broader case study of building a predictive model. It uses all of the previous topics.</p>
+</div>
+<div id="data-spending" class="section level1">
+<h1>Data Spending</h1>
+<p>The data can be found on the <code>tidymodels.org</code> site:</p>
+<pre class="r"><code>library(tidymodels)
+library(readr)
+
+hotels &lt;- 
+  readr::read_csv(&#39;https://bit.ly/hotel_booking_data&#39;) %&gt;%
+  mutate_if(is.character, as.factor) 
+
+dim(hotels)
+#&gt; [1] 50000    23
+
+table(hotels$children)/nrow(hotels)
+#&gt; 
+#&gt; children     none 
+#&gt;  0.08076  0.91924</code></pre>
+<pre class="r"><code>set.seed(35225)
+splits &lt;- initial_split(hotels, strata = children)
+
+hotel_train &lt;- training(splits)
+hotel_test  &lt;- testing(splits)</code></pre>
+<pre class="r"><code>set.seed(948)
+val_set &lt;- validation_split(hotel_train, strata = children, prop = 0.80)
+val_set
+#&gt; # Validation Set Split (0.8/0.2)  using stratification 
+#&gt; # A tibble: 1 x 2
+#&gt;   splits             id        
+#&gt;   &lt;named list&gt;       &lt;chr&gt;     
+#&gt; 1 &lt;split [30K/7.5K]&gt; validation</code></pre>
+</div>
+<div id="a-first-model-logistic-regression" class="section level1">
+<h1>A first model: logistic regression</h1>
+<pre class="r"><code>holidays &lt;- c(&quot;AllSouls&quot;, &quot;AshWednesday&quot;, &quot;ChristmasEve&quot;, &quot;Easter&quot;, 
+              &quot;ChristmasDay&quot;, &quot;GoodFriday&quot;, &quot;NewYearsDay&quot;, &quot;PalmSunday&quot;)
+
+lr_recipe &lt;- 
+  recipe(children ~ ., data = hotel_train) %&gt;% 
+  step_other(country, threshold = 0.025) %&gt;% 
+  step_date(arrival_date) %&gt;% 
+  step_holiday(arrival_date, holidays = holidays) %&gt;% 
+  step_rm(arrival_date) %&gt;% 
+  step_dummy(all_nominal(), -all_outcomes()) %&gt;% 
+  step_zv(all_predictors()) %&gt;% 
+  step_normalize(all_predictors())</code></pre>
+<pre class="r"><code>lr_mod &lt;- 
+  logistic_reg(penalty = tune(), mixture = tune()) %&gt;% 
+  set_engine(&quot;glmnet&quot;)
+
+lr_workflow &lt;- 
+  workflow() %&gt;% 
+  add_model(lr_mod) %&gt;% 
+  add_recipe(lr_recipe)</code></pre>
+<pre class="r"><code>lr_reg_grid &lt;- 
+  expand.grid(mixture = c(0.10, 0.25, 0.5, 0.75, 1),
+              penalty = 10^seq(-3, -1, length.out = 20))</code></pre>
+<pre class="r"><code>tune_ctrl &lt;- control_grid(save_pred = TRUE)
+roc_only &lt;- metric_set(roc_auc)
+
+lr_res &lt;- 
+  lr_workflow %&gt;% 
+  tune_grid(val_set,
+            grid = lr_reg_grid,
+            control = tune_ctrl,
+            metrics = roc_only)
+#&gt; ! validation: recipe: The `x` argument of `as_tibble.matrix()` must have column names ...</code></pre>
+<pre class="r"><code>lr_res %&gt;%
+  collect_metrics() %&gt;%
+  mutate(mixture = format(mixture)) %&gt;%
+  ggplot(aes(x = penalty, y = mean, col = mixture)) +
+  geom_point() +
+  geom_line() +
+  scale_x_log10() +
+  scale_color_brewer(palette = &quot;Set1&quot;)</code></pre>
+<p><img src="figs/logistic-results-1.svg" width="672" /></p>
+<pre class="r"><code>lr_best &lt;- 
+  lr_res %&gt;%
+  collect_metrics() %&gt;% 
+  filter(mixture == 1) %&gt;% 
+  arrange(desc(mean)) %&gt;% 
+  select(penalty, mixture) %&gt;% 
+  slice(1)
+lr_best
+#&gt; # A tibble: 1 x 2
+#&gt;   penalty mixture
+#&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+#&gt; 1   0.001       1</code></pre>
+<pre class="r"><code>lr_auc &lt;- 
+  lr_res %&gt;% 
+  collect_predictions(parameters = lr_best) %&gt;% 
+  roc_curve(children, .pred_children) %&gt;% 
+  mutate(model = &quot;Logistic Regression&quot;)
+
+autoplot(lr_auc)</code></pre>
+<p><img src="figs/logistic-roc-curve-1.svg" width="672" /></p>
+</div>
+<div id="something-more-complex-random-forest" class="section level1">
+<h1>Something more complex: random forest</h1>
+<pre class="r"><code>rf_recipe &lt;- 
+  recipe(children ~ ., data = hotel_train) %&gt;% 
+  step_date(arrival_date) %&gt;% 
+  step_holiday(arrival_date) %&gt;% 
+  step_rm(arrival_date) </code></pre>
+<pre class="r"><code>cores &lt;- parallel::detectCores()
+cores
+#&gt; [1] 20</code></pre>
+<pre class="r"><code>rf_mod &lt;- 
+  rand_forest(mtry = tune(), min_n = tune(), trees = 1000) %&gt;% 
+  set_engine(&quot;ranger&quot;, num.threads = cores) %&gt;% 
+  set_mode(&quot;classification&quot;)
+
+rf_workflow &lt;- 
+  workflow() %&gt;% 
+  add_model(rf_mod) %&gt;% 
+  add_recipe(rf_recipe)</code></pre>
+<pre class="r"><code>rf_res &lt;- 
+  rf_workflow %&gt;% 
+  tune_grid(val_set,
+            grid = 25,
+            control = tune_ctrl,
+            metrics = roc_only)
+#&gt; i Creating pre-processing data to finalize unknown parameter: mtry</code></pre>
+<pre class="r"><code>autoplot(rf_res)</code></pre>
+<p><img src="figs/rf-results-1.svg" width="672" /></p>
+<pre class="r"><code>rf_best &lt;- select_best(rf_res, metric = &quot;roc_auc&quot;)
+rf_best
+#&gt; # A tibble: 1 x 2
+#&gt;    mtry min_n
+#&gt;   &lt;int&gt; &lt;int&gt;
+#&gt; 1     4     8</code></pre>
+<pre class="r"><code>rf_auc &lt;- 
+  rf_res %&gt;% 
+  collect_predictions(parameters = rf_best) %&gt;% 
+  roc_curve(children, .pred_children) %&gt;% 
+  mutate(model = &quot;Random Forest&quot;)
+
+bind_rows(rf_auc, lr_auc) %&gt;% 
+  ggplot(aes(x = 1 - specificity, y = sensitivity, col = model)) + 
+  geom_path() +
+  geom_abline(lty = 2) + 
+  coord_equal()</code></pre>
+<p><img src="figs/rf-roc-curve-1.svg" width="672" /></p>
+<pre class="r"><code>rf_mod &lt;- 
+  rand_forest(mtry = 5, min_n = 2, trees = 1000) %&gt;% 
+  set_engine(&quot;ranger&quot;, num.threads = 20, importance = &#39;impurity&#39;) %&gt;% 
+  set_mode(&quot;classification&quot;)
+
+rf_workflow &lt;- 
+  workflow() %&gt;% 
+  add_model(rf_mod) %&gt;% 
+  add_recipe(rf_recipe)
+
+rf_fit &lt;- rf_workflow %&gt;% last_fit(splits)</code></pre>
+<pre class="r"><code>library(vip)
+
+rf_fit$.workflow %&gt;% 
+  pluck(1) %&gt;% 
+  pull_workflow_fit() %&gt;% 
+  vip(num_features = 20) </code></pre>
+<p><img src="figs/rf-importance-1.svg" width="672" /></p>
+</div>
+<div id="test-set-results" class="section level1">
+<h1>Test set results</h1>
+<pre class="r"><code>rf_fit %&gt;% 
+  collect_predictions() %&gt;% 
+  roc_auc(children, .pred_children)
+#&gt; # A tibble: 1 x 3
+#&gt;   .metric .estimator .estimate
+#&gt;   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+#&gt; 1 roc_auc binary         0.930
+
+rf_fit %&gt;% 
+  collect_predictions() %&gt;% 
+  roc_curve(children, .pred_children) %&gt;% 
+  autoplot()</code></pre>
+<p><img src="figs/test-set-roc-curve-1.svg" width="672" /></p>
+</div>

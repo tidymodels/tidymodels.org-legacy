@@ -1,0 +1,256 @@
+---
+title: "A predictive modeling case study"
+weight: 1
+tags: [parsnip, recipe, rsample, tune]
+categories: [model fitting, tuning]
+output:
+  blogdown::html_page:
+    toc: true
+---
+
+```{r setup, include = FALSE, message = FALSE, warning = FALSE}
+source(here::here("content/start/common.R"))
+```
+
+```{r load, include = FALSE, message = FALSE, warning = FALSE}
+library(readr)
+library(vip)
+library(tidymodels)
+pkgs <- c("tidymodels", "readr", "glmnet", "ranger", "vip")
+theme_set(theme_bw() + theme(legend.position = "top"))
+```
+
+`r req_pkgs(pkgs)`
+
+# Introduction
+
+The previous _Getting Started_ articles have been focused on single tasks related to modeling. This example is a broader case study of building a predictive model. It uses all of the previous topics.  
+
+
+# Data Spending
+
+The data can be found on the `tidymodels.org` site: 
+
+```{r hotel-import, message = FALSE}
+library(tidymodels)
+library(readr)
+
+hotels <- 
+  readr::read_csv('https://bit.ly/hotel_booking_data') %>%
+  mutate_if(is.character, as.factor) 
+
+dim(hotels)
+
+table(hotels$children)/nrow(hotels)
+```
+
+
+```{r tr-te-split}
+set.seed(35225)
+splits <- initial_split(hotels, strata = children)
+
+hotel_train <- training(splits)
+hotel_test  <- testing(splits)
+```
+
+
+```{r validation-set}
+set.seed(948)
+val_set <- validation_split(hotel_train, strata = children, prop = 0.80)
+val_set
+```
+
+
+# A first model: logistic regression
+
+```{r logistic-features}
+holidays <- c("AllSouls", "AshWednesday", "ChristmasEve", "Easter", 
+              "ChristmasDay", "GoodFriday", "NewYearsDay", "PalmSunday")
+
+lr_recipe <- 
+  recipe(children ~ ., data = hotel_train) %>% 
+  step_other(country, threshold = 0.025) %>% 
+  step_date(arrival_date) %>% 
+  step_holiday(arrival_date, holidays = holidays) %>% 
+  step_rm(arrival_date) %>% 
+  step_dummy(all_nominal(), -all_outcomes()) %>% 
+  step_zv(all_predictors()) %>% 
+  step_normalize(all_predictors())
+```
+
+```{r logistic-model}
+lr_mod <- 
+  logistic_reg(penalty = tune(), mixture = tune()) %>% 
+  set_engine("glmnet")
+
+lr_workflow <- 
+  workflow() %>% 
+  add_model(lr_mod) %>% 
+  add_recipe(lr_recipe)
+```
+
+```{r logistic-grid}
+lr_reg_grid <- 
+  expand.grid(mixture = c(0.10, 0.25, 0.5, 0.75, 1),
+              penalty = 10^seq(-3, -1, length.out = 20))
+```
+
+
+```{r logistic-fit, cache = TRUE}
+tune_ctrl <- control_grid(save_pred = TRUE)
+roc_only <- metric_set(roc_auc)
+
+lr_res <- 
+  lr_workflow %>% 
+  tune_grid(val_set,
+            grid = lr_reg_grid,
+            control = tune_ctrl,
+            metrics = roc_only)
+```
+
+```{r logistic-results}
+lr_res %>%
+  collect_metrics() %>%
+  mutate(mixture = format(mixture)) %>%
+  ggplot(aes(x = penalty, y = mean, col = mixture)) +
+  geom_point() +
+  geom_line() +
+  scale_x_log10() +
+  scale_color_brewer(palette = "Set1")
+```
+
+
+
+```{r logistic-best}
+lr_best <- 
+  lr_res %>%
+  collect_metrics() %>% 
+  filter(mixture == 1) %>% 
+  arrange(desc(mean)) %>% 
+  select(penalty, mixture) %>% 
+  slice(1)
+lr_best
+```
+
+
+```{r logistic-roc-curve}
+lr_auc <- 
+  lr_res %>% 
+  collect_predictions(parameters = lr_best) %>% 
+  roc_curve(children, .pred_children) %>% 
+  mutate(model = "Logistic Regression")
+
+autoplot(lr_auc)
+```
+
+
+# Something more complex: random forest
+
+
+```{r rf-features}
+rf_recipe <- 
+  recipe(children ~ ., data = hotel_train) %>% 
+  step_date(arrival_date) %>% 
+  step_holiday(arrival_date) %>% 
+  step_rm(arrival_date) 
+```
+
+```{r num-cores}
+cores <- parallel::detectCores()
+cores
+```
+
+
+```{r rf-model}
+rf_mod <- 
+  rand_forest(mtry = tune(), min_n = tune(), trees = 1000) %>% 
+  set_engine("ranger", num.threads = cores) %>% 
+  set_mode("classification")
+
+rf_workflow <- 
+  workflow() %>% 
+  add_model(rf_mod) %>% 
+  add_recipe(rf_recipe)
+```
+
+```{r rf-fit, cache = TRUE}
+rf_res <- 
+  rf_workflow %>% 
+  tune_grid(val_set,
+            grid = 25,
+            control = tune_ctrl,
+            metrics = roc_only)
+```
+
+
+```{r rf-results}
+autoplot(rf_res)
+```
+
+
+```{r rf-best}
+rf_best <- select_best(rf_res, metric = "roc_auc")
+rf_best
+```
+
+```{r rf-roc-curve}
+rf_auc <- 
+  rf_res %>% 
+  collect_predictions(parameters = rf_best) %>% 
+  roc_curve(children, .pred_children) %>% 
+  mutate(model = "Random Forest")
+
+bind_rows(rf_auc, lr_auc) %>% 
+  ggplot(aes(x = 1 - specificity, y = sensitivity, col = model)) + 
+  geom_path() +
+  geom_abline(lty = 2) + 
+  coord_equal()
+```
+
+```{r rf-final, cache = TRUE}
+rf_mod <- 
+  rand_forest(mtry = 5, min_n = 2, trees = 1000) %>% 
+  set_engine("ranger", num.threads = 20, importance = 'impurity') %>% 
+  set_mode("classification")
+
+rf_workflow <- 
+  workflow() %>% 
+  add_model(rf_mod) %>% 
+  add_recipe(rf_recipe)
+
+rf_fit <- rf_workflow %>% last_fit(splits)
+```
+
+
+```{r rf-importance}
+library(vip)
+
+rf_fit$.workflow %>% 
+  pluck(1) %>% 
+  pull_workflow_fit() %>% 
+  vip(num_features = 20) 
+```
+
+# Test set results
+
+```{r test-set-roc-curve}
+rf_fit %>% 
+  collect_predictions() %>% 
+  roc_auc(children, .pred_children)
+
+rf_fit %>% 
+  collect_predictions() %>% 
+  roc_curve(children, .pred_children) %>% 
+  autoplot()
+```
+
+
+
+
+# Session information
+
+```{r si, echo = FALSE}
+small_session(pkgs)
+```
+
+
