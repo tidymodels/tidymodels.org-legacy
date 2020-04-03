@@ -18,11 +18,6 @@ library(sessioninfo)
 pkgs <- c("tidymodels")
 ```
 
-# Learning objective
-
-Perform common hypothesis tests for statistical inference using flexible functions
-
-
 # Introduction
 
 This article only requires the tidymodels package. 

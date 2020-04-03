@@ -19,10 +19,6 @@ pkgs <- c("tidymodels")
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
-# Learning objective
-
-Summarize clustering characteristics and estimate the best number of clusters for a data set
-
 # Introduction
 
 This article only requires that the tidymodels package be installed.

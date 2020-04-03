@@ -13,10 +13,6 @@ description: |
 
 
 
-# Learning objective
-
-Apply bootstrap resampling to estimate model parameters
-
 # Introduction
 
 This article only requires that the tidymodels package be installed.
@@ -244,7 +240,7 @@ ggplot(splines_aug, aes(x, y)) +
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Los_Angeles         
-#>  date     2020-04-02                  
+#>  date     2020-04-03                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version    date       lib source                               

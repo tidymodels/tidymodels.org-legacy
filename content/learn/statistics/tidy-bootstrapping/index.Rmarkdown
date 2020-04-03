@@ -20,10 +20,6 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
 
-# Learning objective
-
-Apply bootstrap resampling to estimate model parameters
-
 # Introduction
 
 This article only requires that the tidymodels package be installed.

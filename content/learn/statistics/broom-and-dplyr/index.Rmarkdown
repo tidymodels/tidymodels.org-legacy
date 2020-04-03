@@ -18,10 +18,6 @@ pkgs <- c("tidymodels")
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
-# Learning objective
-
-Analyze the results of correlation tests and simple regression models for many data sets at once
-
 # Introduction
 
 This article only requires that you have the tidymodels package installed.
