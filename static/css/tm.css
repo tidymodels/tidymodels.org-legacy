@@ -166,6 +166,33 @@ h2 {
     color: #CA225E90;
   }
 
+/*Getting Started TOC divider -- styling may change */
+
+/*
+#TOC{
+    padding: 2em;
+    position: relative;
+}
+#TOC:after,
+#TOC:before {
+    border: 1pt solid #ca225e3d; 
+    bottom: 0;    
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 5%;
+}
+#TOC:after {
+    border-left: none;
+    right: 0;
+}
+#TOC:before {
+    border-right: none;
+    left: 0;
+}
+
+*/
+
 
 /*Sidebar TOC links for Learn and Packages pages */
 #TableOfContents a, 
