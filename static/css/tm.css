@@ -119,7 +119,7 @@ div.tagline {
   font-size: 2.4em; /* same as main-site, but duplicated here so it applies to Learn .sectionTitle */
 }
 
-h1,.itemTitle {   
+h1, h2, .itemTitle {   
   font-family: 'Lato', sans-serif;
   font-weight: normal;
   font-size: 1.3em;
@@ -141,8 +141,7 @@ h1 {
 }
 
 h2 {
-  font-size: 1.5em;
-  color: #ca225e;
+  font-size: 1.1em;
 }
 
 
