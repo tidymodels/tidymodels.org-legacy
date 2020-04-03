@@ -57,7 +57,7 @@ rf_xy_fit &lt;-
 rf_xy_fit
 #&gt; parsnip model object
 #&gt; 
-#&gt; Fit time:  930ms 
+#&gt; Fit time:  1s 
 #&gt; Ranger result
 #&gt; 
 #&gt; Call:
@@ -71,7 +71,7 @@ rf_xy_fit
 #&gt; Target node size:                 5 
 #&gt; Variable importance mode:         none 
 #&gt; Splitrule:                        variance 
-#&gt; OOB prediction error (MSE):       0.00844 
+#&gt; OOB prediction error (MSE):       0.00843 
 #&gt; R squared (OOB):                  0.736</code></pre>
 <p>The non-formula interface doesn’t do anything to the predictors before passing them to the underlying model function. This particular model does <em>not</em> require indicator variables (sometimes called “dummy variables”) to be created prior to fitting the model. Note that the output shows “Number of independent variables: 5”.</p>
 <p>For regression models, we can use the basic <code>predict()</code> method, which returns a tibble with a column named <code>.pred</code>:</p>
@@ -90,16 +90,16 @@ test_results %&gt;% slice(1:5)
 #&gt; 2       5.02  5.21
 #&gt; 3       5.27  5.25
 #&gt; 4       5.60  5.51
-#&gt; 5       5.28  5.24
+#&gt; 5       5.28  5.25
 
 # summarize performance
 test_results %&gt;% metrics(truth = Sale_Price, estimate = .pred) 
 #&gt; # A tibble: 3 x 3
 #&gt;   .metric .estimator .estimate
 #&gt;   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
-#&gt; 1 rmse    standard      0.0914
-#&gt; 2 rsq     standard      0.717 
-#&gt; 3 mae     standard      0.0662</code></pre>
+#&gt; 1 rmse    standard      0.0916
+#&gt; 2 rsq     standard      0.715 
+#&gt; 3 mae     standard      0.0663</code></pre>
 <p>Note that:</p>
 <ul>
 <li>If the model required indicator variables, we would have to create them manually prior to using <code>fit()</code> (perhaps using the recipes package).</li>
@@ -114,7 +114,7 @@ test_results %&gt;% metrics(truth = Sale_Price, estimate = .pred)
   )
 #&gt; parsnip model object
 #&gt; 
-#&gt; Fit time:  2.6s 
+#&gt; Fit time:  2.8s 
 #&gt; Ranger result
 #&gt; 
 #&gt; Call:
@@ -128,8 +128,8 @@ test_results %&gt;% metrics(truth = Sale_Price, estimate = .pred)
 #&gt; Target node size:                 5 
 #&gt; Variable importance mode:         none 
 #&gt; Splitrule:                        variance 
-#&gt; OOB prediction error (MSE):       0.00848 
-#&gt; R squared (OOB):                  0.735</code></pre>
+#&gt; OOB prediction error (MSE):       0.00849 
+#&gt; R squared (OOB):                  0.734</code></pre>
 <p>Suppose that we would like to use the randomForest package instead of ranger. To do so, the only part of the syntax that needs to change is the <code>set_engine()</code> argument:</p>
 <pre class="r"><code>rand_forest(mode = &quot;regression&quot;, mtry = 3, trees = 1000) %&gt;%
   set_engine(&quot;randomForest&quot;) %&gt;%
@@ -167,7 +167,7 @@ test_results %&gt;% metrics(truth = Sale_Price, estimate = .pred)
   )
 #&gt; parsnip model object
 #&gt; 
-#&gt; Fit time:  3.5s 
+#&gt; Fit time:  3.9s 
 #&gt; Ranger result
 #&gt; 
 #&gt; Call:
@@ -181,7 +181,7 @@ test_results %&gt;% metrics(truth = Sale_Price, estimate = .pred)
 #&gt; Target node size:                 5 
 #&gt; Variable importance mode:         none 
 #&gt; Splitrule:                        variance 
-#&gt; OOB prediction error (MSE):       0.00869 
+#&gt; OOB prediction error (MSE):       0.0087 
 #&gt; R squared (OOB):                  0.728</code></pre>
 </div>
 <div id="penalized-logistic-regression" class="section level1">
@@ -210,7 +210,7 @@ glmn_fit &lt;-
 glmn_fit
 #&gt; parsnip model object
 #&gt; 
-#&gt; Fit time:  17ms 
+#&gt; Fit time:  10ms 
 #&gt; 
 #&gt; Call:  glmnet::glmnet(x = as.matrix(x), y = y, family = &quot;gaussian&quot;,      alpha = ~0.5) 
 #&gt; 
@@ -300,7 +300,7 @@ test_results
 #&gt;  2       5.02            5.21   5.17
 #&gt;  3       5.27            5.25   5.23
 #&gt;  4       5.60            5.51   5.25
-#&gt;  5       5.28            5.24   5.25
+#&gt;  5       5.28            5.25   5.25
 #&gt;  6       5.17            5.19   5.19
 #&gt;  7       5.02            4.97   5.19
 #&gt;  8       5.46            5.50   5.49
@@ -329,57 +329,37 @@ test_results %&gt;%
 <h1>Session information</h1>
 <pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────
 #&gt;  setting  value                       
-#&gt;  version  R version 3.6.2 (2019-12-12)
-#&gt;  os       macOS Mojave 10.14.6        
+#&gt;  version  R version 3.6.1 (2019-07-05)
+#&gt;  os       macOS Catalina 10.15.3      
 #&gt;  system   x86_64, darwin15.6.0        
 #&gt;  ui       X11                         
 #&gt;  language (EN)                        
 #&gt;  collate  en_US.UTF-8                 
 #&gt;  ctype    en_US.UTF-8                 
-#&gt;  tz       America/Denver              
-#&gt;  date     2020-04-01                  
+#&gt;  tz       America/Los_Angeles         
+#&gt;  date     2020-04-03                  
 #&gt; 
 #&gt; ─ Packages ───────────────────────────────────────────────────────────────────
-#&gt;  package      * version      date       lib
-#&gt;  AmesHousing  * 0.0.3        2017-12-17 [1]
-#&gt;  broom        * 0.5.5        2020-02-29 [1]
-#&gt;  dials        * 0.0.4.9000   2020-03-20 [1]
-#&gt;  dplyr        * 0.8.5        2020-03-07 [1]
-#&gt;  ggplot2      * 3.3.0        2020-03-05 [1]
-#&gt;  glmnet       * 3.0-2        2019-12-11 [1]
-#&gt;  infer        * 0.5.1        2019-11-19 [1]
-#&gt;  parsnip      * 0.0.5        2020-01-07 [1]
-#&gt;  purrr        * 0.3.3        2019-10-18 [1]
-#&gt;  randomForest * 4.6-14       2018-03-25 [1]
-#&gt;  ranger       * 0.12.1       2020-01-10 [1]
-#&gt;  recipes      * 0.1.10       2020-03-18 [1]
-#&gt;  rlang          0.4.5.9000   2020-03-20 [1]
-#&gt;  rsample      * 0.0.5        2019-07-12 [1]
-#&gt;  tibble       * 2.99.99.9014 2020-03-26 [1]
-#&gt;  tidymodels   * 0.1.0        2020-02-16 [1]
-#&gt;  tune         * 0.0.1.9000   2020-03-23 [1]
-#&gt;  workflows    * 0.1.1.9000   2020-03-20 [1]
-#&gt;  yardstick    * 0.0.5.9000   2020-03-20 [1]
-#&gt;  source                               
-#&gt;  CRAN (R 3.6.0)                       
-#&gt;  CRAN (R 3.6.0)                       
-#&gt;  local                                
-#&gt;  CRAN (R 3.6.0)                       
-#&gt;  CRAN (R 3.6.0)                       
-#&gt;  CRAN (R 3.6.0)                       
-#&gt;  CRAN (R 3.6.0)                       
-#&gt;  CRAN (R 3.6.2)                       
-#&gt;  CRAN (R 3.6.0)                       
-#&gt;  CRAN (R 3.6.0)                       
-#&gt;  CRAN (R 3.6.0)                       
-#&gt;  CRAN (R 3.6.0)                       
-#&gt;  Github (r-lib/rlang@a90b04b)         
-#&gt;  CRAN (R 3.6.0)                       
-#&gt;  Github (tidyverse/tibble@2448bb0)    
-#&gt;  CRAN (R 3.6.0)                       
-#&gt;  local                                
-#&gt;  Github (tidymodels/workflows@e995c18)
-#&gt;  Github (tidymodels/yardstick@6a9a69a)
+#&gt;  package      * version    date       lib source                               
+#&gt;  AmesHousing  * 0.0.3      2017-12-17 [1] CRAN (R 3.6.0)                       
+#&gt;  broom        * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
+#&gt;  dials        * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
+#&gt;  dplyr        * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
+#&gt;  ggplot2      * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
+#&gt;  glmnet       * 3.0-2      2019-12-11 [1] CRAN (R 3.6.0)                       
+#&gt;  infer        * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                       
+#&gt;  parsnip      * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
+#&gt;  purrr        * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
+#&gt;  randomForest * 4.6-14     2018-03-25 [1] CRAN (R 3.6.0)                       
+#&gt;  ranger       * 0.11.2     2019-03-07 [1] CRAN (R 3.6.0)                       
+#&gt;  recipes      * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
+#&gt;  rlang          0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
+#&gt;  rsample      * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
+#&gt;  tibble       * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
+#&gt;  tidymodels   * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
+#&gt;  tune         * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
+#&gt;  workflows    * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
+#&gt;  yardstick    * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
 #&gt; 
 #&gt; [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library</code></pre>
 </div>
