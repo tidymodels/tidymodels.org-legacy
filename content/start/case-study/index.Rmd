@@ -26,10 +26,13 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 
 The previous _Getting Started_ articles have been focused on single tasks related to modeling. This example is a broader case study of building a predictive model. It uses all of the previous topics.  
 
+Our modeling goal here is to predict which hotel stays include children (vs. do not include children or babies) based on the other characteristics in this dataset such as which hotel the guests stay at, how much they pay, etc. The [paper that this data comes from](https://www.sciencedirect.com/science/article/pii/S2352340918315191) points out that the distribution of many of these variables (such as number of adults/children, room type, meals bought, country, and so forth) is different for canceled versus not canceled hotel bookings. This is mostly because more information is gathered when guests check in; the biggest contributor to these differences is not that people who cancel are different from people who do not.
+
+To build our models, the data were filtered to only the bookings that did not cancel and build a model to predict which hotel stays include children and which do not.
 
 # Data Spending
 
-The data can be found on the `tidymodels.org` site: 
+The [version](https://gist.github.com/topepo/05a74916c343e57a71c51d6bc32a21ce) of the data that we'll use can be found on the `tidymodels.org` site: 
 
 ```{r hotel-import, message = FALSE}
 library(tidymodels)
@@ -40,26 +43,30 @@ hotels <-
   mutate_if(is.character, as.factor) 
 
 dim(hotels)
-
-table(hotels$children)/nrow(hotels)
 ```
 
+An important consideration for these data: children were only in `r round(mean(hotels$children == "children") * 100, 1)`% of the reservations. This type of severe class imbalance can often wreak havoc on an analysis. While there are several methods for combating this issue, the analyses shown below analyze the data as-is. 
+
+For a data splitting strategy, 25% of the reservations were allocated to the test set using a stratified random sample:  
 
 ```{r tr-te-split}
 set.seed(35225)
 splits <- initial_split(hotels, strata = children)
 
-hotel_train <- training(splits)
+hotel_other <- training(splits)
 hotel_test  <- testing(splits)
+nrow(hotel_test)
 ```
 
+Rather than using multiple iterations of resampling, a single _validation set_ will be split apart from the `r format(nrow(hotel_other), big.mark = ",")` reservations that were not used for testing. In tidymodels, a validation set is treated as a single iteration of resampling. For this reason, the `validation_split()` function was used to allocate 20% of these to validation and `r format(nrow(hotel_other) * .8, big.mark = ",")` reservations to the training set:  
 
 ```{r validation-set}
 set.seed(948)
-val_set <- validation_split(hotel_train, strata = children, prop = 0.80)
+val_set <- validation_split(hotel_other, strata = children, prop = 0.80)
 val_set
 ```
 
+The standard functions from the tune package will be used as before but, in this case, the performance metrics will be computed on a single set of `r format(nrow(hotel_other) * .2, big.mark = ",")` reservations. This amount of data should provide enough precision to be a reliable indicator for how well each model predicts the outcome.  
 
 # A first model: logistic regression
 
@@ -75,7 +82,7 @@ lr_mod <-
 
 Setting `mixture` to a value of one means that the glmnet model will focus on potentially removing irrelevant predictors. 
 
-To prepare the data for the model, the categorical predictors (e.g., ) should be converted to dummy variables. Additionally, it might make sense fo create a set of date-based predictors that reflect important components related to the arrival date. First, `step_date()` creates predictors for the year, month, and day of the week. Secondly, `step_holiday()` generates a set of indicator variables for specific holidays. The addition of `step_zv()` means that no indicators variables that only contains a single unique value (e.g. all zeros) will be added to the model. This is important because, for penalized models, the the predictors should be centered and scaled. 
+To prepare the data for the model, the categorical predictors (e.g., `distribution_channel`, `hotel`, ...) should be converted to dummy variables. Additionally, it might make sense fo create a set of date-based predictors that reflect important components related to the arrival date. First, `step_date()` creates predictors for the year, month, and day of the week. Secondly, `step_holiday()` generates a set of indicator variables for specific holidays. The addition of `step_zv()` means that no indicators variables that only contains a single unique value (e.g. all zeros) will be added to the model. This is important because, for penalized models, the the predictors should be centered and scaled. 
 
 The recipe for these steps is: 
 
@@ -84,7 +91,7 @@ holidays <- c("AllSouls", "AshWednesday", "ChristmasEve", "Easter",
               "ChristmasDay", "GoodFriday", "NewYearsDay", "PalmSunday")
 
 lr_recipe <- 
-  recipe(children ~ ., data = hotel_train) %>% 
+  recipe(children ~ ., data = hotel_other) %>% 
   step_date(arrival_date) %>% 
   step_holiday(arrival_date, holidays = holidays) %>% 
   step_rm(arrival_date) %>% 
@@ -121,7 +128,7 @@ lr_res <-
 
 The resulting validation set metrics are computed and plotted against the amount of penalization: 
 
-```{r logistic-results}
+```{r logistic-results, fig.height = 4.25, , fig.width = 6}
 lr_res %>% 
   collect_metrics() %>% 
   ggplot(aes(x = penalty, y = mean)) + 
@@ -145,9 +152,7 @@ lr_best <-
 lr_best
 ```
 
-This may result in some predictors still being removed form the model despite the small values of the penalty being best. 
-
-For this specific penalty value, the validation set ROC curve is:
+This value has effectively the same performance as the numerically best, but might eliminate more predictors. For this specific penalty value, the validation set ROC curve is:
 
 ```{r logistic-roc-curve}
 lr_auc <- 
@@ -169,7 +174,7 @@ Once effective and low-maintenance modeling technique is _random forest_ (used i
 
 ```{r rf-features}
 rf_recipe <- 
-  recipe(children ~ ., data = hotel_train) %>% 
+  recipe(children ~ ., data = hotel_other) %>% 
   step_date(arrival_date) %>% 
   step_holiday(arrival_date) %>% 
   step_rm(arrival_date) 
@@ -210,9 +215,11 @@ rf_res <-
             metrics = roc_only)
 ```
 
-The results, when plotted, indicates that both `mtry` and the minimum number of data points required to keep splitting should be fairly small (on average). Note, however, that the range of the y-axis indicates that the model is very robust to the choice of these parameters. 
+The note about "finalizing the unknown parameter" is related to the size of the data set. Since `mtry` depends on the number of predictors in the data set, `tune_grid()` determines the upper bound for `mtry` once it receives the data. 
 
-```{r rf-results}
+The results of the tuning process, when plotted, indicate that both `mtry` and the minimum number of data points required to keep splitting should be fairly small (on average). Note, however, that the range of the y-axis indicates that the model is very robust to the choice of these parameters. 
+
+```{r rf-results, fig.height = 4}
 autoplot(rf_res)
 ```
 
@@ -237,12 +244,12 @@ bind_rows(rf_auc, lr_auc) %>%
   geom_path() +
   geom_abline(lty = 2) + 
   coord_equal() + 
-  scale_color_brewer("Set2")
+  scale_color_brewer(palette = "Set1")
 ```
 
 The random forest is uniformly better across event probability thresholds. 
 
-If this model were chosen to be better than the other models, it can be used once again with `last_fit()` to fit the entire training set and then evaluate the test set. 
+If this model were chosen to be better than the other models, it can be used once again with `last_fit()` to fit the final model and then evaluate the test set. 
 
 However, the model object is redefined so that the _variable importance_ scores are computed for this model. This should give some insight into which predictors are driving model performance.
 
@@ -271,7 +278,7 @@ rf_fit$.workflow %>%
   vip(num_features = 20) 
 ```
 
-The most important predictors were the daily cost for the roo, the type of reservation, the time between the creation of the reservation and the arrival date, and the type of room that was reserved. 
+The most important predictors were the daily cost for the room, the type of reservation, the time between the creation of the reservation and the arrival date, and the type of room that was reserved. 
 
 # Test set results
 
