@@ -271,15 +271,11 @@ h2 {
 /* Learn List Page */
 
 .learn-list .article-title {
-  font-size: 1.4em;
+  font-size: 1.25em;
 }
 
 .learn-list ul{
   max-width: 90%;
-}
-
-.learn-list ul li{
-  margin-bottom: 1em;
 }
 
 .article-content ul li::before {
@@ -293,8 +289,8 @@ h2 {
 
 .learning-objective {
   color: #1a162dcf;
+  font-size: 0.8em;
   letter-spacing: 1pt;
-  margin-top: 0.4em;
   display: inline-block;
 }
 

@@ -32,7 +32,7 @@
                         <li>
                         <a class="article-title" href="{{.Permalink}}">{{.Title}}</a>
                         {{ with .Description }}
-                        <br><div class="learning-objective">{{ print "Learning Objective:" | markdownify | upper }}</div><p class="learning-objective-text"><em>{{ . | markdownify }}</em></p>
+                        <br><div class="learning-objective">{{ print "Learning Objective:" | markdownify | upper }}</div> <p class="learning-objective-text"><em>{{ . | markdownify }}</em></p>
                         {{ end }}
                         </li>
                     {{ end }}
