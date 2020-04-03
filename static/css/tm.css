@@ -1,3 +1,11 @@
+@import url('https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i&display=swap');
+
+
+.serif {
+  font-family: 'Libre Baskerville', serif;
+  color: #302c41;
+}
+
 body, button, input, textarea {
   font-family: 'Lato', sans-serif;
   font-size: 17px;
