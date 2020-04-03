@@ -3,9 +3,6 @@ title: "Building a model"
 weight: 1
 tags: [parsnip, broom]
 categories: [model fitting]
-output:
-  blogdown::html_page:
-    toc: true
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}
