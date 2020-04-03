@@ -220,7 +220,6 @@ h1, h2 {
 .column25-left {
   padding-top: 20px;
   padding-right: 3em;
-  position: fixed;
   border-right: solid #d9d9d9 1pt;
   max-width: 250px;
 }
@@ -298,4 +297,15 @@ table thead tr th:last-child {
 
 .column75 > a {
   color: #1a162d80;
+}
+
+/*---- STICKY TOC w/ SMOOTH SCROLL-----*/
+
+.column25, .column25-left {
+  position: sticky;
+  top: 5.53em;
+}
+
+html {
+  scroll-behavior: smooth;
 }
