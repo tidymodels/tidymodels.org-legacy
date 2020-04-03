@@ -37,5 +37,13 @@ preserveTaxonomyNames = true
 	latexDashes = true
   extensions = ["backslashLineBreak"]
 
-[markup.goldmark.renderer]
-  unsafe = true
+[markup]
+  defaultMarkdownHandler = "goldmark"
+  [markup.tableOfContents]
+    endLevel = 3
+    ordered = false
+    startLevel = 1
+  [markup.goldmark.renderer]
+    unsafe = true
+  [markup.highlight]
+    style = "pygments"

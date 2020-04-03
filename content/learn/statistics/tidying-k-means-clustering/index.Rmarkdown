@@ -3,6 +3,9 @@ title: "K-means clustering with tidy data principles"
 tags: [broom]
 categories: [statistical analysis]
 type: learn-subsection
+weight: 3
+description: | 
+  Summarize clustering characteristics and estimate the best number of clusters for a data set.
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}

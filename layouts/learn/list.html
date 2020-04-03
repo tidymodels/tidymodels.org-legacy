@@ -25,25 +25,31 @@
                 </div>
               </div>
               <div class="itemMeta">
-                <div class="author">
-                <!-- based on author field being used in YAML frontmatter -->
-                {{ $show_authors := $.Site.Params.authors.show_list | default true }}
-                {{ if $show_authors }}
-                {{ partial "pretty_author_names" . }}
-                {{ end }}
+                <div class="author article-content">
+                    <ul>
+                    <!-- Ranges through content/posts/*.md -->
+                    {{ range .Pages }}
+                        <li>
+                        <a href="{{.Permalink}}">{{.Title}}</a>
+                        {{ with .Description }}
+                        <br><p class= "serif">{{ print "Learning Objective:" | markdownify | upper }} <em>{{ . | markdownify }}</em></p>
+                        {{ end }}
+                        </li>
+                    {{ end }}
+                    </ul>
                 </div>
                 <div class="itemDescription">{{ default .Description | markdownify }}
-                  <a class="readMore" href="{{ .RelPermalink }}">Read More &#187;</a>
+                  <a class="readMore" href="{{ .RelPermalink }}">See all &#187;</a>
                 </div>
                 <div class="itemDate">
                   <div class="created">
-                  <i class="fas fa-box-open"></i>&nbsp;
+                  <!--<i class="fas fa-box-open"></i>&nbsp;
                   {{ range $i, $tags := (.GetTerms "tags") }}
                       {{- if $i -}}, {{ end -}}
                       {{ with $tags }}
                       <a href="{{ .Permalink }}">{{- .LinkTitle -}}</a>
                       {{- end -}}
-                  {{- end -}} 
+                  {{- end -}} -->
                   </div>
                 </div>
               </div>
@@ -53,7 +59,7 @@
       {{ template "_internal/pagination.html" . }}
       </div>
 
-{{ partial "ex-sidebar.html" . }}
+{{ partial "learn-sidebar.html" . }}
 
     </div>
   </div>  <!-- bandContent -->
