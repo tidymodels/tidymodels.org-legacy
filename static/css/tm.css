@@ -140,11 +140,11 @@ h1 {
 }
 
 .itemTitle a { /* For Learn Page headers */
-  color: #1a162d99;
+  color: #1a162d;
 }
 
-.itemTitle a:hover { /* For Learn Page headers */
-  color: #1a162d;
+.itemTitle a:hover { /* For Learn List Page headers */
+  color: #1a162d99;
   text-decoration: none;
 }
 
@@ -268,6 +268,39 @@ h2 {
 }
 
 
+/* Learn List Page */
+
+.learn-list .article-title {
+  font-size: 1.4em;
+}
+
+.learn-list ul{
+  max-width: 90%;
+}
+
+.learn-list ul li{
+  margin-bottom: 1em;
+}
+
+.article-content ul li::before {
+  content: "\2022";  /* Add content: \2022 is the CSS Code/unicode for a bullet */
+  /*color: #1a162d;*/  /* Change the color */
+  font-weight: bold; /* If you want it to be bold */
+  display: inline-block; /* Needed to add space between the bullet and the text */
+  width: 1.5em; /* Also needed for space (tweak if needed) */
+  margin-left: -1.7em; /* Also needed for space (tweak if needed) */
+}
+
+.learning-objective {
+  color: #1a162dcf;
+  letter-spacing: 1pt;
+  margin-top: 0.4em;
+  display: inline-block;
+}
+
+.learning-objective-text {
+  color: #1a162d9e;
+}
 /*-------- NAVBAR --------- */
 
 /*navbar header items */

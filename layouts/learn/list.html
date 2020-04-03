@@ -25,14 +25,14 @@
                 </div>
               </div>
               <div class="itemMeta">
-                <div class="author article-content">
+                <div class="author article-content learn-list">
                     <ul>
                     <!-- Ranges through content/posts/*.md -->
                     {{ range .Pages }}
                         <li>
-                        <a href="{{.Permalink}}">{{.Title}}</a>
+                        <a class="article-title" href="{{.Permalink}}">{{.Title}}</a>
                         {{ with .Description }}
-                        <br><p class= "serif">{{ print "Learning Objective:" | markdownify | upper }} <em>{{ . | markdownify }}</em></p>
+                        <br><div class="learning-objective">{{ print "Learning Objective:" | markdownify | upper }}</div><p class="learning-objective-text"><em>{{ . | markdownify }}</em></p>
                         {{ end }}
                         </li>
                     {{ end }}
