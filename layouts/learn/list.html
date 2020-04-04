@@ -7,7 +7,7 @@
       <div class="column75">
         <div class="sectionTitle">{{ .Title }}</div>
 
-        <div>{{ range .Sections }}
+        <div>{{ range $index, $element := .Sections }}
               {{ $post := . }}
           <div class="listItem">
              {{ $card := (.Resources.ByType "image").GetMatch "*thumbnail*" }}
@@ -17,6 +17,7 @@
             <div class="itemDetails">
               <div class="itemHeader">
                 <div class="itemTitle"><a href="{{ .RelPermalink }}">{{ .Title | markdownify }}</a></div>
+                {{ if ne $index 0 }}
                 <div class="itemTag" aria-hidden="true">
                   <a href="#" class="back-to-top">
                     <span class="button_icon">
@@ -25,6 +26,7 @@
                     {{ print "back to top"}}
                   </a>
                 </div>
+                {{ end }}
               </div>
               <div class="itemMeta">
                 <div class="author article-content">
