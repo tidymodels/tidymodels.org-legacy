@@ -6,9 +6,17 @@
     <div class="full splitColumns withMobileMargins">
       <div class="column75">
         <div class="sectionTitle">{{ .Title }}</div>
-
+          
+          <!--beginning of jump to section-->
+          <div class="listItem">
+            {{ range $index, $element := .Sections }}
+                <a href="#{{ anchorize (.Title) }}">{{ .Title | markdownify }}</a>
+          {{ end }}
+          </div>
+          
         <div>{{ range $index, $element := .Sections }}
               {{ $post := . }}
+              
           <div class="listItem">
              {{ $card := (.Resources.ByType "image").GetMatch "*thumbnail*" }}
              {{ with $card }}
@@ -16,8 +24,10 @@
               {{ end }}
             <div class="itemDetails">
               <div class="itemHeader">
-                <div class="itemTitle"><a href="{{ .RelPermalink }}">{{ .Title | markdownify }}</a></div>
-                {{ if ne $index 0 }}
+                <div class="itemTitle" id="{{ anchorize (.Title) }}">
+                  <a href="#{{ anchorize (.Title) }}">{{ .Title | markdownify }}</a>
+                  </div>
+                {{ if ne $index 0 }} <!--do not show back to top for 1st section-->
                 <div class="itemTag" aria-hidden="true">
                   <a href="#" class="back-to-top">
                     <span class="button_icon">
