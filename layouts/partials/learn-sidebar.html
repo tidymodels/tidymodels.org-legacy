@@ -1,11 +1,21 @@
       <div class="column25">
+        
+        <div class="section">
+          <div class="sectionTitle">Jump to section</div>
+          {{ range .Sections }}
+          <div class="articleCategory">
+            <a href="{{ .RelPermalink }}">{{ .Title | markdownify }}</a>
+          </div>
+          {{ end }}
+        </div>
 
         <div class="section">
-          <div class="sectionTitle">Find by package</div>
+          <div class="sectionTitle">Filter by package</div>
           {{ range $key, $value := $.Site.Taxonomies.tags }}
           <div class="articleCategory {{ replace (lower $key) " " "" }}">
             <a href="{{ (print "/tags/" $key | urlize) | relURL }}">{{ $key }} ({{ .Count }})</a>
           </div>
           {{ end }}
         </div>
+     
       </div>
