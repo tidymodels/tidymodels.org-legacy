@@ -8,6 +8,7 @@ twitter_image = "01.rstudio.flowers-sharing.jpg"
 # Link custom CSS and JS assets
 #   (relative to /static/css and /static/js respectively)
 custom_css = ["tm.css"]
+custom_js = ["tm.js"]
 
 # Define base hex url for index page (where the stickers link out to)
 hex_base_url = "tidymodels.github.io/"

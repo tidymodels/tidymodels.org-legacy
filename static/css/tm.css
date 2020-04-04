@@ -276,16 +276,26 @@ h2 {
 
 .learn-list ul{
   max-width: 90%;
+  border-left: 1pt solid pink;
+  margin-left: 2em;
 }
 
 .article-content ul li::before {
-  content: "\2022";  /* Add content: \2022 is the CSS Code/unicode for a bullet */
+  content: " ";  /* Add content: \2022 is the CSS Code/unicode for a bullet */
   /*color: #1a162d;*/  /* Change the color */
   font-weight: bold; /* If you want it to be bold */
   display: inline-block; /* Needed to add space between the bullet and the text */
   width: 1.5em; /* Also needed for space (tweak if needed) */
   margin-left: -1.7em; /* Also needed for space (tweak if needed) */
 }
+
+
+.learning-objective-text {
+  color: #1a162d9e;
+  
+}
+
+/* Learn subsection*/
 
 .learning-objective {
   color: #1a162dcf;
@@ -294,9 +304,30 @@ h2 {
   display: inline-block;
 }
 
-.learning-objective-text {
-  color: #1a162d9e;
+  .single-learning-objective-text {
+  }
+
+
+.single-learning-objective-text:after,
+.single-learning-objective-text:before {
+    border: 1pt solid #ca225e3d; 
+    bottom: 0;    
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 5%;
 }
+.single-learning-objective-text:after {
+    border-left: none;
+    right: 0;
+}
+.single-learning-objective-text:before {
+    border-right: none;
+    left: 0;
+}
+
+
+
 /*-------- NAVBAR --------- */
 
 /*navbar header items */
@@ -400,4 +431,21 @@ html {
 
 .section .event a{
     color: #1a162d;
+}
+
+/* LEARN THUMBNAILS */
+
+.image-cropper {
+    width: 100px;
+    height: 100px;
+    position: relative;
+    overflow: hidden;
+   /* border-radius: 50%; */
+    margin: 2em auto;
+}
+
+.circle-thumbnail {
+  display: inline;
+  margin: 0 auto;
+  width: auto;
 }
