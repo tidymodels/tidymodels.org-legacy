@@ -3,6 +3,8 @@ title: "Classification models using a neural network"
 tags: [rsample, parsnip]
 categories: [model fitting]
 type: learn-subsection
+description: | 
+  Train a classification model and evaluate its performance.
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}
@@ -16,9 +18,6 @@ pkgs <- c("tidymodels", "keras")
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
-# Learning objective
-
-Train a classification model and evaluate its performance
 
 # Introduction
 

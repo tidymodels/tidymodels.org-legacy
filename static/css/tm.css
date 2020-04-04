@@ -216,7 +216,10 @@ h2 {
 .articleCategory a:hover {
   color: #1a162dde;
   text-decoration: none;
+}
 
+.articleCategory {
+	padding-left: 0;
 }
 
 /*-- Getting Started Page Left Sidebar -- */
