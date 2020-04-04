@@ -2,6 +2,8 @@
 title: "Subsampling for class imbalances"
 tags: [recipes, themis, discrim, parsnip]
 categories: [model fitting, pre-processing]
+description: | 
+  Improve model performance in imbalanced data sets through undersampling or oversampling.
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}
@@ -21,9 +23,6 @@ pkgs <- c("tidymodels", "klaR", "themis", "discrim", "readr", "ROSE")
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
-# Learning objective
-
-Improve model performance in imbalanced data sets through undersampling or oversampling
 
 # Introduction
 

@@ -2,6 +2,8 @@
 title: "Regression models two ways"
 tags: [rsample, parsnip]
 categories: [model fitting]
+description: | 
+  Create and train different kinds of regression models with different computational engines.
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}
@@ -23,9 +25,6 @@ pkgs <- c("tidymodels", "AmesHousing", "ranger", "randomForest", "glmnet")
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
-# Learning objective
-
-Create and train different kinds of regression models with different computational engines
 
 # Introduction
 

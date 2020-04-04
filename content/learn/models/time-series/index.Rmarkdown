@@ -3,6 +3,8 @@ title: "Modeling time series with tidy resampling"
 tags: [rsample]
 categories: [model fitting, resampling]
 type: learn-subsection
+description: | 
+  Calculate performance estimates for time series forecasts using resampling.
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}
@@ -20,9 +22,6 @@ pkgs <- c("tidymodels", "timetk", "forecast", "sweep", "zoo")
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
-# Learning objective
-
-Calculate performance estimates for time series forecasts using resampling
 
 # Introduction
 

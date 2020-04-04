@@ -3,32 +3,23 @@ title: "Multivariate analysis using partial least squares"
 tags: [recipes,rsample]
 categories: [pre-processing]
 type: learn-subsection
+description: | 
+  Build and fit a predictive model with more than one outcome.
 ---
 
-```{r setup, include = FALSE, message = FALSE, warning = FALSE}
-source(here::here("content/learn/common.R"))
-```
 
-```{r load, include = FALSE}
-library(pls)
-library(tidymodels)
-library(sessioninfo)
-pkgs <- c("modeldata", "pls", "tidymodels")
 
-theme_set(theme_bw() + theme(legend.position = "top"))
-```
 
-# Learning objective
 
-Build and fit a predictive model with more than one outcome
 
 # Introduction
 
-`r req_pkgs(pkgs)`
+This article requires that you have the following packages installed: modeldata, pls, and tidymodels.
 
 "Multivariate analysis" usually refers to multiple _outcomes_ being modeled, analyzed, and/or predicted. There are multivariate versions of many common statistical tools. For example, suppose there was a data set with columns `y1` and `y2` representing two outcomes to be predicted. The `lm()` function would look something like:
 
-```{r lm, eval = FALSE}
+
+```r
 lm(cbind(y1, y2) ~ ., data = dat)
 ```
 
@@ -44,7 +35,8 @@ The goal is to predict the proportion of the three substances using the chemistr
 
 To start, let's take the two data matrices (called `endpoints` and `absorp`) and bind them together in a data frame:
 
-```{r data}
+
+```r
 library(modeldata)
 data(meats)
 ```
@@ -61,7 +53,8 @@ Since we are working with variances and covariances, we need to standardize the 
 
 Many base R functions that deal with multivariate outcomes using a formula require the use of `cbind()` on the left-hand side of the formula to work with the traditional formula methods. In tidymodels, recipes do not; the outcomes can be symbolically "added" together on the left-hand side:
 
-```{r recipe}
+
+```r
 norm_rec <- 
   recipe(water + fat + protein ~ ., data = meats) %>%
   step_normalize(everything()) 
@@ -73,7 +66,8 @@ Since the data set isn't large, let's use resampling to measure these proportion
 
 The folds can be created using the [rsample](https://tidymodels.github.io/rsample/) package and the recipe can be estimated for each resample using the [`prepper()`](https://tidymodels.github.io/rsample/reference/prepper.html) function: 
 
-```{r cv}
+
+```r
 set.seed(57343)
 folds <- vfold_cv(meats, repeats = 10)
 
@@ -98,7 +92,8 @@ The calculation for the proportion of variance explained is straightforward for 
 The function `get_var_explained()` shown below will do all these computations and return a data frame with columns `components`, `source` (for the predictors, water, etc) and the `proportion` of variance that is explained by the components. 
 
 
-```{r var-explained}
+
+```r
 library(pls)
 
 get_var_explained <- function(recipe, ...) {
@@ -143,7 +138,8 @@ get_var_explained <- function(recipe, ...) {
 
 We compute this data frame for each resample and save the results in different columns. 
 
-```{r get-estimates}
+
+```r
 folds <- 
   folds %>%
   mutate(var = map(recipes, get_var_explained))
@@ -151,7 +147,8 @@ folds <-
 
 To extract and aggregate these data, simple row binding can be used to stack the data vertically. Most of the action happens in the first 15 components so let's filter the data and compute the _average_ proportion.
 
-```{r collapse-and-average}
+
+```r
 variance_data <- 
   bind_rows(folds[["var"]]) %>%
   filter(components <= 15) %>%
@@ -161,16 +158,52 @@ variance_data <-
 
 The plot below shows that, if the protein measurement is important, you might require 10 or so components to achieve a good representation of that outcome. Note that the predictor variance is captured extremely well using a single component. This is due to the high degree of correlation in those data. 
 
-```{r plot, fig.width=6, fig.height=4.25,  out.width = '100%'}
+
+```r
 ggplot(variance_data, aes(x = components, y = proportion, col = source)) + 
   geom_line() + 
   geom_point() 
 ```
 
+<img src="figs/plot-1.svg" width="100%" />
+
 
 # Session information
 
-```{r si, echo = FALSE}
-small_session(pkgs)
+
+```
+#> ─ Session info ───────────────────────────────────────────────────────────────
+#>  setting  value                       
+#>  version  R version 3.6.1 (2019-07-05)
+#>  os       macOS Catalina 10.15.3      
+#>  system   x86_64, darwin15.6.0        
+#>  ui       X11                         
+#>  language (EN)                        
+#>  collate  en_US.UTF-8                 
+#>  ctype    en_US.UTF-8                 
+#>  tz       America/Los_Angeles         
+#>  date     2020-04-03                  
+#> 
+#> ─ Packages ───────────────────────────────────────────────────────────────────
+#>  package    * version    date       lib source                               
+#>  broom      * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
+#>  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
+#>  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
+#>  ggplot2    * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
+#>  infer      * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                       
+#>  modeldata  * 0.0.1      2019-12-19 [1] Github (tidymodels/modeldata@aa91bb1)
+#>  parsnip    * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
+#>  pls        * 2.7-2      2019-10-01 [1] CRAN (R 3.6.0)                       
+#>  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
+#>  recipes    * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
+#>  rlang        0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
+#>  rsample    * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
+#>  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
+#>  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
+#>  tune       * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
+#>  workflows  * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
+#>  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
+#> 
+#> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
 ```
  
