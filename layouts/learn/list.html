@@ -7,6 +7,8 @@
       <div class="column75">
         <div class="sectionTitle">{{ .Title }}</div>
           
+          <p>{{ .Content | markdownify }}</p>
+          
           <!--beginning of jump to section-->
           <div class="listItem learn-top-nav">
             {{ range $index, $element := .Sections }}

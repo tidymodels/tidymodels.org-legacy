@@ -1,14 +1,4 @@
       <div class="column25">
-        
-        <!--div class="section">
-          <div class="sectionTitle">Jump to section</div>
-          {{ range .Sections }}
-          <div class="articleCategory">
-            <a href="{{ .RelPermalink }}">{{ .Title | markdownify }}</a>
-          </div>
-          {{ end }}
-        </div-->
-
         <div class="section">
           <div class="sectionTitle">Filter by package</div>
           {{ range $key, $value := $.Site.Taxonomies.tags }}
@@ -17,5 +7,4 @@
           </div>
           {{ end }}
         </div>
-     
       </div>
