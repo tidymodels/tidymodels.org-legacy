@@ -89,7 +89,7 @@ rf_xy_fit
 #> Target node size:                 5 
 #> Variable importance mode:         none 
 #> Splitrule:                        variance 
-#> OOB prediction error (MSE):       0.00843 
+#> OOB prediction error (MSE):       0.00844 
 #> R squared (OOB):                  0.736
 ```
 
@@ -114,16 +114,16 @@ test_results %>% slice(1:5)
 #> 2       5.02  5.21
 #> 3       5.27  5.25
 #> 4       5.60  5.51
-#> 5       5.28  5.25
+#> 5       5.28  5.24
 
 # summarize performance
 test_results %>% metrics(truth = Sale_Price, estimate = .pred) 
 #> # A tibble: 3 x 3
 #>   .metric .estimator .estimate
 #>   <chr>   <chr>          <dbl>
-#> 1 rmse    standard      0.0916
-#> 2 rsq     standard      0.715 
-#> 3 mae     standard      0.0663
+#> 1 rmse    standard      0.0914
+#> 2 rsq     standard      0.717 
+#> 3 mae     standard      0.0662
 ```
 
 Note that: 
@@ -143,7 +143,7 @@ rand_forest(mode = "regression", mtry = 3, trees = 1000) %>%
   )
 #> parsnip model object
 #> 
-#> Fit time:  3.1s 
+#> Fit time:  3.6s 
 #> Ranger result
 #> 
 #> Call:
@@ -157,8 +157,8 @@ rand_forest(mode = "regression", mtry = 3, trees = 1000) %>%
 #> Target node size:                 5 
 #> Variable importance mode:         none 
 #> Splitrule:                        variance 
-#> OOB prediction error (MSE):       0.00849 
-#> R squared (OOB):                  0.734
+#> OOB prediction error (MSE):       0.00848 
+#> R squared (OOB):                  0.735
 ```
  
 Suppose that we would like to use the randomForest package instead of ranger. To do so, the only part of the syntax that needs to change is the `set_engine()` argument:
@@ -174,7 +174,7 @@ rand_forest(mode = "regression", mtry = 3, trees = 1000) %>%
   )
 #> parsnip model object
 #> 
-#> Fit time:  1.9s 
+#> Fit time:  2.6s 
 #> 
 #> Call:
 #>  randomForest(x = as.data.frame(x), y = y, ntree = ~1000, mtry = ~3) 
@@ -211,7 +211,7 @@ rand_forest(mode = "regression", mtry = .preds(), trees = 1000) %>%
   )
 #> parsnip model object
 #> 
-#> Fit time:  4.1s 
+#> Fit time:  5s 
 #> Ranger result
 #> 
 #> Call:
@@ -225,7 +225,7 @@ rand_forest(mode = "regression", mtry = .preds(), trees = 1000) %>%
 #> Target node size:                 5 
 #> Variable importance mode:         none 
 #> Splitrule:                        variance 
-#> OOB prediction error (MSE):       0.0087 
+#> OOB prediction error (MSE):       0.00869 
 #> R squared (OOB):                  0.728
 ```
 
@@ -260,7 +260,7 @@ glmn_fit <-
 glmn_fit
 #> parsnip model object
 #> 
-#> Fit time:  10ms 
+#> Fit time:  20ms 
 #> 
 #> Call:  glmnet::glmnet(x = as.matrix(x), y = y, family = "gaussian",      alpha = ~0.5) 
 #> 
@@ -356,7 +356,7 @@ test_results
 #>  2       5.02            5.21   5.17
 #>  3       5.27            5.25   5.23
 #>  4       5.60            5.51   5.25
-#>  5       5.28            5.25   5.25
+#>  5       5.28            5.24   5.25
 #>  6       5.17            5.19   5.19
 #>  7       5.02            4.97   5.19
 #>  8       5.46            5.50   5.49
@@ -391,38 +391,39 @@ test_results %>%
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.1 (2019-07-05)
-#>  os       macOS Catalina 10.15.3      
+#>  version  R version 3.6.0 (2019-04-26)
+#>  os       macOS  10.15.4              
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/Los_Angeles         
-#>  date     2020-04-03                  
+#>  tz       America/New_York            
+#>  date     2020-04-04                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package      * version    date       lib source                               
-#>  AmesHousing  * 0.0.3      2017-12-17 [1] CRAN (R 3.6.0)                       
-#>  broom        * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
-#>  dials        * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
-#>  dplyr        * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
-#>  ggplot2      * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
-#>  glmnet       * 3.0-2      2019-12-11 [1] CRAN (R 3.6.0)                       
-#>  infer        * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                       
-#>  parsnip      * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
-#>  purrr        * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
-#>  randomForest * 4.6-14     2018-03-25 [1] CRAN (R 3.6.0)                       
-#>  ranger       * 0.11.2     2019-03-07 [1] CRAN (R 3.6.0)                       
-#>  recipes      * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
-#>  rlang          0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
-#>  rsample      * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
-#>  tibble       * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
-#>  tidymodels   * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
-#>  tune         * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
-#>  workflows    * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
-#>  yardstick    * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
+#>  package      * version date       lib source                          
+#>  AmesHousing  * 0.0.3   2017-12-17 [1] CRAN (R 3.6.0)                  
+#>  broom        * 0.5.5   2020-02-29 [1] CRAN (R 3.6.0)                  
+#>  dials        * 0.0.4   2019-12-02 [1] CRAN (R 3.6.0)                  
+#>  dplyr        * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)                  
+#>  ggplot2      * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)                  
+#>  glmnet       * 3.0-2   2019-12-11 [1] CRAN (R 3.6.0)                  
+#>  infer        * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)                  
+#>  parsnip      * 0.0.5   2020-01-07 [1] CRAN (R 3.6.0)                  
+#>  purrr        * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)                  
+#>  randomForest * 4.6-14  2018-03-25 [1] CRAN (R 3.6.0)                  
+#>  ranger       * 0.12.1  2020-01-10 [1] CRAN (R 3.6.0)                  
+#>  recipes      * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)                  
+#>  rlang          0.4.5   2020-03-01 [1] CRAN (R 3.6.0)                  
+#>  rsample      * 0.0.5   2019-07-12 [1] CRAN (R 3.6.0)                  
+#>  tibble       * 2.1.3   2019-06-06 [2] CRAN (R 3.6.0)                  
+#>  tidymodels   * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)                  
+#>  tune         * 0.0.1   2020-01-24 [1] Github (tidymodels/tune@ba56ec5)
+#>  workflows    * 0.1.1   2020-03-17 [1] CRAN (R 3.6.0)                  
+#>  yardstick    * 0.0.6   2020-03-17 [1] CRAN (R 3.6.0)                  
 #> 
-#> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
+#> [1] /Users/desireedeleon/Library/R/3.6/library
+#> [2] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
 ```
  
