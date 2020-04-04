@@ -127,7 +127,7 @@ div.tagline {
   font-size: 2.4em; /* same as main-site, but duplicated here so it applies to Learn .sectionTitle */
 }
 
-h1,.itemTitle {   
+h1, h2, .itemTitle {   
   font-family: 'Lato', sans-serif;
   font-weight: normal;
   font-size: 1.3em;
@@ -140,17 +140,16 @@ h1 {
 }
 
 .itemTitle a { /* For Learn Page headers */
-  color: #1a162d99;
+  color: #1a162d;
 }
 
-.itemTitle a:hover { /* For Learn Page headers */
-  color: #1a162d;
+.itemTitle a:hover { /* For Learn List Page headers */
+  color: #1a162d99;
   text-decoration: none;
 }
 
 h2 {
-  font-size: 1.5em;
-  color: #ca225e;
+  font-size: 1.1em;
 }
 
 
@@ -174,6 +173,33 @@ h2 {
   #TOC a { /* Get Started Page TOC */
     color: #CA225E90;
   }
+
+/*Getting Started TOC divider -- styling may change */
+
+/*
+#TOC{
+    padding: 2em;
+    position: relative;
+}
+#TOC:after,
+#TOC:before {
+    border: 1pt solid #ca225e3d; 
+    bottom: 0;    
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 5%;
+}
+#TOC:after {
+    border-left: none;
+    right: 0;
+}
+#TOC:before {
+    border-right: none;
+    left: 0;
+}
+
+*/
 
 
 /*Sidebar TOC links for Learn and Packages pages */
@@ -243,6 +269,66 @@ h2 {
   margin: 15px auto; 
   position: relative; 
 }
+
+
+/* Learn List Page */
+
+.learn-list .article-title {
+  font-size: 1.1em;
+}
+
+.learn-list ul{
+  max-width: 90%;
+  border-left: 1pt solid pink;
+  margin-left: 2em;
+}
+
+.article-content ul li::before {
+  content: " ";  /* Add content: \2022 is the CSS Code/unicode for a bullet */
+  /*color: #1a162d;*/  /* Change the color */
+  font-weight: bold; /* If you want it to be bold */
+  display: inline-block; /* Needed to add space between the bullet and the text */
+  width: 1.5em; /* Also needed for space (tweak if needed) */
+  margin-left: -1.7em; /* Also needed for space (tweak if needed) */
+}
+
+
+.learning-objective-text {
+  color: #1a162d9e;
+  
+}
+
+/* Learn subsection*/
+
+.learning-objective {
+  color: #1a162dcf;
+  font-size: 0.8em;
+  letter-spacing: 1pt;
+  display: inline-block;
+}
+
+  .single-learning-objective-text {
+  }
+
+
+.single-learning-objective-text:after,
+.single-learning-objective-text:before {
+    border: 1pt solid #ca225e3d; 
+    bottom: 0;    
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 5%;
+}
+.single-learning-objective-text:after {
+    border-left: none;
+    right: 0;
+}
+.single-learning-objective-text:before {
+    border-right: none;
+    left: 0;
+}
+
 
 
 /*-------- NAVBAR --------- */
@@ -348,4 +434,21 @@ html {
 
 .section .event a{
     color: #1a162d;
+}
+
+/* LEARN THUMBNAILS */
+
+.image-cropper {
+    width: 100px;
+    height: 100px;
+    position: relative;
+    overflow: hidden;
+   /* border-radius: 50%; */
+    margin: 2em auto;
+}
+
+.circle-thumbnail {
+  display: inline;
+  margin: 0 auto;
+  width: auto;
 }

@@ -39,19 +39,24 @@
                 {{ end }}
               </div>
               <div class="itemMeta">
-                <div class="author article-content">
+                <div style = "display: flex;">
+<div style="width: 100px;">
+<!-- sorry! I know this is all wrong--> 
+<div class="image-cropper"><img class="circle-thumbnail" src="../images/probability.png"></div></div>
+                <div class="author article-content learn-list">
                     <ul>
                     <!-- Ranges through content/posts/*.md -->
                     {{ range .Pages }}
                         <li>
-                        <a href="{{.Permalink}}">{{.Title}}</a>
+                        <a class="article-title" href="{{.Permalink}}">{{.Title}}</a>
                         {{ with .Description }}
-                        <br><p class= "serif">{{ print "Learning Objective:" | markdownify | upper }} <em>{{ . | markdownify }}</em></p>
+                        <br> <p class="learning-objective-text"><em>{{ . | markdownify }}</em></p>
                         {{ end }}
                         </li>
                     {{ end }}
                     </ul>
                 </div>
+   </div>
                 <div class="itemDescription">{{ default .Description | markdownify }}
                   <a class="readMore" href="{{ .RelPermalink }}">See all &#187;</a>
                 </div>
