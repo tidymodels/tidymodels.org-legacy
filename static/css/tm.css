@@ -277,7 +277,6 @@ h2 {
 .learn-list ul{
   max-width: 90%;
   border-left: 1pt solid pink;
-  margin-left: 2em;
 }
 
 .article-content ul li::before {
@@ -304,7 +303,7 @@ h2 {
   display: inline-block;
 }
 
-  .single-learning-objective-text {
+.single-learning-objective-text {
   }
 
 
