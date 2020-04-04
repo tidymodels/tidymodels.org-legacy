@@ -220,8 +220,8 @@ h2 {
 
 .column25-left .sectionTitle.current {
   color: #CA225E;
+  text-decoration: none;
 }
-
 
 .column25 {
   padding-left: 3em;
