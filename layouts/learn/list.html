@@ -8,9 +8,9 @@
         <div class="sectionTitle">{{ .Title }}</div>
           
           <!--beginning of jump to section-->
-          <div class="listItem">
+          <div class="listItem learn-top-nav">
             {{ range $index, $element := .Sections }}
-                <a href="#{{ anchorize (.Title) }}">{{ .Title | markdownify }}</a>
+                <a class="learn-top-nav-item" href="#{{ anchorize (.Title) }}">{{ .Title | markdownify }}</a>
           {{ end }}
           </div>
         

@@ -276,23 +276,18 @@ h2 {
 
 .learn-list ul{
   max-width: 90%;
-  border-left: 1pt solid pink;
+  border-left: 1pt solid #ca225e3d;
 }
 
-.article-content ul li::before {
+.article-content.learn-list ul li::before {
   content: " ";  /* Add content: \2022 is the CSS Code/unicode for a bullet */
-  /*color: #1a162d;*/  /* Change the color */
-  font-weight: bold; /* If you want it to be bold */
-  display: inline-block; /* Needed to add space between the bullet and the text */
-  width: 1.5em; /* Also needed for space (tweak if needed) */
-  margin-left: -1.7em; /* Also needed for space (tweak if needed) */
 }
 
 
 .learning-objective-text {
   color: #1a162d9e;
-  
 }
+
 
 /* Learn subsection*/
 
@@ -395,7 +390,7 @@ table thead tr th:last-child {
   color: #1a162d80;
 }
 
-/*---- STICKY TOC w/ SMOOTH SCROLL-----*/
+/*---- STICKY TOC for all w/ SMOOTH SCROLL-----*/
 
 .column25, .column25-left {
   position: sticky;
@@ -457,6 +452,55 @@ html {
   width: auto;
 }
 
-.learn-list.itemDescription {
+.learn-list.itemDescription { /* "See all" link */
   margin-left: 2em;
 }
+
+
+/* Learn page Jump to Section */
+
+.listItem.learn-top-nav{
+  display: flex;
+  padding: 1em 0;
+  border-top: 1pt solid #fdfdfd;
+  border-bottom: 1pt solid #fcfcfc;
+}
+
+a.learn-top-nav-item{
+  text-transform: uppercase;
+  letter-spacing: 1pt;
+  font-size: 0.75em;
+  padding-right: 1em;
+  line-height: 1.4em;
+  color: #1a162d99;
+}
+
+a.learn-top-nav-item:hover{
+  color: #1a162d;
+  text-decoration: none;
+}
+
+.listItem.learn-top-nav{
+ padding: 1em;
+ position: relative;
+}
+
+.listItem.learn-top-nav:after,
+.listItem.learn-top-nav:before {
+    border: 1pt solid #ca225e3d; 
+    bottom: 0;    
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 5%;
+}
+.listItem.learn-top-nav:after {
+    border-left: none;
+    right: 0;
+}
+.listItem.learn-top-nav:before {
+    border-right: none;
+    left: 0;
+}
+
+
