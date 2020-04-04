@@ -213,7 +213,7 @@ h2 {
   font-weight: normal;
 }
 
-.column25-left .sectionTitle a:hover {
+.column25-left .sectionTitle a:hover:not(.current) {
   color: #1a162dde;
   text-decoration: none;
 }
