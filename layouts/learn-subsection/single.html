@@ -28,11 +28,13 @@
         {{ partial "pretty_author_names" . }}
       {{ end }}
         </p>
-        
+      
+      {{ with $.Params.Description }}  
       <div class="learning-objective-container">
         <h1 class="learning-objective">{{ print "Learning objective" }}</h1>
-        <p class="learning-objective-text">{{ $.Params.Description | markdownify }}</p>
+        <p class="learning-objective-text">{{ . | markdownify }}</p>
       </div>
+      {{ end }}
 
       <div class="article-content">
       {{ .Content }}
