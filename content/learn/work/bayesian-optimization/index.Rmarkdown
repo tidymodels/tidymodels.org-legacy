@@ -3,6 +3,9 @@ title: "Iterative Bayesian optimization of a classification model"
 tags: [tune, dials, parsnip, recipes, workflows]
 categories: [model tuning]
 type: learn-subsection
+weight: 3
+description: | 
+  Identify the best hyperparameters for a model using Bayesian optimization of iterative search.
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}
@@ -21,10 +24,6 @@ pkgs <- c("modeldata", "kernlab", "tidymodels")
 
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
-
-# Learning objective
-
-Identify the best hyperparameters for a model using Bayesian optimization of iterative search
 
 # Introduction
 

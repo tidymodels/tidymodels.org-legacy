@@ -3,6 +3,9 @@ title: "Model tuning via grid search"
 tags: [rsample, parsnip, tune, yardstick]
 categories: [model tuning]
 type: learn-subsection
+weight: 1
+description: | 
+  Choose hyperparameters for a model by training on a grid of many possible parameter values.
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}
@@ -20,10 +23,6 @@ pkgs <- c("tidymodels", "mlbench", "kernlab")
 
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
-
-# Learning objective
-
-Choose hyperparameters for a model by training on a grid of many possible parameter values
 
 # Introduction
 
