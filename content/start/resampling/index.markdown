@@ -3,9 +3,6 @@ title: "Evaluate your model with resampling"
 weight: 3
 tags: [rsample, parsnip, tune, yardstick]
 categories: [resampling]
-output:
-  blogdown::html_page:
-    toc: true
 ---
 
 
@@ -145,7 +142,7 @@ rf_fit <- rf_mod %>% fit(class ~ ., data = cell_train)
 rf_fit
 #> parsnip model object
 #> 
-#> Fit time:  3.4s 
+#> Fit time:  2.8s 
 #> Ranger result
 #> 
 #> Call:
@@ -424,7 +421,7 @@ The performance metrics from the test set are much closer to the performance met
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Los_Angeles         
-#>  date     2020-04-03                  
+#>  date     2020-04-04                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version    date       lib source                               

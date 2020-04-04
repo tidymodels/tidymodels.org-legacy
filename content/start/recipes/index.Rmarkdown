@@ -3,9 +3,6 @@ title: "Preprocess your data with recipes"
 weight: 2
 tags: [recipes, parsnip, workflows, yardstick, broom]
 categories: [pre-processing]
-output:
-  blogdown::html_page:
-    toc: true
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}

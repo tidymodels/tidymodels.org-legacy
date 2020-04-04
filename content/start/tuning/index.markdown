@@ -3,9 +3,6 @@ title: "Tune model parameters"
 weight: 4
 tags: [rsample, parsnip, tune, dials, yardstick]
 categories: [tuning]
-output:
-  blogdown::html_page:
-    toc: true
 ---
 
 
@@ -206,7 +203,7 @@ final_tree <- final_mod %>%
 final_tree
 #> parsnip model object
 #> 
-#> Fit time:  138ms 
+#> Fit time:  129ms 
 #> n= 1515 
 #> 
 #> node), split, n, loss, yval, (yprob)
