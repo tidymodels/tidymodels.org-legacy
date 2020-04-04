@@ -435,11 +435,11 @@ html {
 
 /* LEARN THUMBNAILS */
 
-.flex-container{
+.flex-container.learn-list{
   display: flex;
 }
 
-.image-container {
+.image-container.learn-list {
   width: 100px;
   margin-right: 2em;
 }
@@ -456,4 +456,8 @@ html {
   display: inline;
   margin: 0 auto;
   width: auto;
+}
+
+.learn-list.itemDescription {
+  margin-left: 2em;
 }

@@ -41,10 +41,10 @@
               </div>
               
               <div class="itemMeta">
-                <div style = "display: flex;">
+                <div class="flex-container learn-list">
                   
                   <!--thumbnail images-->
-                  <div style="width: 100px;">
+                  <div class="image-container learn-list">
                     <div class="image-cropper">
                       {{ $thumb := (.Resources.ByType "image").GetMatch "*thumbnail*" }}
                         {{ with $thumb }}
@@ -54,18 +54,18 @@
                   </div>
                   
                  <div class="author article-content learn-list">
-                    <ul>
-                    <!-- Ranges through content/posts/*.md -->
-                    {{ range .Pages }}
-                      <li>
-                        <a class="article-title" href="{{.Permalink}}">{{.Title}}</a>
-                        {{ with .Description }}
+                  <ul>
+                  <!-- Ranges through content/posts/*.md -->
+                  {{ range .Pages }}
+                    <li>
+                      <a class="article-title" href="{{.Permalink}}">{{.Title}}</a>
+                      {{ with .Description }}
                         <br> <p class="learning-objective-text"><em>{{ . | markdownify }}</em></p>
-                        {{ end }}
-                      </li>
+                      {{ end }}
+                    </li>
                     {{ end }}
                   </ul>
-                  <div class="itemDescription">{{ default .Description | markdownify }}
+                  <div class="itemDescription learn-list">{{ default .Description | markdownify }}
                     <a class="readMore" href="{{ .RelPermalink }}">See all &#187;</a>
                   </div>
                 </div>
