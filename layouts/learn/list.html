@@ -7,11 +7,15 @@
       <div class="column75">
         <div class="sectionTitle">{{ .Title }}</div>
           
+          <p>{{ .Content | markdownify }}</p>
+          
           <!--beginning of jump to section-->
           <div class="listItem">
+            <ul>
             {{ range $index, $element := .Sections }}
-                <a href="#{{ anchorize (.Title) }}">{{ .Title | markdownify }}</a>
-          {{ end }}
+                <li><a href="#{{ anchorize (.Title) }}">{{ .Title | markdownify }}</a></li>
+            {{ end }}
+            </ul>
           </div>
         
         <!--range across all subsections-->
