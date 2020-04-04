@@ -49,7 +49,17 @@
       {{ .Content }}
       </div>
 
-
+      <!--previous article-->
+      {{ with .NextInSection }}
+        <a href="{{ .RelPermalink }}"><i class="fas fa-angle-double-left"></i> <em>{{ .Title }}</em></a>
+      {{ end }}
+      
+      <!--next article-->
+      {{ with .PrevInSection }}
+        <a href="{{ .RelPermalink }}"><em>{{ .Title }}</em> <i class="fas fa-angle-double-right"></i></a>
+      {{ end }}
+      
+      
 
       </div>
 
