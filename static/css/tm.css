@@ -497,4 +497,13 @@ a.learn-top-nav-item:hover{
     left: 0;
 }
 
+/*----ANCHORS----*/
 
+.anchor-container{
+  position: relative;
+}
+
+.anchor{
+  top: -100px; /* absolute value must be > than navbar */
+  position: absolute;
+}
