@@ -60,7 +60,7 @@
                  <div class="author article-content learn-list">
                     <ul>
                     <!-- Ranges through content/posts/*.md -->
-                    {{ range .Pages }}
+                    {{ range .Pages.ByWeight }}
                         <li>
                         <a class="article-title" href="{{.Permalink}}">{{.Title}}</a>
                         {{ with .Description }}
