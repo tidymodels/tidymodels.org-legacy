@@ -174,7 +174,7 @@ h2 {
   }
   
   #TOC a { /* Get Started Page TOC */
-    color: #CA225E90;
+    color: #ca225ec9;
   }
 
 /*Getting Started TOC divider -- styling may change */
@@ -466,7 +466,7 @@ a.learn-top-nav-item{
   letter-spacing: 2pt;
   font-size: 0.8rem !important;
   font-weight: bold;
-  color: #CA225E90;
+  color: #ca225ec9;
 }
 
 a.learn-top-nav-item:hover{
