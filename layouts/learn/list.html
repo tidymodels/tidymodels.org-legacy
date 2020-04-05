@@ -4,16 +4,20 @@
 <div class="band padForHeader pushFooter">
   <div class="bandContent">
     <div class="full splitColumns withMobileMargins">
-      <div class="column75">
+      <div class="column75 learn-list">
         <div class="sectionTitle">{{ .Title }}</div>
-          
+        
           <p>{{ .Content | markdownify }}</p>
-          
+
           <!--beginning of jump to section-->
           <div class="listItem learn-top-nav">
+            <ul>
             {{ range $index, $element := .Sections }}
+              <li>
                 <a class="learn-top-nav-item" href="#{{ anchorize (.Title) }}">{{ .Title | markdownify }}</a>
-          {{ end }}
+              </li>
+            {{ end }}
+            </ul>
           </div>
         
         <!--range across all subsections-->
