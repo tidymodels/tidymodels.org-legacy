@@ -373,7 +373,7 @@ a.productName {
 /*-----TABLES-----*/
 
 .article-content {
-  overflow-x: scroll; /*we probably want to create a parent container around only tables*/
+  overflow-x: auto; /*was scroll, but we probably want to create a parent container around only tables*/
 }
 
 table tbody tr td:last-child {
