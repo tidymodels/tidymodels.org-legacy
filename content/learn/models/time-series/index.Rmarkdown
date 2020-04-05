@@ -3,6 +3,7 @@ title: "Modeling time series with tidy resampling"
 tags: [rsample]
 categories: [model fitting, resampling]
 type: learn-subsection
+weight: 4
 description: | 
   Calculate performance estimates for time series forecasts using resampling.
 ---

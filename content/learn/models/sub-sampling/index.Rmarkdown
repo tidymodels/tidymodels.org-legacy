@@ -2,6 +2,7 @@
 title: "Subsampling for class imbalances"
 tags: [recipes, themis, discrim, parsnip]
 categories: [model fitting, pre-processing]
+weight: 3
 description: | 
   Improve model performance in imbalanced data sets through undersampling or oversampling.
 ---

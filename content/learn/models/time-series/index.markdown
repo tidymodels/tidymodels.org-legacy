@@ -3,6 +3,7 @@ title: "Modeling time series with tidy resampling"
 tags: [rsample]
 categories: [model fitting, resampling]
 type: learn-subsection
+weight: 4
 description: | 
   Calculate performance estimates for time series forecasts using resampling.
 ---
@@ -279,7 +280,7 @@ mutate(
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Los_Angeles         
-#>  date     2020-04-03                  
+#>  date     2020-04-04                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version    date       lib source                               
