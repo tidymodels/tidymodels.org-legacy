@@ -60,12 +60,12 @@
                   </div>
                   
                  <div class="author article-content learn-list">
-                  <ul>
-                  <!-- Ranges through content/posts/*.md -->
-                  {{ range .Pages }}
-                    <li>
-                      <a class="article-title" href="{{.Permalink}}">{{.Title}}</a>
-                      {{ with .Description }}
+                    <ul>
+                    <!-- Ranges through content/posts/*.md -->
+                    {{ range .Pages.ByWeight }}
+                        <li>
+                        <a class="article-title" href="{{.Permalink}}">{{.Title}}</a>
+                        {{ with .Description }}
                         <br> <p class="learning-objective-text"><em>{{ . | markdownify }}</em></p>
                       {{ end }}
                     </li>

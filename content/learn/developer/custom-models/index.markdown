@@ -3,28 +3,18 @@ title: "How to build a parsnip model"
 tags: [parsnip]
 categories: []
 type: learn-subsection
+weight: 2
+description: | 
+  Create a parsnip model function from an existing model implementation.
 ---
 
-```{r setup, include = FALSE, message = FALSE, warning = FALSE}
-source(here::here("content/learn/common.R"))
-```
 
-```{r load, include = FALSE, message = FALSE, warning = FALSE}
-library(mda)
-library(tidymodels)
 
-pkgs <- c("tidymodels", "mda", "modeldata")
 
-theme_set(theme_bw() + theme(legend.position = "top"))
-```
-
-# Learning objective
-
-Create a parsnip model function from an existing model implementation
 
 # Introduction
 
-`r req_pkgs(pkgs)`
+This article requires that you have the following packages installed: mda, modeldata, and tidymodels.
 
 The parsnip package constructs models and predictions by representing those actions in expressions. There are a few reasons for this:
 
@@ -39,8 +29,13 @@ This article describes the process of creating a new model function. Before proc
 
 As an example, we'll create a function for _mixture discriminant analysis_. There are [a few packages](http://search.r-project.org/cgi-bin/namazu.cgi?query=%22mixture+discriminant%22&max=100&result=normal&sort=score&idxname=functions) that implement this but we'll focus on `mda::mda`:
 
-```{r mda-str}
+
+```r
 str(mda::mda)
+#> function (formula = formula(data), data = sys.frame(sys.parent()), subclasses = 3, 
+#>     sub.df = NULL, tot.df = NULL, dimension = sum(subclasses) - 1, eps = .Machine$double.eps, 
+#>     iter = 5, weights = mda.start(x, g, subclasses, trace, ...), method = polyreg, 
+#>     keep.fitted = (n * dimension < 5000), trace = FALSE, ...)
 ```
 
 The main hyperparameter is the number of subclasses. We'll name our function `discrim_mixture`. 
@@ -67,7 +62,8 @@ If you are adding a new model from your own package, you can use these functions
 
 We will add the MDA model using the model type `discrim_mixture`. Since this is a classification method, we only have to register a single mode:
 
-```{r mda-reg}
+
+```r
 library(tidymodels)
 set_new_model("discrim_mixture")
 set_model_mode(model = "discrim_mixture", mode = "classification")
@@ -81,8 +77,20 @@ set_dependency("discrim_mixture", eng = "mda", pkg = "mda")
 
 These functions should silently finish. There is also a function that can be used to show what aspects of the model have been added to parsnip: 
 
-```{r mda-show-1}
+
+```r
 show_model_info("discrim_mixture")
+#> Information for `discrim_mixture`
+#>  modes: unknown, classification 
+#> 
+#>  engines: 
+#>    classification: mda
+#> 
+#>  no registered arguments.
+#> 
+#>  no registered fit modules.
+#> 
+#>  no registered prediction modules.
 ```
 
 The next step would be the declare the main arguments to the model. These are declared independent of the mode.  To specify the argument, there are a few slots to fill in:
@@ -97,7 +105,8 @@ The next step would be the declare the main arguments to the model. These are de
  
 For `mda::mda()`, the main tuning parameter is `subclasses` which we will rewrite as `sub_classes`. 
 
-```{r mda-args}
+
+```r
 set_model_arg(
   model = "discrim_mixture",
   eng = "mda",
@@ -107,6 +116,19 @@ set_model_arg(
   has_submodel = FALSE
 )
 show_model_info("discrim_mixture")
+#> Information for `discrim_mixture`
+#>  modes: unknown, classification 
+#> 
+#>  engines: 
+#>    classification: mda
+#> 
+#>  arguments: 
+#>    mda: 
+#>       sub_classes --> subclasses
+#> 
+#>  no registered fit modules.
+#> 
+#>  no registered prediction modules.
 ```
 
 ## Step 2. Create the model function
@@ -119,7 +141,8 @@ This is a fairly simple function that can follow a basic template. The main argu
 
 A basic version of the function is:
 
-```{r model-fun}
+
+```r
 discrim_mixture <-
   function(mode = "classification",  sub_classes = NULL) {
     # Check for correct mode
@@ -156,7 +179,8 @@ Now that parsnip knows about the model, mode, and engine, we can give it the inf
 
 For the first engine:
 
-```{r fit-mod}
+
+```r
 set_fit(
   model = "discrim_mixture",
   eng = "mda",
@@ -169,6 +193,21 @@ set_fit(
   )
 )
 show_model_info("discrim_mixture")
+#> Information for `discrim_mixture`
+#>  modes: unknown, classification 
+#> 
+#>  engines: 
+#>    classification: mda
+#> 
+#>  arguments: 
+#>    mda: 
+#>       sub_classes --> subclasses
+#> 
+#>  fit modules:
+#>  engine           mode
+#>     mda classification
+#> 
+#>  no registered prediction modules.
 ```
 
 ## Step 4. Add modules for prediction
@@ -183,7 +222,8 @@ The parsnip prediction code will expect the result to be an unnamed character st
 
 To add this method to the model environment, a similar `set()` function is used:
 
-```{r mds-class}
+
+```r
 class_info <- 
   list(
     pre = NULL,
@@ -209,7 +249,7 @@ set_pred(
   type = "class",
   value = class_info
 )
-```    
+```
 
 A similar call can be used to define the class probability module (if they can be computed). The format is identical to the `class` module but the output is expected to be a tibble with columns for each factor level. 
 
@@ -217,7 +257,8 @@ As an example of the `post` function, the data frame created by `mda:::predict.m
 
 We register the probability module. There is a template function that makes this slightly easier to format the objects:
 
-```{r mda-prob}
+
+```r
 prob_info <-
   pred_value_template(
     post = function(x, object) {
@@ -239,6 +280,23 @@ set_pred(
 )
 
 show_model_info("discrim_mixture")
+#> Information for `discrim_mixture`
+#>  modes: unknown, classification 
+#> 
+#>  engines: 
+#>    classification: mda
+#> 
+#>  arguments: 
+#>    mda: 
+#>       sub_classes --> subclasses
+#> 
+#>  fit modules:
+#>  engine           mode
+#>     mda classification
+#> 
+#>  prediction modules:
+#>              mode engine     methods
+#>    classification    mda class, prob
 ```
 
 If this model could be used for regression situations, we could also add a "numeric" module. The convention used here is very similar to the two that are detailed in the next section. For `pred`, the model requires an unnamed numeric vector output (usually). 
@@ -252,14 +310,25 @@ As a developer, one thing that may come in handy is the `translate()` function. 
 
 For example:
 
-```{r mda-code}
+
+```r
 discrim_mixture(sub_classes = 2) %>%
   translate(engine = "mda")
+#> Model Specification (classification)
+#> 
+#> Main Arguments:
+#>   sub_classes = 2
+#> 
+#> Computational engine: mda 
+#> 
+#> Model fit template:
+#> mda::mda(formula = missing_arg(), data = missing_arg(), subclasses = 2)
 ```
 
 Let's try it on a data set from the modeldata package:
 
-```{r mda-data}
+
+```r
 data("two_class_dat", package = "modeldata")
 set.seed(4622)
 example_split <- initial_split(two_class_dat, prop = 0.99)
@@ -272,12 +341,49 @@ mda_spec <- discrim_mixture(sub_classes = 2) %>%
 mda_fit <- mda_spec %>%
   fit(Class ~ ., data = example_train, engine = "mda")
 mda_fit
+#> parsnip model object
+#> 
+#> Fit time:  29ms 
+#> Call:
+#> mda::mda(formula = formula, data = data, subclasses = ~2)
+#> 
+#> Dimension: 2 
+#> 
+#> Percent Between-Group Variance Explained:
+#>    v1    v2 
+#>  82.5 100.0 
+#> 
+#> Degrees of Freedom (per dimension): 3 
+#> 
+#> Training Misclassification Error: 0.17 ( N = 784 )
+#> 
+#> Deviance: 674
 
 predict(mda_fit, new_data = example_test, type = "prob") %>%
   bind_cols(example_test %>% select(Class))
+#> # A tibble: 7 x 3
+#>   .pred_Class1 .pred_Class2 Class 
+#>          <dbl>        <dbl> <fct> 
+#> 1       0.586        0.414  Class1
+#> 2       0.968        0.0321 Class1
+#> 3       0.0155       0.984  Class2
+#> 4       0.670        0.330  Class1
+#> 5       0.837        0.163  Class1
+#> 6       0.898        0.102  Class1
+#> 7       0.676        0.324  Class2
 
 predict(mda_fit, new_data = example_test) %>% 
  bind_cols(example_test %>% select(Class))
+#> # A tibble: 7 x 2
+#>   .pred_class Class 
+#>   <fct>       <fct> 
+#> 1 Class1      Class1
+#> 2 Class1      Class1
+#> 3 Class2      Class2
+#> 4 Class1      Class1
+#> 5 Class1      Class1
+#> 6 Class1      Class1
+#> 7 Class1      Class2
 ```
 
 
@@ -285,7 +391,8 @@ predict(mda_fit, new_data = example_test) %>%
 
 The process here is _almost_ the same as building a new model but simpler with fewer steps. You only need to add the engine-specific aspects of the model. For example, if we wanted to fit a linear regression model using M-estimation, we could only add a new engine. The code for the `rlm()` function in MASS is pretty similar to `lm()`, so we can copy that code and change the package/function names:
 
-```{r rlm}
+
+```r
 set_model_engine("linear_reg", "regression", eng = "rlm")
 set_dependency("linear_reg", eng = "rlm", pkg = "MASS")
 
@@ -323,6 +430,21 @@ set_pred(
 linear_reg() %>% 
   set_engine("rlm") %>% 
   fit(mpg ~ ., data = mtcars)
+#> parsnip model object
+#> 
+#> Fit time:  7ms 
+#> Call:
+#> rlm(formula = formula, data = data)
+#> Converged in 8 iterations
+#> 
+#> Coefficients:
+#> (Intercept)         cyl        disp          hp        drat          wt 
+#>     17.8225     -0.2788      0.0159     -0.0254      0.4639     -4.1436 
+#>        qsec          vs          am        gear        carb 
+#>      0.6531      0.2498      1.4341      0.8594     -0.0108 
+#> 
+#> Degrees of freedom: 32 total; 21 residual
+#> Scale estimate: 2.15
 ```
 
 # Adding parsnip models to another package
@@ -333,7 +455,8 @@ For parsnip to register them, that package must already be loaded. For this reas
 
 The first difference is that the functions that define the model must be inside of a wrapper function that is called when your package is loaded. For our example here, this might look like: 
 
-```{r eval = FALSE}
+
+```r
 make_discrim_mixture_mda <- function() {
   parsnip::set_new_model("discrim_mixture")
 
@@ -345,7 +468,8 @@ make_discrim_mixture_mda <- function() {
 
 This function is then executed when your package is loaded: 
 
-```{r eval = FALSE}
+
+```r
 .onLoad <- function(libname, pkgname) {
   # This defines discrim_mixture in the model database
   make_discrim_mixture_mda()
@@ -375,17 +499,21 @@ The main piece of information that requires some detail is `call_info`. This is 
 
 For example, for a nearest-neighbors `neighbors` parameter, this value is just: 
 
-```{r mtry}
+
+```r
 info <- list(pkg = "dials", fun = "neighbors")
 
 # FYI: how it is used under-the-hood: 
 new_param_call <- rlang::call2(.fn = info$fun, .ns = info$pkg)
 rlang::eval_tidy(new_param_call)
+#> # Nearest Neighbors  (quantitative)
+#> Range: [1, 10]
 ```
 
 For `discrim_mixture()`, a dials object is needed that returns an integer that is the number of sub-classes that should be create. We can create a dials parameter function for this:
 
-```{r sub-classes}
+
+```r
 sub_classes <- function(range = c(1L, 10L), trans = NULL) {
   new_quant_param(
     type = "integer",
@@ -400,7 +528,8 @@ sub_classes <- function(range = c(1L, 10L), trans = NULL) {
 
 If this were in the dials package, we could use: 
 
-```{r tunable}
+
+```r
 tunable.discrim_mixture <- function(x, ...) {
   tibble::tibble(
     name = c("sub_classes"),
@@ -414,7 +543,8 @@ tunable.discrim_mixture <- function(x, ...) {
 
 Once this method is in place, the tuning functions can be used: 
 
-```{r tune-mda}
+
+```r
 mda_spec <- 
   discrim_mixture(sub_classes = tune()) %>% 
   set_engine("mda")
@@ -422,7 +552,19 @@ mda_spec <-
 set.seed(452)
 cv <- vfold_cv(example_train)
 mda_tune_res <- tune_grid(Class ~ ., mda_spec, cv, grid = 4)
+#> Warning: `tune_grid.formula()` is deprecated as of lifecycle 0.1.0.
+#> The first argument to `tune_grid()` should be either a model or a workflow. In the future, you can use:
+#> tune_grid(mda_spec, Class ~ ., resamples = cv, grid = 4)
+#> This warning is displayed once every 8 hours.
+#> Call `lifecycle::last_warnings()` to see where this warning was generated.
 show_best(mda_tune_res, metric = "roc_auc")
+#> # A tibble: 4 x 6
+#>   sub_classes .metric .estimator  mean     n std_err
+#>         <int> <chr>   <chr>      <dbl> <int>   <dbl>
+#> 1           2 roc_auc binary     0.885    10  0.0143
+#> 2           3 roc_auc binary     0.884    10  0.0140
+#> 3           6 roc_auc binary     0.879    10  0.0146
+#> 4           8 roc_auc binary     0.878    10  0.0141
 ```
 
 
@@ -440,7 +582,8 @@ There are some models (e.g. `glmnet`, `plsr`, `Cubust`, etc.) that can make pred
 
 For example, if I fit a linear regression model via `glmnet` and get four values of the regularization parameter (`lambda`):
 
-```{r glmnet, eval = FALSE}
+
+```r
 linear_reg() %>%
   set_engine("glmnet", nlambda = 4) %>% 
   fit(mpg ~ ., data = mtcars) %>%
@@ -453,13 +596,15 @@ _However_, the API is still being developed. Currently, there is not an interfac
 
 You might want to set defaults that can be overridden by the user. For example, for logistic regression with `glm`, it make sense to default `family = binomial`. However, if someone wants to use a different link function, they should be able to do that. For that model/engine definition, it has:
 
-```{r glm-alt, eval = FALSE}
+
+```r
 defaults = list(family = expr(binomial))
 ```
 
 So that is the default:
 
-```{r glm-alt-show, eval = FALSE}
+
+```r
 logistic_reg() %>% translate(engine = "glm")
 
 # but you can change it:
@@ -479,7 +624,8 @@ The `translate` function can be used to check values or set defaults once the mo
 
 For example, the ranger and randomForest package functions have arguments for calculating importance. One is a logical and the other is a string. Since this is likely to lead to a bunch of frustration and GH issues, we can put in a check:
 
-```{r rf-trans, eval = FALSE}
+
+```r
 # Simplified version
 translate.rand_forest <- function (x, engine, ...){
   # Run the general method to get the real arguments in place
@@ -527,8 +673,40 @@ If you have a suggestion, please add a GitHub issue to discuss it.
  
 # Session information
 
-```{r si, echo = FALSE}
-small_session(pkgs)
+
+```
+#> ─ Session info ───────────────────────────────────────────────────────────────
+#>  setting  value                       
+#>  version  R version 3.6.1 (2019-07-05)
+#>  os       macOS Catalina 10.15.3      
+#>  system   x86_64, darwin15.6.0        
+#>  ui       X11                         
+#>  language (EN)                        
+#>  collate  en_US.UTF-8                 
+#>  ctype    en_US.UTF-8                 
+#>  tz       America/Los_Angeles         
+#>  date     2020-04-04                  
+#> 
+#> ─ Packages ───────────────────────────────────────────────────────────────────
+#>  package    * version    date       lib source                               
+#>  broom      * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
+#>  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
+#>  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
+#>  ggplot2    * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
+#>  infer      * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                       
+#>  mda        * 0.4-10     2017-11-02 [1] CRAN (R 3.6.0)                       
+#>  parsnip    * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
+#>  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
+#>  recipes    * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
+#>  rlang        0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
+#>  rsample    * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
+#>  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
+#>  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
+#>  tune       * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
+#>  workflows  * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
+#>  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
+#> 
+#> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
 ```
 
 

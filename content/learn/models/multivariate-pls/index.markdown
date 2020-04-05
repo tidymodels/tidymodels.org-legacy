@@ -3,6 +3,7 @@ title: "Multivariate analysis using partial least squares"
 tags: [recipes,rsample]
 categories: [pre-processing]
 type: learn-subsection
+weight: 5
 description: | 
   Build and fit a predictive model with more than one outcome.
 ---
@@ -181,7 +182,7 @@ ggplot(variance_data, aes(x = components, y = proportion, col = source)) +
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/New_York            
+#>  tz       America/Los_Angeles         
 #>  date     2020-04-04                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────

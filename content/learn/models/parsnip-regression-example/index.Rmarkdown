@@ -2,6 +2,8 @@
 title: "Regression models two ways"
 tags: [rsample, parsnip]
 categories: [model fitting]
+type: learn-subsection
+weight: 1
 description: | 
   Create and train different kinds of regression models with different computational engines.
 ---
