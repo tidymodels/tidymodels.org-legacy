@@ -3,6 +3,9 @@ title: "Create your own recipe step function"
 tags: [recipes]
 categories: []
 type: learn-subsection
+weight: 1
+description: | 
+  Write a new recipe step for data preprocessing.
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}
@@ -15,10 +18,6 @@ library(modeldata)
 pkgs <- c("tidymodels", "modeldata")
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
-
-# Learning objective
-
-Write a new recipe step for data preprocessing
 
 # Introduction
 

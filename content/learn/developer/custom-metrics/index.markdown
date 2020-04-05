@@ -3,26 +3,19 @@ title: "Custom performance metrics"
 tags: [yardstick]
 categories: []
 type: learn-subsection
+weight: 3
+description: | 
+  Create a new performance metric and integrate it with yardstick functions.
 ---
 
-```{r setup, include = FALSE, message = FALSE, warning = FALSE}
-source(here::here("content/learn/common.R"))
-```
 
-```{r load, include = FALSE, message = FALSE, warning = FALSE}
-library(tidymodels)
-library(rlang)
 
-pkgs <- c("tidymodels", "rlang")
-```
 
-# Learning objective
 
-Create a new performance metric and integrate it with yardstick functions
 
 # Introduction
 
-`r req_pkgs(pkgs)`
+This article requires that you have the following packages installed: rlang and tidymodels.
 
 The [yardstick](https://tidymodels.github.io/yardstick/) package already includes a large number of metrics, but there's obviously a chance that you might have a custom metric that hasn't been implemented yet. In that case, you can use a few of the tools yardstick exposes to create custom metrics.
 
@@ -58,7 +51,8 @@ The yardstick function `metric_vec_template()` accepts the implementation functi
 
 The `metric_vec_template()` helper handles the removal of `NA` values in your metric, so your implementation function does not have to worry about them. It performs type checking using `cls` and also checks that the `estimator` is valid, the second of which is covered in the classification example. This way, all you have to worry about is the core implementation.
 
-```{r}
+
+```r
 library(tidymodels)
 
 mse_vec <- function(truth, estimate, na_rm = TRUE, ...) {
@@ -81,38 +75,47 @@ mse_vec <- function(truth, estimate, na_rm = TRUE, ...) {
 
 At this point, you've created the vector version of the mean squared error metric.
 
-```{r}
+
+```r
 data("solubility_test")
 
 mse_vec(
   truth = solubility_test$solubility, 
   estimate = solubility_test$prediction
 )
+#> [1] 0.521
 ```
 
 Intelligent error handling is immediately available.
 
-```{r, error = TRUE}
+
+```r
 mse_vec(truth = "apple", estimate = 1)
+#> Error: `truth` should be a numeric but a character was supplied.
 
 mse_vec(truth = 1, estimate = factor("xyz"))
+#> Error: `estimate` should be a numeric but a factor was supplied.
 ```
 
 `NA` values are removed if `na_rm = TRUE` (the default). If `na_rm = FALSE` and any `NA` values are detected, then the metric automatically returns `NA`.
 
-```{r}
+
+```r
 # NA values removed
 mse_vec(truth = c(NA, .5, .4), estimate = c(1, .6, .5))
+#> [1] 0.01
 
 # NA returned
 mse_vec(truth = c(NA, .5, .4), estimate = c(1, .6, .5), na_rm = FALSE)
+#> [1] NA
 ```
 
 ## Data frame implementation
 
 The data frame version of the metric should be fairly simple. It is a generic function with a `data.frame` method that calls the yardstick helper, `metric_summarizer()`, and passes along the `mse_vec()` function to it along with versions of `truth` and `estimate` that have been wrapped in `rlang::enquo()` and then unquoted with `!!` so that non-standard evaluation can be supported.
 
-```{r}
+
+```r
 library(rlang)
 
 mse <- function(data, ...) {
@@ -136,16 +139,23 @@ mse.data.frame <- function(data, truth, estimate, na_rm = TRUE, ...) {
 
 And that's it. The yardstick package handles the rest with an internal call to `summarise()`.
 
-```{r, error = TRUE}
+
+```r
 mse(solubility_test, truth = solubility, estimate = prediction)
+#> # A tibble: 1 x 3
+#>   .metric .estimator .estimate
+#>   <chr>   <chr>          <dbl>
+#> 1 mse     standard       0.521
 
 # Error handling
 mse(solubility_test, truth = solubility, estimate = factor("xyz"))
+#> Error: `estimate` should be a numeric but a factor was supplied.
 ```
 
 Let's test it out on a grouped data frame.
 
-```{r, message=FALSE}
+
+```r
 library(dplyr)
 
 set.seed(1234)
@@ -165,6 +175,19 @@ solubility_resampled <- bind_rows(
 solubility_resampled %>%
   group_by(resample) %>%
   mse(solubility, prediction)
+#> # A tibble: 10 x 4
+#>    resample .metric .estimator .estimate
+#>    <chr>    <chr>   <chr>          <dbl>
+#>  1 1        mse     standard       0.512
+#>  2 10       mse     standard       0.454
+#>  3 2        mse     standard       0.513
+#>  4 3        mse     standard       0.414
+#>  5 4        mse     standard       0.543
+#>  6 5        mse     standard       0.456
+#>  7 6        mse     standard       0.652
+#>  8 7        mse     standard       0.642
+#>  9 8        mse     standard       0.404
+#> 10 9        mse     standard       0.479
 ```
 
 # Class example: miss rate
@@ -181,7 +204,8 @@ Classification metrics are more complicated than numeric ones because you have t
 
 The vector implementation for classification metrics initially has the same setup  as numeric metrics, but has an additional argument, `estimator` that determines the type of estimator to use (binary or some kind of multiclass implementation or averaging). This argument is auto-selected for the user, so default it to  `NULL`. Additionally, pass it along to `metric_vec_template()` so that it can check the provided `estimator` against the classes of `truth` and `estimate` to see if they are allowed.
 
-```{r}
+
+```r
 # So we can support the yardstick event_first option
 relevant_col <- function(xtab) {
   if (getOption("yardstick.event_first")) {
@@ -224,17 +248,22 @@ miss_rate_vec <- function(truth, estimate, estimator = NULL, na_rm = TRUE, ...) 
 
 Another change from the numeric metric is that a call to `finalize_estimator()` is made. This is the infrastructure that auto-selects the type of estimator to use.
 
-```{r}
+
+```r
 data("two_class_example")
 miss_rate_vec(two_class_example$truth, two_class_example$predicted)
+#> [1] 0.12
 ```
 
 What happens if you try and pass in a multiclass result?
 
-```{r}
+
+```r
 data("hpc_cv")
 fold1 <- filter(hpc_cv, Resample == "Fold01")
 miss_rate_vec(fold1$obs, fold1$pred)
+#>      F      M      L 
+#> 0.0621 0.0000 0.0000
 ```
 
 This isn't great, as currently multiclass `miss_rate()` isn't supported and it would have been better to throw an error if the `estimator` was not `"binary"`. Currently, `finalize_estimator()` uses its default implementation which selected `"macro"` as the `estimator` since `truth` was a factor with more than 2 classes. When we implement multiclass averaging, this is what you want, but if your metric only works with a binary implementation (or has other specialized multiclass versions), you might want to guard against this.
@@ -245,7 +274,8 @@ Don't worry about the `metric_dispatcher` argument. This is handled for you and 
 
 It is also good practice to call `validate_estimator()` which handles the case where a user passed in the estimator themselves. This validates that the supplied `estimator` is one of the allowed types and error otherwise.
 
-```{r, error = TRUE}
+
+```r
 finalize_estimator_internal.miss_rate <- function(metric_dispatcher, x, estimator) {
   
   validate_estimator(estimator, estimator_override = "binary")
@@ -293,9 +323,11 @@ miss_rate_vec <- function(truth, estimate, estimator = NULL, na_rm = TRUE, ...) 
 
 # Error thrown by our custom handler
 miss_rate_vec(fold1$obs, fold1$pred)
+#> Error in finalize_estimator_internal.miss_rate(metric_dispatcher, x, estimator): A multiclass `truth` input was provided, but only `binary` is supported.
 
 # Error thrown by validate_estimator()
 miss_rate_vec(fold1$obs, fold1$pred, estimator = "macro")
+#> Error: `estimator` must be one of: "binary". Not "macro".
 ```
 
 ## Supporting multiclass miss rate
@@ -306,7 +338,8 @@ Generally, they require more effort to get right than the binary case, especiall
 
 Let's first remove the "binary" restriction we created earlier.
 
-```{r}
+
+```r
 rm(finalize_estimator_internal.miss_rate)
 ```
 
@@ -318,7 +351,8 @@ The main changes below are:
 
 - `miss_rate_multiclass()` provides the implementation for the multiclass case. It calculates the true positive and false negative values as vectors with one value per class. For the macro case, it returns a vector of miss rate calculations, and for micro, it first sums the individual pieces and returns a single miss rate calculation. In the macro case, the vector is then weighted appropriately in `miss_rate_estimator_impl()` depending on whether or not it was macro or  weighted macro. 
 
-```{r}
+
+```r
 miss_rate_vec <- function(truth, estimate, estimator = NULL, na_rm = TRUE, ...) {
   
   # calls finalize_estimator_internal() internally
@@ -391,19 +425,23 @@ For the macro case, this separation of weighting from the core implementation mi
 
 Let's try it out now:
 
-```{r}
+
+```r
 # two class
 miss_rate_vec(two_class_example$truth, two_class_example$predicted)
+#> [1] 0.12
 
 # multiclass
 miss_rate_vec(fold1$obs, fold1$pred)
+#> [1] 0.548
 ```
 
 ### Data frame implementation
 
 Luckily, the data frame implementation is as simple as the numeric case, we just need to add an extra `estimator` argument and pass that through.
 
-```{r}
+
+```r
 miss_rate <- function(data, truth, estimate, estimator = NULL, na_rm = TRUE, ...) {
   UseMethod("miss_rate")
 }
@@ -424,22 +462,45 @@ miss_rate.data.frame <- function(data, truth, estimate, estimator = NULL, na_rm 
 }
 ```
 
-```{r, error = TRUE}
+
+```r
 # Macro weighted automatically selected
 fold1 %>%
   miss_rate(obs, pred)
+#> # A tibble: 1 x 3
+#>   .metric   .estimator .estimate
+#>   <chr>     <chr>          <dbl>
+#> 1 miss_rate macro          0.548
 
 # Switch to micro
 fold1 %>%
   miss_rate(obs, pred, estimator = "micro")
+#> # A tibble: 1 x 3
+#>   .metric   .estimator .estimate
+#>   <chr>     <chr>          <dbl>
+#> 1 miss_rate micro          0.726
 
 # Macro weighted by resample
 hpc_cv %>%
   group_by(Resample) %>%
   miss_rate(obs, pred, estimator = "macro_weighted")
+#> # A tibble: 10 x 4
+#>    Resample .metric   .estimator     .estimate
+#>    <chr>    <chr>     <chr>              <dbl>
+#>  1 Fold01   miss_rate macro_weighted     0.726
+#>  2 Fold02   miss_rate macro_weighted     0.712
+#>  3 Fold03   miss_rate macro_weighted     0.758
+#>  4 Fold04   miss_rate macro_weighted     0.712
+#>  5 Fold05   miss_rate macro_weighted     0.712
+#>  6 Fold06   miss_rate macro_weighted     0.697
+#>  7 Fold07   miss_rate macro_weighted     0.675
+#>  8 Fold08   miss_rate macro_weighted     0.721
+#>  9 Fold09   miss_rate macro_weighted     0.673
+#> 10 Fold10   miss_rate macro_weighted     0.699
 
 # Error handling
 miss_rate(hpc_cv, obs, VF)
+#> Error: `estimate` should be a factor but a numeric was supplied.
 ```
 
 # Using custom metrics in `metric_set()`
@@ -450,20 +511,64 @@ miss_rate(hpc_cv, obs, VF)
 - Class metrics - `"class_metric"`
 - Class probability metrics - `"prob_metric"`
 
-```{r, error=TRUE}
+
+```r
 # This errors because the class has not been set
 metric_set(mse, rmse)
+#> Error: 
+#> The combination of metric functions must be:
+#> - only numeric metrics
+#> - a mix of class metrics and class probability metrics
+#> The following metric function types are being mixed:
+#> - other (mse)
+#> - numeric (rmse)
 
 class(mse) <- c("numeric_metric", class(mse))
 
 numeric_mets <- metric_set(mse, rmse)
 
 numeric_mets(solubility_test, solubility, prediction)
+#> # A tibble: 2 x 3
+#>   .metric .estimator .estimate
+#>   <chr>   <chr>          <dbl>
+#> 1 mse     standard       0.521
+#> 2 rmse    standard       0.722
 ```
 
 
 # Session information
 
-```{r si, echo = FALSE}
-small_session("yardstick")
+
+```
+#> ─ Session info ───────────────────────────────────────────────────────────────
+#>  setting  value                       
+#>  version  R version 3.6.1 (2019-07-05)
+#>  os       macOS Catalina 10.15.3      
+#>  system   x86_64, darwin15.6.0        
+#>  ui       X11                         
+#>  language (EN)                        
+#>  collate  en_US.UTF-8                 
+#>  ctype    en_US.UTF-8                 
+#>  tz       America/Los_Angeles         
+#>  date     2020-04-04                  
+#> 
+#> ─ Packages ───────────────────────────────────────────────────────────────────
+#>  package    * version    date       lib source                               
+#>  broom      * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
+#>  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
+#>  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
+#>  ggplot2    * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
+#>  infer      * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                       
+#>  parsnip    * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
+#>  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
+#>  recipes    * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
+#>  rlang      * 0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
+#>  rsample    * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
+#>  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
+#>  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
+#>  tune       * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
+#>  workflows  * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
+#>  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
+#> 
+#> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
 ```

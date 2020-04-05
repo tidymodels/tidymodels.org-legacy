@@ -3,6 +3,9 @@ title: "How to create a tuning parameter function"
 tags: [dials]
 categories: []
 type: learn-subsection
+weight: 4
+description: | 
+  Build functions to use in tuning both quantitative and qualitative parameters.
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}
@@ -14,10 +17,6 @@ library(tidymodels)
 
 pkgs <- c("dials", "scales")
 ```
-
-# Learning objective
-
-Build functions to use in tuning both quantitative and qualitative parameters
 
 # Introduction
 
