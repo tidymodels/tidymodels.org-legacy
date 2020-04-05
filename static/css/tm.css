@@ -277,6 +277,11 @@ h2 {
   font-size: 1.1em;
 }
 
+.article-content.learn-list ul {
+    list-style: none;
+    border-left: 1pt solid #ffc0cb78;
+}
+
 .article-content.learn-list ul li::before {
   content: " ";  /* Add content: \2022 is the CSS Code/unicode for a bullet */
 }
