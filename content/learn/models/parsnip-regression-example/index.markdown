@@ -2,6 +2,7 @@
 title: "Regression models two ways"
 tags: [rsample, parsnip]
 categories: [model fitting]
+type: learn-subsection
 weight: 1
 description: | 
   Create and train different kinds of regression models with different computational engines.
@@ -76,7 +77,7 @@ rf_xy_fit <-
 rf_xy_fit
 #> parsnip model object
 #> 
-#> Fit time:  985ms 
+#> Fit time:  1s 
 #> Ranger result
 #> 
 #> Call:
@@ -144,7 +145,7 @@ rand_forest(mode = "regression", mtry = 3, trees = 1000) %>%
   )
 #> parsnip model object
 #> 
-#> Fit time:  2.7s 
+#> Fit time:  2.8s 
 #> Ranger result
 #> 
 #> Call:
@@ -212,7 +213,7 @@ rand_forest(mode = "regression", mtry = .preds(), trees = 1000) %>%
   )
 #> parsnip model object
 #> 
-#> Fit time:  3.8s 
+#> Fit time:  4s 
 #> Ranger result
 #> 
 #> Call:
@@ -261,7 +262,7 @@ glmn_fit <-
 glmn_fit
 #> parsnip model object
 #> 
-#> Fit time:  11ms 
+#> Fit time:  10ms 
 #> 
 #> Call:  glmnet::glmnet(x = as.matrix(x), y = y, family = "gaussian",      alpha = ~0.5) 
 #> 

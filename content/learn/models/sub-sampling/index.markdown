@@ -2,6 +2,7 @@
 title: "Subsampling for class imbalances"
 tags: [recipes, themis, discrim, parsnip]
 categories: [model fitting, pre-processing]
+type: learn-subsection
 weight: 3
 description: | 
   Improve model performance in imbalanced data sets through undersampling or oversampling.
@@ -82,16 +83,16 @@ qda_rose_wflw <-
   add_model(qda_mod) %>% 
   add_recipe(imbal_rec)
 qda_rose_wflw
-#> ══ Workflow ════════════════════════════════════════════════
+#> ══ Workflow ═══════════════════════════════════════════════════════════════════════
 #> Preprocessor: Recipe
 #> Model: discrim_regularized()
 #> 
-#> ── Preprocessor ────────────────────────────────────────────
+#> ── Preprocessor ───────────────────────────────────────────────────────────────────
 #> 1 Recipe Step
 #> 
 #> ● step_rose()
 #> 
-#> ── Model ───────────────────────────────────────────────────
+#> ── Model ──────────────────────────────────────────────────────────────────────────
 #> Regularized Discriminant Model Specification (classification)
 #> 
 #> Main Arguments:
@@ -133,8 +134,8 @@ collect_metrics(qda_rose_res)
 #> # A tibble: 2 x 5
 #>   .metric .estimator  mean     n std_err
 #>   <chr>   <chr>      <dbl> <int>   <dbl>
-#> 1 j_index binary     0.763    50 0.0236 
-#> 2 roc_auc binary     0.948    50 0.00602
+#> 1 j_index binary     0.775    50 0.0203 
+#> 2 roc_auc binary     0.953    50 0.00493
 ```
 
 What do the results look like without using ROSE? We can create another workflow and fit the QDA model along the same resamples:
