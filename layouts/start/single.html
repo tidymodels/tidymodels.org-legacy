@@ -11,7 +11,7 @@
       
       <div class="column75">
 
-      <h1 class="article-title">{{ .Title | markdownify }}</h1>
+      <h1 class="article-title">{{ .Weight }}&nbsp;&nbsp;&nbsp;{{ .Title | markdownify }}</h1>
       
       <i class="fas fa-box-open"></i>&nbsp;
       {{ range $i, $tags := (.GetTerms "tags") }}
