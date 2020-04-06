@@ -4,16 +4,18 @@
 <div class="band padForHeader pushFooter">
   <div class="bandContent">
     <div class="full splitColumns withMobileMargins">
-      <div class="column75">
+      <div class="column75 learn-list">
         <div class="sectionTitle">{{ .Title }}</div>
-          
+        
           <p>{{ .Content | markdownify }}</p>
-          
+
           <!--beginning of jump to section-->
-          <div class="listItem">
+          <div class="listItem learn-top-nav">
             <ul>
             {{ range $index, $element := .Sections }}
-                <li><a href="#{{ anchorize (.Title) }}">{{ .Title | markdownify }}</a></li>
+              <li>
+                <a class="learn-top-nav-item" href="#{{ anchorize (.Title) }}">{{ .Title | markdownify }}</a>
+              </li>
             {{ end }}
             </ul>
           </div>
@@ -22,12 +24,12 @@
         <div>{{ range $index, $element := .Sections }}
               {{ $post := . }}
               
-          <div class="listItem">
+        <!--anchorizing all subsection links-->
+          <div class="listItem anchor-container">
+            <div class="anchor" style="top: -100px; position: absolute;" id="{{ anchorize (.Title) }}"></div>
             <div class="itemDetails">
               <div class="itemHeader">
-                
-                <!--anchorizing all subsection links-->
-                <div class="itemTitle" id="{{ anchorize (.Title) }}">
+                <div class="itemTitle">
                   <a href="#{{ anchorize (.Title) }}">{{ .Title | markdownify }}</a>
                 </div>
                 
@@ -45,10 +47,10 @@
               </div>
               
               <div class="itemMeta">
-                <div style = "display: flex;">
+                <div class="flex-container learn-list">
                   
                   <!--thumbnail images-->
-                  <div style="width: 100px;">
+                  <div class="image-container learn-list">
                     <div class="image-cropper">
                       {{ $thumb := (.Resources.ByType "image").GetMatch "*thumbnail*" }}
                         {{ with $thumb }}
@@ -65,15 +67,16 @@
                         <a class="article-title" href="{{.Permalink}}">{{.Title}}</a>
                         {{ with .Description }}
                         <br> <p class="learning-objective-text"><em>{{ . | markdownify }}</em></p>
-                        {{ end }}
-                        </li>
+                      {{ end }}
+                    </li>
                     {{ end }}
-                    </ul>
+                  </ul>
+                  <div class="itemDescription learn-list">{{ default .Description | markdownify }}
+                    <a class="readMore" href="{{ .RelPermalink }}">See all &#187;</a>
+                  </div>
                 </div>
-   </div>
-                <div class="itemDescription">{{ default .Description | markdownify }}
-                  <a class="readMore" href="{{ .RelPermalink }}">See all &#187;</a>
-                </div>
+              </div>
+              
                 <div class="itemDate">
                   <div class="created">
                   <!--<i class="fas fa-box-open"></i>&nbsp;
@@ -99,3 +102,6 @@
 </div> <!-- band -->
 
 {{ end }}
+
+
+

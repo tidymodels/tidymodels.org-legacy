@@ -83,11 +83,13 @@ a {
 
 /*----- COLORED LIST BULLET----*/
 
-.article-content ul {
+.article-content ul,
+.learn-top-nav ul {
   list-style: none; /* Remove default bullets */
 }
 
-.article-content ul li::before {
+.article-content ul li::before, 
+.learn-top-nav ul li::before {
   content: "\2022";  /* Add content: \2022 is the CSS Code/unicode for a bullet */
   color: #CA225E; /* Change the color */
   font-weight: bold; /* If you want it to be bold */
@@ -150,6 +152,7 @@ h1 {
 
 h2 {
   font-size: 1.1em;
+  color: #1a162d90;
 }
 
 
@@ -171,7 +174,7 @@ h2 {
   }
   
   #TOC a { /* Get Started Page TOC */
-    color: #CA225E90;
+    color: #ca225ec9;
   }
 
 /*Getting Started TOC divider -- styling may change */
@@ -216,10 +219,7 @@ h2 {
 .articleCategory a:hover {
   color: #1a162dde;
   text-decoration: none;
-}
 
-.articleCategory {
-	padding-left: 0;
 }
 
 /*-- Getting Started Page Left Sidebar -- */
@@ -277,26 +277,20 @@ h2 {
   font-size: 1.1em;
 }
 
-.learn-list ul{
-  max-width: 90%;
-  border-left: 1pt solid pink;
-  margin-left: 2em;
+.article-content.learn-list ul {
+    list-style: none;
+    border-left: 1pt solid #ffc0cb78;
 }
 
-.article-content ul li::before {
+.article-content.learn-list ul li::before {
   content: " ";  /* Add content: \2022 is the CSS Code/unicode for a bullet */
-  /*color: #1a162d;*/  /* Change the color */
-  font-weight: bold; /* If you want it to be bold */
-  display: inline-block; /* Needed to add space between the bullet and the text */
-  width: 1.5em; /* Also needed for space (tweak if needed) */
-  margin-left: -1.7em; /* Also needed for space (tweak if needed) */
 }
 
 
 .learning-objective-text {
   color: #1a162d9e;
-  
 }
+
 
 /* Learn subsection*/
 
@@ -307,9 +301,8 @@ h2 {
   display: inline-block;
 }
 
-  .single-learning-objective-text {
+.single-learning-objective-text {
   }
-
 
 .single-learning-objective-text:after,
 .single-learning-objective-text:before {
@@ -380,7 +373,7 @@ a.productName {
 /*-----TABLES-----*/
 
 .article-content {
-  overflow-x: scroll; /*we probably want to create a parent container around only tables*/
+  overflow-x: auto; /*was scroll, but we probably want to create a parent container around only tables*/
 }
 
 table tbody tr td:last-child {
@@ -399,7 +392,7 @@ table thead tr th:last-child {
   color: #1a162d80;
 }
 
-/*---- STICKY TOC w/ SMOOTH SCROLL-----*/
+/*---- STICKY TOC for all w/ SMOOTH SCROLL-----*/
 
 .column25, .column25-left {
   position: sticky;
@@ -438,17 +431,80 @@ html {
 
 /* LEARN THUMBNAILS */
 
+.flex-container.learn-list{
+  display: flex;
+}
+
+.image-container.learn-list {
+  width: 100px;
+  margin-right: 2em;
+}
+
 .image-cropper {
     width: 100px;
     height: 100px;
     position: relative;
     overflow: hidden;
-   /* border-radius: 50%; */
     margin: 2em auto;
 }
 
-.circle-thumbnail {
+.learn-thumbnail {
   display: inline;
   margin: 0 auto;
   width: auto;
+}
+
+.learn-list.itemDescription { /* "See all" link */
+  margin-left: 2em;
+}
+
+
+/* Learn page Jump to Section */
+
+a.learn-top-nav-item{
+  text-transform: uppercase;
+  letter-spacing: 2pt;
+  font-size: 0.8rem !important;
+  font-weight: bold;
+  color: #ca225ec9;
+}
+
+a.learn-top-nav-item:hover{
+  color: #CA225E;
+  text-decoration: none;
+}
+
+
+.listItem.learn-top-nav{
+ padding: 1em;
+ position: relative;
+}
+
+.listItem.learn-top-nav:after,
+.listItem.learn-top-nav:before {
+    border: 1pt solid #ca225e3d; 
+    bottom: 0;    
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 2.5%;
+}
+.listItem.learn-top-nav:after {
+    border-left: none;
+    right: 0;
+}
+.listItem.learn-top-nav:before {
+    border-right: none;
+    left: 0;
+}
+
+/*----ANCHORS----*/
+
+.anchor-container{
+  position: relative;
+}
+
+.anchor{
+  top: -100px; /* absolute value must be > than navbar */
+  position: absolute;
 }

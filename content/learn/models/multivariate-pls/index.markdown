@@ -175,8 +175,8 @@ ggplot(variance_data, aes(x = components, y = proportion, col = source)) +
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.1 (2019-07-05)
-#>  os       macOS Catalina 10.15.3      
+#>  version  R version 3.6.0 (2019-04-26)
+#>  os       macOS  10.15.4              
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
@@ -186,25 +186,26 @@ ggplot(variance_data, aes(x = components, y = proportion, col = source)) +
 #>  date     2020-04-04                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version    date       lib source                               
-#>  broom      * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
-#>  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
-#>  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
-#>  ggplot2    * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
-#>  infer      * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                       
-#>  modeldata  * 0.0.1      2019-12-19 [1] Github (tidymodels/modeldata@aa91bb1)
-#>  parsnip    * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
-#>  pls        * 2.7-2      2019-10-01 [1] CRAN (R 3.6.0)                       
-#>  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
-#>  recipes    * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
-#>  rlang        0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
-#>  rsample    * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
-#>  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
-#>  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
-#>  tune       * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
-#>  workflows  * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
-#>  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
+#>  package    * version date       lib source                               
+#>  broom      * 0.5.5   2020-02-29 [1] CRAN (R 3.6.0)                       
+#>  dials      * 0.0.4   2019-12-02 [1] CRAN (R 3.6.0)                       
+#>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)                       
+#>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)                       
+#>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)                       
+#>  modeldata  * 0.0.1   2020-01-24 [1] Github (tidymodels/modeldata@aa91bb1)
+#>  parsnip    * 0.0.5   2020-01-07 [1] CRAN (R 3.6.0)                       
+#>  pls        * 2.7-2   2019-10-01 [1] CRAN (R 3.6.0)                       
+#>  purrr      * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)                       
+#>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)                       
+#>  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)                       
+#>  rsample    * 0.0.5   2019-07-12 [1] CRAN (R 3.6.0)                       
+#>  tibble     * 2.1.3   2019-06-06 [2] CRAN (R 3.6.0)                       
+#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)                       
+#>  tune       * 0.0.1   2020-01-24 [1] Github (tidymodels/tune@ba56ec5)     
+#>  workflows  * 0.1.1   2020-03-17 [1] CRAN (R 3.6.0)                       
+#>  yardstick  * 0.0.6   2020-03-17 [1] CRAN (R 3.6.0)                       
 #> 
-#> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
+#> [1] /Users/desireedeleon/Library/R/3.6/library
+#> [2] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
 ```
  
