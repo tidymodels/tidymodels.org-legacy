@@ -128,10 +128,10 @@ p_value_independence
 #> # A tibble: 1 x 1
 #>   p_value
 #>     <dbl>
-#> 1       0
+#> 1  0.0002
 ```
 
-Thus, if there were really no relationship between cognition and genotype, the probability that we would see a statistic as or more extreme than 21.577 is approximately 0.
+Thus, if there were really no relationship between cognition and genotype, the probability that we would see a statistic as or more extreme than 21.577 is approximately 2\times 10^{-4}.
 
 Note that, equivalently to the steps shown above, the package supplies a wrapper function, `chisq_test`, to carry out Chi-Squared tests of independence on tidy data. The syntax goes like this:
 
@@ -221,12 +221,12 @@ p_value_gof <- null_distribution_gof %>%
 
 p_value_gof
 #> # A tibble: 1 x 1
-#>   p_value
-#>     <dbl>
-#> 1   0.001
+#>    p_value
+#>      <dbl>
+#> 1 0.000600
 ```
 
-Thus, if each genotype occurred at the same rate as the Song paper, the probability that we would see a distribution like the one we did is approximately 0.001.
+Thus, if each genotype occurred at the same rate as the Song paper, the probability that we would see a distribution like the one we did is approximately 6\times 10^{-4}.
 
 Again, equivalently to the steps shown above, the package supplies a wrapper function, `chisq_test`, to carry out Chi-Squared goodness of fit tests on tidy data. The syntax goes like this:
 
@@ -255,7 +255,7 @@ chisq_test(ad_data, response = Genotype, p = meta_rates)
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Los_Angeles         
-#>  date     2020-04-03                  
+#>  date     2020-04-06                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version    date       lib source                               

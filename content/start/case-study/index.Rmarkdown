@@ -1,11 +1,8 @@
 ---
 title: "A predictive modeling case study"
-weight: 1
+weight: 5
 tags: [parsnip, recipe, rsample, tune]
 categories: [model fitting, tuning]
-output:
-  blogdown::html_page:
-    toc: true
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}

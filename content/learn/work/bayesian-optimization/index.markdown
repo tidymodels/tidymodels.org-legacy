@@ -142,7 +142,7 @@ search_res <-
 #> 
 #> Optimizing roc_auc using the expected improvement
 #> 
-#> ── Iteration 1 ────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 1 ───────────────────────────────────────────────────────
 #> 
 #> i Current best:		roc_auc=0.8655 (@iter 0)
 #> i Gaussian process model
@@ -154,7 +154,7 @@ search_res <-
 #> ✓ Estimating performance
 #> ⓧ Newest results:	roc_auc=0.8624 (+/-0.00897)
 #> 
-#> ── Iteration 2 ────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 2 ───────────────────────────────────────────────────────
 #> 
 #> i Current best:		roc_auc=0.8655 (@iter 0)
 #> i Gaussian process model
@@ -166,7 +166,7 @@ search_res <-
 #> ✓ Estimating performance
 #> ⓧ Newest results:	roc_auc=0.8606 (+/-0.00908)
 #> 
-#> ── Iteration 3 ────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 3 ───────────────────────────────────────────────────────
 #> 
 #> i Current best:		roc_auc=0.8655 (@iter 0)
 #> i Gaussian process model
@@ -178,7 +178,7 @@ search_res <-
 #> ✓ Estimating performance
 #> ⓧ Newest results:	roc_auc=0.8634 (+/-0.00923)
 #> 
-#> ── Iteration 4 ────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 4 ───────────────────────────────────────────────────────
 #> 
 #> i Current best:		roc_auc=0.8655 (@iter 0)
 #> i Gaussian process model
@@ -190,7 +190,7 @@ search_res <-
 #> ✓ Estimating performance
 #> ⓧ Newest results:	roc_auc=0.8494 (+/-0.0116)
 #> 
-#> ── Iteration 5 ────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 5 ───────────────────────────────────────────────────────
 #> 
 #> i Current best:		roc_auc=0.8655 (@iter 0)
 #> i Gaussian process model
@@ -202,7 +202,7 @@ search_res <-
 #> ✓ Estimating performance
 #> ⓧ Newest results:	roc_auc=0.8236 (+/-0.00885)
 #> 
-#> ── Iteration 6 ────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 6 ───────────────────────────────────────────────────────
 #> 
 #> i Current best:		roc_auc=0.8655 (@iter 0)
 #> i Gaussian process model
@@ -214,7 +214,7 @@ search_res <-
 #> ✓ Estimating performance
 #> ⓧ Newest results:	roc_auc=0.8054 (+/-0.0114)
 #> 
-#> ── Iteration 7 ────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 7 ───────────────────────────────────────────────────────
 #> 
 #> i Current best:		roc_auc=0.8655 (@iter 0)
 #> i Gaussian process model
@@ -226,7 +226,7 @@ search_res <-
 #> ✓ Estimating performance
 #> ⓧ Newest results:	roc_auc=0.8622 (+/-0.009)
 #> 
-#> ── Iteration 8 ────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 8 ───────────────────────────────────────────────────────
 #> 
 #> i Current best:		roc_auc=0.8655 (@iter 0)
 #> i Gaussian process model
@@ -238,7 +238,7 @@ search_res <-
 #> ✓ Estimating performance
 #> ⓧ Newest results:	roc_auc=0.8655 (+/-0.00848)
 #> 
-#> ── Iteration 9 ────────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 9 ───────────────────────────────────────────────────────
 #> 
 #> i Current best:		roc_auc=0.8655 (@iter 0)
 #> i Gaussian process model
@@ -250,7 +250,7 @@ search_res <-
 #> ✓ Estimating performance
 #> ⓧ Newest results:	roc_auc=0.8494 (+/-0.0116)
 #> 
-#> ── Iteration 10 ───────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 10 ──────────────────────────────────────────────────────
 #> 
 #> i Current best:		roc_auc=0.8655 (@iter 0)
 #> i Gaussian process model
@@ -262,7 +262,7 @@ search_res <-
 #> ✓ Estimating performance
 #> ♥ Newest results:	roc_auc=0.8681 (+/-0.00898)
 #> 
-#> ── Iteration 11 ───────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 11 ──────────────────────────────────────────────────────
 #> 
 #> i Current best:		roc_auc=0.8681 (@iter 10)
 #> i Gaussian process model
@@ -274,7 +274,7 @@ search_res <-
 #> ✓ Estimating performance
 #> ⓧ Newest results:	roc_auc=0.8509 (+/-0.0116)
 #> 
-#> ── Iteration 12 ───────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 12 ──────────────────────────────────────────────────────
 #> 
 #> i Current best:		roc_auc=0.8681 (@iter 10)
 #> i Gaussian process model
@@ -286,7 +286,7 @@ search_res <-
 #> ✓ Estimating performance
 #> ⓧ Newest results:	roc_auc=0.8494 (+/-0.0116)
 #> 
-#> ── Iteration 13 ───────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 13 ──────────────────────────────────────────────────────
 #> 
 #> i Current best:		roc_auc=0.8681 (@iter 10)
 #> i Gaussian process model
@@ -298,7 +298,7 @@ search_res <-
 #> ✓ Estimating performance
 #> ⓧ Newest results:	roc_auc=0.8625 (+/-0.00898)
 #> 
-#> ── Iteration 14 ───────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 14 ──────────────────────────────────────────────────────
 #> 
 #> i Current best:		roc_auc=0.8681 (@iter 10)
 #> i Gaussian process model
@@ -310,7 +310,7 @@ search_res <-
 #> ✓ Estimating performance
 #> ♥ Newest results:	roc_auc=0.8691 (+/-0.00837)
 #> 
-#> ── Iteration 15 ───────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 15 ──────────────────────────────────────────────────────
 #> 
 #> i Current best:		roc_auc=0.8691 (@iter 14)
 #> i Gaussian process model
@@ -322,7 +322,7 @@ search_res <-
 #> ✓ Estimating performance
 #> ♥ Newest results:	roc_auc=0.8728 (+/-0.00842)
 #> 
-#> ── Iteration 16 ───────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 16 ──────────────────────────────────────────────────────
 #> 
 #> i Current best:		roc_auc=0.8728 (@iter 15)
 #> i Gaussian process model
@@ -334,7 +334,7 @@ search_res <-
 #> ✓ Estimating performance
 #> ⓧ Newest results:	roc_auc=0.8655 (+/-0.00848)
 #> 
-#> ── Iteration 17 ───────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 17 ──────────────────────────────────────────────────────
 #> 
 #> i Current best:		roc_auc=0.8728 (@iter 15)
 #> i Gaussian process model
@@ -346,7 +346,7 @@ search_res <-
 #> ✓ Estimating performance
 #> ⓧ Newest results:	roc_auc=0.8696 (+/-0.00881)
 #> 
-#> ── Iteration 18 ───────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 18 ──────────────────────────────────────────────────────
 #> 
 #> i Current best:		roc_auc=0.8728 (@iter 15)
 #> i Gaussian process model
@@ -356,9 +356,9 @@ search_res <-
 #> i cost=0.461, rbf_sigma=0.908, num_comp=0
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.7731 (+/-0.0168)
+#> ⓧ Newest results:	roc_auc=0.7732 (+/-0.0168)
 #> 
-#> ── Iteration 19 ───────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 19 ──────────────────────────────────────────────────────
 #> 
 #> i Current best:		roc_auc=0.8728 (@iter 15)
 #> i Gaussian process model
@@ -370,7 +370,7 @@ search_res <-
 #> ✓ Estimating performance
 #> ⓧ Newest results:	roc_auc=0.8621 (+/-0.00933)
 #> 
-#> ── Iteration 20 ───────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 20 ──────────────────────────────────────────────────────
 #> 
 #> i Current best:		roc_auc=0.8728 (@iter 15)
 #> i Gaussian process model
@@ -382,7 +382,7 @@ search_res <-
 #> ✓ Estimating performance
 #> ⓧ Newest results:	roc_auc=0.8494 (+/-0.0116)
 #> 
-#> ── Iteration 21 ───────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 21 ──────────────────────────────────────────────────────
 #> 
 #> i Current best:		roc_auc=0.8728 (@iter 15)
 #> i Gaussian process model
@@ -394,7 +394,7 @@ search_res <-
 #> ✓ Estimating performance
 #> ⓧ Newest results:	roc_auc=0.8721 (+/-0.00749)
 #> 
-#> ── Iteration 22 ───────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 22 ──────────────────────────────────────────────────────
 #> 
 #> i Current best:		roc_auc=0.8728 (@iter 15)
 #> i Gaussian process model
@@ -404,343 +404,284 @@ search_res <-
 #> i cost=0.00853, rbf_sigma=0.989, num_comp=0
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.7058 (+/-0.038)
+#> ⓧ Newest results:	roc_auc=0.769 (+/-0.018)
 #> 
-#> ── Iteration 23 ───────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 23 ──────────────────────────────────────────────────────
 #> 
 #> i Current best:		roc_auc=0.8728 (@iter 15)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
-#> i cost=0.00546, rbf_sigma=1.38e-10, num_comp=19
+#> i cost=0.0126, rbf_sigma=0.0421, num_comp=14
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.7895 (+/-0.0489)
+#> ⓧ Newest results:	roc_auc=0.8709 (+/-0.00841)
 #> 
-#> ── Iteration 24 ───────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 24 ──────────────────────────────────────────────────────
 #> 
 #> i Current best:		roc_auc=0.8728 (@iter 15)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
-#> i cost=0.871, rbf_sigma=1.72e-10, num_comp=19
+#> i cost=25, rbf_sigma=0.00246, num_comp=7
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.864 (+/-0.00842)
+#> ⓧ Newest results:	roc_auc=0.8695 (+/-0.00942)
 #> 
-#> ── Iteration 25 ───────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 25 ──────────────────────────────────────────────────────
 #> 
 #> i Current best:		roc_auc=0.8728 (@iter 15)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
-#> i cost=3.8, rbf_sigma=6.24e-10, num_comp=19
+#> i cost=0.00414, rbf_sigma=0.0155, num_comp=11
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.864 (+/-0.00842)
+#> ⓧ Newest results:	roc_auc=0.8666 (+/-0.00934)
 #> 
-#> ── Iteration 26 ───────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 26 ──────────────────────────────────────────────────────
 #> 
 #> i Current best:		roc_auc=0.8728 (@iter 15)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
-#> i cost=5.2, rbf_sigma=0.791, num_comp=1
+#> i cost=28.4, rbf_sigma=4.2e-07, num_comp=5
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.7319 (+/-0.0173)
+#> ⓧ Newest results:	roc_auc=0.8588 (+/-0.00922)
 #> 
-#> ── Iteration 27 ───────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 27 ──────────────────────────────────────────────────────
 #> 
 #> i Current best:		roc_auc=0.8728 (@iter 15)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
-#> i cost=0.213, rbf_sigma=9.11e-10, num_comp=20
+#> i cost=0.00112, rbf_sigma=1.18e-10, num_comp=14
+#> i Estimating performance
+#> ✓ Estimating performance
+#> ⓧ Newest results:	roc_auc=0.7888 (+/-0.0489)
+#> 
+#> ── Iteration 28 ──────────────────────────────────────────────────────
+#> 
+#> i Current best:		roc_auc=0.8728 (@iter 15)
+#> i Gaussian process model
+#> ✓ Gaussian process model
+#> i Generating 5000 candidates
+#> i Predicted candidates
+#> i cost=0.00106, rbf_sigma=0.0852, num_comp=15
+#> i Estimating performance
+#> ✓ Estimating performance
+#> ⓧ Newest results:	roc_auc=0.8709 (+/-0.00732)
+#> 
+#> ── Iteration 29 ──────────────────────────────────────────────────────
+#> 
+#> i Current best:		roc_auc=0.8728 (@iter 15)
+#> i Gaussian process model
+#> ✓ Gaussian process model
+#> i Generating 5000 candidates
+#> i Predicted candidates
+#> i cost=16.3, rbf_sigma=0.000223, num_comp=7
+#> i Estimating performance
+#> ✓ Estimating performance
+#> ⓧ Newest results:	roc_auc=0.8636 (+/-0.00969)
+#> 
+#> ── Iteration 30 ──────────────────────────────────────────────────────
+#> 
+#> i Current best:		roc_auc=0.8728 (@iter 15)
+#> i Gaussian process model
+#> ✓ Gaussian process model
+#> i Generating 5000 candidates
+#> i Predicted candidates
+#> i cost=19.7, rbf_sigma=1.66e-08, num_comp=13
+#> i Estimating performance
+#> ✓ Estimating performance
+#> ⓧ Newest results:	roc_auc=0.8622 (+/-0.009)
+#> 
+#> ── Iteration 31 ──────────────────────────────────────────────────────
+#> 
+#> i Current best:		roc_auc=0.8728 (@iter 15)
+#> i Gaussian process model
+#> ✓ Gaussian process model
+#> i Generating 5000 candidates
+#> i Predicted candidates
+#> i cost=0.000982, rbf_sigma=3.12e-05, num_comp=1
+#> i Estimating performance
+#> ✓ Estimating performance
+#> ⓧ Newest results:	roc_auc=0.7575 (+/-0.0177)
+#> 
+#> ── Iteration 32 ──────────────────────────────────────────────────────
+#> 
+#> i Current best:		roc_auc=0.8728 (@iter 15)
+#> i Gaussian process model
+#> ✓ Gaussian process model
+#> i Generating 5000 candidates
+#> i Predicted candidates
+#> i cost=0.0772, rbf_sigma=1.37e-07, num_comp=8
+#> i Estimating performance
+#> ✓ Estimating performance
+#> ⓧ Newest results:	roc_auc=0.8645 (+/-0.00874)
+#> 
+#> ── Iteration 33 ──────────────────────────────────────────────────────
+#> 
+#> i Current best:		roc_auc=0.8728 (@iter 15)
+#> i Gaussian process model
+#> ✓ Gaussian process model
+#> i Generating 5000 candidates
+#> i Predicted candidates
+#> i cost=30.7, rbf_sigma=5.9e-07, num_comp=17
+#> i Estimating performance
+#> ✓ Estimating performance
+#> ⓧ Newest results:	roc_auc=0.8605 (+/-0.00866)
+#> 
+#> ── Iteration 34 ──────────────────────────────────────────────────────
+#> 
+#> i Current best:		roc_auc=0.8728 (@iter 15)
+#> i Gaussian process model
+#> ✓ Gaussian process model
+#> i Generating 5000 candidates
+#> i Predicted candidates
+#> i cost=0.00103, rbf_sigma=0.0127, num_comp=7
+#> i Estimating performance
+#> ✓ Estimating performance
+#> ⓧ Newest results:	roc_auc=0.8656 (+/-0.00909)
+#> 
+#> ── Iteration 35 ──────────────────────────────────────────────────────
+#> 
+#> i Current best:		roc_auc=0.8728 (@iter 15)
+#> i Gaussian process model
+#> ✓ Gaussian process model
+#> i Generating 5000 candidates
+#> i Predicted candidates
+#> i cost=0.00108, rbf_sigma=4.39e-07, num_comp=20
 #> i Estimating performance
 #> ✓ Estimating performance
 #> ⓧ Newest results:	roc_auc=0.8655 (+/-0.00848)
 #> 
-#> ── Iteration 28 ───────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 36 ──────────────────────────────────────────────────────
 #> 
 #> i Current best:		roc_auc=0.8728 (@iter 15)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
-#> i cost=0.0104, rbf_sigma=1.18e-10, num_comp=1
+#> i cost=3.4, rbf_sigma=0.949, num_comp=4
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.7015 (+/-0.0374)
+#> ⓧ Newest results:	roc_auc=0.833 (+/-0.0135)
 #> 
-#> ── Iteration 29 ───────────────────────────────────────────────────────────────────────────────────────
-#> 
-#> i Current best:		roc_auc=0.8728 (@iter 15)
-#> i Gaussian process model
-#> ✓ Gaussian process model
-#> i Generating 5000 candidates
-#> i Predicted candidates
-#> i cost=0.0106, rbf_sigma=0.542, num_comp=19
-#> i Estimating performance
-#> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.8044 (+/-0.0112)
-#> 
-#> ── Iteration 30 ───────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 37 ──────────────────────────────────────────────────────
 #> 
 #> i Current best:		roc_auc=0.8728 (@iter 15)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
-#> i cost=1.23, rbf_sigma=2.44e-10, num_comp=6
-#> i Estimating performance
-#> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.8633 (+/-0.00873)
-#> 
-#> ── Iteration 31 ───────────────────────────────────────────────────────────────────────────────────────
-#> 
-#> i Current best:		roc_auc=0.8728 (@iter 15)
-#> i Gaussian process model
-#> ✓ Gaussian process model
-#> i Generating 5000 candidates
-#> i Predicted candidates
-#> i cost=0.00348, rbf_sigma=2.83e-10, num_comp=0
-#> i Estimating performance
-#> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.7771 (+/-0.0475)
-#> 
-#> ── Iteration 32 ───────────────────────────────────────────────────────────────────────────────────────
-#> 
-#> i Current best:		roc_auc=0.8728 (@iter 15)
-#> i Gaussian process model
-#> ✓ Gaussian process model
-#> i Generating 5000 candidates
-#> i Predicted candidates
-#> i cost=8.02, rbf_sigma=1.1e-10, num_comp=3
+#> i cost=1.25, rbf_sigma=1.07e-10, num_comp=3
 #> i Estimating performance
 #> ✓ Estimating performance
 #> ⓧ Newest results:	roc_auc=0.8504 (+/-0.0112)
 #> 
-#> ── Iteration 33 ───────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 38 ──────────────────────────────────────────────────────
 #> 
 #> i Current best:		roc_auc=0.8728 (@iter 15)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
-#> i cost=0.00482, rbf_sigma=0.823, num_comp=15
+#> i cost=3.99, rbf_sigma=0.997, num_comp=17
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.8003 (+/-0.0157)
+#> ⓧ Newest results:	roc_auc=0.767 (+/-0.0161)
 #> 
-#> ── Iteration 34 ───────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 39 ──────────────────────────────────────────────────────
 #> 
 #> i Current best:		roc_auc=0.8728 (@iter 15)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
-#> i cost=0.0312, rbf_sigma=0.413, num_comp=0
+#> i cost=0.0137, rbf_sigma=2.54e-05, num_comp=3
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.8031 (+/-0.0142)
+#> ⓧ Newest results:	roc_auc=0.8503 (+/-0.0112)
 #> 
-#> ── Iteration 35 ───────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 40 ──────────────────────────────────────────────────────
 #> 
 #> i Current best:		roc_auc=0.8728 (@iter 15)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
-#> i cost=3.71, rbf_sigma=0.464, num_comp=18
-#> i Estimating performance
-#> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.8171 (+/-0.00984)
-#> 
-#> ── Iteration 36 ───────────────────────────────────────────────────────────────────────────────────────
-#> 
-#> i Current best:		roc_auc=0.8728 (@iter 15)
-#> i Gaussian process model
-#> ✓ Gaussian process model
-#> i Generating 5000 candidates
-#> i Predicted candidates
-#> i cost=0.243, rbf_sigma=1.88e-10, num_comp=1
-#> i Estimating performance
-#> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.7015 (+/-0.0374)
-#> 
-#> ── Iteration 37 ───────────────────────────────────────────────────────────────────────────────────────
-#> 
-#> i Current best:		roc_auc=0.8728 (@iter 15)
-#> i Gaussian process model
-#> ✓ Gaussian process model
-#> i Generating 5000 candidates
-#> i Predicted candidates
-#> i cost=0.0995, rbf_sigma=1.95e-10, num_comp=20
-#> i Estimating performance
-#> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.7902 (+/-0.049)
-#> 
-#> ── Iteration 38 ───────────────────────────────────────────────────────────────────────────────────────
-#> 
-#> i Current best:		roc_auc=0.8728 (@iter 15)
-#> i Gaussian process model
-#> ✓ Gaussian process model
-#> i Generating 5000 candidates
-#> i Predicted candidates
-#> i cost=0.367, rbf_sigma=2.48e-10, num_comp=20
-#> i Estimating performance
-#> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.8655 (+/-0.00848)
-#> 
-#> ── Iteration 39 ───────────────────────────────────────────────────────────────────────────────────────
-#> 
-#> i Current best:		roc_auc=0.8728 (@iter 15)
-#> i Gaussian process model
-#> ✓ Gaussian process model
-#> i Generating 5000 candidates
-#> i Predicted candidates
-#> i cost=0.148, rbf_sigma=0.371, num_comp=7
-#> i Estimating performance
-#> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.8708 (+/-0.00671)
-#> 
-#> ── Iteration 40 ───────────────────────────────────────────────────────────────────────────────────────
-#> 
-#> i Current best:		roc_auc=0.8728 (@iter 15)
-#> i Gaussian process model
-#> ✓ Gaussian process model
-#> i Generating 5000 candidates
-#> i Predicted candidates
-#> i cost=0.121, rbf_sigma=0.738, num_comp=15
-#> i Estimating performance
-#> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.8121 (+/-0.015)
-#> 
-#> ── Iteration 41 ───────────────────────────────────────────────────────────────────────────────────────
-#> 
-#> i Current best:		roc_auc=0.8728 (@iter 15)
-#> i Gaussian process model
-#> ✓ Gaussian process model
-#> i Generating 5000 candidates
-#> i Predicted candidates
-#> i cost=0.0595, rbf_sigma=7.02e-08, num_comp=6
-#> i Estimating performance
-#> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.8633 (+/-0.00873)
-#> 
-#> ── Iteration 42 ───────────────────────────────────────────────────────────────────────────────────────
-#> 
-#> i Current best:		roc_auc=0.8728 (@iter 15)
-#> i Gaussian process model
-#> ✓ Gaussian process model
-#> i Generating 5000 candidates
-#> i Predicted candidates
-#> i cost=0.0598, rbf_sigma=0.0733, num_comp=20
-#> i Estimating performance
-#> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.8679 (+/-0.00738)
-#> 
-#> ── Iteration 43 ───────────────────────────────────────────────────────────────────────────────────────
-#> 
-#> i Current best:		roc_auc=0.8728 (@iter 15)
-#> i Gaussian process model
-#> ✓ Gaussian process model
-#> i Generating 5000 candidates
-#> i Predicted candidates
-#> i cost=5.98, rbf_sigma=0.0784, num_comp=10
-#> i Estimating performance
-#> ✓ Estimating performance
-#> ♥ Newest results:	roc_auc=0.8781 (+/-0.00913)
-#> 
-#> ── Iteration 44 ───────────────────────────────────────────────────────────────────────────────────────
-#> 
-#> i Current best:		roc_auc=0.8781 (@iter 43)
-#> i Gaussian process model
-#> ✓ Gaussian process model
-#> i Generating 5000 candidates
-#> i Predicted candidates
-#> i cost=0.00907, rbf_sigma=0.943, num_comp=8
-#> i Estimating performance
-#> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.8493 (+/-0.00727)
-#> 
-#> ── Iteration 45 ───────────────────────────────────────────────────────────────────────────────────────
-#> 
-#> i Current best:		roc_auc=0.8781 (@iter 43)
-#> i Gaussian process model
-#> ✓ Gaussian process model
-#> i Generating 5000 candidates
-#> i Predicted candidates
-#> i cost=0.00183, rbf_sigma=0.771, num_comp=4
-#> i Estimating performance
-#> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.8551 (+/-0.00796)
-#> 
-#> ── Iteration 46 ───────────────────────────────────────────────────────────────────────────────────────
-#> 
-#> i Current best:		roc_auc=0.8781 (@iter 43)
-#> i Gaussian process model
-#> ✓ Gaussian process model
-#> i Generating 5000 candidates
-#> i Predicted candidates
-#> i cost=0.00108, rbf_sigma=1.6e-10, num_comp=18
+#> i cost=0.00227, rbf_sigma=1.05e-10, num_comp=18
 #> i Estimating performance
 #> ✓ Estimating performance
 #> ⓧ Newest results:	roc_auc=0.7857 (+/-0.0483)
 #> 
-#> ── Iteration 47 ───────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 41 ──────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.8781 (@iter 43)
+#> i Current best:		roc_auc=0.8728 (@iter 15)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
-#> i cost=7.82, rbf_sigma=1.27e-10, num_comp=14
+#> i cost=3.77, rbf_sigma=1.08e-10, num_comp=16
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.8623 (+/-0.00909)
+#> ⓧ Newest results:	roc_auc=0.8606 (+/-0.00908)
 #> 
-#> ── Iteration 48 ───────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 42 ──────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.8781 (@iter 43)
+#> i Current best:		roc_auc=0.8728 (@iter 15)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
-#> i cost=0.0131, rbf_sigma=2.51e-10, num_comp=12
+#> i cost=0.00118, rbf_sigma=2.16e-10, num_comp=1
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.7882 (+/-0.0488)
+#> ⓧ Newest results:	roc_auc=0.7015 (+/-0.0374)
 #> 
-#> ── Iteration 49 ───────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 43 ──────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.8781 (@iter 43)
+#> i Current best:		roc_auc=0.8728 (@iter 15)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
-#> i cost=0.487, rbf_sigma=0.022, num_comp=7
+#> i cost=1.86, rbf_sigma=1.1e-10, num_comp=9
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.8711 (+/-0.00917)
+#> ⓧ Newest results:	roc_auc=0.8638 (+/-0.00874)
 #> 
-#> ── Iteration 50 ───────────────────────────────────────────────────────────────────────────────────────
+#> ── Iteration 44 ──────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.8781 (@iter 43)
+#> i Current best:		roc_auc=0.8728 (@iter 15)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
-#> i cost=2.32, rbf_sigma=2.31e-10, num_comp=11
+#> i cost=0.162, rbf_sigma=0.934, num_comp=6
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.8621 (+/-0.00933)
+#> ⓧ Newest results:	roc_auc=0.8621 (+/-0.00645)
+#> 
+#> ── Iteration 45 ──────────────────────────────────────────────────────
+#> 
+#> i Current best:		roc_auc=0.8728 (@iter 15)
+#> i Gaussian process model
+#> ✓ Gaussian process model
+#> i Generating 5000 candidates
+#> i Predicted candidates
+#> i cost=0.0122, rbf_sigma=0.000678, num_comp=18
+#> i Estimating performance
+#> ✓ Estimating performance
+#> ⓧ Newest results:	roc_auc=0.8594 (+/-0.00883)
+#> ! No improvement for 30 iterations; returning current results.
 ```
 
 The resulting tibble is a stacked set of rows of the rsample object with an additional column for the iteration number:
@@ -749,7 +690,7 @@ The resulting tibble is a stacked set of rows of the rsample object with an addi
 ```r
 search_res
 #> #  10-fold cross-validation 
-#> # A tibble: 510 x 5
+#> # A tibble: 460 x 5
 #>    splits             id     .metrics         .notes           .iter
 #>  * <list>             <chr>  <list>           <list>           <dbl>
 #>  1 <split [1.4K/152]> Fold01 <tibble [5 × 6]> <tibble [0 × 1]>     0
@@ -762,7 +703,7 @@ search_res
 #>  8 <split [1.4K/151]> Fold08 <tibble [5 × 6]> <tibble [0 × 1]>     0
 #>  9 <split [1.4K/151]> Fold09 <tibble [5 × 6]> <tibble [0 × 1]>     0
 #> 10 <split [1.4K/151]> Fold10 <tibble [5 × 6]> <tibble [0 × 1]>     0
-#> # … with 500 more rows
+#> # … with 450 more rows
 ```
 
 As with grid search, we can summarize the results over resamples:
@@ -774,7 +715,7 @@ estimates <-
   arrange(.iter)
 
 estimates
-#> # A tibble: 55 x 9
+#> # A tibble: 50 x 9
 #>        cost rbf_sigma num_comp .iter .metric .estimator  mean     n std_err
 #>       <dbl>     <dbl>    <int> <dbl> <chr>   <chr>      <dbl> <int>   <dbl>
 #>  1  0.00207  1.56e- 5       10     0 roc_auc binary     0.864    10 0.00888
@@ -787,11 +728,11 @@ estimates
 #>  8 23.0      1.02e-10        7     3 roc_auc binary     0.863    10 0.00923
 #>  9  0.0894   1.09e-10        0     4 roc_auc binary     0.849    10 0.0116 
 #> 10  0.402    4.13e- 1       20     5 roc_auc binary     0.824    10 0.00885
-#> # … with 45 more rows
+#> # … with 40 more rows
 ```
 
 
-The best performance of the initial set of candidate values was `AUC = 0.865 `. The best results were achieved at iteration 43 with a corresponding AUC value of 0.878. The five best results were:
+The best performance of the initial set of candidate values was `AUC = 0.865 `. The best results were achieved at iteration 15 with a corresponding AUC value of 0.873. The five best results were:
 
 
 ```r
@@ -799,11 +740,11 @@ show_best(search_res, metric = "roc_auc")
 #> # A tibble: 5 x 9
 #>      cost rbf_sigma num_comp .iter .metric .estimator  mean     n std_err
 #>     <dbl>     <dbl>    <int> <dbl> <chr>   <chr>      <dbl> <int>   <dbl>
-#> 1 5.98       0.0784       10    43 roc_auc binary     0.878    10 0.00913
-#> 2 0.0915     0.0300       20    15 roc_auc binary     0.873    10 0.00842
-#> 3 0.00173    0.126        11    21 roc_auc binary     0.872    10 0.00749
-#> 4 0.487      0.0220        7    49 roc_auc binary     0.871    10 0.00917
-#> 5 0.148      0.371         7    39 roc_auc binary     0.871    10 0.00671
+#> 1 0.0915     0.0300       20    15 roc_auc binary     0.873    10 0.00842
+#> 2 0.00173    0.126        11    21 roc_auc binary     0.872    10 0.00749
+#> 3 0.0126     0.0421       14    23 roc_auc binary     0.871    10 0.00841
+#> 4 0.00106    0.0852       15    28 roc_auc binary     0.871    10 0.00732
+#> 5 0.00210    0.0109       20    17 roc_auc binary     0.870    10 0.00881
 ```
 
 A plot of the search iterations can be created via:
@@ -853,7 +794,7 @@ collect_metrics(search_res) %>%
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Los_Angeles         
-#>  date     2020-04-04                  
+#>  date     2020-04-06                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version    date       lib source                               

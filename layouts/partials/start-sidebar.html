@@ -1,0 +1,10 @@
+      <div class="column25-left">
+        <div class="section hideOnMobile">
+        {{ $page := . }}
+        {{ range (where .Site.RegularPages.ByWeight "Section" "start" ) }}
+        <div class="section">
+          <div class="sectionTitle">{{ .Weight }}&nbsp&nbsp<a class = "sectionTitle {{ if eq $page.RelPermalink .RelPermalink }}current{{ end }}" href="{{ .RelPermalink }}">{{ .Title }}</a></div>
+        </div>
+        {{ end }}
+        </div>
+      </div>
