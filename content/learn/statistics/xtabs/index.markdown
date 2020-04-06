@@ -128,10 +128,10 @@ p_value_independence
 #> # A tibble: 1 x 1
 #>   p_value
 #>     <dbl>
-#> 1  0.0002
+#> 1  0.0008
 ```
 
-Thus, if there were really no relationship between cognition and genotype, the probability that we would see a statistic as or more extreme than 21.577 is approximately 2\times 10^{-4}.
+Thus, if there were really no relationship between cognition and genotype, the probability that we would see a statistic as or more extreme than 21.577 is approximately 8\times 10^{-4}.
 
 Note that, equivalently to the steps shown above, the package supplies a wrapper function, `chisq_test`, to carry out Chi-Squared tests of independence on tidy data. The syntax goes like this:
 
@@ -248,32 +248,32 @@ chisq_test(ad_data, response = Genotype, p = meta_rates)
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
 #>  version  R version 3.6.1 (2019-07-05)
-#>  os       macOS Catalina 10.15.3      
+#>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/Los_Angeles         
+#>  tz       America/New_York            
 #>  date     2020-04-06                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version    date       lib source                               
-#>  broom      * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
-#>  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
-#>  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
-#>  ggplot2    * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
-#>  infer      * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                       
-#>  parsnip    * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
-#>  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
-#>  recipes    * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
-#>  rlang        0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
-#>  rsample    * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
-#>  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
-#>  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
-#>  tune       * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
-#>  workflows  * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
-#>  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
+#>  package    * version date       lib source        
+#>  broom      * 0.5.4   2020-01-27 [1] CRAN (R 3.6.0)
+#>  dials      * 0.0.6   2020-04-02 [1] local         
+#>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
+#>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
+#>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
+#>  parsnip    * 0.1.0   2020-04-06 [1] local         
+#>  purrr      * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
+#>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
+#>  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
+#>  rsample    * 0.0.6   2020-03-31 [1] local         
+#>  tibble     * 3.0.0   2020-03-30 [1] CRAN (R 3.6.1)
+#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
+#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.1)
+#>  workflows  * 0.1.0   2019-12-30 [1] CRAN (R 3.6.1)
+#>  yardstick  * 0.0.5   2020-01-23 [1] CRAN (R 3.6.0)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
 ```

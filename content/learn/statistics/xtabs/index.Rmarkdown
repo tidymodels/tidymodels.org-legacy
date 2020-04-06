@@ -16,6 +16,7 @@ source(here::here("content/learn/common.R"))
 library(tidymodels)
 library(sessioninfo)
 pkgs <- c("tidymodels", "modeldata")
+theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
 
