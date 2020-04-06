@@ -452,9 +452,10 @@ html {
 }
 
 
-/* Learn page Jump to Section */
+/* Bracketed TOC for single articles */
 
-a.learn-top-nav-item{
+a.learn-top-nav-item,
+.tutorial #TableOfContents a {
   text-transform: uppercase;
   letter-spacing: 2pt;
   font-size: 0.8rem !important;
@@ -462,19 +463,23 @@ a.learn-top-nav-item{
   color: #ca225ec9;
 }
 
-a.learn-top-nav-item:hover{
+a.learn-top-nav-item:hover,
+.tutorial #TableOfContents a:hover {
   color: #CA225E;
   text-decoration: none;
 }
 
 
-.listItem.learn-top-nav{
+.listItem.learn-top-nav,
+.listItem.tutorial {
  padding: 1em;
  position: relative;
 }
 
 .listItem.learn-top-nav:after,
-.listItem.learn-top-nav:before {
+.listItem.learn-top-nav:before,
+.listItem.tutorial:after,
+.listItem.tutorial:before {
     border: 1pt solid #ca225e3d; 
     bottom: 0;    
     content: '';
@@ -482,11 +487,13 @@ a.learn-top-nav-item:hover{
     top: 0;
     width: 2.5%;
 }
-.listItem.learn-top-nav:after {
+.listItem.learn-top-nav:after,
+.listItem.tutorial:after {
     border-left: none;
     right: 0;
 }
-.listItem.learn-top-nav:before {
+.listItem.learn-top-nav:before,
+.listItem.tutorial:before{
     border-right: none;
     left: 0;
 }
@@ -500,4 +507,23 @@ a.learn-top-nav-item:hover{
 .anchor{
   top: -100px; /* absolute value must be > than navbar */
   position: absolute;
+}
+
+
+/*----Single Tutorial TOC----*/
+
+.tutorial #TableOfContents ul li::before {
+	content: "\2022";
+	color: #CA225E;
+	font-weight: bold;
+	display: inline-block;
+	width: 1.5em;
+	margin-left: -1.7em; 
+}
+
+.tutorial #TableOfContents ul {
+	list-style: none;
+	line-height: 1.6em;
+	padding-left: 2em;
+	margin-bottom: 0em;
 }
