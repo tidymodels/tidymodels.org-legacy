@@ -3,7 +3,7 @@ title: "Bootstrap resampling and tidy regression models"
 tags: [rsample, broom]
 categories: [statistical analysis, resampling]
 type: learn-subsection
-weight: 2
+weight: 3
 description: | 
   Apply bootstrap resampling to estimate model parameters.
 ---
@@ -12,10 +12,6 @@ description: |
 
 
 
-
-# Learning objective
-
-Apply bootstrap resampling to estimate model parameters
 
 # Introduction
 
@@ -244,7 +240,7 @@ ggplot(splines_aug, aes(x, y)) +
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Los_Angeles         
-#>  date     2020-04-02                  
+#>  date     2020-04-06                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version    date       lib source                               

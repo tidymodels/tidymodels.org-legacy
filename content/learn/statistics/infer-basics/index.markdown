@@ -12,11 +12,6 @@ description: |
 
 
 
-# Learning objective
-
-Perform common hypothesis tests for statistical inference using flexible functions
-
-
 # Introduction
 
 This article only requires the tidymodels package. 
@@ -248,16 +243,16 @@ gss %>%
 #> # Groups:   replicate [5,000]
 #>    replicate hours
 #>        <int> <dbl>
-#>  1         1  79.2
-#>  2         1  49.2
-#>  3         1  49.2
-#>  4         1  54.2
-#>  5         1  14.2
-#>  6         1  11.2
-#>  7         1  49.2
-#>  8         1  27.2
+#>  1         1  39.2
+#>  2         1  39.2
+#>  3         1  39.2
+#>  4         1  51.2
+#>  5         1  44.2
+#>  6         1  39.2
+#>  7         1  39.2
+#>  8         1  39.2
 #>  9         1  39.2
-#> 10         1  47.2
+#> 10         1  43.2
 #> # … with 8,779,990 more rows
 ```
 
@@ -278,16 +273,16 @@ gss %>%
 #> # Groups:   replicate [5,000]
 #>    partyid   age replicate
 #>    <fct>   <dbl>     <int>
-#>  1 ind        37         1
+#>  1 rep        37         1
 #>  2 ind        29         1
-#>  3 rep        58         1
-#>  4 dem        40         1
+#>  3 dem        58         1
+#>  4 rep        40         1
 #>  5 ind        39         1
 #>  6 ind        37         1
-#>  7 ind        53         1
+#>  7 other      53         1
 #>  8 ind        41         1
 #>  9 ind        55         1
-#> 10 dem        47         1
+#> 10 ind        47         1
 #> # … with 14,814,990 more rows
 ```
 
@@ -305,16 +300,16 @@ gss %>%
 #> # A tibble: 5,000 x 2
 #>    replicate  stat
 #>        <int> <dbl>
-#>  1         1  40.0
-#>  2         2  40.0
-#>  3         3  40.0
-#>  4         4  40.1
+#>  1         1  39.9
+#>  2         2  39.5
+#>  3         3  39.8
+#>  4         4  40.6
 #>  5         5  39.7
-#>  6         6  40.4
+#>  6         6  39.9
 #>  7         7  39.9
 #>  8         8  40.1
 #>  9         9  39.9
-#> 10        10  39.7
+#> 10        10  40.3
 #> # … with 4,990 more rows
 ```
 
@@ -330,16 +325,16 @@ gss %>%
 #> # A tibble: 5,000 x 2
 #>    replicate    stat
 #>        <int>   <dbl>
-#>  1         1 -0.304 
-#>  2         2  0.168 
-#>  3         3 -0.465 
-#>  4         4 -0.0965
-#>  5         5  0.184 
-#>  6         6 -0.873 
-#>  7         7 -0.202 
-#>  8         8 -0.373 
-#>  9         9  0.683 
-#> 10        10 -0.244 
+#>  1         1 -0.0795
+#>  2         2  0.240 
+#>  3         3  0.163 
+#>  4         4 -0.542 
+#>  5         5 -0.842 
+#>  6         6  0.559 
+#>  7         7  0.0852
+#>  8         8 -1.05  
+#>  9         9  0.279 
+#> 10        10  0.410 
 #> # … with 4,990 more rows
 ```
 
@@ -403,10 +398,10 @@ p_value
 #> # A tibble: 1 x 1
 #>   p_value
 #>     <dbl>
-#> 1   0.018
+#> 1  0.0212
 ```
 
-It looks like the p-value is 0.018, which is pretty small---if the true mean number of hours worked per week was actually 40, the probability of our sample mean being this far (0.772 hours) from 40 would be 0.018. This may or may not be statistically significantly different, depending on the significance level `\(\alpha\)` you decided on *before* you ran this analysis. If you had set `\(\alpha = .05\)`, then this difference would be statistically significant, but if you had set `\(\alpha = .01\)`, then it would not be.
+It looks like the p-value is 0.021, which is pretty small---if the true mean number of hours worked per week was actually 40, the probability of our sample mean being this far (0.772 hours) from 40 would be 0.021. This may or may not be statistically significantly different, depending on the significance level `\(\alpha\)` you decided on *before* you ran this analysis. If you had set `\(\alpha = .05\)`, then this difference would be statistically significant, but if you had set `\(\alpha = .01\)`, then it would not be.
 
 To get a confidence interval around our estimate, we can write:
 
@@ -499,7 +494,7 @@ That's it! This vignette covers most all of the key functionality of infer. See 
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Los_Angeles         
-#>  date     2020-04-02                  
+#>  date     2020-04-06                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version    date       lib source                               

@@ -19,10 +19,6 @@ pkgs <- c("tidymodels", "modeldata")
 ```
 
 
-# Learning objective
-
-Use tests of independence and goodness of fit to analyze tables of counts
-
 # Introduction
 
 `r req_pkgs(pkgs)`

@@ -13,10 +13,6 @@ description: |
 
 
 
-# Learning objective
-
-Use tests of independence and goodness of fit to analyze tables of counts
-
 # Introduction
 
 This article requires that you have the following packages installed: modeldata and tidymodels.
@@ -259,7 +255,7 @@ chisq_test(ad_data, response = Genotype, p = meta_rates)
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Los_Angeles         
-#>  date     2020-04-02                  
+#>  date     2020-04-06                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version    date       lib source                               

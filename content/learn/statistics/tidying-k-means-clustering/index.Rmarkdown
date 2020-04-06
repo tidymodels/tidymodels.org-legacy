@@ -3,7 +3,7 @@ title: "K-means clustering with tidy data principles"
 tags: [broom]
 categories: [statistical analysis]
 type: learn-subsection
-weight: 3
+weight: 2
 description: | 
   Summarize clustering characteristics and estimate the best number of clusters for a data set.
 ---
@@ -18,10 +18,6 @@ pkgs <- c("tidymodels")
 
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
-
-# Learning objective
-
-Summarize clustering characteristics and estimate the best number of clusters for a data set
 
 # Introduction
 

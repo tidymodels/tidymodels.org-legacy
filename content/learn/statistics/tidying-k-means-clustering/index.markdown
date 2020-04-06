@@ -3,7 +3,7 @@ title: "K-means clustering with tidy data principles"
 tags: [broom]
 categories: [statistical analysis]
 type: learn-subsection
-weight: 3
+weight: 2
 description: | 
   Summarize clustering characteristics and estimate the best number of clusters for a data set.
 ---
@@ -11,10 +11,6 @@ description: |
 
 
 
-
-# Learning objective
-
-Summarize clustering characteristics and estimate the best number of clusters for a data set
 
 # Introduction
 
@@ -259,7 +255,7 @@ This represents the variance within the clusters. It decreases as `k` increases,
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Los_Angeles         
-#>  date     2020-04-02                  
+#>  date     2020-04-06                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version    date       lib source                               
