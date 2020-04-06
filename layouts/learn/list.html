@@ -4,46 +4,88 @@
 <div class="band padForHeader pushFooter">
   <div class="bandContent">
     <div class="full splitColumns withMobileMargins">
-      <div class="column75">
+      <div class="column75 learn-list">
         <div class="sectionTitle">{{ .Title }}</div>
+        
+          <p>{{ .Content | markdownify }}</p>
 
-        <div>{{ range .Sections }}
+          <!--beginning of jump to section-->
+          <div class="listItem learn-top-nav">
+            <ul>
+            {{ range $index, $element := .Sections }}
+              <li>
+                <a class="learn-top-nav-item" href="#{{ anchorize (.Title) }}">{{ .Title | markdownify }}</a>
+              </li>
+            {{ end }}
+            </ul>
+          </div>
+        
+        <!--range across all subsections-->
+        <div>{{ range $index, $element := .Sections }}
               {{ $post := . }}
-          <div class="listItem">
-             {{ $card := (.Resources.ByType "image").GetMatch "*thumbnail*" }}
-             {{ with $card }}
-              <a class="itemImage project" href="{{ $post.RelPermalink }}" style="background-image: url('{{ .RelPermalink }}');"></a>
-              {{ end }}
+              
+        <!--anchorizing all subsection links-->
+          <div class="listItem anchor-container">
+            <div class="anchor" style="top: -100px; position: absolute;" id="{{ anchorize (.Title) }}"></div>
             <div class="itemDetails">
               <div class="itemHeader">
-
-                <div class="itemTitle"><a href="{{ .RelPermalink }}">{{ .Title | markdownify }}</a></div>
-                <div class="itemTag">
-                  {{- range .Params.categories -}}
-                    <a href="{{ relURL (print "/categories/" . | urlize) }}">{{ . | humanize }}</a>
-                  {{ end -}}
+                <div class="itemTitle">
+                  <a href="#{{ anchorize (.Title) }}">{{ .Title | markdownify }}</a>
+                </div>
+                
+                <!--add back to top button on right of all subsection headers-->
+                {{ if ne $index 0 }} <!--do not show back to top for 1st section-->
+                <div class="itemTag" aria-hidden="true">
+                  <a href="#" class="back-to-top">
+                    <span class="button_icon">
+                      <i class="fas fa-chevron-up fa"></i>
+                    </span>
+                    {{ print "back to top"}}
+                  </a>
+                </div>
+                {{ end }}
+              </div>
+              
+              <div class="itemMeta">
+                <div class="flex-container learn-list">
+                  
+                  <!--thumbnail images-->
+                  <div class="image-container learn-list">
+                    <div class="image-cropper">
+                      {{ $thumb := (.Resources.ByType "image").GetMatch "*thumbnail*" }}
+                        {{ with $thumb }}
+                        <img class="circle-thumbnail" src="{{ .RelPermalink }}">
+                        {{ end }} 
+                    </div>
+                  </div>
+                  
+                 <div class="author article-content learn-list">
+                    <ul>
+                    <!-- Ranges through content/posts/*.md -->
+                    {{ range .Pages.ByWeight }}
+                        <li>
+                        <a class="article-title" href="{{.Permalink}}">{{.Title}}</a>
+                        {{ with .Description }}
+                        <br> <p class="learning-objective-text"><em>{{ . | markdownify }}</em></p>
+                      {{ end }}
+                    </li>
+                    {{ end }}
+                  </ul>
+                  <div class="itemDescription learn-list">{{ default .Description | markdownify }}
+                    <a class="readMore" href="{{ .RelPermalink }}">See all &#187;</a>
+                  </div>
                 </div>
               </div>
-              <div class="itemMeta">
-                <div class="author">
-                <!-- based on author field being used in YAML frontmatter -->
-                {{ $show_authors := $.Site.Params.authors.show_list | default true }}
-                {{ if $show_authors }}
-                {{ partial "pretty_author_names" . }}
-                {{ end }}
-                </div>
-                <div class="itemDescription">{{ default .Description | markdownify }}
-                  <a class="readMore" href="{{ .RelPermalink }}">Read More &#187;</a>
-                </div>
+              
                 <div class="itemDate">
                   <div class="created">
-                  <i class="fas fa-box-open"></i>&nbsp;
+                  <!--<i class="fas fa-box-open"></i>&nbsp;
                   {{ range $i, $tags := (.GetTerms "tags") }}
                       {{- if $i -}}, {{ end -}}
                       {{ with $tags }}
                       <a href="{{ .Permalink }}">{{- .LinkTitle -}}</a>
                       {{- end -}}
-                  {{- end -}} 
+                  {{- end -}} -->
                   </div>
                 </div>
               </div>
@@ -53,10 +95,13 @@
       {{ template "_internal/pagination.html" . }}
       </div>
 
-{{ partial "ex-sidebar.html" . }}
+{{ partial "learn-sidebar.html" . }}
 
     </div>
   </div>  <!-- bandContent -->
 </div> <!-- band -->
 
 {{ end }}
+
+
+

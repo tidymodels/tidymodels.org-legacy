@@ -1,0 +1,14 @@
+resources:
+- url: /books/
+  title: Books
+  icon: fa-book-open
+  icon_pack: fas
+  what: |
+    Study up on predictive modeling with our in-depth books.
+
+- url: https://www.tidyverse.org/tags/tidymodels/
+  title: News
+  icon: fa-bullhorn
+  icon_pack: fas
+  what: |
+    Hear the latest about tidymodels packages at the [tidyverse blog](https://www.tidyverse.org/tags/tidymodels/). 

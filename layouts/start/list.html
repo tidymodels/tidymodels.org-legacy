@@ -4,24 +4,20 @@
 <div class="band padForHeader pushFooter">
   <div class="bandContent">
     <div class="full splitColumns withMobileMargins">
-            <div class="page-wrap">
       <div class="column25-left">
         <div class="section hideOnMobile">
         {{ range (where .Site.RegularPages.ByWeight "Section" "start" ) }}
         {{ $post := . }}
-        <div class="section">
-          <div class="sectionTitle">{{ .Weight }}&nbsp&nbsp<a href="{{ .RelPermalink }}">{{ .Title }}</a></div>
-        </div>
+          <div class="section">
+            <div class="sectionTitle">{{ .Weight }}&nbsp&nbsp<a href="{{ .RelPermalink }}">{{ .Title }}</a></div>
+          </div>
         {{ end }}
         </div>
       </div>
-      </div>
-      
       <div class="column75">
         <div class="article-title">{{ .Title }}</div>
         {{ .Content }}
       </div>
-
     </div>
   </div>  <!-- bandContent -->
 </div> <!-- band -->
