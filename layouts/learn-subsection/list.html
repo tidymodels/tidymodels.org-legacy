@@ -18,30 +18,16 @@
         <div>{{ range .Pages }}
               {{ $post := . }}
           <div class="listItem">
-             {{ $card := (.Resources.ByType "image").GetMatch "*thumbnail*" }}
-             {{ with $card }}
-              <a class="itemImage project" href="{{ $post.RelPermalink }}" style="background-image: url('{{ .RelPermalink }}');"></a>
-              {{ end }}
             <div class="itemDetails">
               <div class="itemHeader">
 
-                <div class="itemTitle"><a href="{{ .RelPermalink }}">{{ .Title | markdownify }}</a></div>
-                <div class="itemTag">
-                  {{- range .Params.categories -}}
-                    <a href="{{ relURL (print "/categories/" . | urlize) }}">{{ . | humanize }}</a>
-                  {{ end -}}
+                <div class="itemTitle"><a href="{{ .RelPermalink }}">{{ .Title | markdownify }}</a>
                 </div>
+                
               </div>
               <div class="itemMeta">
-                <div class="author">
-                <!-- based on author field being used in YAML frontmatter -->
-                {{ $show_authors := $.Site.Params.authors.show_list | default true }}
-                {{ if $show_authors }}
-                {{ partial "pretty_author_names" . }}
-                {{ end }}
-                </div>
-                <div class="itemDescription">{{ default .Description | markdownify }}
-                  <a class="readMore" href="{{ .RelPermalink }}">Read More &#187;</a>
+                <div class="itemDescription learning-objective-text"><em>{{ default .Description | markdownify }}</em>
+                  <a class="readMore" href="{{ .RelPermalink }}">Read article &#187;</a>
                 </div>
                 <div class="itemDate">
                   <div class="created">
@@ -61,7 +47,16 @@
       {{ template "_internal/pagination.html" . }}
       </div>
 
-{{ partial "ex-sidebar.html" . }}
+      <div class="column25">
+          {{ partial "nested-sidebar.html" . }}
+      
+        <div class="section">
+          <div class="sectionTitle">Resources</div>
+          {{ partial "resources_sticky.html" .}}
+        </div>
+      </div>
+          
+
 
     </div>
   </div>  <!-- bandContent -->
