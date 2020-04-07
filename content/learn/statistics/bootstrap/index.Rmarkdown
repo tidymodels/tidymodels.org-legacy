@@ -5,7 +5,7 @@ categories: [statistical analysis, resampling]
 type: learn-subsection
 weight: 3
 description: | 
-  Apply bootstrap resampling to estimate model parameters.
+  Apply bootstrap resampling to estimate uncertainty in model parameters.
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}
@@ -14,7 +14,7 @@ source(here::here("content/learn/common.R"))
 
 ```{r load, include = FALSE}
 library(tidymodels)
-pkgs <- c("tidymodels")
+pkgs <- c("tidymodels", "tidyr")
 
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
@@ -22,7 +22,7 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 
 # Introduction
 
-This article only requires that the tidymodels package be installed.
+`r req_pkgs(pkgs)`
 
 Combining fitted models in a tidy way becomes useful when performing bootstrapping or permutation tests. These approaches have been explored before, for instance by [Andrew MacDonald here](http://rstudio-pubs-static.s3.amazonaws.com/19698_a4c472606e3c43e4b94720506e49bb7b.html), and [Hadley has explored efficient support for bootstrapping](https://github.com/hadley/dplyr/issues/269) as a potential enhancement to dplyr. The tidymodels package [broom](https://broom.tidyverse.org/) fits naturally with dplyr in performing these analyses.
 
@@ -74,6 +74,7 @@ boot_models <-
   mutate(model = map(splits, fit_nls_on_bootstrap),
          coef_info = map(model, tidy))
 
+library(tidyr)
 boot_coefs <- 
   boot_models %>% 
   unnest(coef_info)
