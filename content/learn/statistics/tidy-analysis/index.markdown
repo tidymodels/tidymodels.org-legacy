@@ -16,11 +16,11 @@ description: |
 
 This article only requires that you have the tidymodels package installed.
 
-While the tidymodels package [broom](https://broom.tidyverse.org/) is useful for summarizing the result of a single analysis in a consistent format, it is really designed for high-throughput applications, where you must combine results from multiple analyses. These could be subgroups of data, analyses using different models, bootstrap replicates, permutations, and so on. In particular, it plays well with the `nest()/unnest()` functions in tidyr and the `map()` function in purrr.
+While the tidymodels package [broom](https://broom.tidyverse.org/) is useful for summarizing the result of a single analysis in a consistent format, it is really designed for high-throughput applications, where you must combine results from multiple analyses. These could be subgroups of data, analyses using different models, bootstrap replicates, permutations, and so on. In particular, it plays well with the `nest()/unnest()` functions from [tidyr](https://tidyr.tidyverse.org/) and the `map()` function in [purrr](https://purrr.tidyverse.org/).
 
 # Correlation analysis
 
-Let's try this on a simple data set, the built-in `Orange`. We start by coercing `Orange` to a `tibble`. This gives a nicer print method that will especially useful later on when we start working with list-columns.
+Let's demonstrate this with a simple data set, the built-in `Orange`. We start by coercing `Orange` to a `tibble`. This gives a nicer print method that will be especially useful later on when we start working with list-columns.
 
 
 ```r
@@ -70,7 +70,7 @@ Orange %>%
   summarize(correlation = cor(age, circumference))
 #> # A tibble: 5 x 2
 #>   Tree  correlation
-#>   <ord>       <dbl>
+#> * <ord>       <dbl>
 #> 1 3           0.988
 #> 2 1           0.985
 #> 3 5           0.988
@@ -78,7 +78,7 @@ Orange %>%
 #> 5 4           0.984
 ```
 
-(Note that the correlations are much higher than the aggregated one, and furthermore we can now see it is similar across trees).
+(Note that the correlations are much higher than the aggregated one, and also we can now see the correlation is similar across trees).
 
 Suppose that instead of simply estimating a correlation, we want to perform a hypothesis test with `cor.test()`:
 
@@ -99,7 +99,7 @@ ct
 #> 0.914
 ```
 
-This contains multiple values we could want in our output. Some are vectors of length 1, such as the p-value and the estimate, and some are longer, such as the confidence interval. We can get this into a nicely organized tibble using the `tidy()` function:
+This test output contains multiple values we may be interested in. Some are vectors of length 1, such as the p-value and the estimate, and some are longer, such as the confidence interval. We can get this into a nicely organized tibble using the `tidy()` function:
 
 
 ```r
@@ -114,12 +114,14 @@ Often, we want to perform multiple tests or fit multiple models, each on a diffe
 
 
 ```r
+library(tidyr)
+
 nested <- 
   Orange %>% 
   nest(data = c(age, circumference))
 ```
 
-Then we run a correlation test for each nested tibble using `purrr::map()`:
+Then we perform a correlation test for each nested tibble using `purrr::map()`:
 
 
 ```r
@@ -179,7 +181,7 @@ Orange %>%
 
 # Regression models
 
-This workflow becomes even more useful when applied to regressions. Untidy output for a regression looks like:
+This type of workflow becomes even more useful when applied to regressions. Untidy output for a regression looks like:
 
 
 ```r
@@ -205,7 +207,7 @@ summary(lm_fit)
 #> F-statistic:  166 on 1 and 33 DF,  p-value: 1.93e-14
 ```
 
-where we tidy these results, we get multiple rows of output for each model:
+When we tidy these results, we get multiple rows of output for each model:
 
 
 ```r
@@ -244,7 +246,7 @@ Orange %>%
 #> 10 5     circumference     8.79     0.621    14.1   0.0000318
 ```
 
-You can just as easily use multiple predictors in the regressions, as shown here on the `mtcars` dataset. We nest the data into automatic and manual cars (the `am` column), then perform the regression within each nested tibble.
+You can just as easily use multiple predictors in the regressions, as shown here on the `mtcars` dataset. We nest the data into automatic vs. manual cars (the `am` column), then perform the regression within each nested tibble.
 
 
 ```r
@@ -345,11 +347,11 @@ regressions %>%
 #> # … with 22 more rows, and 1 more variable: .std.resid <dbl>
 ```
 
-By combining the estimates and p-values across all groups into the same tidy data frame (instead of a list of output model objects), a new class of analyses and visualizations becomes straightforward. This includes
+By combining the estimates and p-values across all groups into the same tidy data frame (instead of a list of output model objects), a new class of analyses and visualizations becomes straightforward. This includes:
 
-- Sorting by p-value or estimate to find the most significant terms across all tests
-- P-value histograms
-- Volcano plots comparing p-values to effect size estimates
+- sorting by p-value or estimate to find the most significant terms across all tests,
+- p-value histograms, and
+- volcano plots comparing p-values to effect size estimates.
 
 In each of these cases, we can easily filter, facet, or distinguish based on the `term` column. In short, this makes the tools of tidy data analysis available for the *results* of data analysis and models, not just the inputs.
 
@@ -360,33 +362,33 @@ In each of these cases, we can easily filter, facet, or distinguish based on the
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.1 (2019-07-05)
-#>  os       macOS Catalina 10.15.3      
+#>  version  R version 3.6.2 (2019-12-12)
+#>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/Los_Angeles         
-#>  date     2020-04-06                  
+#>  tz       America/Denver              
+#>  date     2020-04-07                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version    date       lib source                               
-#>  broom      * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
-#>  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
-#>  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
-#>  ggplot2    * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
-#>  infer      * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                       
-#>  parsnip    * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
-#>  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
-#>  recipes    * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
-#>  rlang        0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
-#>  rsample    * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
-#>  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
-#>  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
-#>  tune       * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
-#>  workflows  * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
-#>  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
+#>  package    * version     date       lib source                               
+#>  broom      * 0.5.5       2020-02-29 [1] CRAN (R 3.6.0)                       
+#>  dials      * 0.0.4.9000  2020-03-20 [1] local                                
+#>  dplyr      * 0.8.99.9002 2020-04-03 [1] Github (tidyverse/dplyr@bda05f7)     
+#>  ggplot2    * 3.3.0       2020-03-05 [1] CRAN (R 3.6.0)                       
+#>  infer      * 0.5.1       2019-11-19 [1] CRAN (R 3.6.0)                       
+#>  parsnip    * 0.0.5.9001  2020-04-03 [1] Github (tidymodels/parsnip@0e83faf)  
+#>  purrr      * 0.3.3       2019-10-18 [1] CRAN (R 3.6.0)                       
+#>  recipes    * 0.1.10.9000 2020-04-03 [1] local                                
+#>  rlang        0.4.5.9000  2020-03-20 [1] Github (r-lib/rlang@a90b04b)         
+#>  rsample    * 0.0.6       2020-03-31 [1] CRAN (R 3.6.2)                       
+#>  tibble     * 3.0.0       2020-03-30 [1] CRAN (R 3.6.2)                       
+#>  tidymodels * 0.1.0       2020-02-16 [1] CRAN (R 3.6.0)                       
+#>  tune       * 0.1.0       2020-04-02 [1] CRAN (R 3.6.2)                       
+#>  workflows  * 0.1.1.9000  2020-03-20 [1] Github (tidymodels/workflows@e995c18)
+#>  yardstick  * 0.0.6       2020-03-17 [1] CRAN (R 3.6.0)                       
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
 ```
