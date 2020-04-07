@@ -527,3 +527,18 @@ a.learn-top-nav-item:hover,
 	padding-left: 2em;
 	margin-bottom: 0em;
 }
+
+/*----Increase font sizes and spacing----*/
+
+.listItem .itemDetails .itemDescription {
+	font-size: 1.2em;
+	line-height: 1.6em;
+}
+
+.article-title {
+	line-height: 1.3em;
+}
+
+.articleCategory {
+	padding-left: 0px;
+}
