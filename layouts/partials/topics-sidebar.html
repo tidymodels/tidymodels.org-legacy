@@ -2,9 +2,11 @@
   <div class="sectionTitle">Explore topics
   </div>
     {{ range $index, $element := .FirstSection.Sections }}
+    <ul>
       <div class="articleCategory">
-        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
       </div>
+    </ul>
     {{ end }}
 </div>
 
