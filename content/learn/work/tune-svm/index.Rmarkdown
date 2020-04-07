@@ -46,7 +46,7 @@ From `?Ionosphere`:
 
 > Received signals were processed using an autocorrelation function whose arguments are the time of a pulse and the pulse number. There were 17 pulse numbers for the Goose Bay system. Instances in this databse are described by 2 attributes per pulse number, corresponding to the complex values returned by the function resulting from the complex electromagnetic signal. See cited below for more details.
 
-There are 43 predictors and a factor outcome. Two of the predictors are factors (`V1` and `V2`) and the rest are numerics that have been scaled to a range of -1 to 1. Note that the two factor predictors have sparse distributions:
+There are 43 predictors and a factor outcome. Two of the predictors are factors (`V1` and `V2`) and the rest are numeric variables that have been scaled to a range of -1 to 1. Note that the two factor predictors have sparse distributions:
 
 ```{r factor-pred}
 table(Ionosphere$V1)
@@ -80,7 +80,12 @@ svm_mod <-
   set_engine("kernlab")
 ```
 
-In the code below, tuning will be demonstrated using a standard R formula as well as this recipe:
+In this article, tuning will be demonstrated in two ways, using:
+
+- a standard R formula, and 
+- a recipe.
+
+Let's create the recipe here:
 
 ```{r rec}
 iono_rec <-
@@ -100,7 +105,7 @@ set.seed(4943)
 iono_rs <- bootstraps(Ionosphere, times = 30)
 ```
 
-# Optional Inputs
+# Optional inputs
 
 An _optional_ step for model tuning is to specify which metrics should be computed using the out-of-sample predictions. For classification, the default is to calculate the log-likelihood statistic and overall accuracy. Instead of the defaults, the area under the ROC curve will be used. To do this, a yardstick package function can be used to create a metric set:
 
@@ -108,7 +113,7 @@ An _optional_ step for model tuning is to specify which metrics should be comput
 roc_vals <- metric_set(roc_auc)
 ```
 
-If no grid or parameters are provided, a set of 10 are created using a space-filling design (via a Latin hypercube). A grid can be given in a data frame where the parameters are in columns and parameter combinations are in rows. Here, the default will be used.
+If no grid or parameters are provided, a set of 10 hyperparameters are created using a space-filling design (via a Latin hypercube). A grid can be given in a data frame where the parameters are in columns and parameter combinations are in rows. Here, the default will be used.
 
 Also, a control object can be passed that specifies different aspects of the search. Here, the verbose option is turned off. 
 
@@ -116,9 +121,9 @@ Also, a control object can be passed that specifies different aspects of the sea
 ctrl <- control_grid(verbose = FALSE)
 ```
 
-# Executing the grid using a formula
+# Executing with a formula
 
-First, the formula interface will be used:
+First, we can use the formula interface:
 
 ```{r grid}
 set.seed(35)
@@ -149,15 +154,15 @@ estimates <- collect_metrics(formula_res)
 estimates
 ```
 
-The top combinations were:
+The top combinations are:
 
 ```{r sorted-metrics}
 show_best(formula_res, metric = "roc_auc")
 ```
 
-#  Executing the grid using a recipe
+#  Executing with a recipe
 
-The same syntax is used but a recipe is passed in as the pre-processor argument:
+Next, we can use the same syntax but pass a *recipe* in as the pre-processor argument:
 
 ```{r recipe}
 set.seed(325)
@@ -172,7 +177,7 @@ recipe_res <-
 recipe_res
 ```
 
-The best setting here was:
+The best setting here is:
 
 ```{r best-rec}
 show_best(recipe_res, metric = "roc_auc")
