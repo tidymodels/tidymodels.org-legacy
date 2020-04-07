@@ -77,7 +77,7 @@ rf_xy_fit <-
 rf_xy_fit
 #> parsnip model object
 #> 
-#> Fit time:  1.1s 
+#> Fit time:  1s 
 #> Ranger result
 #> 
 #> Call:
@@ -145,7 +145,7 @@ rand_forest(mode = "regression", mtry = 3, trees = 1000) %>%
   )
 #> parsnip model object
 #> 
-#> Fit time:  2.9s 
+#> Fit time:  2.8s 
 #> Ranger result
 #> 
 #> Call:
@@ -176,7 +176,7 @@ rand_forest(mode = "regression", mtry = 3, trees = 1000) %>%
   )
 #> parsnip model object
 #> 
-#> Fit time:  2s 
+#> Fit time:  1.9s 
 #> 
 #> Call:
 #>  randomForest(x = as.data.frame(x), y = y, ntree = ~1000, mtry = ~3) 
@@ -213,7 +213,7 @@ rand_forest(mode = "regression", mtry = .preds(), trees = 1000) %>%
   )
 #> parsnip model object
 #> 
-#> Fit time:  4.1s 
+#> Fit time:  4s 
 #> Ranger result
 #> 
 #> Call:
