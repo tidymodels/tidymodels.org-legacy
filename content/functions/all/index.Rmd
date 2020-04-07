@@ -1,5 +1,6 @@
 ---
 title: "List of all functions across packages"
+disable_jquery: true
 ---
 
 ```{r ex_setup, include=FALSE}
@@ -26,13 +27,20 @@ pkgs <- c("broom", "butcher", "corrr", "dials", "discrim",
 pkg_urls <- get_pkgdown_urls(pkgs)
 ```
 
-```{r table-display, echo = FALSE, results = "asis"}
-DT::datatable(
-  pkg_urls,
-  rownames = FALSE,
-  escape = FALSE,
-  filter = "top",
-  style = 'bootstrap',
-  width = 800
-)
+# Empty?
+
+```{r table-display, echo = FALSE}
+pkg_urls %>% 
+      datatable(rownames = FALSE,
+              class = 'cell-border stripe',
+              filter = list(position = 'top'),
+              options = list(autoWidth = TRUE,
+                             bInfo = FALSE,
+                             paging = TRUE),
+              escape = FALSE)
 ```
+
+
+
+
+
