@@ -147,7 +147,8 @@ We compute this data frame for each resample and save the results in the differe
 ```{r get-estimates}
 folds <- 
   folds %>%
-  mutate(var = map(recipes, get_var_explained))
+  mutate(var = map(recipes, get_var_explained),
+         var = unname(var))
 ```
 
 To extract and aggregate these data, simple row binding can be used to stack the data vertically. Most of the action happens in the first 15 components so let's filter the data and compute the _average_ proportion.

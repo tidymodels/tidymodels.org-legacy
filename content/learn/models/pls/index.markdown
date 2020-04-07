@@ -144,7 +144,8 @@ We compute this data frame for each resample and save the results in the differe
 ```r
 folds <- 
   folds %>%
-  mutate(var = map(recipes, get_var_explained))
+  mutate(var = map(recipes, get_var_explained),
+         var = unname(var))
 ```
 
 To extract and aggregate these data, simple row binding can be used to stack the data vertically. Most of the action happens in the first 15 components so let's filter the data and compute the _average_ proportion.
@@ -156,13 +157,6 @@ variance_data <-
   filter(components <= 15) %>%
   group_by(components, source) %>%
   summarize(proportion = mean(proportion))
-#> New names:
-#> * `11` -> `11...1`
-#> * `12` -> `12...2`
-#> * `13` -> `13...3`
-#> * `14` -> `14...4`
-#> * `15` -> `15...5`
-#> * ...
 ```
 
 The plot below shows that, if the protein measurement is important, you might require 10 or so components to achieve a good representation of that outcome. Note that the predictor variance is captured extremely well using a single component. This is due to the high degree of correlation in those data. 
