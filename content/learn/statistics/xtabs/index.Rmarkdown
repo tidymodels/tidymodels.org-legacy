@@ -8,21 +8,27 @@ description: |
   Use tests of independence and goodness of fit to analyze tables of counts.
 ---
 
+```{r setup, include = FALSE, message = FALSE, warning = FALSE}
+source(here::here("content/learn/common.R"))
+```
 
-
-
+```{r load, include = FALSE}
+library(tidymodels)
+library(sessioninfo)
+pkgs <- c("tidymodels", "modeldata")
+theme_set(theme_bw() + theme(legend.position = "top"))
+```
 
 
 # Introduction
 
-This article requires that you have the following packages installed: modeldata and tidymodels.
+`r req_pkgs(pkgs)`
 
-In this vignette, we'll walk through conducting a `\(\chi^2\)` (chi-squared) test of independence and a chi-squared goodness of fit test using `infer`. We'll start out with a  chi-squared test of independence, which can be used to test the association between two categorical variables. Then, we'll move on to a chi-squared goodness of fit test, which tests how well the distribution of one categorical variable can be approximated by some theoretical distribution.
+In this vignette, we'll walk through conducting a $\chi^2$ (chi-squared) test of independence and a chi-squared goodness of fit test using `infer`. We'll start out with a  chi-squared test of independence, which can be used to test the association between two categorical variables. Then, we'll move on to a chi-squared goodness of fit test, which tests how well the distribution of one categorical variable can be approximated by some theoretical distribution.
 
 Throughout this vignette, we'll make use of the `ad_data` dataset (available in the modeldata package,) which contains data related to cognitive impairment in 333 patients from [Craig-Schapiro _et al_ (2011)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3079734/). See `?ad_data` for more information on the variables included and their source. One of the main research questions in these data were how does a person's genetics related to the Apolipoprotein E gene affect their cognitive skills (as had been reported in the literature). The data shows: 
 
-
-```r
+```{r glimpse-ad_data-actual, warning = FALSE, message = FALSE}
 library(tidymodels) # Includes the infer package
 
 data(ad_data, package = "modeldata")
@@ -34,26 +40,32 @@ The three main genetic variants are called E2, E3, and E4. The values above repr
 
 To carry out a chi-squared test of independence, we'll examine the association between their cognitive ability (impaired and healthy) and the genetic makeup. This is what the relationship looks like in the sample data:
 
-<img src="figs/plot-indep-1.svg" width="672" />
+```{r plot-indep, echo = FALSE}
+ad_data %>%
+  ggplot() +
+  aes(y = Genotype, fill = Class) +
+  geom_bar(position = "fill") +
+  scale_fill_brewer(type = "qual") +
+  labs(y = "Genotype: Apolipoprotein E Genetics",
+       x = "Proportion") 
+```
 
 If there were no relationship, we would expect to see the purple bars reaching to the same length, regardless of cognitive ability. Are the differences we see here, though, just due to random noise?
 
 First, to calculate the observed statistic, we can use `specify()` and `calculate()`.
 
-
-```r
+```{r calc-obs-stat-indep, warning = FALSE, message = FALSE}
 # calculate the observed statistic
 observed_indep_statistic <- ad_data %>%
   specify(Genotype ~ Class) %>%
   calculate(stat = "Chisq")
 ```
 
-The observed `\(\chi^2\)` statistic is 21.577. Now, we want to compare this statistic to a null distribution, generated under the assumption that these variables are not actually related, to get a sense of how likely it would be for us to see this observed statistic if there were actually no association between cognitive ability and genetics.
+The observed $\chi^2$ statistic is `r observed_indep_statistic`. Now, we want to compare this statistic to a null distribution, generated under the assumption that these variables are not actually related, to get a sense of how likely it would be for us to see this observed statistic if there were actually no association between cognitive ability and genetics.
 
 We can `generate` the null distribution in one of two ways---using randomization or theory-based methods. The randomization approach permutes the response and explanatory variables, so that each person's genetics is matched up with a random cognitive rating from the sample in order to break up any association between the two.
 
-
-```r
+```{r generate-null-indep, warning = FALSE, message = FALSE}
 # generate the null distribution using randomization
 null_distribution_simulated <- ad_data %>%
   specify(Genotype ~ Class) %>%
@@ -64,8 +76,7 @@ null_distribution_simulated <- ad_data %>%
 
 Note that, in the line `specify(Genotype ~ Class)` above, we could use the equivalent syntax `specify(response = Genotype, explanatory = Class)`. The same goes in the code below, which generates the null distribution using theory-based methods instead of randomization.
 
-
-```r
+```{r generate-null-indep-t, warning = FALSE, message = FALSE}
 # generate the null distribution by theoretical approximation
 null_distribution_theoretical <- ad_data %>%
   specify(Genotype ~ Class) %>%
@@ -76,8 +87,7 @@ null_distribution_theoretical <- ad_data %>%
 
 To get a sense for what these distributions look like, and where our observed statistic falls, we can use `visualize()`:
 
-
-```r
+```{r visualize-indep, warning = FALSE, message = FALSE}
 # visualize the null distribution and test statistic!
 null_distribution_simulated %>%
   visualize() + 
@@ -85,12 +95,9 @@ null_distribution_simulated %>%
                 direction = "greater")
 ```
 
-<img src="figs/visualize-indep-1.svg" width="672" />
-
 We could also visualize the observed statistic against the theoretical null distribution. Note that we skip the `generate()` and `calculate()` steps when using the theoretical approach, and that we now need to provide `method = "theoretical"` to `visualize()`.
 
-
-```r
+```{r visualize-indep-theor, warning = FALSE, message = FALSE}
 # visualize the theoretical null distribution and test statistic!
 ad_data %>%
   specify(Genotype ~ Class) %>%
@@ -100,12 +107,9 @@ ad_data %>%
                 direction = "greater")
 ```
 
-<img src="figs/visualize-indep-theor-1.svg" width="672" />
-
 To visualize both the randomization-based and theoretical null distributions to get a sense of how the two relate, we can pipe the randomization-based null distribution into `visualize()`, and further provide `method = "both"`.
 
-
-```r
+```{r visualize-indep-both, warning = FALSE, message = FALSE}
 # visualize both null distributions and the test statistic!
 null_distribution_simulated %>%
   visualize(method = "both") + 
@@ -113,35 +117,23 @@ null_distribution_simulated %>%
                 direction = "greater")
 ```
 
-<img src="figs/visualize-indep-both-1.svg" width="672" />
-
 Either way, it looks like our observed test statistic would be fairly unlikely if there were actually no association between cognition and genotype More exactly, we can calculate the p-value:
 
-
-```r
+```{r p-value-indep, warning = FALSE, message = FALSE}
 # calculate the p value from the observed statistic and null distribution
 p_value_independence <- null_distribution_simulated %>%
   get_p_value(obs_stat = observed_indep_statistic,
               direction = "greater")
 
 p_value_independence
-#> # A tibble: 1 x 1
-#>   p_value
-#>     <dbl>
-#> 1  0.0002
 ```
 
-Thus, if there were really no relationship between cognition and genotype, the probability that we would see a statistic as or more extreme than 21.577 is approximately 2\times 10^{-4}.
+Thus, if there were really no relationship between cognition and genotype, the probability that we would see a statistic as or more extreme than `r observed_indep_statistic` is approximately `r p_value_independence`.
 
 Note that, equivalently to the steps shown above, the package supplies a wrapper function, `chisq_test`, to carry out Chi-Squared tests of independence on tidy data. The syntax goes like this:
 
-
-```r
+```{r chisq-indep-wrapper, message = FALSE, warning = FALSE}
 chisq_test(ad_data, Genotype ~ Class)
-#> # A tibble: 1 x 3
-#>   statistic chisq_df  p_value
-#>       <dbl>    <int>    <dbl>
-#> 1      21.6        5 0.000630
 ```
 
 
@@ -151,8 +143,7 @@ Now, moving on to a chi-squared goodness of fit test, we'll take a look at just 
 
 The rates of the meta-analysis and our observed data are: 
  
-
-```r
+```{r rates}
 # Song, Y., Stampfer, M. J., & Liu, S. (2004). Meta-Analysis: Apolipoprotein E 
 # Genotypes and Risk for Coronary Heart Disease. Annals of Internal Medicine, 
 # 141(2), 137.
@@ -162,21 +153,13 @@ meta_rates <- meta_rates/sum(meta_rates) # these add up to slightly > 100%
 
 obs_rates <- table(ad_data$Genotype)/nrow(ad_data)
 round(cbind(obs_rates, meta_rates) * 100, 2)
-#>      obs_rates meta_rates
-#> E2E2       0.6       0.71
-#> E2E3      11.1      11.37
-#> E2E4       2.4       2.31
-#> E3E3      50.1      60.85
-#> E3E4      31.8      22.54
-#> E4E4       3.9       2.21
 ```
 
 Suppose our null hypothesis is that `Genotype` follows the same frequency distribution as the meta-analysis. Lets now test whether this difference in distributions is statistically significant.
 
 First, to carry out this hypothesis test, we would calculate our observed statistic.
 
-
-```r
+```{r observed-gof-statistic, warning = FALSE, message = FALSE}
 # calculating the null distribution
 observed_gof_statistic <- ad_data %>%
   specify(response = Genotype) %>%
@@ -184,11 +167,10 @@ observed_gof_statistic <- ad_data %>%
   calculate(stat = "Chisq")
 ```
 
-The observed statistic is 23.384. Now, generating a null distribution, by just dropping in a call to `generate()`:
+The observed statistic is `r observed_gof_statistic`. Now, generating a null distribution, by just dropping in a call to `generate()`:
 
 
-
-```r
+```{r null-distribution-gof, warning = FALSE, message = FALSE}
 # generating a null distribution
 null_distribution_gof <- ad_data %>%
   specify(response = Genotype) %>%
@@ -199,8 +181,7 @@ null_distribution_gof <- ad_data %>%
 
 Again, to get a sense for what these distributions look like, and where our observed statistic falls, we can use `visualize()`:
 
-
-```r
+```{r visualize-indep-gof, warning = FALSE, message = FALSE}
 # visualize the null distribution and test statistic!
 null_distribution_gof %>%
   visualize() + 
@@ -208,73 +189,30 @@ null_distribution_gof %>%
                 direction = "greater")
 ```
 
-<img src="figs/visualize-indep-gof-1.svg" width="672" />
-
 This statistic seems like it would be unlikely if our rates were the same as the rates from the meta-analysis! How unlikely, though? Calculating the p-value:
 
-
-```r
+```{r get-p-value-gof, warning = FALSE, message = FALSE}
 # calculate the p-value
 p_value_gof <- null_distribution_gof %>%
   get_p_value(observed_gof_statistic,
               direction = "greater")
 
 p_value_gof
-#> # A tibble: 1 x 1
-#>    p_value
-#>      <dbl>
-#> 1 0.000600
 ```
 
-Thus, if each genotype occurred at the same rate as the Song paper, the probability that we would see a distribution like the one we did is approximately 6\times 10^{-4}.
+Thus, if each genotype occurred at the same rate as the Song paper, the probability that we would see a distribution like the one we did is approximately `r p_value_gof`.
 
 Again, equivalently to the steps shown above, the package supplies a wrapper function, `chisq_test`, to carry out Chi-Squared goodness of fit tests on tidy data. The syntax goes like this:
 
-
-```r
+```{r chisq-gof-wrapper, message = FALSE, warning = FALSE}
 chisq_test(ad_data, response = Genotype, p = meta_rates)
-#> # A tibble: 1 x 3
-#>   statistic chisq_df  p_value
-#>       <dbl>    <dbl>    <dbl>
-#> 1      23.4        5 0.000285
 ```
 
 
 
 # Session information
 
-
-```
-#> ─ Session info ───────────────────────────────────────────────────────────────
-#>  setting  value                       
-#>  version  R version 3.6.1 (2019-07-05)
-#>  os       macOS Catalina 10.15.3      
-#>  system   x86_64, darwin15.6.0        
-#>  ui       X11                         
-#>  language (EN)                        
-#>  collate  en_US.UTF-8                 
-#>  ctype    en_US.UTF-8                 
-#>  tz       America/Los_Angeles         
-#>  date     2020-04-06                  
-#> 
-#> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version    date       lib source                               
-#>  broom      * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
-#>  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
-#>  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
-#>  ggplot2    * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
-#>  infer      * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                       
-#>  parsnip    * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
-#>  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
-#>  recipes    * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
-#>  rlang        0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
-#>  rsample    * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
-#>  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
-#>  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
-#>  tune       * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
-#>  workflows  * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
-#>  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
-#> 
-#> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
+```{r si, echo = FALSE}
+small_session(pkgs)
 ```
  
