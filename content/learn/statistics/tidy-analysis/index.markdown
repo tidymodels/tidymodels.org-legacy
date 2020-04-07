@@ -14,7 +14,7 @@ description: |
 
 # Introduction
 
-This article only requires that you have the tidymodels package installed.
+This article requires that you have the following packages installed: tidymodels and tidyr.
 
 While the tidymodels package [broom](https://broom.tidyverse.org/) is useful for summarizing the result of a single analysis in a consistent format, it is really designed for high-throughput applications, where you must combine results from multiple analyses. These could be subgroups of data, analyses using different models, bootstrap replicates, permutations, and so on. In particular, it plays well with the `nest()/unnest()` functions from [tidyr](https://tidyr.tidyverse.org/) and the `map()` function in [purrr](https://purrr.tidyverse.org/).
 
@@ -386,6 +386,7 @@ In each of these cases, we can easily filter, facet, or distinguish based on the
 #>  rsample    * 0.0.6       2020-03-31 [1] CRAN (R 3.6.2)                       
 #>  tibble     * 3.0.0       2020-03-30 [1] CRAN (R 3.6.2)                       
 #>  tidymodels * 0.1.0       2020-02-16 [1] CRAN (R 3.6.0)                       
+#>  tidyr      * 1.0.2       2020-01-24 [1] CRAN (R 3.6.0)                       
 #>  tune       * 0.1.0       2020-04-02 [1] CRAN (R 3.6.2)                       
 #>  workflows  * 0.1.1.9000  2020-03-20 [1] Github (tidymodels/workflows@e995c18)
 #>  yardstick  * 0.0.6       2020-03-17 [1] CRAN (R 3.6.0)                       

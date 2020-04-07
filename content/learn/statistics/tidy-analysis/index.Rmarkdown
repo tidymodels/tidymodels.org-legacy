@@ -14,13 +14,13 @@ source(here::here("content/learn/common.R"))
 
 ```{r load, include = FALSE}
 library(tidymodels)
-pkgs <- c("tidymodels")
+pkgs <- c("tidymodels", "tidyr")
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
 # Introduction
 
-This article only requires that you have the tidymodels package installed.
+`r req_pkgs(pkgs)`
 
 While the tidymodels package [broom](https://broom.tidyverse.org/) is useful for summarizing the result of a single analysis in a consistent format, it is really designed for high-throughput applications, where you must combine results from multiple analyses. These could be subgroups of data, analyses using different models, bootstrap replicates, permutations, and so on. In particular, it plays well with the `nest()/unnest()` functions from [tidyr](https://tidyr.tidyverse.org/) and the `map()` function in [purrr](https://purrr.tidyverse.org/).
 

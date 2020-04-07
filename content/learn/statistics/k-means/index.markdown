@@ -14,7 +14,7 @@ description: |
 
 # Introduction
 
-This article only requires that the tidymodels package be installed.
+This article requires that you have the following packages installed: tidymodels and tidyr.
 
 K-means clustering serves as a useful example of applying tidy data principles to statistical analysis, and especially the distinction between the three tidying functions: 
 
@@ -271,6 +271,7 @@ This represents the variance within the clusters. It decreases as `k` increases,
 #>  rsample    * 0.0.6       2020-03-31 [1] CRAN (R 3.6.2)                       
 #>  tibble     * 3.0.0       2020-03-30 [1] CRAN (R 3.6.2)                       
 #>  tidymodels * 0.1.0       2020-02-16 [1] CRAN (R 3.6.0)                       
+#>  tidyr      * 1.0.2       2020-01-24 [1] CRAN (R 3.6.0)                       
 #>  tune       * 0.1.0       2020-04-02 [1] CRAN (R 3.6.2)                       
 #>  workflows  * 0.1.1.9000  2020-03-20 [1] Github (tidymodels/workflows@e995c18)
 #>  yardstick  * 0.0.6       2020-03-17 [1] CRAN (R 3.6.0)                       
