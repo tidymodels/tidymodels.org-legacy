@@ -542,3 +542,7 @@ a.learn-top-nav-item:hover,
 .articleCategory {
 	padding-left: 0px;
 }
+
+#rStudioHeader #menu .menuItem:last-of-type {
+	padding-right: 0px;
+}
