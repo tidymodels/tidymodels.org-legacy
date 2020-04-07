@@ -24,7 +24,7 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 
 `r req_pkgs(pkgs)`
 
-Combining fitted models in a tidy way becomes useful when performing bootstrapping or permutation tests. These approaches have been explored before, for instance by [Andrew MacDonald here](http://rstudio-pubs-static.s3.amazonaws.com/19698_a4c472606e3c43e4b94720506e49bb7b.html), and [Hadley has explored efficient support for bootstrapping](https://github.com/hadley/dplyr/issues/269) as a potential enhancement to dplyr. The tidymodels package [broom](https://broom.tidyverse.org/) fits naturally with dplyr in performing these analyses.
+Combining fitted models in a tidy way is useful for performing bootstrapping or permutation tests. These approaches have been explored before, for instance by [Andrew MacDonald here](http://rstudio-pubs-static.s3.amazonaws.com/19698_a4c472606e3c43e4b94720506e49bb7b.html), and [Hadley has explored efficient support for bootstrapping](https://github.com/hadley/dplyr/issues/269) as a potential enhancement to dplyr. The tidymodels package [broom](https://broom.tidyverse.org/) fits naturally with [dplyr](https://dplyr.tidyverse.org/) in performing these analyses.
 
 Bootstrapping consists of randomly sampling a data set with replacement, then performing the analysis individually on each bootstrapped replicate. The variation in the resulting estimate is then a reasonable approximation of the variance in our estimate.
 
@@ -52,9 +52,9 @@ While this does provide a p-value and confidence intervals for the parameters, t
 
 # Bootstrapping models
 
-We can use the `bootstraps()` function in the rsample package to sample bootstrap replications. First, we construct 100 bootstrap replications of the data, each of which has been randomly sampled with replacement. The resulting object is an `rset`, which is a data frame with a column of `rsplit` objects.
+We can use the `bootstraps()` function in the rsample package to sample bootstrap replications. First, we construct 2000 bootstrap replicates of the data, each of which has been randomly sampled with replacement. The resulting object is an `rset`, which is a data frame with a column of `rsplit` objects.
 
-An `rsplit` object has two main components: an analysis data set and an assessment data set, accessible via `analysis(rsplit)` and `assessment(rsplit)` respectively. For bootstrap samples, the analysis data set is the bootstrap sample itself, and the assessment data set consists of all the out of bag samples.
+An `rsplit` object has two main components: an analysis data set and an assessment data set, accessible via `analysis(rsplit)` and `assessment(rsplit)` respectively. For bootstrap samples, the analysis data set is the bootstrap sample itself, and the assessment data set consists of all the out-of-bag samples.
 
 ```{r}
 set.seed(27)
@@ -62,7 +62,7 @@ boots <- bootstraps(mtcars, times = 2000, apparent = TRUE)
 boots
 ```
 
-We create a helper function to fit an `nls()` model on each bootstrap sample, and then use `purrr::map()` to apply this function to all the bootstrap samples at once. Similarly, we create a column of tidy coefficient information by unnesting.
+Let's create a helper function to fit an `nls()` model on each bootstrap sample, and then use `purrr::map()` to apply this function to all the bootstrap samples at once. Similarly, we create a column of tidy coefficient information by unnesting.
 
 ```{r}
 fit_nls_on_bootstrap <- function(split) {
@@ -86,7 +86,7 @@ The unnested coefficient information contains a summary of each replication comb
 boot_coefs
 ```
 
-# Bootstrap confidence intervals
+# Confidence intervals
 
 We can then calculate confidence intervals (using what is called the [percentile method](https://www.uvm.edu/~dhowell/StatPages/Randomization%20Tests/ResamplingWithR/BootstMeans/bootstrapping_means.html)):
 
@@ -105,11 +105,11 @@ ggplot(boot_coefs, aes(estimate)) +
   geom_vline(aes(xintercept = .upper), data = percentile_intervals, col = "blue")
 ```
 
-rsample also has functions for other types of confidence intervals. 
+The rsample package also has functions for [other types of confidence intervals](https://tidymodels.github.io/rsample/reference/int_pctl.html). 
 
-# Showing possible model fits
+# Possible model fits
 
-Or we can use `augment()` to visualize the uncertainty in the curve. Since there are so many bootstrap samples, we'll show a sample of the model fits:
+We can use `augment()` to visualize the uncertainty in the fitted curve. Since there are so many bootstrap samples, we'll only show a sample of the model fits in our visualization:
 
 ```{r}
 boot_aug <- 
