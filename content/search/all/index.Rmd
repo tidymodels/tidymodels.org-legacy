@@ -1,0 +1,47 @@
+---
+title: "Explore functions"
+disable_jquery: true
+---
+
+```{r ex_setup, include=FALSE}
+knitr::opts_chunk$set(
+  message = FALSE,
+  digits = 3,
+  collapse = TRUE,
+  comment = "#>"
+  )
+options(digits = 3)
+script <- here::here("static/code/get_pkgdown_urls.R")
+source(script)
+library(DT)
+```
+
+
+# All tidymodels packages
+
+This is a searchable table with all functions for each tidymodels package (as on CRAN). 
+
+<br>
+
+```{r table-compute, include = FALSE}
+pkgs <- c("broom", "butcher", "corrr", "dials", "discrim", 
+          "embed", "hardhat", "infer", "modeldata", "modeldb", "parsnip", 
+          "probably", "recipes", "rsample", "textrecipes", "tidyposterior", 
+          "tidypredict", "yardstick", "workflows")
+pkg_urls <- get_pkgdown_urls(pkgs)
+```
+
+
+```{r table-display, echo = FALSE}
+pkg_urls %>% 
+  mutate(package = as.factor(package)) %>% 
+  datatable(rownames = FALSE,
+            class = 'cell-border stripe',
+            filter = 'top',
+            escape = FALSE)
+```
+
+
+
+
+

@@ -60,9 +60,9 @@ Models can be added by the user too. See the ["Making a {parsnip} model from scr
 DT::datatable(
   pkg_urls,
   rownames = FALSE,
+  class = 'cell-border stripe',
   escape = FALSE,
-  filter = "top",
-  width = 800
+  filter = "top"
 )
 ```
 
@@ -80,7 +80,11 @@ args <-
   unnest(args) %>% 
   select(model:original)
 
-DT::datatable(args, filter = "top", style = 'bootstrap')
+DT::datatable(
+  args, 
+  class = 'cell-border stripe',
+  filter = 'top',
+  escape = FALSE)
 ```
 
 

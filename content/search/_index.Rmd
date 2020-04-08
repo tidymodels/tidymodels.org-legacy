@@ -1,5 +1,5 @@
 ---
-title: "Tidymodels functions"
+title: "Explore functions"
 disable_jquery: true
 ---
 
@@ -16,7 +16,12 @@ source(script)
 library(DT)
 ```
 
+
+# All tidymodels packages
+
 This is a searchable table with all functions for each tidymodels package (as on CRAN). 
+
+<br>
 
 ```{r table-compute, include = FALSE}
 pkgs <- c("broom", "butcher", "corrr", "dials", "discrim", 
@@ -33,13 +38,5 @@ pkg_urls %>%
   datatable(rownames = FALSE,
             class = 'cell-border stripe',
             filter = 'top',
-            options = list(maxWidth = '100%',
-                           scrollX = FALSE),
-            escape = FALSE,
-            width = 760)
+            escape = FALSE)
 ```
-
-
-
-
-
