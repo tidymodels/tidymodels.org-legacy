@@ -546,3 +546,30 @@ a.learn-top-nav-item:hover,
 #rStudioHeader #menu .menuItem:last-of-type {
 	padding-right: 0px;
 }
+
+/*----DataTables formatting----*/
+
+table.dataTable {
+  width: 760px;
+	text-align: left;
+	font-size: 1rem;
+	max-width: 100%;
+}
+
+table.dataTable tbody td {
+	line-height: 1.5em;
+}
+
+table.dataTable thead th, 
+table.dataTable thead td,
+table.dataTable.no-footer {
+	border-bottom: 1px solid #a19ea936 !important;
+}
+
+table.dataTable thead {
+	font-weight: 600;
+	background-color: #eab0c41a;
+	text-transform: uppercase;
+	color: #1a162d;
+}
+
