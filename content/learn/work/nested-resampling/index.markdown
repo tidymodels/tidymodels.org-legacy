@@ -25,9 +25,9 @@ A typical scheme for splitting the data when developing a predictive model is to
 
 <img src="figs/resampling.svg" width="70%" style="display: block; margin: auto;" />
 
-A common method for tuning models is [grid search](/learn/work/tune-svm/) where a candidate set of tuning parameters is created. The full set of models for every combination of the tuning parameter grid and the resamples is created. Each time, the assessment data are used to measure performance and the average value is determined for each tuning parameter. 
+A common method for tuning models is [grid search](/learn/work/tune-svm/) where a candidate set of tuning parameters is created. The full set of models for every combination of the tuning parameter grid and the resamples is fitted. Each time, the assessment data are used to measure performance and the average value is determined for each tuning parameter. 
 
-The potential problem is, once we pick the tuning parameter associated with the best performance, this performance value is usually quoted as the performance of the model. There is serious potential for _optimization bias_ since we use the same data to tune the model and to assess performance. This would result in an optimistic estimate of performance. 
+The potential problem is that once we pick the tuning parameter associated with the best performance, this performance value is usually quoted as the performance of the model. There is serious potential for _optimization bias_ since we use the same data to tune the model and to assess performance. This would result in an optimistic estimate of performance. 
 
 Nested resampling uses an additional layer of resampling that separates the tuning activities from the process used to estimate the efficacy of the model. An _outer_ resampling scheme is used and, for every split in the outer resample, another full set of resampling splits are created on the original analysis set. For example, if 10-fold cross-validation is used on the outside and 5-fold cross-validation on the inside, a total of 500 models will be fit. The parameter tuning will be conducted 10 times and the best parameters are determined from the average of the 5 assessment sets. This process occurs 10 times. 
 
@@ -53,7 +53,7 @@ large_dat <- sim_data(10^5)
 
 # Nested resampling
 
-To get started, the types of resampling methods need to be specified. This isn't a large data set, so 5 repeats of 10-fold cross validation will be used as the _outer_ resampling method for generating the estimate of overall performance. To tune the model, it would be good to have precise estimates for each of the values of the tuning parameter so let's use 25 iterations of the bootstrap. This means that there will eventually be `5 * 10 * 25 = 1250` models that are fit to the data _per tuning parameter_. These will be discarded once the performance of the model has been quantified. 
+To get started, the types of resampling methods need to be specified. This isn't a large data set, so 5 repeats of 10-fold cross validation will be used as the _outer_ resampling method for generating the estimate of overall performance. To tune the model, it would be good to have precise estimates for each of the values of the tuning parameter so let's use 25 iterations of the bootstrap. This means that there will eventually be `5 * 10 * 25 = 1250` models that are fit to the data _per tuning parameter_. These models will be discarded once the performance of the model has been quantified. 
 
 To create the tibble with the resampling specifications: 
 
@@ -94,7 +94,7 @@ results$splits[[2]]
 #> <90/10/100>
 ```
 
-`<90/10/100>` indicates the number of data in the analysis set, assessment set, and the original data. 
+`<90/10/100>` indicates the number of observations in the analysis set, assessment set, and the original data. 
 
 Each element of `inner_resamples` has its own tibble with the bootstrapping splits. 
 
@@ -129,7 +129,7 @@ results$inner_resamples[[5]]$splits[[1]]
 
 To start, we need to define how the model will be created and measured. Let's use a radial basis support vector machine model via the function `kernlab::ksvm`. This model is generally considered to have _two_ tuning parameters: the SVM cost value and the kernel parameter `sigma`. For illustration purposes here, only the cost value will be tuned and the function `kernlab::sigest` will be used to estimate `sigma` during each model fit. This is automatically done by `ksvm`. 
 
-After the model is fit to the analysis set, the root-mean squared error (RMSE) is computed on the assessment set. **One important note:** for this model, it is critical to center and scale the predictors before computing dot products. We don't do this operation here because `mlbench.friedman1` simulates all of the predictors to be standard uniform random variables. 
+After the model is fit to the analysis set, the root-mean squared error (RMSE) is computed on the assessment set. **One important note:** for this model, it is critical to center and scale the predictors before computing dot products. We don't do this operation here because `mlbench.friedman1` simulates all of the predictors to be standardized uniform random variables. 
 
 Our function to fit the model and compute the RMSE is:
 
@@ -190,7 +190,7 @@ Now that those functions are defined, we can execute all the inner resampling lo
 tuning_results <- map(results$inner_resamples, summarize_tune_results) 
 ```
 
-Alternatively, since these computations can be run in parallel, we can use the furrr package. Instead of using `map()`, the function `future_map()` will parallelize using the [future package](https://cran.r-project.org/web/packages/future/vignettes/future-1-overview.html). The `multisession` plan uses the local cores to process the inner resampling loop. The end results are the same as the sequential computations. 
+Alternatively, since these computations can be run in parallel, we can use the furrr package. Instead of using `map()`, the function `future_map()` parallelizes the iterations using the [future package](https://cran.r-project.org/web/packages/future/vignettes/future-1-overview.html). The `multisession` plan uses the local cores to process the inner resampling loop. The end results are the same as the sequential computations. 
 
 
 ```r
@@ -263,10 +263,10 @@ results <-
 
 summary(results$RMSE)
 #>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-#>    1.57    2.09    2.66    2.68    3.26    4.25
+#>    1.67    2.09    2.67    2.69    3.25    4.35
 ```
 
-The estimated RMSE for the model tuning process is 2.68. 
+The estimated RMSE for the model tuning process is 2.69. 
 
 What is the RMSE estimate for the non-nested procedure when only the outer resampling method is used? For each cost value in the tuning grid, 50 SVM models are fit and their RMSE values are averaged. The table of cost values and mean RMSE estimates is used to determine the best cost value. The associated RMSE is the biased estimate. 
 
