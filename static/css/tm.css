@@ -550,10 +550,10 @@ a.learn-top-nav-item:hover,
 /*----DataTables formatting----*/
 
 table.dataTable {
-  width: 760px;
+  width: 770px;
 	text-align: left;
 	font-size: 1rem;
-	max-width: 100%;
+	max-width: 770px;
 }
 
 table.dataTable tbody td {
@@ -562,7 +562,8 @@ table.dataTable tbody td {
 
 table.dataTable thead th, 
 table.dataTable thead td,
-table.dataTable.no-footer {
+table.dataTable.no-footer, 
+.dataTables_wrapper.no-footer .dataTables_scrollBody {
 	border-bottom: 1px solid #a19ea936 !important;
 }
 
@@ -572,4 +573,3 @@ table.dataTable thead {
 	text-transform: uppercase;
 	color: #1a162d;
 }
-
