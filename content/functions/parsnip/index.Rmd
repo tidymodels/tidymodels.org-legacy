@@ -62,7 +62,6 @@ DT::datatable(
   rownames = FALSE,
   escape = FALSE,
   filter = "top",
-  style = 'bootstrap',
   width = 800
 )
 ```
