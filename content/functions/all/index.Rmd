@@ -1,5 +1,5 @@
 ---
-title: "List of all functions across packages"
+title: "Tidymodels functions"
 disable_jquery: true
 ---
 
@@ -16,8 +16,7 @@ source(script)
 library(DT)
 ```
 
-
-This table lists the functions in CRAN versions of the tidymodels packages. 
+This is a searchable table with all functions for each tidymodels package (as on CRAN). 
 
 ```{r table-compute, include = FALSE}
 pkgs <- c("broom", "butcher", "corrr", "dials", "discrim", 
@@ -27,17 +26,17 @@ pkgs <- c("broom", "butcher", "corrr", "dials", "discrim",
 pkg_urls <- get_pkgdown_urls(pkgs)
 ```
 
-# Empty?
 
 ```{r table-display, echo = FALSE}
 pkg_urls %>% 
-      datatable(rownames = FALSE,
-              class = 'cell-border stripe',
-              filter = list(position = 'top'),
-              options = list(autoWidth = TRUE,
-                             bInfo = FALSE,
-                             paging = TRUE),
-              escape = FALSE)
+  mutate(package = as.factor(package)) %>% 
+  datatable(rownames = FALSE,
+            class = 'cell-border stripe',
+            filter = 'top',
+            options = list(maxWidth = '100%',
+                           scrollX = FALSE),
+            escape = FALSE,
+            width = 760)
 ```
 
 
