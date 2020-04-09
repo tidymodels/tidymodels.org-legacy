@@ -139,12 +139,12 @@ From this, the `fit()` function can be used with a simple model formula. Since r
 
 
 ```r
-set.seed(5273)
+set.seed(234)
 rf_fit <- rf_mod %>% fit(class ~ ., data = cell_train)
 rf_fit
 #> parsnip model object
 #> 
-#> Fit time:  2.5s 
+#> Fit time:  2.4s 
 #> Ranger result
 #> 
 #> Call:
@@ -158,7 +158,7 @@ rf_fit
 #> Target node size:                 10 
 #> Variable importance mode:         none 
 #> Splitrule:                        gini 
-#> OOB prediction error (Brier s.):  0.1214473
+#> OOB prediction error (Brier s.):  0.1218873
 ```
 
 # Estimating performance
@@ -214,12 +214,12 @@ roc_auc(rf_testing_pred,  truth = class, .pred_PS)
 #> # A tibble: 1 x 3
 #>   .metric .estimator .estimate
 #>   <chr>   <chr>          <dbl>
-#> 1 roc_auc binary         0.910
+#> 1 roc_auc binary         0.909
 accuracy(rf_testing_pred, truth = class, .pred_class)
 #> # A tibble: 1 x 3
 #>   .metric  .estimator .estimate
 #>   <chr>    <chr>          <dbl>
-#> 1 accuracy binary         0.839
+#> 1 accuracy binary         0.837
 ```
 
 **What happened here?**
@@ -260,68 +260,68 @@ The final resampling estimates for the model are the **averages** of the perform
 <tbody>
   <tr>
    <td style="text-align:left;"> Fold01 </td>
-   <td style="text-align:right;"> 0.8355263 </td>
-   <td style="text-align:right;"> 0.8944311 </td>
+   <td style="text-align:right;"> 0.7828947 </td>
+   <td style="text-align:right;"> 0.8419206 </td>
    <td style="text-align:right;"> 152 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Fold02 </td>
-   <td style="text-align:right;"> 0.7631579 </td>
-   <td style="text-align:right;"> 0.8259958 </td>
+   <td style="text-align:right;"> 0.8092105 </td>
+   <td style="text-align:right;"> 0.8939982 </td>
    <td style="text-align:right;"> 152 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Fold03 </td>
-   <td style="text-align:right;"> 0.8092105 </td>
-   <td style="text-align:right;"> 0.8962054 </td>
+   <td style="text-align:right;"> 0.8486842 </td>
+   <td style="text-align:right;"> 0.9174923 </td>
    <td style="text-align:right;"> 152 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Fold04 </td>
-   <td style="text-align:right;"> 0.8157895 </td>
-   <td style="text-align:right;"> 0.8925961 </td>
+   <td style="text-align:right;"> 0.8355263 </td>
+   <td style="text-align:right;"> 0.8941946 </td>
    <td style="text-align:right;"> 152 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Fold05 </td>
-   <td style="text-align:right;"> 0.8421053 </td>
-   <td style="text-align:right;"> 0.9243115 </td>
+   <td style="text-align:right;"> 0.8684211 </td>
+   <td style="text-align:right;"> 0.9063232 </td>
    <td style="text-align:right;"> 152 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Fold06 </td>
    <td style="text-align:right;"> 0.8410596 </td>
-   <td style="text-align:right;"> 0.9039773 </td>
+   <td style="text-align:right;"> 0.9136661 </td>
    <td style="text-align:right;"> 151 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Fold07 </td>
-   <td style="text-align:right;"> 0.8410596 </td>
-   <td style="text-align:right;"> 0.9331921 </td>
+   <td style="text-align:right;"> 0.8807947 </td>
+   <td style="text-align:right;"> 0.9368932 </td>
    <td style="text-align:right;"> 151 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Fold08 </td>
-   <td style="text-align:right;"> 0.8013245 </td>
-   <td style="text-align:right;"> 0.8892707 </td>
+   <td style="text-align:right;"> 0.7814570 </td>
+   <td style="text-align:right;"> 0.8890798 </td>
    <td style="text-align:right;"> 151 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Fold09 </td>
-   <td style="text-align:right;"> 0.8609272 </td>
-   <td style="text-align:right;"> 0.9190196 </td>
+   <td style="text-align:right;"> 0.8145695 </td>
+   <td style="text-align:right;"> 0.9075369 </td>
    <td style="text-align:right;"> 151 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Fold10 </td>
-   <td style="text-align:right;"> 0.8476821 </td>
-   <td style="text-align:right;"> 0.9440285 </td>
+   <td style="text-align:right;"> 0.8675497 </td>
+   <td style="text-align:right;"> 0.9310806 </td>
    <td style="text-align:right;"> 151 </td>
   </tr>
 </tbody>
 </table>
 
-From these resampling statistics, the final estimate of performance for this random forest model would be 0.902 for the area under the ROC curve and 0.826 for accuracy. 
+From these resampling statistics, the final estimate of performance for this random forest model would be 0.903 for the area under the ROC curve and 0.833 for accuracy. 
 
 These resampling statistics are an effective method for measuring model performance _without_ predicting the training set directly as a whole. 
 
@@ -329,7 +329,7 @@ To generate these results, the first step is to create a resampling object using
 
 
 ```r
-set.seed(1697)
+set.seed(345)
 folds <- vfold_cv(cell_train, v = 10)
 folds
 #> #  10-fold cross-validation 
@@ -354,14 +354,13 @@ However, the tune package contains high-level functions that can do the required
 
 
 ```r
-set.seed(5273)
 rf_wf <- 
   workflow() %>%
   add_model(rf_mod) %>%
   add_formula(class ~ .)
 
+set.seed(456)
 rf_fit_rs <- fit_resamples(rf_wf, folds)
-
 ```
 
 
@@ -391,8 +390,8 @@ collect_metrics(rf_fit_rs)
 #> # A tibble: 2 x 5
 #>   .metric  .estimator  mean     n std_err
 #>   <chr>    <chr>      <dbl> <int>   <dbl>
-#> 1 accuracy binary     0.826    10 0.00909
-#> 2 roc_auc  binary     0.902    10 0.0104
+#> 1 accuracy binary     0.833    10 0.0111 
+#> 2 roc_auc  binary     0.903    10 0.00842
 ```
 
 Think about these values we now have for accuracy and AUC. These performance metrics are now more realistic (i.e. lower) than our ill-advised first attempt at computing performance metrics in the section above. If we wanted to try different model types for this data set, we could more confidently compare performance metrics computed using resampling to choose between models. Also, remember that at the end of our project, we return to our test set to estimate final model performance. We have looked at this once already before we started using resampling, but let's remind ourselves of the results:
@@ -403,12 +402,12 @@ accuracy(rf_testing_pred, truth = class, .pred_class)
 #> # A tibble: 1 x 3
 #>   .metric  .estimator .estimate
 #>   <chr>    <chr>          <dbl>
-#> 1 accuracy binary         0.839
+#> 1 accuracy binary         0.837
 roc_auc(rf_testing_pred,  truth = class, .pred_PS)
 #> # A tibble: 1 x 3
 #>   .metric .estimator .estimate
 #>   <chr>   <chr>          <dbl>
-#> 1 roc_auc binary         0.910
+#> 1 roc_auc binary         0.909
 ```
 
 The performance metrics from the test set are much closer to the performance metrics computed using resampling than our first ("bad idea") attempt. Resampling allows us to simulate how well our model will perform on new data, and the test set acts as the final, unbiased check for our model's performance.

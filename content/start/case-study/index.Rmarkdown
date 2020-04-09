@@ -49,7 +49,7 @@ An important consideration for these data isthat children were only in `r round(
 For a data splitting strategy, 25% of the reservations were allocated to the test set using a stratified random sample:  
 
 ```{r tr-te-split}
-set.seed(35225)
+set.seed(123)
 splits <- initial_split(hotels, strata = children)
 
 hotel_other <- training(splits)
@@ -60,7 +60,7 @@ nrow(hotel_test)
 Rather than using multiple iterations of resampling, a single _validation set_ will be split apart from the `r format(nrow(hotel_other), big.mark = ",")` reservations that were not used for testing. In tidymodels, a validation set is treated as a single iteration of resampling. For this reason, the `validation_split()` function was used to allocate 20% of these to validation and `r format(nrow(hotel_other) * .8, big.mark = ",")` reservations to the training set:  
 
 ```{r validation-set}
-set.seed(948)
+set.seed(234)
 val_set <- validation_split(hotel_other, strata = children, prop = 0.80)
 val_set
 ```
@@ -205,7 +205,7 @@ Again, if any other resampling method were used, it is better to parallel proces
 To tune, a space-filling design with 25 candidate models is used: 
 
 ```{r rf-fit, cache = TRUE}
-set.seed(3826)
+set.seed(345)
 rf_res <- 
   rf_workflow %>% 
   tune_grid(val_set,

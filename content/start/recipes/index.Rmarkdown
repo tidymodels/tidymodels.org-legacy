@@ -44,7 +44,7 @@ In this example, let's use the nycflights13 data. This data set contains informa
 library(nycflights13)
 library(tidymodels)
 
-set.seed(25213)
+set.seed(123)
 flight_data <- 
   flights %>% 
   mutate(
@@ -83,7 +83,7 @@ To do this, we can use the [rsample](https://tidymodels.github.io/rsample/) pack
 ```{r split}
 # Fix the random numbers by setting the seed 
 # This enables the analysis to be reproducible when random numbers are used 
-set.seed(5970)
+set.seed(234)
 # Put 3/4 of the data into the training set 
 data_split <- initial_split(flight_data, prop = 3/4)
 

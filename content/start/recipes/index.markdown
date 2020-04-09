@@ -36,7 +36,7 @@ In this example, let's use the nycflights13 data. This data set contains informa
 library(nycflights13)
 library(tidymodels)
 
-set.seed(25213)
+set.seed(123)
 flight_data <- 
   flights %>% 
   mutate(
@@ -126,7 +126,7 @@ To do this, we can use the [rsample](https://tidymodels.github.io/rsample/) pack
 ```r
 # Fix the random numbers by setting the seed 
 # This enables the analysis to be reproducible when random numbers are used 
-set.seed(5970)
+set.seed(234)
 # Put 3/4 of the data into the training set 
 data_split <- initial_split(flight_data, prop = 3/4)
 
@@ -241,10 +241,10 @@ One final step is added to the recipe; since `carrier` and `dest` have some infr
 
 ```r
 setdiff(flight_data$dest, train_data$dest)
-#> [1] "LEX"
+#> character(0)
 ```
 
-When the recipe is applied to the training set, a column is made for LEX but it will contain all zeros. This is a "zero-variance predictor" that has no information within the column. While some R functions will not produce an error for such predictors, it usually causes warnings and other issues. `step_zv()` will remove columns from the data when the training set data have a single value, so it is added to the recipe: 
+When the recipe is applied to the training set, a column is made for  but it will contain all zeros. This is a "zero-variance predictor" that has no information within the column. While some R functions will not produce an error for such predictors, it usually causes warnings and other issues. `step_zv()` will remove columns from the data when the training set data have a single value, so it is added to the recipe: 
 
 
 ```r
@@ -327,20 +327,20 @@ This object has the finalized recipe and model objects inside. To extract those 
 flights_fit %>% 
   pull_workflow_fit() %>% 
   tidy()
-#> # A tibble: 157 x 5
+#> # A tibble: 158 x 5
 #>    term                         estimate std.error statistic  p.value
 #>    <chr>                           <dbl>     <dbl>     <dbl>    <dbl>
-#>  1 (Intercept)                   4.80    2.73           1.76 7.90e- 2
+#>  1 (Intercept)                   3.06    2.72           1.12 2.62e- 1
 #>  2 dep_time                     -0.00166 0.0000141   -118.   0.      
-#>  3 air_time                     -0.0441  0.000562     -78.5  0.      
-#>  4 distance                      0.00648 0.00151        4.30 1.71e- 5
-#>  5 date_USChristmasDay           1.26    0.181          6.94 3.82e-12
-#>  6 date_USColumbusDay            0.661   0.173          3.83 1.27e- 4
-#>  7 date_USCPulaskisBirthday      0.732   0.132          5.56 2.68e- 8
-#>  8 date_USDecorationMemorialDay  0.262   0.111          2.36 1.82e- 2
-#>  9 date_USElectionDay            0.861   0.187          4.61 4.02e- 6
-#> 10 date_USGoodFriday             1.22    0.162          7.51 5.91e-14
-#> # … with 147 more rows
+#>  3 air_time                     -0.0437  0.000562     -77.8  0.      
+#>  4 distance                      0.00728 0.00150        4.85 1.21e- 6
+#>  5 date_USChristmasDay           1.29    0.184          7.02 2.17e-12
+#>  6 date_USColumbusDay            0.777   0.170          4.56 5.12e- 6
+#>  7 date_USCPulaskisBirthday      0.718   0.135          5.34 9.50e- 8
+#>  8 date_USDecorationMemorialDay  0.325   0.116          2.80 5.08e- 3
+#>  9 date_USElectionDay            0.726   0.173          4.20 2.67e- 5
+#> 10 date_USGoodFriday             1.19    0.160          7.39 1.48e-13
+#> # … with 148 more rows
 ```
 
 There is also a single interface for getting predictions on new data. The `predict()` method applies the recipe to the new data, then passes them to the fitted model. For the ROC curve, we need the predicted class probabilities (along with the true outcome column):  
@@ -356,11 +356,11 @@ flights_pred %>% slice(1:5)
 #> # A tibble: 5 x 5
 #>   .pred_late .pred_on_time arr_delay time_hour           flight
 #>        <dbl>         <dbl> <fct>     <dttm>               <int>
-#> 1    0.0570          0.943 on_time   2013-01-01 05:00:00   1714
-#> 2    0.00853         0.991 on_time   2013-01-01 05:00:00    725
-#> 3    0.0193          0.981 on_time   2013-01-01 06:00:00    461
-#> 4    0.0368          0.963 on_time   2013-01-01 06:00:00    507
-#> 5    0.0263          0.974 on_time   2013-01-01 06:00:00     79
+#> 1     0.0898         0.910 on_time   2013-01-01 05:00:00   1696
+#> 2     0.0378         0.962 on_time   2013-01-01 06:00:00   1124
+#> 3     0.163          0.837 late      2013-01-01 06:00:00    707
+#> 4     0.0115         0.988 on_time   2013-01-01 06:00:00    709
+#> 5     0.0236         0.976 on_time   2013-01-01 06:00:00   1019
 ```
 
 We can create the ROC curve with these values, using `roc_curve()` and then piping to the `autoplot()` method: 
@@ -382,7 +382,7 @@ flights_pred %>% roc_auc(truth = arr_delay, .pred_late)
 #> # A tibble: 1 x 3
 #>   .metric .estimator .estimate
 #>   <chr>   <chr>          <dbl>
-#> 1 roc_auc binary         0.763
+#> 1 roc_auc binary         0.765
 ```
 
 Not too bad!
@@ -402,7 +402,7 @@ Not too bad!
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-04-08                  
+#>  date     2020-04-09                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package      * version     date       lib

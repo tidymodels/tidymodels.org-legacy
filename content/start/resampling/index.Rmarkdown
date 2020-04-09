@@ -108,7 +108,7 @@ rf_mod <-
 From this, the `fit()` function can be used with a simple model formula. Since random forest models use random numbers, we again set the seed prior to computing: 
 
 ```{r rf-fit}
-set.seed(5273)
+set.seed(234)
 rf_fit <- rf_mod %>% fit(class ~ ., data = cell_train)
 rf_fit
 ```
@@ -181,16 +181,15 @@ In this example, 10-fold CV moves iteratively through the folds and leaves a dif
 
 ```{r rf-rs, include = FALSE}
 library(tidyr)
-set.seed(1697)
+set.seed(345)
 folds <- vfold_cv(cell_train)
-
-set.seed(5273)
 
 rf_wf <- 
   workflow() %>%
   add_model(rf_mod) %>%
   add_formula(class ~ .)
 
+set.seed(456)
 rf_fit_rs <- fit_resamples(rf_wf, folds)
 
 assessment_size <- 
@@ -231,7 +230,7 @@ These resampling statistics are an effective method for measuring model performa
 To generate these results, the first step is to create a resampling object using rsample. There are several resampling methods implemented in rsample; cross-validation folds can be created using `vfold_cv()`: 
 
 ```{r folds}
-set.seed(1697)
+set.seed(345)
 folds <- vfold_cv(cell_train, v = 10)
 folds
 ```
@@ -241,14 +240,13 @@ The list column for `splits` contains the information on which rows belong in th
 However, the tune package contains high-level functions that can do the required computations to resample a model for the purpose of measuring performance. You have several options for building an object for resampling; you can resample a model specification preprocessed with a formula or [recipe](/start/recipes/), or you can resample a [`workflow()`](https://tidymodels.github.io/workflows/) that bundles together a model specification and formula/recipe. For this example, let's use a `workflow()` that bundles together the random forest model and a formula. Whatever of these options you use, the syntax to resample is very similar to `fit()`: 
 
 ```{r rs, eval = FALSE}
-set.seed(5273)
 rf_wf <- 
   workflow() %>%
   add_model(rf_mod) %>%
   add_formula(class ~ .)
 
+set.seed(456)
 rf_fit_rs <- fit_resamples(rf_wf, folds)
-
 ```
 
 ```{r rs-show}

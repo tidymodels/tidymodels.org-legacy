@@ -44,7 +44,7 @@ For a data splitting strategy, 25% of the reservations were allocated to the tes
 
 
 ```r
-set.seed(35225)
+set.seed(123)
 splits <- initial_split(hotels, strata = children)
 
 hotel_other <- training(splits)
@@ -57,7 +57,7 @@ Rather than using multiple iterations of resampling, a single _validation set_ w
 
 
 ```r
-set.seed(948)
+set.seed(234)
 val_set <- validation_split(hotel_other, strata = children, prop = 0.80)
 val_set
 #> # Validation Set Split (0.8/0.2)  using stratification 
@@ -228,7 +228,7 @@ To tune, a space-filling design with 25 candidate models is used:
 
 
 ```r
-set.seed(3826)
+set.seed(345)
 rf_res <- 
   rf_workflow %>% 
   tune_grid(val_set,
@@ -236,6 +236,10 @@ rf_res <-
             control = tune_ctrl,
             metrics = roc_only)
 #> i Creating pre-processing data to finalize unknown parameter: mtry
+#> Warning: The `x` argument of `as_tibble.matrix()` must have column names if `.name_repair` is omitted as of tibble 2.0.0.
+#> Using compatibility `.name_repair`.
+#> This warning is displayed once every 8 hours.
+#> Call `lifecycle::last_warnings()` to see where this warning was generated.
 ```
 
 The note about "finalizing the unknown parameter" is related to the size of the data set. Since `mtry` depends on the number of predictors in the data set, `tune_grid()` determines the upper bound for `mtry` once it receives the data. 
@@ -258,7 +262,7 @@ rf_best
 #> # A tibble: 1 x 2
 #>    mtry min_n
 #>   <int> <int>
-#> 1     5     3
+#> 1     8     7
 ```
 
 As before, the validation set ROC curve can be produced and overlaid with the previous logistic regression model: 
@@ -356,7 +360,7 @@ Based on these results, the validation set and test set performance statistics a
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-04-08                  
+#>  date     2020-04-09                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version     date       lib source                               
@@ -364,7 +368,6 @@ Based on these results, the validation set and test set performance statistics a
 #>  dials      * 0.0.4.9000  2020-03-20 [1] local                                
 #>  dplyr      * 0.8.5       2020-03-07 [1] CRAN (R 3.6.0)                       
 #>  ggplot2    * 3.3.0       2020-03-05 [1] CRAN (R 3.6.0)                       
-#>  glmnet       3.0-2       2019-12-11 [1] CRAN (R 3.6.0)                       
 #>  infer      * 0.5.1       2019-11-19 [1] CRAN (R 3.6.0)                       
 #>  parsnip    * 0.0.5.9001  2020-04-03 [1] Github (tidymodels/parsnip@0e83faf)  
 #>  purrr      * 0.3.3       2019-10-18 [1] CRAN (R 3.6.0)                       

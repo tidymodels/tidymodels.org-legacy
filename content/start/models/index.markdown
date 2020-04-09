@@ -99,7 +99,7 @@ lm_fit <-
 lm_fit
 #> parsnip model object
 #> 
-#> Fit time:  1ms 
+#> Fit time:  2ms 
 #> 
 #> Call:
 #> stats::lm(formula = formula, data = data)
@@ -192,6 +192,8 @@ ggplot(plot_data, aes(x = food_regime)) +
 
 <img src="figs/lm-all-pred-1.svg" width="672" />
 
+## Modeling with a different engine
+
 Every one on your team is happy with that plot _except_ that one person who just read their first book on [Bayesian analysis](https://bayesian.org/what-is-bayesian-analysis/). They are interested in knowing if the results would be different if the model were estimated using a Bayesian approach. In such an analysis, a [_prior distribution_](https://towardsdatascience.com/introduction-to-bayesian-linear-regression-e66e60791ea7) needs to be declared for each model parameter that represents the possible values of the parameters (before being exposed to the observed data). After some discussion, the group agrees that the priors should be bell-shaped but, since no one has any idea what the range of values should be, to take a conservative approach and make the priors _wide_ using a Cauchy distribution (which is the same as a t-distribution with a single degree of freedom).
 
 The [documentation](http://mc-stan.org/rstanarm/articles/priors.html) on the rstanarm package shows us that the `stan_glm()` function can be used to estimate this model, and that the function arguments that need to be specified are called `prior` and `prior_intercept`. It turns out that `linear_reg()` has a `stan` engine. Since these prior distribution arguments are specific to the Stan software, they are passed when the engine is set. After that, the same exact `fit()` call is used:
@@ -202,6 +204,7 @@ library(rstanarm)
 
 prior_dist <- student_t(df = 1)
 
+set.seed(123)
 bayes_fit <- 
   linear_reg() %>% 
   set_engine("stan", prior_intercept = prior_dist, prior = prior_dist) %>% 
@@ -210,7 +213,7 @@ bayes_fit <-
 print(bayes_fit, digits = 5)
 #> parsnip model object
 #> 
-#> Fit time:  1.7s 
+#> Fit time:  1.9s 
 #> stan_glm
 #>  family:       gaussian [identity]
 #>  formula:      width ~ (initial_volume + food_regime)^2
@@ -218,21 +221,23 @@ print(bayes_fit, digits = 5)
 #>  predictors:   6
 #> ------
 #>                                Median   MAD_SD  
-#> (Intercept)                     0.03489  0.00938
-#> initial_volume                  0.00148  0.00039
-#> food_regimeLow                  0.01738  0.01271
-#> food_regimeHigh                 0.01863  0.01382
-#> initial_volume:food_regimeLow  -0.00116  0.00050
-#> initial_volume:food_regimeHigh  0.00064  0.00067
+#> (Intercept)                     0.03495  0.00932
+#> initial_volume                  0.00148  0.00038
+#> food_regimeLow                  0.01725  0.01244
+#> food_regimeHigh                 0.01835  0.01409
+#> initial_volume:food_regimeLow  -0.00117  0.00048
+#> initial_volume:food_regimeHigh  0.00065  0.00067
 #> 
 #> Auxiliary parameter(s):
 #>       Median  MAD_SD 
-#> sigma 0.02124 0.00182
+#> sigma 0.02121 0.00182
 #> 
 #> ------
 #> * For help interpreting the printed output see ?print.stanreg
 #> * For info on the priors used see ?prior_summary.stanreg
 ```
+
+This kind of Bayesian analysis (like many models) involves randomly generated numbers in its fitting procedure. We can use `set.seed()` to ensure that the same (pseudo-)random numbers are generated each time we run this code. The number `123` isn't special or related to our data; it is just a "seed" used to choose random numbers.
 
 To update the parameter table, the `tidy()` method is once again used: 
 
@@ -242,12 +247,12 @@ tidy(bayes_fit, intervals = TRUE)
 #> # A tibble: 6 x 5
 #>   term                            estimate std.error     lower     upper
 #>   <chr>                              <dbl>     <dbl>     <dbl>     <dbl>
-#> 1 (Intercept)                     0.0349    0.00938   0.0195    0.0498  
-#> 2 initial_volume                  0.00148   0.000386  0.000859  0.00213 
-#> 3 food_regimeLow                  0.0174    0.0127   -0.00271   0.0386  
-#> 4 food_regimeHigh                 0.0186    0.0138   -0.00450   0.0420  
-#> 5 initial_volume:food_regimeLow  -0.00116   0.000496 -0.00199  -0.000374
-#> 6 initial_volume:food_regimeHigh  0.000642  0.000674 -0.000475  0.00179
+#> 1 (Intercept)                     0.0349    0.00932   0.0197    0.0504  
+#> 2 initial_volume                  0.00148   0.000376  0.000840  0.00212 
+#> 3 food_regimeLow                  0.0172    0.0124   -0.00411   0.0380  
+#> 4 food_regimeHigh                 0.0183    0.0141   -0.00434   0.0419  
+#> 5 initial_volume:food_regimeLow  -0.00117   0.000480 -0.00198  -0.000339
+#> 6 initial_volume:food_regimeHigh  0.000652  0.000667 -0.000475  0.00177
 ```
 
 A goal of the tidymodels packages is that the **interfaces to common tasks are standardized** (as seen in the `tidy()` results above). The same is true for getting predictions; we can use the same code even though the underlying packages use very different syntax:
@@ -325,7 +330,7 @@ ggplot(iris, aes(Sepal.Width, Sepal.Length)) + # returns a ggplot object
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-04-08                  
+#>  date     2020-04-09                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version     date       lib source                               

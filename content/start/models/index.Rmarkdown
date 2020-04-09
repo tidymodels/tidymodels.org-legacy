@@ -138,6 +138,8 @@ ggplot(plot_data, aes(x = food_regime)) +
   labs(y = "urchin size")
 ```
 
+## Modeling with a different engine
+
 Every one on your team is happy with that plot _except_ that one person who just read their first book on [Bayesian analysis](https://bayesian.org/what-is-bayesian-analysis/). They are interested in knowing if the results would be different if the model were estimated using a Bayesian approach. In such an analysis, a [_prior distribution_](https://towardsdatascience.com/introduction-to-bayesian-linear-regression-e66e60791ea7) needs to be declared for each model parameter that represents the possible values of the parameters (before being exposed to the observed data). After some discussion, the group agrees that the priors should be bell-shaped but, since no one has any idea what the range of values should be, to take a conservative approach and make the priors _wide_ using a Cauchy distribution (which is the same as a t-distribution with a single degree of freedom).
 
 The [documentation](http://mc-stan.org/rstanarm/articles/priors.html) on the rstanarm package shows us that the `stan_glm()` function can be used to estimate this model, and that the function arguments that need to be specified are called `prior` and `prior_intercept`. It turns out that `linear_reg()` has a `stan` engine. Since these prior distribution arguments are specific to the Stan software, they are passed when the engine is set. After that, the same exact `fit()` call is used:
@@ -147,6 +149,7 @@ library(rstanarm)
 
 prior_dist <- student_t(df = 1)
 
+set.seed(123)
 bayes_fit <- 
   linear_reg() %>% 
   set_engine("stan", prior_intercept = prior_dist, prior = prior_dist) %>% 
@@ -154,6 +157,8 @@ bayes_fit <-
 
 print(bayes_fit, digits = 5)
 ```
+
+This kind of Bayesian analysis (like many models) involves randomly generated numbers in its fitting procedure. We can use `set.seed()` to ensure that the same (pseudo-)random numbers are generated each time we run this code. The number `123` isn't special or related to our data; it is just a "seed" used to choose random numbers.
 
 To update the parameter table, the `tidy()` method is once again used: 
 
