@@ -3,6 +3,8 @@ title: "A predictive modeling case study"
 weight: 5
 tags: [parsnip, recipe, rsample, tune]
 categories: [model fitting, tuning]
+description: | 
+  Develop, from beginning to end, a predictive model using best practices.
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}
@@ -21,28 +23,28 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 
 # Introduction
 
-The previous _Getting Started_ articles have been focused on single tasks related to modeling. This example is a broader case study of building a predictive model. It uses all of the previous topics.  
+The previous _Getting Started_ articles have been focused on single tasks related to modeling. This example is a broader case study of building a predictive model from beginning to end. It uses all of the previous topics.  
 
-Our modeling goal here is to predict which hotel stays include children (vs. do not include children or babies) based on the other characteristics in this dataset such as which hotel the guests stay at, how much they pay, etc. The [paper that this data comes from](https://www.sciencedirect.com/science/article/pii/S2352340918315191) points out that the distribution of many of these variables (such as number of adults/children, room type, meals bought, country, and so forth) is different for canceled versus not canceled hotel bookings. This is mostly because more information is gathered when guests check in; the biggest contributor to these differences is not that people who cancel are different from people who do not.
+Our modeling goal here is to use a data set of hotel stays and predict which hotel stays include children (vs. do not include children or babies), based on the other characteristics of the stays such as which hotel the guests stay at, how much they pay, etc. The [paper that this data comes from](https://www.sciencedirect.com/science/article/pii/S2352340918315191) points out that the distribution of many of these variables (such as number of adults/children, room type, meals bought, country of origin of the guests, and so forth) is different for canceled vs. not canceled hotel bookings. This is mostly because more information is gathered when guests check in; the biggest contributor to these differences is not that people who cancel are different from people who do not.
 
-To build our models, the data were filtered to only the bookings that did not cancel and build a model to predict which hotel stays include children and which do not.
+To build our models, we filtered the data to only the bookings that did not cancel and will build a model to predict which non-canceled hotel stays include children and which do not.
 
 # Data Spending
 
-The [version](https://gist.github.com/topepo/05a74916c343e57a71c51d6bc32a21ce) of the data that we'll use can be found on the `tidymodels.org` site: 
+The [version](https://gist.github.com/topepo/05a74916c343e57a71c51d6bc32a21ce) of the data that we'll use can be accessed from the `tidymodels.org` site: 
 
 ```{r hotel-import, message = FALSE}
 library(tidymodels)
 library(readr)
 
 hotels <- 
-  readr::read_csv('https://bit.ly/hotel_booking_data') %>%
+  read_csv('https://bit.ly/hotel_booking_data') %>%
   mutate_if(is.character, as.factor) 
 
 dim(hotels)
 ```
 
-An important consideration for these data: children were only in `r round(mean(hotels$children == "children") * 100, 1)`% of the reservations. This type of severe class imbalance can often wreak havoc on an analysis. While there are several methods for combating this issue, the analyses shown below analyze the data as-is. 
+An important consideration for these data isthat children were only in `r round(mean(hotels$children == "children") * 100, 1)`% of the reservations. This type of severe class imbalance can often wreak havoc on an analysis. While there are several methods for combating this issue, the analyses shown below analyze the data as-is. 
 
 For a data splitting strategy, 25% of the reservations were allocated to the test set using a stratified random sample:  
 
@@ -63,11 +65,11 @@ val_set <- validation_split(hotel_other, strata = children, prop = 0.80)
 val_set
 ```
 
-The standard functions from the tune package will be used as before but, in this case, the performance metrics will be computed on a single set of `r format(nrow(hotel_other) * .2, big.mark = ",")` reservations. This amount of data should provide enough precision to be a reliable indicator for how well each model predicts the outcome.  
+The same functions from the tune package will be used as in previous articles but, in this case, the performance metrics will be computed on a single set of `r format(nrow(hotel_other) * .2, big.mark = ",")` reservations. This amount of data should provide enough precision to be a reliable indicator for how well each model predicts the outcome.  
 
 # A first model: logistic regression
 
-It makes sense to start with a simple model. Since the outcome is categorical, a logistic regression model would be a good first step. Specifically, a glmnet model is used to potentially add some amount of feature selection during model training. This method of estimating the logistic regression slope parameters uses a _penalty_ on the process so that less relavant predictors are driven towards a value of zero. One of the glmnet penalization methods, called the lasso method, can set the predictor slopes to absolute zero if a large enough penalty is used. 
+It makes sense to start with a simple model. Since the outcome is categorical, a logistic regression model would be a good first step. Specifically, let's use a glmnet model to potentially perform feature selection during model training. This method of estimating the logistic regression slope parameters uses a _penalty_ on the process so that less relevant predictors are driven towards a value of zero. One of the glmnet penalization methods, called the lasso method, can set the predictor slopes to absolute zero if a large enough penalty is used. 
 
 To specify a penalized logistic regression model that uses a feature selection penalty:  
 
@@ -79,7 +81,7 @@ lr_mod <-
 
 Setting `mixture` to a value of one means that the glmnet model will focus on potentially removing irrelevant predictors. 
 
-To prepare the data for the model, the categorical predictors (e.g., `distribution_channel`, `hotel`, ...) should be converted to dummy variables. Additionally, it might make sense fo create a set of date-based predictors that reflect important components related to the arrival date. First, `step_date()` creates predictors for the year, month, and day of the week. Secondly, `step_holiday()` generates a set of indicator variables for specific holidays. The addition of `step_zv()` means that no indicators variables that only contains a single unique value (e.g. all zeros) will be added to the model. This is important because, for penalized models, the the predictors should be centered and scaled. 
+To prepare the data for the model, the categorical predictors (e.g., `distribution_channel`, `hotel`, ...) should be converted to dummy variables. Additionally, it might make sense to create a set of date-based predictors that reflect important components related to the arrival date. First, `step_date()` creates predictors for the year, month, and day of the week. Secondly, `step_holiday()` generates a set of indicator variables for specific holidays. The addition of `step_zv()` means that no indicator variables that only contains a single unique value (e.g. all zeros) will be added to the model. This is important because, for penalized models, the the predictors should be centered and scaled. 
 
 The recipe for these steps is: 
 
@@ -97,7 +99,7 @@ lr_recipe <-
   step_normalize(all_predictors())
 ```
 
-The model and recipe can be bundled into a single workflow object to make management of the R objects easy:
+The model and recipe can be bundled into a single `workflow()` object to make management of the R objects easier:
 
 ```{r logistic-workflow}
 lr_workflow <- 
@@ -106,7 +108,7 @@ lr_workflow <-
   add_recipe(lr_recipe)
 ```
 
-Finally a grid of penalty values are created and the model is tuned. The validation set predictions are saved (via the call to `control_grid()` below) so that diagnostic information can be available after the model fit. Also, the area under the ROC curve is once again used to quantify how well the model performs across a continuum of event thresholds (recall that the event rate is very low for these data). 
+Finally a grid of penalty values are created and the model is tuned. The validation set predictions are saved (via the call to `control_grid()` below) so that diagnostic information can be available after the model fit. Also, the area under the ROC curve is used to quantify how well the model performs across a continuum of event thresholds (recall that the event rate is very low for these data). 
 
 
 ```{r logistic-fit, cache = TRUE}
@@ -167,7 +169,7 @@ As a next step, we might consider a highly non-linear model generated using tree
 
 # Tree-based ensembles
 
-Once effective and low-maintenance modeling technique is _random forest_ (used in a previous vignette). This model will be used with less pre-processing than the logistic regression. The conversion to dummy variables and variable normalization are not required. As before, the date predictor is engineered so that the random forest model does not need to work hard to tease these potential patterns from the data.  
+One effective and low-maintenance modeling technique is a _random forest_ (also used in the [resampling article](/start/resampling/)). This model can be used with less preprocessing than the logistic regression; conversion to dummy variables and variable normalization are not required. As before, the date predictor is engineered so that the random forest model does not need to work hard to tease these potential patterns from the data.  
 
 ```{r rf-features}
 rf_recipe <- 
@@ -184,7 +186,7 @@ cores <- parallel::detectCores()
 cores
 ```
 
-To declare that parallel processing should be used, the `num.threads` for `ranger::ranger()` can be passed when setting the computational engine: 
+To declare that parallel processing should be used, the `num.threads` argument for `ranger::ranger()` can be passed when setting the computational engine: 
 
 ```{r rf-model}
 rf_mod <- 
@@ -264,7 +266,7 @@ rf_workflow <-
 rf_fit <- rf_workflow %>% last_fit(splits)
 ```
 
-From this fitted workflow, the vip package can be used to easily visualize the results: 
+From this fitted workflow, the vip package can be used to visualize the results: 
 
 ```{r rf-importance}
 library(vip)
@@ -275,7 +277,7 @@ rf_fit$.workflow %>%
   vip(num_features = 20) 
 ```
 
-The most important predictors were the daily cost for the room, the type of reservation, the time between the creation of the reservation and the arrival date, and the type of room that was reserved. 
+The most important predictors in whether a hotel stay had children or not were the daily cost for the room, the type of reservation, the time between the creation of the reservation and the arrival date, and the type of room that was reserved. 
 
 # Test set results
 

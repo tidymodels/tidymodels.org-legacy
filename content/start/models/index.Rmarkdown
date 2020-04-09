@@ -1,8 +1,10 @@
 ---
-title: "Building a model"
+title: "Build a model"
 weight: 1
 tags: [parsnip, broom]
 categories: [model fitting]
+description: | 
+  Get started by learning how to specify and train a model using tidymodels.
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}
@@ -23,7 +25,7 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 
 # Introduction
 
-How do you create a statistical model using the tidymodels packages? Start with your data, learn how to specify and train models with different engines, and understand why these functions are designed this way.
+How do you create a statistical model using the tidymodels packages? In this article, start with data for modeling, learn how to specify and train models with different engines, and understand why these functions are designed this way.
 
 # How to create and use a model
 
@@ -99,11 +101,12 @@ tidy(lm_fit)
 Suppose that, for a publication, it would be particularly interesting to make a plot of the mean body size for urchins that started the experiment with an initial volume of 20ml. To create such a graph, we start with some new example data that we will make predictions for, to show in our graph:
 
 ```{r new-points}
-new_points <- expand.grid(initial_volume = 20, food_regime = c("Initial", "Low", "High"))
+new_points <- expand.grid(initial_volume = 20, 
+                          food_regime = c("Initial", "Low", "High"))
 new_points
 ```
 
-To get our predicted results, let's use the `predict()` function to find the mean values at 20ml. 
+To get our predicted results, we can use the `predict()` function to find the mean values at 20ml. 
 
 It is also important to communicate the variability, so we also need to find the predicted confidence intervals. If we had used `lm()` to fit the model directly, a few minutes of reading the documentation page for `predict.lm()` would explain how to do this. However, if we decide to use a different model to estimate urchin size (_spoilers:_ we will), it is likely that a completely different syntax would be required. 
 

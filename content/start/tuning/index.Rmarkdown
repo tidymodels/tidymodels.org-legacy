@@ -3,6 +3,8 @@ title: "Tune model parameters"
 weight: 4
 tags: [rsample, parsnip, tune, dials, yardstick]
 categories: [tuning]
+description: | 
+  Estimate the best values for hyperparameters that cannot be learned directly during model training.
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}
@@ -22,7 +24,7 @@ Some model parameters cannot be learned directly from a data set during model tr
 
 # Predicting image segmentation, but better
 
-In our [article on resampling](LINKTODO), we introduced a data set of images of cells that were labeled by experts as well-segmented (`WS`) or poorly segmented (`PS`). We trained a random forest model to predict which images are segmented well vs. poorly, so that a biologist could filter out poorly segmented cell images in their analysis. We used resampling to estimate the performance of our model on this data.
+In our [article on resampling](/start/resampling/), we introduced a data set of images of cells that were labeled by experts as well-segmented (`WS`) or poorly segmented (`PS`). We trained a random forest model to predict which images are segmented well vs. poorly, so that a biologist could filter out poorly segmented cell images in their analysis. We used resampling to estimate the performance of our model on this data.
 
 ```{r cell-import}
 data(cells, package = "modeldata")
