@@ -23,7 +23,7 @@
     weight = 5
 [[main]]
     name = " "
-    url = "/search/"
+    url = "/explore/"
     pre = "<i class=\"fas fa-search fa-lg\"></i>"
     weight = 6
 [[main]]

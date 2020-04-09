@@ -1,5 +1,9 @@
 ---
-title: List of parsnip models
+subtitle: Parsnip
+title: Explore parsnip models
+weight: 3
+description: | 
+  Find models to fit and predict in the tidymodels framework.
 ---
 
 ```{r ex_setup, include=FALSE}
@@ -15,14 +19,20 @@ source(script)
 library(DT)
 pkgs <- c("parsnip", "discrim")
 library(discrim)
+library(parsnip)
 ```
 
-`parsnip` contains wrappers for a number of models. For example, the `parsnip` function `rand_forest()` can be used to create a random forest model. The **mode** of a model is related to its goal. Examples would be regression and classification. 
+To learn about the parsnip package, see [Building a Model](/start/models/) to get started. To go deeper, read the articles in [Creating Robust Models](/learn/models/).
 
-Since there are many models available in R, there are also "side packages" that wrap groups of models: 
+The searchable table below will help you find the key pieces you need to use a parsnip model: 
 
- * [`discrim`](https://github.com/tidymodels/discrim) contains discriminant analysis models. 
+1. A model **type**, like a random forest or a boosted tree.
 
+1. A model **mode**, which maps onto your modeling goal: either regression or classification.
+
+1. A model **engine**, which maps onto an existing R modeling packag or a connection to an external system (such as Spark). 
+
+<br>
 
 ```{r model-table, include = FALSE}
 mod_names <- get_from_env("models")
@@ -51,10 +61,6 @@ pkg_urls <-
   dplyr::select(-alias)
 ```
 
-_How_ the model is created is related to the **engine**. In many cases, this is an R modeling package. In others, it may be a connection to an external system (such as Spark or Tensorflow). The tables below list the engines for each model type. 
-
-Models can be added by the user too. See the ["Making a {parsnip} model from scratch" vignette](https://tidymodels.github.io/parsnip/articles/articles/Scratch.html).
-
 
 ```{r table-display, echo = FALSE, results = "asis"}
 DT::datatable(
@@ -62,11 +68,20 @@ DT::datatable(
   rownames = FALSE,
   class = 'cell-border stripe',
   escape = FALSE,
-  filter = "top"
+  filter = "top",
+  options = list(pageLength = 5)
 )
 ```
 
-Tidymodels use standardized parameter names to have some consistency between models and engines. The mapping between the `parsnip` arguments and their original names is: 
+<br>
+
+Models can be added by the user too. The article [How to build a parsnip model](/learn/developer/models/) walks you through the steps.
+
+# Explore model arguments
+
+The parsnip package provides consistent interface for working with similar models across different engines. This means that parsnip adopts standardized parameter names as arguments, and those names may be different from those used by the individual engines. The searchable table below provides a mapping between the parsnip and the engine arguments: 
+
+<br>
 
 ```{r params, echo = FALSE, results = "asis"}
 envir <- parsnip::get_model_env()
@@ -84,7 +99,9 @@ DT::datatable(
   args, 
   class = 'cell-border stripe',
   filter = 'top',
-  escape = FALSE)
+  escape = FALSE,
+  options = list(pageLength = 5)
+  )
 ```
 
 

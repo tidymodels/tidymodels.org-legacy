@@ -1,0 +1,40 @@
+---
+subtitle: Recipes
+title: Explore recipe steps
+weight: 2
+description: | 
+  Find recipe steps to help you prep your data for modeling.
+---
+
+```{r ex_setup, include=FALSE}
+knitr::opts_chunk$set(
+  message = FALSE,
+  digits = 3,
+  collapse = TRUE,
+  comment = "#>"
+  )
+options(digits = 3)
+script <- here::here("static/code/get_pkgdown_urls.R")
+source(script)
+library(DT)
+pkgs <- c("recipes", "embed", "textrecipes", "themis")
+```
+
+To learn about the recipes package, see [Preprocess your data with recipes](/start/recipes/) to get started. To go deeper, read the articles in [Creating Robust Models](/learn/models/).
+
+The recipes package and its specialized extension [packages](packages/#create-robust-models) offer many steps to help you 
+
+```{r table-compute, include = FALSE}
+pkg_urls <- get_pkgdown_urls(pkgs, fltr = "(^check_)|(^step_)")
+```
+
+```{r table-display, echo = FALSE, results = "asis"}
+DT::datatable(
+  pkg_urls,
+  rownames = FALSE,
+  class = 'cell-border stripe',
+  escape = FALSE,
+  filter = "top",
+  options = list(pageLength = 5)
+)
+```
