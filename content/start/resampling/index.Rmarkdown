@@ -185,8 +185,13 @@ set.seed(1697)
 folds <- vfold_cv(cell_train)
 
 set.seed(5273)
-rf_fit_rs <- rf_mod %>% 
-  fit_resamples(class ~ ., folds)
+
+rf_wf <- 
+  workflow() %>%
+  add_model(rf_mod) %>%
+  add_formula(class ~ .)
+
+rf_fit_rs <- fit_resamples(rf_wf, folds)
 
 assessment_size <- 
   folds %>% 
@@ -233,13 +238,19 @@ folds
 
 The list column for `splits` contains the information on which rows belong in the analysis and assessment sets. There are functions that can be used to extract the individual resampled data called `analysis()` and `assessment()`. 
 
-However, the tune package contains high-level functions that can do the required computations to resample a model (and, optionally, a recipe) for the purpose of measuring performance. The syntax is very similar to `fit()`: 
+However, the tune package contains high-level functions that can do the required computations to resample a model for the purpose of measuring performance. You have several options for building an object for resampling; you can resample a model specification preprocessed with a formula or [recipe](/start/recipes/), or you can resample a [`workflow()`](https://tidymodels.github.io/workflows/) that bundles together a model specification and formula/recipe. For this example, let's use a `workflow()` that bundles together the random forest model and a formula. Whatever of these options you use, the syntax to resample is very similar to `fit()`: 
 
 ```{r rs, eval = FALSE}
 set.seed(5273)
-rf_fit_rs <- rf_mod %>% 
-  fit_resamples(class ~ ., folds)
+rf_wf <- 
+  workflow() %>%
+  add_model(rf_mod) %>%
+  add_formula(class ~ .)
+
+rf_fit_rs <- fit_resamples(rf_wf, folds)
+
 ```
+
 ```{r rs-show}
 rf_fit_rs
 ```

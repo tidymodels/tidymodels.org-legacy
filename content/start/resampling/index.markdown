@@ -144,7 +144,7 @@ rf_fit <- rf_mod %>% fit(class ~ ., data = cell_train)
 rf_fit
 #> parsnip model object
 #> 
-#> Fit time:  2.7s 
+#> Fit time:  2.5s 
 #> Ranger result
 #> 
 #> Call:
@@ -350,14 +350,20 @@ folds
 
 The list column for `splits` contains the information on which rows belong in the analysis and assessment sets. There are functions that can be used to extract the individual resampled data called `analysis()` and `assessment()`. 
 
-However, the tune package contains high-level functions that can do the required computations to resample a model (and, optionally, a recipe) for the purpose of measuring performance. The syntax is very similar to `fit()`: 
+However, the tune package contains high-level functions that can do the required computations to resample a model for the purpose of measuring performance. You have several options for building an object for resampling; you can resample a model specification preprocessed with a formula or [recipe](/start/recipes/), or you can resample a [`workflow()`](https://tidymodels.github.io/workflows/) that bundles together a model specification and formula/recipe. For this example, let's use a `workflow()` that bundles together the random forest model and a formula. Whatever of these options you use, the syntax to resample is very similar to `fit()`: 
 
 
 ```r
 set.seed(5273)
-rf_fit_rs <- rf_mod %>% 
-  fit_resamples(class ~ ., folds)
+rf_wf <- 
+  workflow() %>%
+  add_model(rf_mod) %>%
+  add_formula(class ~ .)
+
+rf_fit_rs <- fit_resamples(rf_wf, folds)
+
 ```
+
 
 ```r
 rf_fit_rs
@@ -423,7 +429,7 @@ The performance metrics from the test set are much closer to the performance met
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-04-08                  
+#>  date     2020-04-09                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version     date       lib source                               
