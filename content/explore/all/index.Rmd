@@ -18,8 +18,6 @@ library(DT)
 ```
 
 
-# Search all of tidymodels
-
 In the searchable table below, you'll find all the functions available in the [tidymodels packages](/packages/). The first column called **topic** provides a link to the function's reference page on each package's documentation site.
 
 <br>
