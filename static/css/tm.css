@@ -568,8 +568,6 @@ table.dataTable.no-footer,
 }
 
 table.dataTable thead {
-	font-weight: 600;
 	background-color: #eab0c41a;
 	text-transform: uppercase;
-	color: #1a162d;
 }
