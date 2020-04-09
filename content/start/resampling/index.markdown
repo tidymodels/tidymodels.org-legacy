@@ -3,6 +3,8 @@ title: "Evaluate your model with resampling"
 weight: 3
 tags: [rsample, parsnip, tune, yardstick]
 categories: [resampling]
+description: | 
+  Measure model performance by generating different versions of the training data through resampling.
 ---
 
 
@@ -94,11 +96,11 @@ When beginning a modeling project, it is common to [separate the data set](https
 
  * The _test set_ is held in reserve until the end of the project, at which point there should only be one or two models under serious consideration. It is used as an unbiased source for measuring final model performance. 
 
-There are different ways to create these partitions of the data. The most common approach is to use a random sample. Suppose that one quarter of the data were reserved for the test set. Random sampling would randomly select 25% for the test set and use the remainder for the training set. We can use the rsample package for this purpose. In the original analysis, the authors made their own training/test set and that information is contained in the column `case`. To demonstrate how to make a split, we'll remove this column before we make our own split. 
+There are different ways to create these partitions of the data. The most common approach is to use a random sample. Suppose that one quarter of the data were reserved for the test set. Random sampling would randomly select 25% for the test set and use the remainder for the training set. We can use the [rsample](https://tidymodels.github.io/rsample/) package for this purpose. In the original analysis, the authors made their own training/test set and that information is contained in the column `case`. To demonstrate how to make a split, we'll remove this column before we make our own split. 
 
 Since random sampling uses random numbers, it is important to set the random number seed. This ensures that the random numbers can be reproduced at a later time (if needed). 
 
-`rsample::initial_split()` takes the original data and saves the information on how to make the partitions. After that, the `training()` and `testing()` functions return the actual data sets:
+The function `rsample::initial_split()` takes the original data and saves the information on how to make the partitions. After that, the `training()` and `testing()` functions return the actual data sets:
 
 
 ```r
@@ -121,9 +123,9 @@ The majority of the modeling work is then conducted on the training set data.
 
 Random forest models are ensembles of decisions trees. A large number of tree models are created for the ensemble based on slightly different versions of the training set. When creating the individual decision trees, the fitting process encourages them to be as diverse as possible. The collection of trees are combined into the random forest model and, when a new sample is predicted, the votes from each tree are used to calculate the final predicted value for the new sample. 
 
-This model is very low maintenance; it requires very little pre-processing of the data and, while it can be tuned, the default parameters tend to give reasonable results. At the same time, the number of trees in the ensemble should be large (in the thousands) and this makes the model moderately expensive to compute. 
+This model is very low maintenance; it requires very little preprocessing of the data and, while it can be tuned, the default parameters tend to give reasonable results. At the same time, the number of trees in the ensemble should be large (in the thousands) and this makes the model moderately expensive to compute. 
 
-To fit a random forest model on the training set, let's use the parsnip package in conjunction with the ranger package. We first define the model that we want to create:
+To fit a random forest model on the training set, let's use the [parsnip](https://tidymodels.github.io/parsnip/) package in conjunction with the ranger package. We first define the model that we want to create:
 
 
 ```r
@@ -142,7 +144,7 @@ rf_fit <- rf_mod %>% fit(class ~ ., data = cell_train)
 rf_fit
 #> parsnip model object
 #> 
-#> Fit time:  2.8s 
+#> Fit time:  2.7s 
 #> Ranger result
 #> 
 #> Call:
@@ -244,7 +246,7 @@ In this example, 10-fold CV moves iteratively through the folds and leaves a dif
 
 
 
-The final resampling estimates for the model are the **averages** of the performance statistics replicates. For example, suppose for our data, the results were: 
+The final resampling estimates for the model are the **averages** of the performance statistics replicates. For example, suppose for our data the results were: 
 
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
  <thead>
@@ -319,11 +321,11 @@ The final resampling estimates for the model are the **averages** of the perform
 </tbody>
 </table>
 
-From these resampling statistics, the final estimate of performance for this random forest model would be 0.9023028 for the area under the ROC curve and 0.8257842 for accuracy. 
+From these resampling statistics, the final estimate of performance for this random forest model would be 0.902 for the area under the ROC curve and 0.826 for accuracy. 
 
 These resampling statistics are an effective method for measuring model performance _without_ predicting the training set directly as a whole. 
 
-To generate these results, the first step is to create a resampling object using rsample. There are several resampling methods implemented in rsample and cross-validation folds can be created using `vfold_cv()`: 
+To generate these results, the first step is to create a resampling object using rsample. There are several resampling methods implemented in rsample; cross-validation folds can be created using `vfold_cv()`: 
 
 
 ```r
@@ -362,7 +364,7 @@ rf_fit_rs
 #> #  10-fold cross-validation 
 #> # A tibble: 10 x 4
 #>    splits             id     .metrics         .notes          
-#>  * <list>             <chr>  <list>           <list>          
+#>    <list>             <chr>  <list>           <list>          
 #>  1 <split [1.4K/152]> Fold01 <tibble [2 × 3]> <tibble [0 × 1]>
 #>  2 <split [1.4K/152]> Fold02 <tibble [2 × 3]> <tibble [0 × 1]>
 #>  3 <split [1.4K/152]> Fold03 <tibble [2 × 3]> <tibble [0 × 1]>
@@ -413,35 +415,35 @@ The performance metrics from the test set are much closer to the performance met
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.1 (2019-07-05)
-#>  os       macOS Catalina 10.15.3      
+#>  version  R version 3.6.2 (2019-12-12)
+#>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/Los_Angeles         
-#>  date     2020-04-04                  
+#>  tz       America/Denver              
+#>  date     2020-04-08                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version    date       lib source                               
-#>  broom      * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
-#>  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
-#>  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
-#>  ggplot2    * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
-#>  infer      * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                       
-#>  modeldata  * 0.0.1      2019-12-19 [1] Github (tidymodels/modeldata@aa91bb1)
-#>  parsnip    * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
-#>  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
-#>  ranger     * 0.11.2     2019-03-07 [1] CRAN (R 3.6.0)                       
-#>  recipes    * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
-#>  rlang        0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
-#>  rsample    * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
-#>  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
-#>  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
-#>  tune       * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
-#>  workflows  * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
-#>  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
+#>  package    * version     date       lib source                               
+#>  broom      * 0.5.5       2020-02-29 [1] CRAN (R 3.6.0)                       
+#>  dials      * 0.0.4.9000  2020-03-20 [1] local                                
+#>  dplyr      * 0.8.5       2020-03-07 [1] CRAN (R 3.6.0)                       
+#>  ggplot2    * 3.3.0       2020-03-05 [1] CRAN (R 3.6.0)                       
+#>  infer      * 0.5.1       2019-11-19 [1] CRAN (R 3.6.0)                       
+#>  modeldata  * 0.0.1       2019-12-06 [1] CRAN (R 3.6.0)                       
+#>  parsnip    * 0.0.5.9001  2020-04-03 [1] Github (tidymodels/parsnip@0e83faf)  
+#>  purrr      * 0.3.3       2019-10-18 [1] CRAN (R 3.6.0)                       
+#>  ranger     * 0.12.1      2020-01-10 [1] CRAN (R 3.6.0)                       
+#>  recipes    * 0.1.10.9000 2020-04-03 [1] local                                
+#>  rlang        0.4.5.9000  2020-03-20 [1] Github (r-lib/rlang@a90b04b)         
+#>  rsample    * 0.0.6       2020-03-31 [1] CRAN (R 3.6.2)                       
+#>  tibble     * 3.0.0       2020-03-30 [1] CRAN (R 3.6.2)                       
+#>  tidymodels * 0.1.0       2020-02-16 [1] CRAN (R 3.6.0)                       
+#>  tune       * 0.1.0       2020-04-02 [1] CRAN (R 3.6.2)                       
+#>  workflows  * 0.1.1.9000  2020-03-20 [1] Github (tidymodels/workflows@e995c18)
+#>  yardstick  * 0.0.6       2020-03-17 [1] CRAN (R 3.6.0)                       
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
 ```
