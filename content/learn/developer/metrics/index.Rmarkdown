@@ -35,11 +35,11 @@ Why create custom metrics? With the infrastructure yardstick provides, you get:
 - Support for grouped data frames
 - Support for use alongside other metrics in `metric_set()`
 
-The implementation metrics differ slightly depending on whether you are implementing a numeric, class, or class probability metric. Examples for numeric and classification metrics are given below. We would encourage you to look into the implementation of `roc_auc()` after reading this vignette if you want to work on a class probability metric.
+The implementation for metrics differ slightly depending on whether you are implementing a numeric, class, or class probability metric. Examples for numeric and classification metrics are given below. We would encourage you to look into the implementation of `roc_auc()` after reading this vignette if you want to work on a class probability metric.
 
-# Numeric example: mean squared error
+# Numeric example: MSE
 
-Mean squared error (from here on, `mse()`) is a numeric metric that measures the average of the squared errors. Numeric metrics are generally the simplest to create with yardstick, as they do not have multiclass implementations. The formula for `mse()` is:
+Mean squared error (sometimes MSE or from here on, `mse()`) is a numeric metric that measures the average of the squared errors. Numeric metrics are generally the simplest to create with yardstick, as they do not have multiclass implementations. The formula for `mse()` is:
 
 $$ MSE = \frac{1}{N} \sum_{i=1}^{N} (truth_i - estimate_i) ^ 2 = mean( (truth - estimate) ^ 2) $$
 
@@ -169,7 +169,7 @@ solubility_resampled %>%
 
 # Class example: miss rate
 
-Miss rate is another name for the False Negative Rate, and is a classification metric in the same family as `sens()` and `spec()`. It follows the formula:
+Miss rate is another name for the false negative rate, and is a classification metric in the same family as `sens()` and `spec()`. It follows the formula:
 
 $$ miss\_rate = \frac{FN}{FN + TP} $$
 
@@ -442,13 +442,13 @@ hpc_cv %>%
 miss_rate(hpc_cv, obs, VF)
 ```
 
-# Using custom metrics in `metric_set()`
+# Using custom metrics
 
-`metric_set()` validates that all metric functions are of the same metric type by checking the class of the function. If any metrics are not of the right class,`metric_set()` fails. This means that to use your function with `metric_set()`, you need to add the correct class.
+The `metric_set()` function validates that all metric functions are of the same metric type by checking the class of the function. If any metrics are not of the right class,`metric_set()` fails. This means that to use your function with `metric_set()`, you need to add the correct class.
 
-- Numeric metrics - `"numeric_metric"`
-- Class metrics - `"class_metric"`
-- Class probability metrics - `"prob_metric"`
+- Numeric metrics: `"numeric_metric"`
+- Class metrics: `"class_metric"`
+- Class probability metrics: `"prob_metric"`
 
 ```{r, error=TRUE}
 # This errors because the class has not been set

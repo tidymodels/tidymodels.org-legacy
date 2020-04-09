@@ -18,7 +18,7 @@ library(forecast)
 library(tidymodels)
 library(sweep)
 library(zoo)
-pkgs <- c("tidymodels", "timetk", "forecast", "sweep", "zoo")
+pkgs <- c("tidymodels", "tidyr", "timetk", "forecast", "sweep", "zoo")
 
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
@@ -114,7 +114,7 @@ roll_rs$arima[[1]]
 Using the model fits, let's measure performance in two ways:
 
  * _Interpolation_ error will measure how well the model fits to the data that were used to create the model. This is most likely optimistic since no holdout method is used. 
- * _Extrapolation_ or _forecast_ error evaluates the efficacy of the model on the data from the following year (that were not used in the model fit).
+ * _Extrapolation_ or _forecast_ error evaluates the performance of the model on the data from the following year (that were not used in the model fit).
  
 In each case, the mean absolute percent error (MAPE) is the statistic used to characterize the model fits. The interpolation error can be computed from the `Arima` object. To make things easy, let's use the sweep package's `sw_glance()` function:
 
@@ -153,6 +153,8 @@ summary(roll_rs$extrapolation)
 What do these error estimates look like over time?
 
 ```{r plot}
+library(tidyr)
+
 roll_rs %>%
   select(interpolation, extrapolation, start_date) %>%
   pivot_longer(cols = matches("ation"), names_to = "error", values_to = "MAPE") %>%

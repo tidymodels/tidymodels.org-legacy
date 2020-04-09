@@ -23,7 +23,7 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 
 `r req_pkgs(pkgs)`
 
-There are many existing recipe steps in packages like recipes, themis, textrecipes, and others. A full list of steps in CRAN packages [can be found here](TODO). However, you might need to define your own preprocessing operations; this article describes how to do that. If you are looking for good examples of existing steps, I would suggest looking at the code for [centering](https://github.com/tidymodels/recipes/blob/master/R/center.R) or [PCA](https://github.com/tidymodels/recipes/blob/master/R/pca.R) to start. 
+There are many existing recipe steps in packages like recipes, themis, textrecipes, and others. A full list of steps in CRAN packages [can be found here](/functions/). However, you might need to define your own preprocessing operations; this article describes how to do that. If you are looking for good examples of existing steps, we suggest looking at the code for [centering](https://github.com/tidymodels/recipes/blob/master/R/center.R) or [PCA](https://github.com/tidymodels/recipes/blob/master/R/pca.R) to start. 
 
 For check operations (e.g. `check_class()`), the process is very similar. Notes on this are available at the end of this article. 
 
@@ -39,7 +39,7 @@ As an example, we will create a step for converting data into percentiles.
 
 # A new step definition
 
-Let's create a step that replaces the value of a variable with its percentile from the training set. The example data we'll use is from the recipes package:
+Let's create a step that replaces the value of a variable with its percentile from the training set. The example data we'll use is from the modeldata package:
 
 ```{r initial}
 library(modeldata)
@@ -64,7 +64,7 @@ Based on the training set, `r round(mean(biomass_tr$carbon <= biomass_te$carbon[
 
 Our new step will do this computation for any numeric variables of interest. We will call this new recipe step `step_percentile()`. The code below is designed for illustration and not speed or best practices. We've left out a lot of error trapping that we would want in a real implementation.  
 
-# Create the initial function
+# Create the function
 
 To start, there is a _user-facing_ function. Let's call that `step_percentile()`. This is just a simple wrapper around a _constructor function_, which defines the rules for any step object that defines a percentile transformation. We'll call this constructor `step_percentile_new()`. 
 
@@ -121,7 +121,7 @@ It is also important to consider if there are any _main arguments_ to the step. 
 
 There are benefits to following these principles (as shown below). 
 
-# Initialization of a new step_percentile objects
+# Initialize a new object
 
 Now, the constructor function can be created.
 
@@ -133,7 +133,7 @@ step_percentile() calls recipes::add_step()
     └──> step_percentile_new() calls recipes::step()
 ```
 
-`step()` is a general constuctor for recipes that mainly makes sure that the resulting step object is a list with an appropriate S3 class structure. Using `subclass = "percentile"` will set the class of new objects to `"step_percentile()"`. 
+`step()` is a general constructor for recipes that mainly makes sure that the resulting step object is a list with an appropriate S3 class structure. Using `subclass = "percentile"` will set the class of new objects to `"step_percentile()"`. 
 
 ```{r initialize}
 step_percentile_new <- 
@@ -151,11 +151,11 @@ step_percentile_new <-
   }
 ```
 
-This constructor function should have no default argument values. Default should be set in the user-facing step object. 
+This constructor function should have no default argument values. Defaults should be set in the user-facing step object. 
 
-# Define the estimation procedure
+# Define the procedure
 
-You will need to create a new `prep()` method for your step's class. To do this, three arguments that the method should have:
+You will need to create a new `prep()` method for your step's class. To do this, three arguments that the method should have are:
 
 ```r
 function(x, training, info = NULL)
@@ -163,11 +163,11 @@ function(x, training, info = NULL)
 
 where
 
- * `x` will be the `step_percentile` object
- * `training` will be a _tibble_ that has the training set data
+ * `x` will be the `step_percentile` object,
+ * `training` will be a _tibble_ that has the training set data, and
  * `info` will also be a tibble that has information on the current set of data available. This information is updated as each step is evaluated by its specific `prep()` method so it may not have the variables from the original data. The columns in this tibble are `variable` (the variable name), `type` (currently either "numeric" or "nominal"), `role` (defining the variable's role), and `source` (either "original" or "derived" depending on where it originated).
 
-You can define other options. 
+You can define other options as well. 
 
 The first thing that you might want to do in the `prep()` function is to translate the specification listed in the `terms` argument to column names in the current data. There is an internal function called `terms_select()` that can be used to obtain this. 
 
@@ -242,7 +242,7 @@ function(object, new_data, ...)
 
 where `object` is the updated step function that has been through the corresponding `prep()` code and `new_data` is a tibble of data to be processed. 
 
-Here is the code to convert the new data to percentiles. The input data (`x` below) comes in as a numeric vector and the output is a vector if approximate percentiles: 
+Here is the code to convert the new data to percentiles. The input data (`x` below) comes in as a numeric vector and the output is a vector of approximate percentiles: 
 
 ```{r bake-helpers}
 pctl_by_approx <- function(x, ref) {
@@ -269,7 +269,7 @@ bake.step_percentile <- function(object, new_data, ...) {
 }
 ```
 
-# Running the example
+# Run the example
 
 Let's use the example data to make sure that it works: 
 
@@ -320,7 +320,7 @@ It is strongly recommended that:
  1. The check uses `rlang::abort(paste0(...))` when the conditions are not met
  1. The original data are returned (unaltered) by the check when the conditions are satisfied. 
 
-# Other step-related methods
+# Other step methods
 
 There are a few other S3 methods that can be created for your step function. They are not required unless you plan on using your step in the broader tidymodels package set. 
 
@@ -353,11 +353,11 @@ recipe(HHV ~ ., data = biomass_tr) %>%
 rec_obj
 ```
  
-# A tidy method
+## A tidy method
 
-The `broom::tidy()` method is means to return information about the step in a usable format. For our step, it would be helpful to know the reference values. 
+The `broom::tidy()` method is a means to return information about the step in a usable format. For our step, it would be helpful to know the reference values. 
 
-When the recipe has been prepped, those data are in the list `ref_dist`. A small function can be used to reformat that data into a tibble. It is customary to make the main return values be named `value`:
+When the recipe has been prepped, those data are in the list `ref_dist`. A small function can be used to reformat that data into a tibble. It is customary to return the main values as `value`:
 
 ```{r tidy-calcs}
 format_pctl <- function(x) {
@@ -373,7 +373,7 @@ pctl_step_object
 format_pctl(pctl_step_object$ref_dist[["hydrogen"]])
 ```
 
-The tidy method could return these values for each selected column. Before prep, missing values can be used as placeholders. 
+The tidy method could return these values for each selected column. Before `prep()`, missing values can be used as placeholders. 
 
 ```{r tidy}
 tidy.step_percentile <- function(x, ...) {
@@ -397,7 +397,7 @@ tidy.step_percentile <- function(x, ...) {
 tidy(rec_obj, number = 1)
 ```
 
-# S3 methods for tuning parameters
+## Methods for tuning parameters
 
 The tune package can be used to find reasonable values of step arguments by model tuning. There are some S3 methods that are useful to define for your step. The percentile example doesn't really have any tunable parameters, so we will demonstrate using `step_poly()`, which returns a polynomial expansion of selected columns. Its function definition has the arguments: 
 
@@ -405,7 +405,7 @@ The tune package can be used to find reasonable values of step arguments by mode
 args(step_poly)
 ```
 
-`degree` is the tunable argument.
+The argument `degree` is tunable.
 
 To work with tune it is _helpful_ (but not required) to use an S3 method called `tunable()` to define which arguments should be tuned and how values of those arguments should be generated. 
 

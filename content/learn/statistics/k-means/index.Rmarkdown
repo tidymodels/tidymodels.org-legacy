@@ -14,16 +14,16 @@ source(here::here("content/learn/common.R"))
 
 ```{r load, include = FALSE}
 library(tidymodels)
-pkgs <- c("tidymodels")
+pkgs <- c("tidymodels", "tidyr")
 
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
 # Introduction
 
-This article only requires that the tidymodels package be installed.
+`r req_pkgs(pkgs)`
 
-K-means clustering serves as a very useful example of applying tidy data principles to statistical analysis, and especially the distinction between the three tidying functions: 
+K-means clustering serves as a useful example of applying tidy data principles to statistical analysis, and especially the distinction between the three tidying functions: 
 
 - `tidy()`
 - `augment()` 
@@ -33,6 +33,7 @@ Let's start by generating some random two-dimensional data with three clusters. 
 
 ```{r}
 library(tidymodels)
+library(tidyr)
 
 set.seed(27)
 
@@ -68,15 +69,15 @@ kclust
 summary(kclust)
 ```
 
-The output is a list of vectors, where each component has a different length. There's one of length `r nrow(points)`: the same as our original data set. There are a number of elements of length 3: `withinss`, `tot.withinss`, and `betweenss`- and `centers` is a matrix with 3 rows. And then there are the elements of length 1: `totss`, `tot.withinss`, `betweenss`, and `iter`.
+The output is a list of vectors, where each component has a different length. There's one of length `r nrow(points)`, the same as our original data set. There are two elements of length 3 (`withinss` and `tot.withinss`) and `centers` is a matrix with 3 rows. And then there are the elements of length 1: `totss`, `tot.withinss`, `betweenss`, and `iter`. (The value `ifault` indicates possible algorithm problems.)
 
-These differing lengths have a deeper meaning when we want to tidy our data set: they signify that each type of component communicates a *different kind* of information.
+These differing lengths have important meaning when we want to tidy our data set; they signify that each type of component communicates a *different kind* of information.
 
 - `cluster` (`r nrow(points)` values) contains information about each *point*
-- `centers`, `withinss` and `size` (3 values) contain information about each *cluster*
+- `centers`, `withinss`, and `size` (3 values) contain information about each *cluster*
 - `totss`, `tot.withinss`, `betweenss`, and `iter` (1 value) contain information about the *full clustering*
 
-Which of these do we want to extract? There is no right answer: each of them may be interesting to an analyst. Because they communicate entirely different information (not to mention there's no straightforward way to combine them), they are extracted by separate functions. `augment` adds the point classifications to the original data set:
+Which of these do we want to extract? There is no right answer; each of them may be interesting to an analyst. Because they communicate entirely different information (not to mention there's no straightforward way to combine them), they are extracted by separate functions. `augment` adds the point classifications to the original data set:
 
 ```{r}
 augment(kclust, points)
@@ -94,9 +95,9 @@ And as it always does, the `glance()` function extracts a single-row summary:
 glance(kclust)
 ```
 
-# {broom} and {dplyr} for exploratory clustering
+# Exploratory clustering
 
-While these summaries are useful, they would not have been too difficult to extract out from the data set yourself. The real power comes from combining these analyses with dplyr.
+While these summaries are useful, they would not have been too difficult to extract out from the data set yourself. The real power comes from combining these analyses with other tools like [dplyr](https://dplyr.tidyverse.org/).
 
 Let's say we want to explore the effect of different choices of `k`, from 1 to 9, on this clustering. First cluster the data 9 times, each using a different value of `k`, then create columns containing the tidied, glanced and augmented data:
 
@@ -113,8 +114,7 @@ kclusts <-
 kclusts
 ```
 
-We can turn these into three separate data sets each representing a different type of data:
-Then tidy the clusterings three ways: using `tidy()`, using `augment()`, and using `glance()`. Each of these goes into a separate data set as they represent different types of data.
+We can turn these into three separate data sets each representing a different type of data: using `tidy()`, using `augment()`, and using `glance()`. Each of these goes into a separate data set as they represent different types of data.
 
 ```{r}
 clusters <- 
@@ -130,7 +130,7 @@ clusterings <-
   unnest(cols = c(glanced))
 ```
 
-Now we can plot the original points, with each point colored according to the predicted cluster.
+Now we can plot the original points using the data from `augment()`, with each point colored according to the predicted cluster.
 
 ```{r, fig.width = 7, fig.height = 7}
 p1 <- 
@@ -140,14 +140,14 @@ p1 <-
 p1
 ```
 
-Already we get a good sense of the proper number of clusters (3), and how the k-means algorithm functions when k is too high or too low. We can then add the centers of the cluster using the data from `tidy()`:
+Already we get a good sense of the proper number of clusters (3), and how the k-means algorithm functions when `k` is too high or too low. We can then add the centers of the cluster using the data from `tidy()`:
 
 ```{r}
 p2 <- p1 + geom_point(data = clusters, size = 10, shape = "x")
 p2
 ```
 
-The data from `glance()` fits a different but equally important purpose: it lets you view trends of some summary statistics across values of k. Of particular interest is the total within sum of squares, saved in the `tot.withinss` column.
+The data from `glance()` fills a different but equally important purpose; it lets us view trends of some summary statistics across values of `k`. Of particular interest is the total within sum of squares, saved in the `tot.withinss` column.
 
 ```{r}
 ggplot(clusterings, aes(k, tot.withinss)) +
@@ -155,11 +155,11 @@ ggplot(clusterings, aes(k, tot.withinss)) +
   geom_point()
 ```
 
-This represents the variance within the clusters. It decreases as `k` increases, but one can notice a bend (or "elbow") right at k=3. This bend indicates that additional clusters beyond the third have little value. (See [here](http://web.stanford.edu/~hastie/Papers/gap.pdf) for a more mathematically rigorous interpretation and implementation of this method). Thus, all three methods of tidying data provided by broom are useful for summarizing clustering output.
+This represents the variance within the clusters. It decreases as `k` increases, but notice a bend (or "elbow") around `k = 3`. This bend indicates that additional clusters beyond the third have little value. (See [here](http://web.stanford.edu/~hastie/Papers/gap.pdf) for a more mathematically rigorous interpretation and implementation of this method). Thus, all three methods of tidying data provided by broom are useful for summarizing clustering output.
 
 # Session information
 
 ```{r si, echo = FALSE}
 small_session(pkgs)
 ```
- 
+

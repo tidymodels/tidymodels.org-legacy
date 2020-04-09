@@ -16,7 +16,7 @@ source(here::here("content/learn/common.R"))
 library(pls)
 library(tidymodels)
 library(sessioninfo)
-pkgs <- c("modeldata", "pls", "tidymodels")
+pkgs <- c("modeldata", "pls", "tidymodels", "tidyr")
 
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
@@ -95,11 +95,12 @@ The pls package expects a simple formula to specify the model, but each side of 
 
 The calculation for the proportion of variance explained is straightforward for the predictors; the function `pls::explvar()` will compute that. For the outcomes, the process is more complicated. A ready-made function to compute these is not obvious but there is some code inside of the summary function to do the computation (see below). 
 
-The function `get_var_explained()` shown below will do all these computations and return a data frame with columns `components`, `source` (for the predictors, water, etc) and the `proportion` of variance that is explained by the components. 
+The function `get_var_explained()` shown here will do all these computations and return a data frame with columns `components`, `source` (for the predictors, water, etc), and the `proportion` of variance that is explained by the components. 
 
 
 ```{r var-explained}
 library(pls)
+library(tidyr)
 
 get_var_explained <- function(recipe, ...) {
   
@@ -141,12 +142,13 @@ get_var_explained <- function(recipe, ...) {
 }
 ```
 
-We compute this data frame for each resample and save the results in different columns. 
+We compute this data frame for each resample and save the results in the different columns. 
 
 ```{r get-estimates}
 folds <- 
   folds %>%
-  mutate(var = map(recipes, get_var_explained))
+  mutate(var = map(recipes, get_var_explained),
+         var = unname(var))
 ```
 
 To extract and aggregate these data, simple row binding can be used to stack the data vertically. Most of the action happens in the first 15 components so let's filter the data and compute the _average_ proportion.

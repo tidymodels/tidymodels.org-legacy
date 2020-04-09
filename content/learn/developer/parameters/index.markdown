@@ -20,7 +20,7 @@ Some models and recipe steps contain parameters that dials does not know about. 
 
 # Quantitative parameters
 
-As an example, the multivariate adaptive regression spline ([MARS](https://en.wikipedia.org/wiki/Multivariate_adaptive_regression_spline)) model creates nonlinear features from predictors and adds them to a linear regression models. The earth package is an excellent implementation of this method. 
+As an example, let's consider the multivariate adaptive regression spline ([MARS](https://en.wikipedia.org/wiki/Multivariate_adaptive_regression_spline)) model, which creates nonlinear features from predictors and adds them to a linear regression models. The earth package is an excellent implementation of this method. 
 
 MARS creates an initial set of features and then prunes them back to an appropriate size. This can be done automatically by `earth::earth()` or the number of final terms can be set by the user. The parsnip function `mars()` has a parameter called `num_terms` that defines this. 
 
@@ -28,7 +28,7 @@ What if we want to create a parameter for the number of _initial terms_ included
  
 We use the `new_quant_param()` function since this is a numeric parameter. The main two arguments to a numeric parameter function are `range` and `trans`. 
 
-The range specifies the possible values of the parameter. For our example, a minimal value might be one or two. What is the upper limit? The default in the earth package is
+The `range` specifies the possible values of the parameter. For our example, a minimal value might be one or two. What is the upper limit? The default in the earth package is
 
 
 ```r
@@ -83,11 +83,11 @@ args(new_quant_param)
 #> NULL
 ```
 
-* Possible types are double precision and integers. The value of `type` should agree if the values of `range` in the function definition. 
+* Possible types are double precision and integers. The value of `type` should agree with the values of `range` in the function definition. 
 
-* It's ok for our tuning to include the minimum or maximum, so we'll use `c(TRUE, TRUE)` for `inclusive`.  If the value cannot include one end of the range, set one or both of these values to `FALSE`.
+* It's OK for our tuning to include the minimum or maximum, so we'll use `c(TRUE, TRUE)` for `inclusive`.  If the value cannot include one end of the range, set one or both of these values to `FALSE`.
 
-* The label should be a named character string where the name is the parameter name and the value represents what will be printed automatically. 
+* The `label` should be a named character string where the name is the parameter name and the value represents what will be printed automatically. 
 
 * `finalize` is an argument that can set parts of the range. This is discussed more below. 
 
@@ -249,34 +249,34 @@ aggregation() %>% value_sample(3)
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.1 (2019-07-05)
-#>  os       macOS Catalina 10.15.3      
+#>  version  R version 3.6.2 (2019-12-12)
+#>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/Los_Angeles         
-#>  date     2020-04-06                  
+#>  tz       America/Denver              
+#>  date     2020-04-08                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version    date       lib source                               
-#>  broom      * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
-#>  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
-#>  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
-#>  ggplot2    * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
-#>  infer      * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                       
-#>  parsnip    * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
-#>  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
-#>  recipes    * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
-#>  rlang        0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
-#>  rsample    * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
-#>  scales     * 1.1.0      2019-11-18 [1] CRAN (R 3.6.0)                       
-#>  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
-#>  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
-#>  tune       * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
-#>  workflows  * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
-#>  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
+#>  package    * version     date       lib source                               
+#>  broom      * 0.5.5       2020-02-29 [1] CRAN (R 3.6.0)                       
+#>  dials      * 0.0.4.9000  2020-03-20 [1] local                                
+#>  dplyr      * 0.8.5       2020-03-07 [1] CRAN (R 3.6.0)                       
+#>  ggplot2    * 3.3.0       2020-03-05 [1] CRAN (R 3.6.0)                       
+#>  infer      * 0.5.1       2019-11-19 [1] CRAN (R 3.6.0)                       
+#>  parsnip    * 0.0.5.9001  2020-04-03 [1] Github (tidymodels/parsnip@0e83faf)  
+#>  purrr      * 0.3.3       2019-10-18 [1] CRAN (R 3.6.0)                       
+#>  recipes    * 0.1.10.9000 2020-04-03 [1] local                                
+#>  rlang        0.4.5.9000  2020-03-20 [1] Github (r-lib/rlang@a90b04b)         
+#>  rsample    * 0.0.6       2020-03-31 [1] CRAN (R 3.6.2)                       
+#>  scales     * 1.1.0       2019-11-18 [1] CRAN (R 3.6.0)                       
+#>  tibble     * 3.0.0       2020-03-30 [1] CRAN (R 3.6.2)                       
+#>  tidymodels * 0.1.0       2020-02-16 [1] CRAN (R 3.6.0)                       
+#>  tune       * 0.1.0       2020-04-02 [1] CRAN (R 3.6.2)                       
+#>  workflows  * 0.1.1.9000  2020-03-20 [1] Github (tidymodels/workflows@e995c18)
+#>  yardstick  * 0.0.6       2020-03-17 [1] CRAN (R 3.6.0)                       
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
 ```

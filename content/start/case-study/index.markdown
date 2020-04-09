@@ -3,6 +3,8 @@ title: "A predictive modeling case study"
 weight: 5
 tags: [parsnip, recipe, rsample, tune]
 categories: [model fitting, tuning]
+description: | 
+  Develop, from beginning to end, a predictive model using best practices.
 ---
 
 
@@ -13,15 +15,15 @@ This article requires that you have the following packages installed: glmnet, ra
 
 # Introduction
 
-The previous _Getting Started_ articles have been focused on single tasks related to modeling. This example is a broader case study of building a predictive model. It uses all of the previous topics.  
+The previous _Getting Started_ articles have been focused on single tasks related to modeling. This example is a broader case study of building a predictive model from beginning to end. It uses all of the previous topics.  
 
-Our modeling goal here is to predict which hotel stays include children (vs. do not include children or babies) based on the other characteristics in this dataset such as which hotel the guests stay at, how much they pay, etc. The [paper that this data comes from](https://www.sciencedirect.com/science/article/pii/S2352340918315191) points out that the distribution of many of these variables (such as number of adults/children, room type, meals bought, country, and so forth) is different for canceled versus not canceled hotel bookings. This is mostly because more information is gathered when guests check in; the biggest contributor to these differences is not that people who cancel are different from people who do not.
+Our modeling goal here is to use a data set of hotel stays and predict which hotel stays include children (vs. do not include children or babies), based on the other characteristics of the stays such as which hotel the guests stay at, how much they pay, etc. The [paper that this data comes from](https://www.sciencedirect.com/science/article/pii/S2352340918315191) points out that the distribution of many of these variables (such as number of adults/children, room type, meals bought, country of origin of the guests, and so forth) is different for canceled vs. not canceled hotel bookings. This is mostly because more information is gathered when guests check in; the biggest contributor to these differences is not that people who cancel are different from people who do not.
 
-To build our models, the data were filtered to only the bookings that did not cancel and build a model to predict which hotel stays include children and which do not.
+To build our models, we filtered the data to only the bookings that did not cancel and will build a model to predict which non-canceled hotel stays include children and which do not.
 
 # Data Spending
 
-The [version](https://gist.github.com/topepo/05a74916c343e57a71c51d6bc32a21ce) of the data that we'll use can be found on the `tidymodels.org` site: 
+The [version](https://gist.github.com/topepo/05a74916c343e57a71c51d6bc32a21ce) of the data that we'll use can be accessed from the `tidymodels.org` site: 
 
 
 ```r
@@ -29,20 +31,20 @@ library(tidymodels)
 library(readr)
 
 hotels <- 
-  readr::read_csv('https://bit.ly/hotel_booking_data') %>%
+  read_csv('https://bit.ly/hotel_booking_data') %>%
   mutate_if(is.character, as.factor) 
 
 dim(hotels)
 #> [1] 50000    23
 ```
 
-An important consideration for these data: children were only in 8.1% of the reservations. This type of severe class imbalance can often wreak havoc on an analysis. While there are several methods for combating this issue, the analyses shown below analyze the data as-is. 
+An important consideration for these data isthat children were only in 8.1% of the reservations. This type of severe class imbalance can often wreak havoc on an analysis. While there are several methods for combating this issue, the analyses shown below analyze the data as-is. 
 
 For a data splitting strategy, 25% of the reservations were allocated to the test set using a stratified random sample:  
 
 
 ```r
-set.seed(35225)
+set.seed(123)
 splits <- initial_split(hotels, strata = children)
 
 hotel_other <- training(splits)
@@ -55,7 +57,7 @@ Rather than using multiple iterations of resampling, a single _validation set_ w
 
 
 ```r
-set.seed(948)
+set.seed(234)
 val_set <- validation_split(hotel_other, strata = children, prop = 0.80)
 val_set
 #> # Validation Set Split (0.8/0.2)  using stratification 
@@ -65,11 +67,11 @@ val_set
 #> 1 <split [30K/7.5K]> validation
 ```
 
-The standard functions from the tune package will be used as before but, in this case, the performance metrics will be computed on a single set of 7,500 reservations. This amount of data should provide enough precision to be a reliable indicator for how well each model predicts the outcome.  
+The same functions from the tune package will be used as in previous articles but, in this case, the performance metrics will be computed on a single set of 7,500 reservations. This amount of data should provide enough precision to be a reliable indicator for how well each model predicts the outcome.  
 
 # A first model: logistic regression
 
-It makes sense to start with a simple model. Since the outcome is categorical, a logistic regression model would be a good first step. Specifically, a glmnet model is used to potentially add some amount of feature selection during model training. This method of estimating the logistic regression slope parameters uses a _penalty_ on the process so that less relavant predictors are driven towards a value of zero. One of the glmnet penalization methods, called the lasso method, can set the predictor slopes to absolute zero if a large enough penalty is used. 
+It makes sense to start with a simple model. Since the outcome is categorical, a logistic regression model would be a good first step. Specifically, let's use a glmnet model to potentially perform feature selection during model training. This method of estimating the logistic regression slope parameters uses a _penalty_ on the process so that less relevant predictors are driven towards a value of zero. One of the glmnet penalization methods, called the lasso method, can set the predictor slopes to absolute zero if a large enough penalty is used. 
 
 To specify a penalized logistic regression model that uses a feature selection penalty:  
 
@@ -82,7 +84,7 @@ lr_mod <-
 
 Setting `mixture` to a value of one means that the glmnet model will focus on potentially removing irrelevant predictors. 
 
-To prepare the data for the model, the categorical predictors (e.g., `distribution_channel`, `hotel`, ...) should be converted to dummy variables. Additionally, it might make sense fo create a set of date-based predictors that reflect important components related to the arrival date. First, `step_date()` creates predictors for the year, month, and day of the week. Secondly, `step_holiday()` generates a set of indicator variables for specific holidays. The addition of `step_zv()` means that no indicators variables that only contains a single unique value (e.g. all zeros) will be added to the model. This is important because, for penalized models, the the predictors should be centered and scaled. 
+To prepare the data for the model, the categorical predictors (e.g., `distribution_channel`, `hotel`, ...) should be converted to dummy variables. Additionally, it might make sense to create a set of date-based predictors that reflect important components related to the arrival date. First, `step_date()` creates predictors for the year, month, and day of the week. Secondly, `step_holiday()` generates a set of indicator variables for specific holidays. The addition of `step_zv()` means that no indicator variables that only contains a single unique value (e.g. all zeros) will be added to the model. This is important because, for penalized models, the the predictors should be centered and scaled. 
 
 The recipe for these steps is: 
 
@@ -101,7 +103,7 @@ lr_recipe <-
   step_normalize(all_predictors())
 ```
 
-The model and recipe can be bundled into a single workflow object to make management of the R objects easy:
+The model and recipe can be bundled into a single `workflow()` object to make management of the R objects easier:
 
 
 ```r
@@ -111,7 +113,7 @@ lr_workflow <-
   add_recipe(lr_recipe)
 ```
 
-Finally a grid of penalty values are created and the model is tuned. The validation set predictions are saved (via the call to `control_grid()` below) so that diagnostic information can be available after the model fit. Also, the area under the ROC curve is once again used to quantify how well the model performs across a continuum of event thresholds (recall that the event rate is very low for these data). 
+Finally a grid of penalty values are created and the model is tuned. The validation set predictions are saved (via the call to `control_grid()` below) so that diagnostic information can be available after the model fit. Also, the area under the ROC curve is used to quantify how well the model performs across a continuum of event thresholds (recall that the event rate is very low for these data). 
 
 
 
@@ -127,6 +129,7 @@ lr_res <-
             grid = lr_reg_grid,
             control = tune_ctrl,
             metrics = roc_only)
+#> ! validation: recipe: The `x` argument of `as_tibble.matrix()` must have column names ...
 ```
 
 The resulting validation set metrics are computed and plotted against the amount of penalization: 
@@ -184,7 +187,7 @@ As a next step, we might consider a highly non-linear model generated using tree
 
 # Tree-based ensembles
 
-Once effective and low-maintenance modeling technique is _random forest_ (used in a previous vignette). This model will be used with less pre-processing than the logistic regression. The conversion to dummy variables and variable normalization are not required. As before, the date predictor is engineered so that the random forest model does not need to work hard to tease these potential patterns from the data.  
+One effective and low-maintenance modeling technique is a _random forest_ (also used in the [resampling article](/start/resampling/)). This model can be used with less preprocessing than the logistic regression; conversion to dummy variables and variable normalization are not required. As before, the date predictor is engineered so that the random forest model does not need to work hard to tease these potential patterns from the data.  
 
 
 ```r
@@ -201,10 +204,10 @@ The computations required for model tuning can usually be easily parallelized. H
 ```r
 cores <- parallel::detectCores()
 cores
-#> [1] 12
+#> [1] 8
 ```
 
-To declare that parallel processing should be used, the `num.threads` for `ranger::ranger()` can be passed when setting the computational engine: 
+To declare that parallel processing should be used, the `num.threads` argument for `ranger::ranger()` can be passed when setting the computational engine: 
 
 
 ```r
@@ -225,7 +228,7 @@ To tune, a space-filling design with 25 candidate models is used:
 
 
 ```r
-set.seed(3826)
+set.seed(345)
 rf_res <- 
   rf_workflow %>% 
   tune_grid(val_set,
@@ -233,6 +236,10 @@ rf_res <-
             control = tune_ctrl,
             metrics = roc_only)
 #> i Creating pre-processing data to finalize unknown parameter: mtry
+#> Warning: The `x` argument of `as_tibble.matrix()` must have column names if `.name_repair` is omitted as of tibble 2.0.0.
+#> Using compatibility `.name_repair`.
+#> This warning is displayed once every 8 hours.
+#> Call `lifecycle::last_warnings()` to see where this warning was generated.
 ```
 
 The note about "finalizing the unknown parameter" is related to the size of the data set. Since `mtry` depends on the number of predictors in the data set, `tune_grid()` determines the upper bound for `mtry` once it receives the data. 
@@ -255,7 +262,7 @@ rf_best
 #> # A tibble: 1 x 2
 #>    mtry min_n
 #>   <int> <int>
-#> 1     5     3
+#> 1     8     7
 ```
 
 As before, the validation set ROC curve can be produced and overlaid with the previous logistic regression model: 
@@ -299,7 +306,7 @@ rf_workflow <-
 rf_fit <- rf_workflow %>% last_fit(splits)
 ```
 
-From this fitted workflow, the vip package can be used to easily visualize the results: 
+From this fitted workflow, the vip package can be used to visualize the results: 
 
 
 ```r
@@ -313,7 +320,7 @@ rf_fit$.workflow %>%
 
 <img src="figs/rf-importance-1.svg" width="672" />
 
-The most important predictors were the daily cost for the room, the type of reservation, the time between the creation of the reservation and the arrival date, and the type of room that was reserved. 
+The most important predictors in whether a hotel stay had children or not were the daily cost for the room, the type of reservation, the time between the creation of the reservation and the arrival date, and the type of room that was reserved. 
 
 # Test set results
 
@@ -345,37 +352,36 @@ Based on these results, the validation set and test set performance statistics a
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.1 (2019-07-05)
-#>  os       macOS Catalina 10.15.3      
+#>  version  R version 3.6.2 (2019-12-12)
+#>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/Los_Angeles         
-#>  date     2020-04-04                  
+#>  tz       America/Denver              
+#>  date     2020-04-09                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version    date       lib source                               
-#>  broom      * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
-#>  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
-#>  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
-#>  ggplot2    * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
-#>  glmnet       3.0-2      2019-12-11 [1] CRAN (R 3.6.0)                       
-#>  infer      * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                       
-#>  parsnip    * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
-#>  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
-#>  ranger       0.11.2     2019-03-07 [1] CRAN (R 3.6.0)                       
-#>  readr      * 1.3.1      2018-12-21 [1] CRAN (R 3.6.0)                       
-#>  recipes    * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
-#>  rlang        0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
-#>  rsample    * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
-#>  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
-#>  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
-#>  tune       * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
-#>  vip        * 0.1.3.9000 2019-12-20 [1] Github (koalaverse/vip@4a7776b)      
-#>  workflows  * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
-#>  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
+#>  package    * version     date       lib source                               
+#>  broom      * 0.5.5       2020-02-29 [1] CRAN (R 3.6.0)                       
+#>  dials      * 0.0.4.9000  2020-03-20 [1] local                                
+#>  dplyr      * 0.8.5       2020-03-07 [1] CRAN (R 3.6.0)                       
+#>  ggplot2    * 3.3.0       2020-03-05 [1] CRAN (R 3.6.0)                       
+#>  infer      * 0.5.1       2019-11-19 [1] CRAN (R 3.6.0)                       
+#>  parsnip    * 0.0.5.9001  2020-04-03 [1] Github (tidymodels/parsnip@0e83faf)  
+#>  purrr      * 0.3.3       2019-10-18 [1] CRAN (R 3.6.0)                       
+#>  ranger       0.12.1      2020-01-10 [1] CRAN (R 3.6.0)                       
+#>  readr      * 1.3.1       2018-12-21 [1] CRAN (R 3.6.0)                       
+#>  recipes    * 0.1.10.9000 2020-04-03 [1] local                                
+#>  rlang        0.4.5.9000  2020-03-20 [1] Github (r-lib/rlang@a90b04b)         
+#>  rsample    * 0.0.6       2020-03-31 [1] CRAN (R 3.6.2)                       
+#>  tibble     * 3.0.0       2020-03-30 [1] CRAN (R 3.6.2)                       
+#>  tidymodels * 0.1.0       2020-02-16 [1] CRAN (R 3.6.0)                       
+#>  tune       * 0.1.0       2020-04-02 [1] CRAN (R 3.6.2)                       
+#>  vip        * 0.2.1       2020-01-20 [1] CRAN (R 3.6.0)                       
+#>  workflows  * 0.1.1.9000  2020-03-20 [1] Github (tidymodels/workflows@e995c18)
+#>  yardstick  * 0.0.6       2020-03-17 [1] CRAN (R 3.6.0)                       
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
 ```

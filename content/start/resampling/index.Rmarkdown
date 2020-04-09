@@ -3,6 +3,8 @@ title: "Evaluate your model with resampling"
 weight: 3
 tags: [rsample, parsnip, tune, yardstick]
 categories: [resampling]
+description: | 
+  Measure model performance by generating different versions of the training data through resampling.
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}
@@ -68,11 +70,11 @@ When beginning a modeling project, it is common to [separate the data set](https
 
  * The _test set_ is held in reserve until the end of the project, at which point there should only be one or two models under serious consideration. It is used as an unbiased source for measuring final model performance. 
 
-There are different ways to create these partitions of the data. The most common approach is to use a random sample. Suppose that one quarter of the data were reserved for the test set. Random sampling would randomly select 25% for the test set and use the remainder for the training set. We can use the rsample package for this purpose. In the original analysis, the authors made their own training/test set and that information is contained in the column `case`. To demonstrate how to make a split, we'll remove this column before we make our own split. 
+There are different ways to create these partitions of the data. The most common approach is to use a random sample. Suppose that one quarter of the data were reserved for the test set. Random sampling would randomly select 25% for the test set and use the remainder for the training set. We can use the [rsample](https://tidymodels.github.io/rsample/) package for this purpose. In the original analysis, the authors made their own training/test set and that information is contained in the column `case`. To demonstrate how to make a split, we'll remove this column before we make our own split. 
 
 Since random sampling uses random numbers, it is important to set the random number seed. This ensures that the random numbers can be reproduced at a later time (if needed). 
 
-`rsample::initial_split()` takes the original data and saves the information on how to make the partitions. After that, the `training()` and `testing()` functions return the actual data sets:
+The function `rsample::initial_split()` takes the original data and saves the information on how to make the partitions. After that, the `training()` and `testing()` functions return the actual data sets:
 
 ```{r cell-split}
 library(tidymodels) # Load the rsample package, along with the rest of tidymodels
@@ -92,9 +94,9 @@ The majority of the modeling work is then conducted on the training set data.
 
 Random forest models are ensembles of decisions trees. A large number of tree models are created for the ensemble based on slightly different versions of the training set. When creating the individual decision trees, the fitting process encourages them to be as diverse as possible. The collection of trees are combined into the random forest model and, when a new sample is predicted, the votes from each tree are used to calculate the final predicted value for the new sample. 
 
-This model is very low maintenance; it requires very little pre-processing of the data and, while it can be tuned, the default parameters tend to give reasonable results. At the same time, the number of trees in the ensemble should be large (in the thousands) and this makes the model moderately expensive to compute. 
+This model is very low maintenance; it requires very little preprocessing of the data and, while it can be tuned, the default parameters tend to give reasonable results. At the same time, the number of trees in the ensemble should be large (in the thousands) and this makes the model moderately expensive to compute. 
 
-To fit a random forest model on the training set, let's use the parsnip package in conjunction with the ranger package. We first define the model that we want to create:
+To fit a random forest model on the training set, let's use the [parsnip](https://tidymodels.github.io/parsnip/) package in conjunction with the ranger package. We first define the model that we want to create:
 
 ```{r rf-def}
 rf_mod <- 
@@ -106,7 +108,7 @@ rf_mod <-
 From this, the `fit()` function can be used with a simple model formula. Since random forest models use random numbers, we again set the seed prior to computing: 
 
 ```{r rf-fit}
-set.seed(5273)
+set.seed(234)
 rf_fit <- rf_mod %>% fit(class ~ ., data = cell_train)
 rf_fit
 ```
@@ -178,12 +180,17 @@ Let's use 10-fold cross-validation (CV) in this example. This method randomly al
 In this example, 10-fold CV moves iteratively through the folds and leaves a different 10% out each time for model assessment. At the end of this process, there are 10 sets of performance statistics that were created on 10 data sets that were not used in the modeling process. For the cell example, this means 10 accuracies and 10 areas under the ROC curve. While 10 models were created, these are not used further; we do not keep the models themselves trained on these folds because their only purpose is calculating performance metrics. 
 
 ```{r rf-rs, include = FALSE}
-set.seed(1697)
+library(tidyr)
+set.seed(345)
 folds <- vfold_cv(cell_train)
 
-set.seed(5273)
-rf_fit_rs <- rf_mod %>% 
-  fit_resamples(class ~ ., folds)
+rf_wf <- 
+  workflow() %>%
+  add_model(rf_mod) %>%
+  add_formula(class ~ .)
+
+set.seed(456)
+rf_fit_rs <- fit_resamples(rf_wf, folds)
 
 assessment_size <- 
   folds %>% 
@@ -208,7 +215,7 @@ assessment_stats <-
 rs_stats <- collect_metrics(rf_fit_rs)
 ```
 
-The final resampling estimates for the model are the **averages** of the performance statistics replicates. For example, suppose for our data, the results were: 
+The final resampling estimates for the model are the **averages** of the performance statistics replicates. For example, suppose for our data the results were: 
 
 ```{r rs-table, echo = FALSE, results = "asis"}
 assessment_stats %>% 
@@ -216,27 +223,32 @@ assessment_stats %>%
   kable_styling(full_width = FALSE)
 ```
 
-From these resampling statistics, the final estimate of performance for this random forest model would be `r rs_stats$mean[rs_stats$.metric == "roc_auc"]` for the area under the ROC curve and `r rs_stats$mean[rs_stats$.metric == "accuracy"]` for accuracy. 
+From these resampling statistics, the final estimate of performance for this random forest model would be `r round(rs_stats$mean[rs_stats$.metric == "roc_auc"], 3)` for the area under the ROC curve and `r round(rs_stats$mean[rs_stats$.metric == "accuracy"], 3)` for accuracy. 
 
 These resampling statistics are an effective method for measuring model performance _without_ predicting the training set directly as a whole. 
 
-To generate these results, the first step is to create a resampling object using rsample. There are several resampling methods implemented in rsample and cross-validation folds can be created using `vfold_cv()`: 
+To generate these results, the first step is to create a resampling object using rsample. There are several resampling methods implemented in rsample; cross-validation folds can be created using `vfold_cv()`: 
 
 ```{r folds}
-set.seed(1697)
+set.seed(345)
 folds <- vfold_cv(cell_train, v = 10)
 folds
 ```
 
 The list column for `splits` contains the information on which rows belong in the analysis and assessment sets. There are functions that can be used to extract the individual resampled data called `analysis()` and `assessment()`. 
 
-However, the tune package contains high-level functions that can do the required computations to resample a model (and, optionally, a recipe) for the purpose of measuring performance. The syntax is very similar to `fit()`: 
+However, the tune package contains high-level functions that can do the required computations to resample a model for the purpose of measuring performance. You have several options for building an object for resampling; you can resample a model specification preprocessed with a formula or [recipe](/start/recipes/), or you can resample a [`workflow()`](https://tidymodels.github.io/workflows/) that bundles together a model specification and formula/recipe. For this example, let's use a `workflow()` that bundles together the random forest model and a formula. Whatever of these options you use, the syntax to resample is very similar to `fit()`: 
 
 ```{r rs, eval = FALSE}
-set.seed(5273)
-rf_fit_rs <- rf_mod %>% 
-  fit_resamples(class ~ ., folds)
+rf_wf <- 
+  workflow() %>%
+  add_model(rf_mod) %>%
+  add_formula(class ~ .)
+
+set.seed(456)
+rf_fit_rs <- fit_resamples(rf_wf, folds)
 ```
+
 ```{r rs-show}
 rf_fit_rs
 ```

@@ -3,6 +3,8 @@ title: "Preprocess your data with recipes"
 weight: 2
 tags: [recipes, parsnip, workflows, yardstick, broom]
 categories: [pre-processing]
+description: | 
+  Prepare data for modeling with modular preprocessing steps.
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}
@@ -22,9 +24,9 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 
 # Introduction
 
-After reviewing our [first steps with models](linkTODO), let's explore how to use the recipes package. 
+After reviewing our [first steps with models](/start/models/), let's explore how to use the recipes package. 
 
-Recipes are tools primarily used for data pre-processing prior to creating a model. Such pre-processing might consist of: 
+Recipes are tools primarily used for data preprocessing prior to creating a model. Such preprocessing might consist of: 
 
  * converting qualitative predictors to indicator variables (also known as dummy variables),
  
@@ -42,7 +44,7 @@ In this example, let's use the nycflights13 data. This data set contains informa
 library(nycflights13)
 library(tidymodels)
 
-set.seed(25213)
+set.seed(123)
 flight_data <- 
   flights %>% 
   mutate(
@@ -76,12 +78,12 @@ Second, there are `r length(levels(flight_data$dest))` destination values contai
 
 To get started, let's split these data into two subsets. We'll keep most of the data (subset chosen randomly) in a _training set_. This subset of the data is used create the model. The remainder of the data are used as a _test set_ and this subset is only used to measure model performance^[This straightforward split of data into two subsets is fairly common. However, it is inadvisable to directly predict the training set one time after fitting the model. Instead, [resampling methods](https://bookdown.org/max/FES/resampling.html) can be used to estimate how well the model performs on the training set.].
 
-To do this, we can use the rsample package to create an object that contains the information on _how_ to split the data, and then two more rsample functions to create data frames for the training and testing sets: 
+To do this, we can use the [rsample](https://tidymodels.github.io/rsample/) package to create an object that contains the information on _how_ to split the data, and then two more rsample functions to create data frames for the training and testing sets: 
 
 ```{r split}
 # Fix the random numbers by setting the seed 
 # This enables the analysis to be reproducible when random numbers are used 
-set.seed(5970)
+set.seed(234)
 # Put 3/4 of the data into the training set 
 data_split <- initial_split(flight_data, prop = 3/4)
 
@@ -90,9 +92,9 @@ train_data <- training(data_split)
 test_data  <- testing(data_split)
 ```
  
-## Creating the predictor definitions
+# Create the predictor definitions
 
-To get started, let's create a simple logistic regression model. Before creating the model fit object, we can use a recipe to create a few new predictors and conduct some pre-processing required by the model. 
+To get started, let's create a simple logistic regression model. Before creating the model fit object, we can use a recipe to create a few new predictors and conduct some preprocessing required by the model. 
 
 To get started, an initial recipe declares the roles of the columns of the data: 
 
@@ -116,7 +118,7 @@ A value of "nominal" means that the column is either of type factor or character
 
 Note that a recipe is always associated with the data set used to create the model; we used `data = train_data` when specifying it. A recipe is associated with a training set, as opposed to a test set.  
 
-We can add many other operations to the recipe. Perhaps it is reasonable for the date of the flight to have an effect on the likelihood of a late arrival. A little bit of _feature engineering_ might go a long way to improving our model. How should the date be encoded into the model?  The `date` column has an R `date` object so including that column as it exists now in the model will just convert it to a numeric format that is the number of days after a reference date: 
+We can add many other operations to the recipe. Perhaps it is reasonable for the date of the flight to have an effect on the likelihood of a late arrival. A little bit of **feature engineering** might go a long way to improving our model. How should the date be encoded into the model?  The `date` column has an R `date` object so including that column as it exists now in the model will just convert it to a numeric format that is the number of days after a reference date: 
 
 ```{r dates}
 days <- 
@@ -151,9 +153,9 @@ flights_rec <-
 
 `step_date()` creates basic date-oriented features. In this case, two factor columns are added with the appropriate day of the week and the month. `step_holiday()` creates binary indicator variables detailing if the current date is a holiday or not. The argument value of `timeDate::listHolidays("US")` uses the timeDate package to list the `r length(timeDate::listHolidays("US"))` standard US holidays. Finally, since we longer want the date column itself in the model, `step_rm()` eliminates it from the data set. 
 
-To train this model, each predictor will need to be in a numeric format^[When computing the model coefficients, the equations that logistic regression uses required numbers (as opposed for factor variables). In other words, there may be a difference in how we store our data (in factors inside a data frame) and how the underlying equations require them (a purely numeric matrix). Luckily, it is easy to go between these two formats in R.]. For columns like `dest` and `origin`, which are currently factor columns, the standard method to convert them to be numeric is to create _dummy_ or _indicator_ variables. These are binary values for the levels of the factors. For example, since `origin` has values of `"EWR"`, `"JFK"`, and `"LGA"`, the standard dummy variable encoding will create _two_ numeric columns of the data that are 1 when the originating airport is `"JFK"` or `"LGA"` and zero otherwise, respectively^[Why two and not three? If you know the value of two of the columns, the third can be inferred. The standard in R is to leave out the dummy variable column for the first level of the factor which, in this case, corresponds to `"EWR"`.].
+To train this model, each predictor will need to be in a numeric format^[When computing the model coefficients, the equations that logistic regression uses requires numbers (as opposed to factor variables). In other words, there may be a difference in how we store our data (in factors inside a data frame) and how the underlying equations require them (a purely numeric matrix). Luckily, it is easy to go between these two formats in R.]. For columns like `dest` and `origin`, which are currently factor columns, the standard method to convert them to be numeric is to create _dummy_ or _indicator_ variables. These are binary values for the levels of the factors. For example, since `origin` has values of `"EWR"`, `"JFK"`, and `"LGA"`, the standard dummy variable encoding will create _two_ numeric columns of the data that are 1 when the originating airport is `"JFK"` or `"LGA"` and zero otherwise, respectively^[Why two and not three? If you know the value of two of the columns, the third can be inferred. The standard in R is to leave out the dummy variable column for the first level of the factor which, in this case, corresponds to `"EWR"`.].
 
-Unlike the standard model formula methods in R, a recipe **does not** automatically create dummy variables^[We don't make the assumption that dummy variables are going to be used. For one reason: [not all models require the predictors to be numeric](https://bookdown.org/max/FES/categorical-trees.html). For another reason, recipes can be used to prepare the data for other, non-model purposes what prefer factors (such as a table or plot).]. Instead, `step_dummy()` can be used for this purpose: 
+Unlike the standard model formula methods in R, a recipe **does not** automatically create dummy variables^[We don't make the assumption that dummy variables are going to be used. For one reason, [not all models require the predictors to be numeric](https://bookdown.org/max/FES/categorical-trees.html). For another reason, recipes can be used to prepare the data for other, non-model purposes that prefer factors (such as a table or plot).]. Instead, `step_dummy()` can be used for this purpose: 
 
 ```{r dummy}
 flights_rec <- 
@@ -192,7 +194,7 @@ flights_rec <-
 
 Now that we've created this _specification_ of what should be done with the data, how do we use it? 
 
-# Using a recipe with a model
+# Use a recipe with a model
 
 Let's use straightforward logistic regression to model the flight data. We can build a model specification using the parsnip package: 
 

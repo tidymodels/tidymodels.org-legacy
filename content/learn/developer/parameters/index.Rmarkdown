@@ -26,7 +26,7 @@ Some models and recipe steps contain parameters that dials does not know about. 
 
 # Quantitative parameters
 
-As an example, the multivariate adaptive regression spline ([MARS](https://en.wikipedia.org/wiki/Multivariate_adaptive_regression_spline)) model creates nonlinear features from predictors and adds them to a linear regression models. The earth package is an excellent implementation of this method. 
+As an example, let's consider the multivariate adaptive regression spline ([MARS](https://en.wikipedia.org/wiki/Multivariate_adaptive_regression_spline)) model, which creates nonlinear features from predictors and adds them to a linear regression models. The earth package is an excellent implementation of this method. 
 
 MARS creates an initial set of features and then prunes them back to an appropriate size. This can be done automatically by `earth::earth()` or the number of final terms can be set by the user. The parsnip function `mars()` has a parameter called `num_terms` that defines this. 
 
@@ -34,7 +34,7 @@ What if we want to create a parameter for the number of _initial terms_ included
  
 We use the `new_quant_param()` function since this is a numeric parameter. The main two arguments to a numeric parameter function are `range` and `trans`. 
 
-The range specifies the possible values of the parameter. For our example, a minimal value might be one or two. What is the upper limit? The default in the earth package is
+The `range` specifies the possible values of the parameter. For our example, a minimal value might be one or two. What is the upper limit? The default in the earth package is
 
 ```{r eart, eval = FALSE}
 min(200, max(20, 2 * ncol(x))) + 1
@@ -61,11 +61,11 @@ library(tidymodels)
 args(new_quant_param)
 ```
 
-* Possible types are double precision and integers. The value of `type` should agree if the values of `range` in the function definition. 
+* Possible types are double precision and integers. The value of `type` should agree with the values of `range` in the function definition. 
 
-* It's ok for our tuning to include the minimum or maximum, so we'll use `c(TRUE, TRUE)` for `inclusive`.  If the value cannot include one end of the range, set one or both of these values to `FALSE`.
+* It's OK for our tuning to include the minimum or maximum, so we'll use `c(TRUE, TRUE)` for `inclusive`.  If the value cannot include one end of the range, set one or both of these values to `FALSE`.
 
-* The label should be a named character string where the name is the parameter name and the value represents what will be printed automatically. 
+* The `label` should be a named character string where the name is the parameter name and the value represents what will be printed automatically. 
 
 * `finalize` is an argument that can set parts of the range. This is discussed more below. 
 
