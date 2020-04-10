@@ -18,7 +18,7 @@ library(tidymodels)
 
 pkgs <- c("tidymodels", "readr", "rstanarm")
 
-theme_set(theme_bw())
+theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
 
@@ -55,13 +55,6 @@ urchins <-
   setNames(c("food_regime", "initial_volume", "width")) %>% 
   # Factors are very helpful for modeling, so we convert one column
   mutate(food_regime = factor(food_regime, levels = c("Initial", "Low", "High")))
-```
-
-You can also download the data file locally: 
-
-`r icon::fa_download(colour = "#CA225E")` 
-```{r download-urchins, echo = FALSE} 
-xfun::embed_files(here::here("content/start/models/urchins.csv"), name = "urchin_data.csv")
 ```
 
 Let's take a quick look at the data:
