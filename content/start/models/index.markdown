@@ -15,15 +15,13 @@ description: |
 
 # Introduction
 
-How do you create a statistical model using tidymodels? In this article, we will walk you through the steps. We will start with data for modeling, learn how to specify and train models with different engines, and understand why these functions are designed this way.
-
-# Prerequisites
+How do you create a statistical model using tidymodels? In this article, we will walk you through the steps. We start with data for modeling, learn how to specify and train models with different engines, and understand why these functions are designed this way.
 
 This article requires that you have the following packages installed: readr, rstanarm, and tidymodels.
 
 
 ```r
-library(tidymodels)  # mainly for parsnip package
+library(tidymodels)  # for the parsnip package
 
 # Helper packages
 library(readr)       # for importing data
@@ -83,28 +81,29 @@ urchins
 #> # … with 62 more rows
 ```
 
-For each of the 72 urchins, we know their:
+The urchins data is a [tibble](https://tibble.tidyverse.org/index.html). If you are new to tibbles, the best place to start is the [tibbles chapter](https://r4ds.had.co.nz/tibbles.html) in *R for data science*. For each of the 72 urchins, we know their:
 
 + experimental feeding regime group (`food_regime`: either `Initial`, `Low`, or `High`),
-+ size at the start of the experiment (`initial_volume`), and
++ size in milliliters at the start of the experiment (`initial_volume`), and
 + suture width at the end of the experiment (`width`).
 
 As a first step in modeling, it's always a good idea to plot the data: 
 
 
 ```r
-theme_set(theme_bw())
-urchins %>% 
-  ggplot(aes(x = initial_volume, 
-             y = width, 
-             group = food_regime, 
-             col = food_regime)) + 
+ggplot(urchins,
+       aes(x = initial_volume, 
+           y = width, 
+           group = food_regime, 
+           col = food_regime)) + 
   geom_point() + 
   geom_smooth(method = lm, se = FALSE)
 #> `geom_smooth()` using formula 'y ~ x'
 ```
 
 <img src="figs/urchin-plot-1.svg" width="672" />
+
+We can see that urchins that were larger in volume at the start of the experiment tended to have wider sutures at the end, but this effect may depend on the feeding regime condition.
 
 # How to create and use a model
 
@@ -137,20 +136,26 @@ linear_reg() %>%
 #> Computational engine: lm
 ```
 
-The [documentation page for `linear_reg()`](https://tidymodels.github.io/parsnip/reference/linear_reg.html) lists the possible engines. 
+The [documentation page for `linear_reg()`](https://tidymodels.github.io/parsnip/reference/linear_reg.html) lists the possible engines. We'll save this model object as `lm_mod`.
+
+
+```r
+lm_mod <- 
+  linear_reg() %>% 
+  set_engine("lm")
+```
 
 From here, the model can be estimated using the [`fit()`](https://tidymodels.github.io/parsnip/reference/fit.html) function:
 
 
 ```r
 lm_fit <- 
-  linear_reg() %>% 
-  set_engine("lm") %>% 
+  lm_mod %>% 
   fit(width ~ (initial_volume + food_regime)^2, data = urchins)
 lm_fit
 #> parsnip model object
 #> 
-#> Fit time:  4ms 
+#> Fit time:  3ms 
 #> 
 #> Call:
 #> stats::lm(formula = formula, data = data)
@@ -164,7 +169,7 @@ lm_fit
 #>                     -0.0012594                       0.0005254
 ```
 
-This object has the `lm` model built-in, which you can access with `lm_fit$fit`. But, there are some benefits of this parsnip model fit object.
+This fitted object has the `lm` model built-in, which you can access with `lm_fit$fit`. But, there are some benefits of the fitted parsnip model object.
 
 For example, perhaps our analysis requires a description of the model parameter estimates and their statistical properties. Although the `summary()` function for `lm` objects can provide that, it gives the results back in an unwieldy format. Many models have a `tidy()` method that provides the summary results in a more predictable and useful format (e.g. a data frame with standard column names): 
 
@@ -182,6 +187,8 @@ tidy(lm_fit)
 #> 6 initial_volume:food_regimeHigh  0.000525  0.000702     0.748 0.457
 ```
 
+# Predict with a fitted model
+
 Suppose that, for a publication, it would be particularly interesting to make a plot of the mean body size for urchins that started the experiment with an initial volume of 20ml. To create such a graph, we start with some new example data that we will make predictions for, to show in our graph:
 
 
@@ -197,7 +204,7 @@ new_points
 
 To get our predicted results, we can use the `predict()` function to find the mean values at 20ml. 
 
-It is also important to communicate the variability, so we also need to find the predicted confidence intervals. If we had used `lm()` to fit the model directly, a few minutes of reading the documentation page for `predict.lm()` would explain how to do this. However, if we decide to use a different model to estimate urchin size (_spoilers:_ we will), it is likely that a completely different syntax would be required. 
+It is also important to communicate the variability, so we also need to find the predicted confidence intervals. If we had used `lm()` to fit the model directly, a few minutes of reading the [documentation page](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/predict.lm.html) for `predict.lm()` would explain how to do this. However, if we decide to use a different model to estimate urchin size (_spoiler:_ we will), it is likely that a completely different syntax would be required. 
 
 Instead, with tidymodels, the types of predicted values are standardized so that we can use the same syntax to get these values. 
 
@@ -219,7 +226,9 @@ When making predictions, the tidymodels convention is to always produce a tibble
 
 
 ```r
-conf_int_pred <- predict(lm_fit, new_data = new_points, type = "conf_int")
+conf_int_pred <- predict(lm_fit, 
+                         new_data = new_points, 
+                         type = "conf_int")
 conf_int_pred
 #> # A tibble: 3 x 2
 #>   .pred_lower .pred_upper
@@ -237,34 +246,43 @@ plot_data <-
 # and plot:
 ggplot(plot_data, aes(x = food_regime)) + 
   geom_point(aes(y = .pred)) + 
-  geom_errorbar(aes(ymin = .pred_lower, ymax = .pred_upper), width = .2) + 
+  geom_errorbar(aes(ymin = .pred_lower, 
+                    ymax = .pred_upper),
+                width = .2) + 
   labs(y = "urchin size")
 ```
 
 <img src="figs/lm-all-pred-1.svg" width="672" />
 
-## Modeling with a different engine
+# Modeling with a different engine
 
 Every one on your team is happy with that plot _except_ that one person who just read their first book on [Bayesian analysis](https://bayesian.org/what-is-bayesian-analysis/). They are interested in knowing if the results would be different if the model were estimated using a Bayesian approach. In such an analysis, a [_prior distribution_](https://towardsdatascience.com/introduction-to-bayesian-linear-regression-e66e60791ea7) needs to be declared for each model parameter that represents the possible values of the parameters (before being exposed to the observed data). After some discussion, the group agrees that the priors should be bell-shaped but, since no one has any idea what the range of values should be, to take a conservative approach and make the priors _wide_ using a Cauchy distribution (which is the same as a t-distribution with a single degree of freedom).
 
-The [documentation](https://mc-stan.org/rstanarm/articles/priors.html) on the rstanarm package shows us that the `stan_glm()` function can be used to estimate this model, and that the function arguments that need to be specified are called `prior` and `prior_intercept`. It turns out that `linear_reg()` has a `stan` engine. Since these prior distribution arguments are specific to the Stan software, they are passed when the engine is set. After that, the same exact `fit()` call is used:
+The [documentation](https://mc-stan.org/rstanarm/articles/priors.html) on the rstanarm package shows us that the `stan_glm()` function can be used to estimate this model, and that the function arguments that need to be specified are called `prior` and `prior_intercept`. It turns out that `linear_reg()` has a [`stan` engine](https://tidymodels.github.io/parsnip/reference/linear_reg.html#details). Since these prior distribution arguments are specific to the Stan software, they are passed as arguments to [`parsnip::set_engine()`](https://tidymodels.github.io/parsnip/reference/set_engine.html). After that, the same exact `fit()` call is used:
 
 
 ```r
-library(rstanarm)
-
-prior_dist <- student_t(df = 1)
+# set the prior distribution
+prior_dist <- rstanarm::student_t(df = 1)
 
 set.seed(123)
-bayes_fit <- 
+
+# make the parsnip model
+bayes_mod <-   
   linear_reg() %>% 
-  set_engine("stan", prior_intercept = prior_dist, prior = prior_dist) %>% 
+  set_engine("stan", 
+             prior_intercept = prior_dist, 
+             prior = prior_dist) 
+
+# fit the model
+bayes_fit <- 
+  bayes_mod %>% 
   fit(width ~ (initial_volume + food_regime)^2, data = urchins)
 #> 
 #> SAMPLING FOR MODEL 'continuous' NOW (CHAIN 1).
 #> Chain 1: 
-#> Chain 1: Gradient evaluation took 7.6e-05 seconds
-#> Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.76 seconds.
+#> Chain 1: Gradient evaluation took 8.3e-05 seconds
+#> Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.83 seconds.
 #> Chain 1: Adjust your expectations accordingly!
 #> Chain 1: 
 #> Chain 1: 
@@ -281,9 +299,9 @@ bayes_fit <-
 #> Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #> Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 #> Chain 1: 
-#> Chain 1:  Elapsed Time: 0.25069 seconds (Warm-up)
-#> Chain 1:                0.186704 seconds (Sampling)
-#> Chain 1:                0.437394 seconds (Total)
+#> Chain 1:  Elapsed Time: 0.26075 seconds (Warm-up)
+#> Chain 1:                0.194741 seconds (Sampling)
+#> Chain 1:                0.455491 seconds (Total)
 #> Chain 1: 
 #> 
 #> SAMPLING FOR MODEL 'continuous' NOW (CHAIN 2).
@@ -306,15 +324,15 @@ bayes_fit <-
 #> Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #> Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 #> Chain 2: 
-#> Chain 2:  Elapsed Time: 0.236054 seconds (Warm-up)
-#> Chain 2:                0.153163 seconds (Sampling)
-#> Chain 2:                0.389217 seconds (Total)
+#> Chain 2:  Elapsed Time: 0.231312 seconds (Warm-up)
+#> Chain 2:                0.152732 seconds (Sampling)
+#> Chain 2:                0.384044 seconds (Total)
 #> Chain 2: 
 #> 
 #> SAMPLING FOR MODEL 'continuous' NOW (CHAIN 3).
 #> Chain 3: 
-#> Chain 3: Gradient evaluation took 1.1e-05 seconds
-#> Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.11 seconds.
+#> Chain 3: Gradient evaluation took 1.3e-05 seconds
+#> Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.13 seconds.
 #> Chain 3: Adjust your expectations accordingly!
 #> Chain 3: 
 #> Chain 3: 
@@ -331,15 +349,15 @@ bayes_fit <-
 #> Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #> Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
 #> Chain 3: 
-#> Chain 3:  Elapsed Time: 0.219278 seconds (Warm-up)
-#> Chain 3:                0.184621 seconds (Sampling)
-#> Chain 3:                0.403899 seconds (Total)
+#> Chain 3:  Elapsed Time: 0.209082 seconds (Warm-up)
+#> Chain 3:                0.179371 seconds (Sampling)
+#> Chain 3:                0.388453 seconds (Total)
 #> Chain 3: 
 #> 
 #> SAMPLING FOR MODEL 'continuous' NOW (CHAIN 4).
 #> Chain 4: 
-#> Chain 4: Gradient evaluation took 1.3e-05 seconds
-#> Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.13 seconds.
+#> Chain 4: Gradient evaluation took 1.2e-05 seconds
+#> Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.12 seconds.
 #> Chain 4: Adjust your expectations accordingly!
 #> Chain 4: 
 #> Chain 4: 
@@ -356,9 +374,9 @@ bayes_fit <-
 #> Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #> Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 #> Chain 4: 
-#> Chain 4:  Elapsed Time: 0.229901 seconds (Warm-up)
-#> Chain 4:                0.161652 seconds (Sampling)
-#> Chain 4:                0.391553 seconds (Total)
+#> Chain 4:  Elapsed Time: 0.222703 seconds (Warm-up)
+#> Chain 4:                0.168657 seconds (Sampling)
+#> Chain 4:                0.39136 seconds (Total)
 #> Chain 4:
 
 print(bayes_fit, digits = 5)
@@ -431,28 +449,28 @@ This isn't very different from the non-Bayesian results (except in interpretatio
 
 The extra step of defining the model using a function like `linear_reg()` might seem superfluous since a call to `lm()` is much more succinct. However, the problem with standard modeling functions is that they don't separate what you want to do from the execution. For example, the process of executing a formula has to happen repeatedly across model calls even when the formula does not change; we can't recycle those computations. 
 
-Also, from a tidy point of view, we can do some interesting things by incrementally creating a model (instead of using single function call). Model tuning, the tidy way, uses the specification of the model (e.g. `linear_reg()` plus `set_engine()`) to declare what parts of the model should be tuned. That would be very difficult to do if `linear_reg()` immediately fit the model. 
+Also, using the tidymodels framework, we can do some interesting things by incrementally creating a model (instead of using single function call). Model tuning with tidymodels uses the specification of the model to declare what parts of the model should be tuned. That would be very difficult to do if `linear_reg()` immediately fit the model. 
 
 If you are familiar with the tidyverse, you may have noticed that our modeling code uses the magrittr pipe (`%>%`). With dplyr and other tidyverse packages, the pipe works well because all of the functions take the _data_ as the first argument. For example: 
 
 
 ```r
-iris %>% 
-  select(starts_with("Sepal"), Species) %>% 
-  pivot_longer(
-    cols = c(starts_with("Sepal")),
-    names_to = "vars",
-    values_to = "values"
-  ) %>% 
-  group_by(vars) ## etc etc
+urchins %>% 
+  group_by(food_regime) %>% 
+  summarize(med_vol = median(initial_volume))
+#> # A tibble: 3 x 2
+#>   food_regime med_vol
+#>   <fct>         <dbl>
+#> 1 Initial        20.5
+#> 2 Low            19.2
+#> 3 High           15
 ```
 
 whereas the modeling code uses the pipe to pass around the _model object_:
 
 
 ```r
-linear_reg() %>% 
-  set_engine("stan", prior_intercept = prior_dist, prior = prior_dist) %>% 
+bayes_mod %>% 
   fit(width ~ (initial_volume + food_regime)^2, data = urchins)
 ```
 
@@ -460,10 +478,11 @@ This may seem jarring if you have used dplyr a lot, but it is extremely similar 
 
 
 ```r
-ggplot(iris, aes(Sepal.Width, Sepal.Length)) + # returns a ggplot object 
-  geom_point() +                               # same
-  geom_smooth() +                              # same
-  labs(y = "Width", x = "Length")              # etc etc
+ggplot(urchins,
+       aes(initial_volume, width)) +      # returns a ggplot object 
+  geom_jitter() +                         # same
+  geom_smooth(method = lm, se = FALSE) +  # same                    
+  labs(x = "Volume", y = "Width")         # etc
 ```
 
 
