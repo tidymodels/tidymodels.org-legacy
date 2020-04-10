@@ -11,23 +11,36 @@ description: |
 
 
 
-This article requires that you have the following packages installed: readr, rstanarm, and tidymodels.
+
 
 # Introduction
 
-How do you create a statistical model using the tidymodels packages? In this article, start with data for modeling, learn how to specify and train models with different engines, and understand why these functions are designed this way.
+How do you create a statistical model using tidymodels? In this article, we will walk you through the steps. We will start with data for modeling, learn how to specify and train models with different engines, and understand why these functions are designed this way.
 
-# How to create and use a model
+# Prerequisites
 
-Let's use the data from [Constable (1993)](https://link.springer.com/article/10.1007/BF00349318) to explore how three different feeding regimes affect the size of sea urchins over time. The initial size of the sea urchins at the beginning of the experiment probably affects how big they grow as they are fed. 
-
-To start, let's load the tidymodels packages, along with readr to read our urchins data into R. For each urchin, we know their initial size (volume), the feeding regime of the experiment, and the suture width at the end of the experiment:
+This article requires that you have the following packages installed: readr, rstanarm, and tidymodels.
 
 
 ```r
-library(tidymodels)
-library(readr)
+library(tidymodels)  # mainly for parsnip package
 
+# Helper packages
+library(readr)       # for importing data
+
+# Modeling packages
+library(rstanarm)    # for Bayesian analysis
+```
+
+
+# The Sea Urchins Data
+
+Let's use the data from [Constable (1993)](https://link.springer.com/article/10.1007/BF00349318) to explore how three different feeding regimes affect the size of sea urchins over time. The initial size of the sea urchins at the beginning of the experiment probably affects how big they grow as they are fed. 
+
+To start, let's read our urchins data into R, which we'll do by providing [`readr::read_csv()`](https://readr.tidyverse.org/reference/read_delim.html) with a url ("<https://bit.ly/urchin_data>"):
+
+
+```r
 urchins <-
   # Data were assembled for a tutorial 
   # at https://www.flutterbys.com.au/stats/tut/tut7.5a.html
@@ -44,18 +57,56 @@ urchins <-
 #> )
 ```
 
+You can also download the data file locally: 
+
+<!--html_preserve--><i class="fas  fa-download " style="color:#CA225E;"></i><!--/html_preserve--> 
+<!--html_preserve--><a href="data:text/csv;base64,UEsDBBQAAgAIALpahlAM1pVNIgEAAEQEAABDAAAAVXNlcnMvYWxpc29uL3JzaXRlcy90aWR5bW9kZWxzLm9yZy9jb250ZW50L3N0YXJ0L21vZGVscy91cmNoaW5zLmNzdmWTvU4EMQyEe54lWsV2kt2UFEicRHW3QE0FKyFoTuL1uSRO7Pi6/cbOjPOz+/npcXenN3d53d8fTj/H9fj4drRE5xcPQ6iIA7eCScrgixCVQEUIVtBLou2owqqEVIQsqbDalGwErHNssgThJoA3gjbFYD2CmbQJ2nQzk2I2AkWzhJIxpWw7igAgQgg8+svvn+uHVb5rOvH3oisASw+u6HmsCn2fFSKP02BetenaPbAfogpGDuZG9DNqe0yqQtoxgGprwG2BNPR38nx8frm1JUXGbJAdBTID4EQ9oFGYXepplZuQ3nJRjXjn61h7T+IzDlp8ZYa2FcmpDwInklrrTdQYvc7B9vuOGalUIfbepGfAKYWyenNhnR5XSNOl9o3fHuI/UEsBAh4DFAACAAgAulqGUAzWlU0iAQAARAQAAEMAAAAAAAAAAQAAAKSBAAAAAFVzZXJzL2FsaXNvbi9yc2l0ZXMvdGlkeW1vZGVscy5vcmcvY29udGVudC9zdGFydC9tb2RlbHMvdXJjaGlucy5jc3ZQSwUGAAAAAAEAAQBxAAAAgwEAAAAA" download="urchin_data.csv">Download urchin_data.csv</a><!--/html_preserve-->
+
+Let's take a quick look at the data:
+
+
+```r
+urchins
+#> # A tibble: 72 x 3
+#>    food_regime initial_volume width
+#>    <fct>                <dbl> <dbl>
+#>  1 Initial                3.5 0.01 
+#>  2 Initial                5   0.02 
+#>  3 Initial                8   0.061
+#>  4 Initial               10   0.051
+#>  5 Initial               13   0.041
+#>  6 Initial               13   0.061
+#>  7 Initial               15   0.041
+#>  8 Initial               15   0.071
+#>  9 Initial               16   0.092
+#> 10 Initial               17   0.051
+#> # … with 62 more rows
+```
+
+For each of the 72 urchins, we know their:
+
++ experimental feeding regime group (`food_regime`: either `Initial`, `Low`, or `High`),
++ size at the start of the experiment (`initial_volume`), and
++ suture width at the end of the experiment (`width`).
+
 As a first step in modeling, it's always a good idea to plot the data: 
 
 
 ```r
 theme_set(theme_bw())
-ggplot(urchins, aes(x = initial_volume, y = width, group = food_regime, col = food_regime)) + 
+urchins %>% 
+  ggplot(aes(x = initial_volume, 
+             y = width, 
+             group = food_regime, 
+             col = food_regime)) + 
   geom_point() + 
   geom_smooth(method = lm, se = FALSE)
 #> `geom_smooth()` using formula 'y ~ x'
 ```
 
 <img src="figs/urchin-plot-1.svg" width="672" />
+
+# How to create and use a model
 
 A standard analysis of covariance ([ANCOVA](https://en.wikipedia.org/wiki/Analysis_of_covariance)) model makes sense for this dataset because we have both a continuous predictor and a categorical predictor. Since the slopes appear to be different for at least two of the feeding regimes, let's build a model that allows for two-way interactions. Specifying an R formula with our variables in this way: 
 
@@ -99,7 +150,7 @@ lm_fit <-
 lm_fit
 #> parsnip model object
 #> 
-#> Fit time:  2ms 
+#> Fit time:  4ms 
 #> 
 #> Call:
 #> stats::lm(formula = formula, data = data)
@@ -113,9 +164,9 @@ lm_fit
 #>                     -0.0012594                       0.0005254
 ```
 
-This object has the `lm` model built-in. 
+This object has the `lm` model built-in, which you can access with `lm_fit$fit`. But, there are some benefits of this parsnip model fit object.
 
-Perhaps our analysis requires a description of the model parameter estimates and their statistical properties. Although the `summary()` function for `lm` objects can provide that, it gives the results back in an unwieldy format. Many models have a `tidy()` method that provides the summary results in a more predictable and useful format (e.g. a data frame with standard column names): 
+For example, perhaps our analysis requires a description of the model parameter estimates and their statistical properties. Although the `summary()` function for `lm` objects can provide that, it gives the results back in an unwieldy format. Many models have a `tidy()` method that provides the summary results in a more predictable and useful format (e.g. a data frame with standard column names): 
 
 
 ```r
@@ -196,7 +247,7 @@ ggplot(plot_data, aes(x = food_regime)) +
 
 Every one on your team is happy with that plot _except_ that one person who just read their first book on [Bayesian analysis](https://bayesian.org/what-is-bayesian-analysis/). They are interested in knowing if the results would be different if the model were estimated using a Bayesian approach. In such an analysis, a [_prior distribution_](https://towardsdatascience.com/introduction-to-bayesian-linear-regression-e66e60791ea7) needs to be declared for each model parameter that represents the possible values of the parameters (before being exposed to the observed data). After some discussion, the group agrees that the priors should be bell-shaped but, since no one has any idea what the range of values should be, to take a conservative approach and make the priors _wide_ using a Cauchy distribution (which is the same as a t-distribution with a single degree of freedom).
 
-The [documentation](http://mc-stan.org/rstanarm/articles/priors.html) on the rstanarm package shows us that the `stan_glm()` function can be used to estimate this model, and that the function arguments that need to be specified are called `prior` and `prior_intercept`. It turns out that `linear_reg()` has a `stan` engine. Since these prior distribution arguments are specific to the Stan software, they are passed when the engine is set. After that, the same exact `fit()` call is used:
+The [documentation](https://mc-stan.org/rstanarm/articles/priors.html) on the rstanarm package shows us that the `stan_glm()` function can be used to estimate this model, and that the function arguments that need to be specified are called `prior` and `prior_intercept`. It turns out that `linear_reg()` has a `stan` engine. Since these prior distribution arguments are specific to the Stan software, they are passed when the engine is set. After that, the same exact `fit()` call is used:
 
 
 ```r
@@ -209,11 +260,111 @@ bayes_fit <-
   linear_reg() %>% 
   set_engine("stan", prior_intercept = prior_dist, prior = prior_dist) %>% 
   fit(width ~ (initial_volume + food_regime)^2, data = urchins)
+#> 
+#> SAMPLING FOR MODEL 'continuous' NOW (CHAIN 1).
+#> Chain 1: 
+#> Chain 1: Gradient evaluation took 7.6e-05 seconds
+#> Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.76 seconds.
+#> Chain 1: Adjust your expectations accordingly!
+#> Chain 1: 
+#> Chain 1: 
+#> Chain 1: Iteration:    1 / 2000 [  0%]  (Warmup)
+#> Chain 1: Iteration:  200 / 2000 [ 10%]  (Warmup)
+#> Chain 1: Iteration:  400 / 2000 [ 20%]  (Warmup)
+#> Chain 1: Iteration:  600 / 2000 [ 30%]  (Warmup)
+#> Chain 1: Iteration:  800 / 2000 [ 40%]  (Warmup)
+#> Chain 1: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+#> Chain 1: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+#> Chain 1: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+#> Chain 1: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+#> Chain 1: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+#> Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+#> Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
+#> Chain 1: 
+#> Chain 1:  Elapsed Time: 0.25069 seconds (Warm-up)
+#> Chain 1:                0.186704 seconds (Sampling)
+#> Chain 1:                0.437394 seconds (Total)
+#> Chain 1: 
+#> 
+#> SAMPLING FOR MODEL 'continuous' NOW (CHAIN 2).
+#> Chain 2: 
+#> Chain 2: Gradient evaluation took 1.1e-05 seconds
+#> Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.11 seconds.
+#> Chain 2: Adjust your expectations accordingly!
+#> Chain 2: 
+#> Chain 2: 
+#> Chain 2: Iteration:    1 / 2000 [  0%]  (Warmup)
+#> Chain 2: Iteration:  200 / 2000 [ 10%]  (Warmup)
+#> Chain 2: Iteration:  400 / 2000 [ 20%]  (Warmup)
+#> Chain 2: Iteration:  600 / 2000 [ 30%]  (Warmup)
+#> Chain 2: Iteration:  800 / 2000 [ 40%]  (Warmup)
+#> Chain 2: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+#> Chain 2: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+#> Chain 2: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+#> Chain 2: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+#> Chain 2: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+#> Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+#> Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
+#> Chain 2: 
+#> Chain 2:  Elapsed Time: 0.236054 seconds (Warm-up)
+#> Chain 2:                0.153163 seconds (Sampling)
+#> Chain 2:                0.389217 seconds (Total)
+#> Chain 2: 
+#> 
+#> SAMPLING FOR MODEL 'continuous' NOW (CHAIN 3).
+#> Chain 3: 
+#> Chain 3: Gradient evaluation took 1.1e-05 seconds
+#> Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.11 seconds.
+#> Chain 3: Adjust your expectations accordingly!
+#> Chain 3: 
+#> Chain 3: 
+#> Chain 3: Iteration:    1 / 2000 [  0%]  (Warmup)
+#> Chain 3: Iteration:  200 / 2000 [ 10%]  (Warmup)
+#> Chain 3: Iteration:  400 / 2000 [ 20%]  (Warmup)
+#> Chain 3: Iteration:  600 / 2000 [ 30%]  (Warmup)
+#> Chain 3: Iteration:  800 / 2000 [ 40%]  (Warmup)
+#> Chain 3: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+#> Chain 3: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+#> Chain 3: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+#> Chain 3: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+#> Chain 3: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+#> Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+#> Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
+#> Chain 3: 
+#> Chain 3:  Elapsed Time: 0.219278 seconds (Warm-up)
+#> Chain 3:                0.184621 seconds (Sampling)
+#> Chain 3:                0.403899 seconds (Total)
+#> Chain 3: 
+#> 
+#> SAMPLING FOR MODEL 'continuous' NOW (CHAIN 4).
+#> Chain 4: 
+#> Chain 4: Gradient evaluation took 1.3e-05 seconds
+#> Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.13 seconds.
+#> Chain 4: Adjust your expectations accordingly!
+#> Chain 4: 
+#> Chain 4: 
+#> Chain 4: Iteration:    1 / 2000 [  0%]  (Warmup)
+#> Chain 4: Iteration:  200 / 2000 [ 10%]  (Warmup)
+#> Chain 4: Iteration:  400 / 2000 [ 20%]  (Warmup)
+#> Chain 4: Iteration:  600 / 2000 [ 30%]  (Warmup)
+#> Chain 4: Iteration:  800 / 2000 [ 40%]  (Warmup)
+#> Chain 4: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+#> Chain 4: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+#> Chain 4: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+#> Chain 4: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+#> Chain 4: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+#> Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+#> Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
+#> Chain 4: 
+#> Chain 4:  Elapsed Time: 0.229901 seconds (Warm-up)
+#> Chain 4:                0.161652 seconds (Sampling)
+#> Chain 4:                0.391553 seconds (Total)
+#> Chain 4:
 
 print(bayes_fit, digits = 5)
 #> parsnip model object
 #> 
-#> Fit time:  1.9s 
+#> Fit time:  1.8s 
 #> stan_glm
 #>  family:       gaussian [identity]
 #>  formula:      width ~ (initial_volume + food_regime)^2
@@ -322,35 +473,35 @@ ggplot(iris, aes(Sepal.Width, Sepal.Length)) + # returns a ggplot object
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.2 (2019-12-12)
-#>  os       macOS Mojave 10.14.6        
+#>  version  R version 3.6.1 (2019-07-05)
+#>  os       macOS Catalina 10.15.3      
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/Denver              
-#>  date     2020-04-09                  
+#>  tz       America/Los_Angeles         
+#>  date     2020-04-10                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version     date       lib source                               
-#>  broom      * 0.5.5       2020-02-29 [1] CRAN (R 3.6.0)                       
-#>  dials      * 0.0.4.9000  2020-03-20 [1] local                                
-#>  dplyr      * 0.8.5       2020-03-07 [1] CRAN (R 3.6.0)                       
-#>  ggplot2    * 3.3.0       2020-03-05 [1] CRAN (R 3.6.0)                       
-#>  infer      * 0.5.1       2019-11-19 [1] CRAN (R 3.6.0)                       
-#>  parsnip    * 0.0.5.9001  2020-04-03 [1] Github (tidymodels/parsnip@0e83faf)  
-#>  purrr      * 0.3.3       2019-10-18 [1] CRAN (R 3.6.0)                       
-#>  readr      * 1.3.1       2018-12-21 [1] CRAN (R 3.6.0)                       
-#>  recipes    * 0.1.10.9000 2020-04-03 [1] local                                
-#>  rlang        0.4.5.9000  2020-03-20 [1] Github (r-lib/rlang@a90b04b)         
-#>  rsample    * 0.0.6       2020-03-31 [1] CRAN (R 3.6.2)                       
-#>  rstanarm   * 2.19.3      2020-02-11 [1] CRAN (R 3.6.2)                       
-#>  tibble     * 3.0.0       2020-03-30 [1] CRAN (R 3.6.2)                       
-#>  tidymodels * 0.1.0       2020-02-16 [1] CRAN (R 3.6.0)                       
-#>  tune       * 0.1.0       2020-04-02 [1] CRAN (R 3.6.2)                       
-#>  workflows  * 0.1.1.9000  2020-03-20 [1] Github (tidymodels/workflows@e995c18)
-#>  yardstick  * 0.0.6       2020-03-17 [1] CRAN (R 3.6.0)                       
+#>  package    * version    date       lib source                               
+#>  broom      * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
+#>  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
+#>  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
+#>  ggplot2    * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
+#>  infer      * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                       
+#>  parsnip    * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
+#>  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
+#>  readr      * 1.3.1      2018-12-21 [1] CRAN (R 3.6.0)                       
+#>  recipes    * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
+#>  rlang        0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
+#>  rsample    * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
+#>  rstanarm   * 2.19.3     2020-02-11 [1] CRAN (R 3.6.1)                       
+#>  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
+#>  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
+#>  tune       * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
+#>  workflows  * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
+#>  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
 ```

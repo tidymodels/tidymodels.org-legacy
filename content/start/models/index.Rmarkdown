@@ -21,22 +21,34 @@ pkgs <- c("tidymodels", "readr", "rstanarm")
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
-`r req_pkgs(pkgs)`
+
 
 # Introduction
 
-How do you create a statistical model using the tidymodels packages? In this article, start with data for modeling, learn how to specify and train models with different engines, and understand why these functions are designed this way.
+How do you create a statistical model using tidymodels? In this article, we will walk you through the steps. We will start with data for modeling, learn how to specify and train models with different engines, and understand why these functions are designed this way.
 
-# How to create and use a model
+# Prerequisites
+
+`r req_pkgs(pkgs)`
+
+```{r eval=FALSE}
+library(tidymodels)  # mainly for parsnip package
+
+# Helper packages
+library(readr)       # for importing data
+
+# Modeling packages
+library(rstanarm)    # for Bayesian analysis
+```
+
+
+# The Sea Urchins Data
 
 Let's use the data from [Constable (1993)](https://link.springer.com/article/10.1007/BF00349318) to explore how three different feeding regimes affect the size of sea urchins over time. The initial size of the sea urchins at the beginning of the experiment probably affects how big they grow as they are fed. 
 
-To start, let's load the tidymodels packages, along with readr to read our urchins data into R. For each urchin, we know their initial size (volume), the feeding regime of the experiment, and the suture width at the end of the experiment:
+To start, let's read our urchins data into R, which we'll do by providing [`readr::read_csv()`](https://readr.tidyverse.org/reference/read_delim.html) with a url ("<https://bit.ly/urchin_data>"):
 
 ```{r data}
-library(tidymodels)
-library(readr)
-
 urchins <-
   # Data were assembled for a tutorial 
   # at https://www.flutterbys.com.au/stats/tut/tut7.5a.html
@@ -47,14 +59,39 @@ urchins <-
   mutate(food_regime = factor(food_regime, levels = c("Initial", "Low", "High")))
 ```
 
+You can also download the data file locally: 
+
+`r icon::fa_download(colour = "#CA225E")` 
+```{r download-urchins, echo = FALSE} 
+xfun::embed_files(here::here("content/start/models/urchins.csv"), name = "urchin_data.csv")
+```
+
+Let's take a quick look at the data:
+
+```{r}
+urchins
+```
+
+For each of the `r nrow(urchins)` urchins, we know their:
+
++ experimental feeding regime group (`food_regime`: either `Initial`, `Low`, or `High`),
++ size at the start of the experiment (`initial_volume`), and
++ suture width at the end of the experiment (`width`).
+
 As a first step in modeling, it's always a good idea to plot the data: 
 
 ```{r urchin-plot}
 theme_set(theme_bw())
-ggplot(urchins, aes(x = initial_volume, y = width, group = food_regime, col = food_regime)) + 
+urchins %>% 
+  ggplot(aes(x = initial_volume, 
+             y = width, 
+             group = food_regime, 
+             col = food_regime)) + 
   geom_point() + 
   geom_smooth(method = lm, se = FALSE)
 ```
+
+# How to create and use a model
 
 A standard analysis of covariance ([ANCOVA](https://en.wikipedia.org/wiki/Analysis_of_covariance)) model makes sense for this dataset because we have both a continuous predictor and a categorical predictor. Since the slopes appear to be different for at least two of the feeding regimes, let's build a model that allows for two-way interactions. Specifying an R formula with our variables in this way: 
 
@@ -90,9 +127,9 @@ lm_fit <-
 lm_fit
 ```
 
-This object has the `lm` model built-in. 
+This object has the `lm` model built-in, which you can access with `lm_fit$fit`. But, there are some benefits of this parsnip model fit object.
 
-Perhaps our analysis requires a description of the model parameter estimates and their statistical properties. Although the `summary()` function for `lm` objects can provide that, it gives the results back in an unwieldy format. Many models have a `tidy()` method that provides the summary results in a more predictable and useful format (e.g. a data frame with standard column names): 
+For example, perhaps our analysis requires a description of the model parameter estimates and their statistical properties. Although the `summary()` function for `lm` objects can provide that, it gives the results back in an unwieldy format. Many models have a `tidy()` method that provides the summary results in a more predictable and useful format (e.g. a data frame with standard column names): 
 
 ```{r lm-table}
 tidy(lm_fit)
@@ -142,7 +179,7 @@ ggplot(plot_data, aes(x = food_regime)) +
 
 Every one on your team is happy with that plot _except_ that one person who just read their first book on [Bayesian analysis](https://bayesian.org/what-is-bayesian-analysis/). They are interested in knowing if the results would be different if the model were estimated using a Bayesian approach. In such an analysis, a [_prior distribution_](https://towardsdatascience.com/introduction-to-bayesian-linear-regression-e66e60791ea7) needs to be declared for each model parameter that represents the possible values of the parameters (before being exposed to the observed data). After some discussion, the group agrees that the priors should be bell-shaped but, since no one has any idea what the range of values should be, to take a conservative approach and make the priors _wide_ using a Cauchy distribution (which is the same as a t-distribution with a single degree of freedom).
 
-The [documentation](http://mc-stan.org/rstanarm/articles/priors.html) on the rstanarm package shows us that the `stan_glm()` function can be used to estimate this model, and that the function arguments that need to be specified are called `prior` and `prior_intercept`. It turns out that `linear_reg()` has a `stan` engine. Since these prior distribution arguments are specific to the Stan software, they are passed when the engine is set. After that, the same exact `fit()` call is used:
+The [documentation](https://mc-stan.org/rstanarm/articles/priors.html) on the rstanarm package shows us that the `stan_glm()` function can be used to estimate this model, and that the function arguments that need to be specified are called `prior` and `prior_intercept`. It turns out that `linear_reg()` has a `stan` engine. Since these prior distribution arguments are specific to the Stan software, they are passed when the engine is set. After that, the same exact `fit()` call is used:
 
 ```{r go-stan, message = FALSE}
 library(rstanarm)
