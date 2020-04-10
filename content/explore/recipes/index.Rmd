@@ -25,7 +25,8 @@ To learn about the recipes package, see [Preprocess your data with recipes](/sta
 The recipes package and its specialized extension [packages](packages/#create-robust-models) offer many steps to help you 
 
 ```{r table-compute, include = FALSE}
-pkg_urls <- get_pkgdown_urls(pkgs, fltr = "(^check_)|(^step_)")
+pkg_urls <- get_pkgdown_urls(pkgs, fltr = "(^check_)|(^step_)") %>% 
+  select(title, topic, package)
 ```
 
 ```{r table-display, echo = FALSE, results = "asis"}

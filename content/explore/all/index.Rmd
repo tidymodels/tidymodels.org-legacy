@@ -27,7 +27,8 @@ pkgs <- c("broom", "butcher", "corrr", "dials", "discrim",
           "embed", "hardhat", "infer", "modeldata", "modeldb", "parsnip", 
           "probably", "recipes", "rsample", "textrecipes", "tidyposterior", 
           "tidypredict", "yardstick", "workflows")
-pkg_urls <- get_pkgdown_urls(pkgs)
+pkg_urls <- get_pkgdown_urls(pkgs) %>% 
+  select(title, topic, package)
 ```
 
 

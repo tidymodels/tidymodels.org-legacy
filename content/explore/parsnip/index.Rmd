@@ -58,7 +58,8 @@ pkg_urls <-
   mutate(title = str_remove(title, "General Interface for ")) %>% 
   full_join(model_modes, by = "alias") %>% 
   full_join(model_eng, by = "alias") %>% 
-  dplyr::select(-alias)
+  dplyr::select(-alias) %>% 
+  select(title, topic, package, mode, engine)
 ```
 
 
@@ -97,6 +98,7 @@ args <-
 
 DT::datatable(
   args, 
+  rownames = FALSE,
   class = 'cell-border stripe',
   filter = 'top',
   escape = FALSE,
