@@ -1,8 +1,10 @@
 ---
-title: "Building a model"
+title: "Build a model"
 weight: 1
 tags: [parsnip, broom]
 categories: [model fitting]
+description: | 
+  Get started by learning how to specify and train a model using tidymodels.
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}
@@ -23,7 +25,7 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 
 # Introduction
 
-How do you create a statistical model using the tidymodels packages? Start with your data, learn how to specify and train models with different engines, and understand why these functions are designed this way.
+How do you create a statistical model using the tidymodels packages? In this article, start with data for modeling, learn how to specify and train models with different engines, and understand why these functions are designed this way.
 
 # How to create and use a model
 
@@ -99,11 +101,12 @@ tidy(lm_fit)
 Suppose that, for a publication, it would be particularly interesting to make a plot of the mean body size for urchins that started the experiment with an initial volume of 20ml. To create such a graph, we start with some new example data that we will make predictions for, to show in our graph:
 
 ```{r new-points}
-new_points <- expand.grid(initial_volume = 20, food_regime = c("Initial", "Low", "High"))
+new_points <- expand.grid(initial_volume = 20, 
+                          food_regime = c("Initial", "Low", "High"))
 new_points
 ```
 
-To get our predicted results, let's use the `predict()` function to find the mean values at 20ml. 
+To get our predicted results, we can use the `predict()` function to find the mean values at 20ml. 
 
 It is also important to communicate the variability, so we also need to find the predicted confidence intervals. If we had used `lm()` to fit the model directly, a few minutes of reading the documentation page for `predict.lm()` would explain how to do this. However, if we decide to use a different model to estimate urchin size (_spoilers:_ we will), it is likely that a completely different syntax would be required. 
 
@@ -135,6 +138,8 @@ ggplot(plot_data, aes(x = food_regime)) +
   labs(y = "urchin size")
 ```
 
+## Modeling with a different engine
+
 Every one on your team is happy with that plot _except_ that one person who just read their first book on [Bayesian analysis](https://bayesian.org/what-is-bayesian-analysis/). They are interested in knowing if the results would be different if the model were estimated using a Bayesian approach. In such an analysis, a [_prior distribution_](https://towardsdatascience.com/introduction-to-bayesian-linear-regression-e66e60791ea7) needs to be declared for each model parameter that represents the possible values of the parameters (before being exposed to the observed data). After some discussion, the group agrees that the priors should be bell-shaped but, since no one has any idea what the range of values should be, to take a conservative approach and make the priors _wide_ using a Cauchy distribution (which is the same as a t-distribution with a single degree of freedom).
 
 The [documentation](http://mc-stan.org/rstanarm/articles/priors.html) on the rstanarm package shows us that the `stan_glm()` function can be used to estimate this model, and that the function arguments that need to be specified are called `prior` and `prior_intercept`. It turns out that `linear_reg()` has a `stan` engine. Since these prior distribution arguments are specific to the Stan software, they are passed when the engine is set. After that, the same exact `fit()` call is used:
@@ -144,6 +149,7 @@ library(rstanarm)
 
 prior_dist <- student_t(df = 1)
 
+set.seed(123)
 bayes_fit <- 
   linear_reg() %>% 
   set_engine("stan", prior_intercept = prior_dist, prior = prior_dist) %>% 
@@ -151,6 +157,8 @@ bayes_fit <-
 
 print(bayes_fit, digits = 5)
 ```
+
+This kind of Bayesian analysis (like many models) involves randomly generated numbers in its fitting procedure. We can use `set.seed()` to ensure that the same (pseudo-)random numbers are generated each time we run this code. The number `123` isn't special or related to our data; it is just a "seed" used to choose random numbers.
 
 To update the parameter table, the `tidy()` method is once again used: 
 

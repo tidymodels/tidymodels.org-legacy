@@ -23,12 +23,25 @@ Second, let's fit a regularized linear regression model to demonstrate how to mo
 
 # The Ames housing data
 
-We'll use the Ames housing data to demonstrate how to create regression models using parsnip. First, set up the data set and create a simple training/test set split:
+We'll use the Ames housing data set to demonstrate how to create regression models using parsnip. First, set up the data set and create a simple training/test set split:
 
 
 ```r
 library(AmesHousing)
 ames <- make_ames()
+#> Warning: `funs()` is deprecated as of dplyr 0.8.0.
+#> Please use a list of either functions or lambdas: 
+#> 
+#>   # Simple named list: 
+#>   list(mean = mean, median = median)
+#> 
+#>   # Auto named with `tibble::lst()`: 
+#>   tibble::lst(mean, median)
+#> 
+#>   # Using lambdas
+#>   list(~ mean(., trim = .2), ~ median(., na.rm = TRUE))
+#> This warning is displayed once every 8 hours.
+#> Call `lifecycle::last_warnings()` to see where this warning was generated.
 
 library(tidymodels)
 
@@ -41,9 +54,9 @@ ames_test  <- testing(data_split)
 
 The use of the test set here is _only for illustration_; normally in a data analysis these data would be saved to the very end after many models have been evaluated. 
 
-# Random forests
+# Random forest
 
-We'll start by fitting a random forest model to a small set of parameters. Let's say that the model would include the predictors `Longitude`, `Latitude`, `Lot_Area`, `Neighborhood`, and `Year_Sold`. A simple random forest model can be specified via:
+We'll start by fitting a random forest model to a small set of parameters. Let's create a model with the predictors `Longitude`, `Latitude`, `Lot_Area`, `Neighborhood`, and `Year_Sold`. A simple random forest model can be specified via:
 
 
 ```r
@@ -52,9 +65,9 @@ rf_defaults
 #> Random Forest Model Specification (regression)
 ```
 
-The model will be fit with the ranger package by default. Since we didn't add any extra arguments to `fit`, _many_ of the arguments will be set to their defaults from the specific function that is used by `ranger::ranger()`. The help pages for the model function describes the changes to the default parameters that are made and you can also use the `translate()` function to check out such details. 
+The model will be fit with the ranger package by default. Since we didn't add any extra arguments to `fit`, _many_ of the arguments will be set to their defaults from the function  `ranger::ranger()`. The help pages for the model function describe the default parameters and you can also use the `translate()` function to check out such details. 
 
-The parsnip package provides two different interfaces to fit a models: 
+The parsnip package provides two different interfaces to fit a model: 
 
 - the formula interface (`fit()`), and
 - the non-formula interface (`fit_xy()`).
@@ -77,7 +90,7 @@ rf_xy_fit <-
 rf_xy_fit
 #> parsnip model object
 #> 
-#> Fit time:  1s 
+#> Fit time:  936ms 
 #> Ranger result
 #> 
 #> Call:
@@ -91,7 +104,7 @@ rf_xy_fit
 #> Target node size:                 5 
 #> Variable importance mode:         none 
 #> Splitrule:                        variance 
-#> OOB prediction error (MSE):       0.00843 
+#> OOB prediction error (MSE):       0.00844 
 #> R squared (OOB):                  0.736
 ```
 
@@ -116,16 +129,16 @@ test_results %>% slice(1:5)
 #> 2       5.02  5.21
 #> 3       5.27  5.25
 #> 4       5.60  5.51
-#> 5       5.28  5.25
+#> 5       5.28  5.24
 
 # summarize performance
 test_results %>% metrics(truth = Sale_Price, estimate = .pred) 
 #> # A tibble: 3 x 3
 #>   .metric .estimator .estimate
-#>   <chr>   <chr>          <dbl>
-#> 1 rmse    standard      0.0916
-#> 2 rsq     standard      0.715 
-#> 3 mae     standard      0.0663
+#> * <chr>   <chr>          <dbl>
+#> 1 rmse    standard      0.0914
+#> 2 rsq     standard      0.717 
+#> 3 mae     standard      0.0662
 ```
 
 Note that: 
@@ -145,7 +158,7 @@ rand_forest(mode = "regression", mtry = 3, trees = 1000) %>%
   )
 #> parsnip model object
 #> 
-#> Fit time:  2.8s 
+#> Fit time:  2.6s 
 #> Ranger result
 #> 
 #> Call:
@@ -159,8 +172,8 @@ rand_forest(mode = "regression", mtry = 3, trees = 1000) %>%
 #> Target node size:                 5 
 #> Variable importance mode:         none 
 #> Splitrule:                        variance 
-#> OOB prediction error (MSE):       0.00849 
-#> R squared (OOB):                  0.734
+#> OOB prediction error (MSE):       0.00848 
+#> R squared (OOB):                  0.735
 ```
  
 Suppose that we would like to use the randomForest package instead of ranger. To do so, the only part of the syntax that needs to change is the `set_engine()` argument:
@@ -176,7 +189,7 @@ rand_forest(mode = "regression", mtry = 3, trees = 1000) %>%
   )
 #> parsnip model object
 #> 
-#> Fit time:  1.9s 
+#> Fit time:  2s 
 #> 
 #> Call:
 #>  randomForest(x = as.data.frame(x), y = y, ntree = ~1000, mtry = ~3) 
@@ -190,16 +203,16 @@ rand_forest(mode = "regression", mtry = 3, trees = 1000) %>%
 
 Look at the formula code that was printed out; one function uses the argument name `ntree` and the other uses `num.trees`. The parsnip models don't require you to know the specific names of the main arguments. 
 
-Now suppose that we want to modify the value of `mtry` based on the number of predictors in the data. Usually, a good default value is `floor(sqrt(num_predictors))`. A pure bagging model requires an `mtry` value equal to the total number of parameters. There may be cases where you may not know how many predictors are going to be present when the model will be fit (perhaps due to the generation of indicator variables or a variable filter) so this might be difficult to know exactly. 
+Now suppose that we want to modify the value of `mtry` based on the number of predictors in the data. Usually, a good default value is `floor(sqrt(num_predictors))` but a pure bagging model requires an `mtry` value equal to the total number of parameters. There may be cases where you may not know how many predictors are going to be present when the model will be fit (perhaps due to the generation of indicator variables or a variable filter) so this might be difficult to know exactly ahead of time when you write your code. 
 
-When the model it being fit by parsnip, [_data descriptors_](https://tidymodels.github.io/parsnip/reference/descriptors.html) are made available. These attempt to let you know what you will have available when the model is fit. When a model object is created (say using `rand_forest()`), the values of the arguments that you give it are _immediately evaluated_... unless you delay them. To delay the evaluation of any argument, you can used `rlang::expr()` to make an expression. 
+When the model it being fit by parsnip, [_data descriptors_](https://tidymodels.github.io/parsnip/reference/descriptors.html) are made available. These attempt to let you know what you will have available when the model is fit. When a model object is created (say using `rand_forest()`), the values of the arguments that you give it are _immediately evaluated_ unless you delay them. To delay the evaluation of any argument, you can used `rlang::expr()` to make an expression. 
 
-Two relevant descriptors for what we are about to do are:
+Two relevant data descriptors for our example model are:
 
  * `.preds()`: the number of predictor _variables_ in the data set that are associated with the predictors **prior to dummy variable creation**.
  * `.cols()`: the number of predictor _columns_ after dummy variables (or other encodings) are created.
 
-Since ranger won't create indicator values, `.preds()` would be appropriate for using `mtry` for a bagging model. 
+Since ranger won't create indicator values, `.preds()` would be appropriate for `mtry` for a bagging model. 
 
 For example, let's use an expression with the `.preds()` descriptor to fit a bagging model: 
 
@@ -213,7 +226,7 @@ rand_forest(mode = "regression", mtry = .preds(), trees = 1000) %>%
   )
 #> parsnip model object
 #> 
-#> Fit time:  4s 
+#> Fit time:  3.8s 
 #> Ranger result
 #> 
 #> Call:
@@ -227,16 +240,16 @@ rand_forest(mode = "regression", mtry = .preds(), trees = 1000) %>%
 #> Target node size:                 5 
 #> Variable importance mode:         none 
 #> Splitrule:                        variance 
-#> OOB prediction error (MSE):       0.0087 
+#> OOB prediction error (MSE):       0.00869 
 #> R squared (OOB):                  0.728
 ```
 
 
-# Penalized logistic regression
+# Regularized regression
 
 A linear model might work for this data set as well. We can use the `linear_reg()` parsnip model. There are two engines that can perform regularization/penalization, the glmnet and sparklyr packages. Let's use the former here. The glmnet package only implements a non-formula method, but parsnip will allow either one to be used. 
 
-When regularization is used, the predictors should first be centered and scaled before being passed to the model. The formula method won't do that automatically so we will need to do this ourselves. We'll use recipes package for these steps (more information [here](https://tidymodels.github.io/recipes/)). 
+When regularization is used, the predictors should first be centered and scaled before being passed to the model. The formula method won't do that automatically so we will need to do this ourselves. We'll use the [recipes](https://tidymodels.github.io/recipes/) package for these steps. 
 
 
 ```r
@@ -262,7 +275,7 @@ glmn_fit <-
 glmn_fit
 #> parsnip model object
 #> 
-#> Fit time:  10ms 
+#> Fit time:  12ms 
 #> 
 #> Call:  glmnet::glmnet(x = as.matrix(x), y = y, family = "gaussian",      alpha = ~0.5) 
 #> 
@@ -353,12 +366,12 @@ test_results <-
 test_results
 #> # A tibble: 731 x 3
 #>    Sale_Price `random forest` glmnet
-#>         <dbl>           <dbl>  <dbl>
+#>  *      <dbl>           <dbl>  <dbl>
 #>  1       5.33            5.22   5.27
 #>  2       5.02            5.21   5.17
 #>  3       5.27            5.25   5.23
 #>  4       5.60            5.51   5.25
-#>  5       5.28            5.25   5.25
+#>  5       5.28            5.24   5.25
 #>  6       5.17            5.19   5.19
 #>  7       5.02            4.97   5.19
 #>  8       5.46            5.50   5.49
@@ -369,7 +382,7 @@ test_results
 test_results %>% metrics(truth = Sale_Price, estimate = glmnet) 
 #> # A tibble: 3 x 3
 #>   .metric .estimator .estimate
-#>   <chr>   <chr>          <dbl>
+#> * <chr>   <chr>          <dbl>
 #> 1 rmse    standard      0.132 
 #> 2 rsq     standard      0.410 
 #> 3 mae     standard      0.0956
@@ -385,7 +398,7 @@ test_results %>%
 
 <img src="figs/glmn-pred-1.svg" width="672" />
 
-
+This final plot compares the performance of the random forest and regularized regression models.
 
 # Session information
 
@@ -393,37 +406,57 @@ test_results %>%
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.1 (2019-07-05)
-#>  os       macOS Catalina 10.15.3      
+#>  version  R version 3.6.2 (2019-12-12)
+#>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/Los_Angeles         
-#>  date     2020-04-06                  
+#>  tz       America/Denver              
+#>  date     2020-04-07                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package      * version    date       lib source                               
-#>  AmesHousing  * 0.0.3      2017-12-17 [1] CRAN (R 3.6.0)                       
-#>  broom        * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
-#>  dials        * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
-#>  dplyr        * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
-#>  ggplot2      * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
-#>  glmnet       * 3.0-2      2019-12-11 [1] CRAN (R 3.6.0)                       
-#>  infer        * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                       
-#>  parsnip      * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
-#>  purrr        * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
-#>  randomForest * 4.6-14     2018-03-25 [1] CRAN (R 3.6.0)                       
-#>  ranger       * 0.11.2     2019-03-07 [1] CRAN (R 3.6.0)                       
-#>  recipes      * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
-#>  rlang          0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
-#>  rsample      * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
-#>  tibble       * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
-#>  tidymodels   * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
-#>  tune         * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
-#>  workflows    * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
-#>  yardstick    * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
+#>  package      * version     date       lib
+#>  AmesHousing  * 0.0.3       2017-12-17 [1]
+#>  broom        * 0.5.5       2020-02-29 [1]
+#>  dials        * 0.0.4.9000  2020-03-20 [1]
+#>  dplyr        * 0.8.99.9002 2020-04-03 [1]
+#>  ggplot2      * 3.3.0       2020-03-05 [1]
+#>  glmnet       * 3.0-2       2019-12-11 [1]
+#>  infer        * 0.5.1       2019-11-19 [1]
+#>  parsnip      * 0.0.5.9001  2020-04-03 [1]
+#>  purrr        * 0.3.3       2019-10-18 [1]
+#>  randomForest * 4.6-14      2018-03-25 [1]
+#>  ranger       * 0.12.1      2020-01-10 [1]
+#>  recipes      * 0.1.10.9000 2020-04-03 [1]
+#>  rlang          0.4.5.9000  2020-03-20 [1]
+#>  rsample      * 0.0.6       2020-03-31 [1]
+#>  tibble       * 3.0.0       2020-03-30 [1]
+#>  tidymodels   * 0.1.0       2020-02-16 [1]
+#>  tune         * 0.1.0       2020-04-02 [1]
+#>  workflows    * 0.1.1.9000  2020-03-20 [1]
+#>  yardstick    * 0.0.6       2020-03-17 [1]
+#>  source                               
+#>  CRAN (R 3.6.0)                       
+#>  CRAN (R 3.6.0)                       
+#>  local                                
+#>  Github (tidyverse/dplyr@bda05f7)     
+#>  CRAN (R 3.6.0)                       
+#>  CRAN (R 3.6.0)                       
+#>  CRAN (R 3.6.0)                       
+#>  Github (tidymodels/parsnip@0e83faf)  
+#>  CRAN (R 3.6.0)                       
+#>  CRAN (R 3.6.0)                       
+#>  CRAN (R 3.6.0)                       
+#>  local                                
+#>  Github (r-lib/rlang@a90b04b)         
+#>  CRAN (R 3.6.2)                       
+#>  CRAN (R 3.6.2)                       
+#>  CRAN (R 3.6.0)                       
+#>  CRAN (R 3.6.2)                       
+#>  Github (tidymodels/workflows@e995c18)
+#>  CRAN (R 3.6.0)                       
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
 ```

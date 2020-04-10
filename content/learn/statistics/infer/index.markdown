@@ -16,9 +16,13 @@ description: |
 
 This article only requires the tidymodels package. 
 
-The tidymodels package [infer](https://tidymodels.github.io/infer/) implements an expressive grammar to perform statistical inference that coheres with the `tidyverse` design framework. Rather than providing methods for specific statistical tests, this package consolidates the principles that are shared among common hypothesis tests into a set of 4 main verbs (functions), supplemented with many utilities to visualize and extract value from their outputs.
+The tidymodels package [infer](https://tidymodels.github.io/infer/) implements an expressive grammar to perform statistical inference that coheres with the `tidyverse` design framework. Rather than providing methods for specific statistical tests, this package consolidates the principles that are shared among common hypothesis tests into a set of 4 main verbs (functions), supplemented with many utilities to visualize and extract information from their outputs.
 
-Regardless of which hypothesis test we're using, we're still asking the same kind of question: is the effect/difference in our observed data real, or due to chance? To answer this question, we start by assuming that the observed data came from some world where "nothing is going on" (i.e. the observed effect was simply due to random chance), and call this assumption our *null hypothesis*. (In reality, we might not believe in the null hypothesis at all---the null hypothesis is in opposition to the *alternate hypothesis*, which supposes that the effect present in the observed data is actually due to the fact that "something is going on.") We then calculate a *test statistic* from our data that describes the observed effect. We can use this test statistic to calculate a *p-value*, giving the probability that our observed data could come about if the null hypothesis was true. If this probability is below some pre-defined *significance level* `\(\alpha\)`, then we can reject our null hypothesis.
+Regardless of which hypothesis test we're using, we're still asking the same kind of question: 
+
+>Is the effect or difference in our observed data real, or due to chance? 
+
+To answer this question, we start by assuming that the observed data came from some world where "nothing is going on" (i.e. the observed effect was simply due to random chance), and call this assumption our **null hypothesis**. (In reality, we might not believe in the null hypothesis at all; the null hypothesis is in opposition to the **alternate hypothesis**, which supposes that the effect present in the observed data is actually due to the fact that "something is going on.") We then calculate a **test statistic** from our data that describes the observed effect. We can use this test statistic to calculate a **p-value**, giving the probability that our observed data could come about if the null hypothesis was true. If this probability is below some pre-defined **significance level** `\(\alpha\)`, then we can reject our null hypothesis.
 
 If you are new to hypothesis testing, take a look at 
 
@@ -27,12 +31,12 @@ If you are new to hypothesis testing, take a look at
 
 The workflow of this package is designed around these ideas. Starting from some data set,
 
-+ `specify()` allows you to specify the variable, or relationship between variables, that you're interested in.
-+ `hypothesize()` allows you to declare the null hypothesis.
-+ `generate()` allows you to generate data reflecting the null hypothesis.
++ `specify()` allows you to specify the variable, or relationship between variables, that you're interested in,
++ `hypothesize()` allows you to declare the null hypothesis,
++ `generate()` allows you to generate data reflecting the null hypothesis, and
 + `calculate()` allows you to calculate a distribution of statistics from the generated data to form the null distribution.
 
-Throughout this vignette, we make use of `gss`, a data set supplied by infer containing a sample of 500 observations of 11 variables from the *General Social Survey*. 
+Throughout this vignette, we make use of `gss`, a data set available in infer containing a sample of 500 observations of 11 variables from the *General Social Survey*. 
 
 
 ```r
@@ -43,8 +47,8 @@ data(gss)
 
 # take a look at its structure
 dplyr::glimpse(gss)
-#> Observations: 3,000
-#> Variables: 11
+#> Rows: 3,000
+#> Columns: 11
 #> $ year    <dbl> 2008, 2006, 1985, 1987, 2006, 1986, 1977, 1998, 2012, 1982, 1…
 #> $ age     <dbl> 37, 29, 58, 40, 39, 37, 53, 41, 55, 47, 36, 75, 22, 19, 34, 5…
 #> $ sex     <fct> male, female, male, male, female, male, female, male, male, m…
@@ -60,9 +64,9 @@ dplyr::glimpse(gss)
 
 Each row is an individual survey response, containing some basic demographic information on the respondent as well as some additional variables. See `?gss` for more information on the variables included and their source. Note that this data (and our examples on it) are for demonstration purposes only, and will not necessarily provide accurate estimates unless weighted properly. For these examples, let's suppose that this data set is a representative sample of a population we want to learn about: American adults.
 
-# specify(): Specifying Response (and Explanatory) Variables
+# Specify variables
 
-The `specify` function can be used to specify which of the variables in the data set you're interested in. If you're only interested in, say, the `age` of the respondents, you might write:
+The `specify()` function can be used to specify which of the variables in the data set you're interested in. If you're only interested in, say, the `age` of the respondents, you might write:
 
 
 ```r
@@ -85,7 +89,7 @@ gss %>%
 #> # … with 2,978 more rows
 ```
 
-On the front-end, the output of `specify` just looks like it selects off the columns in the dataframe that you've specified. Checking the class of this object, though:
+On the front end, the output of `specify()` just looks like it selects off the columns in the dataframe that you've specified. What do we see if we check the class of this object, though?
 
 
 ```r
@@ -95,13 +99,13 @@ gss %>%
 #> [1] "infer"      "tbl_df"     "tbl"        "data.frame"
 ```
 
-We can see that the infer class has been appended on top of the dataframe classes--this new class stores some extra metadata.
+We can see that the infer class has been appended on top of the dataframe classes; this new class stores some extra metadata.
 
-If you're interested in two variables--`age` and `partyid`, for example--you can `specify` their relationship in one of two (equivalent) ways:
+If you're interested in two variables (`age` and `partyid`, for example) you can `specify()` their relationship in one of two (equivalent) ways:
 
 
 ```r
-# with the named arguments
+# as a formula
 gss %>%
   specify(age ~ partyid)
 #> Response: age (numeric)
@@ -121,7 +125,7 @@ gss %>%
 #> 10    47 rep    
 #> # … with 2,953 more rows
 
-# as a formula
+# with the named arguments
 gss %>%
   specify(response = age, explanatory = partyid)
 #> Response: age (numeric)
@@ -166,7 +170,7 @@ gss %>%
 #> # … with 2,980 more rows
 ```
 
-# hypothesize(): Declaring the Null Hypothesis
+# Declare the hypothesis
 
 The next step in the infer pipeline is often to declare a null hypothesis using `hypothesize()`. The first step is to supply one of "independence" or "point" to the `null` argument. If your null hypothesis assumes independence between two variables, then this is all you need to supply to `hypothesize()`:
 
@@ -221,7 +225,7 @@ gss %>%
 
 Again, from the front-end, the dataframe outputted from `hypothesize()` looks almost exactly the same as it did when it came out of `specify()`, but infer now "knows" your null hypothesis.
 
-# generate(): Generating the Null Distribution
+# Generate the distribution
 
 Once we've asserted our null hypothesis using `hypothesize()`, we can construct a null distribution based on this hypothesis. We can do this using one of several methods, supplied in the `type` argument:
 
@@ -243,22 +247,22 @@ gss %>%
 #> # Groups:   replicate [5,000]
 #>    replicate hours
 #>        <int> <dbl>
-#>  1         1  59.2
-#>  2         1  29.2
-#>  3         1  60.2
-#>  4         1  69.2
-#>  5         1  14.2
-#>  6         1  41.2
-#>  7         1  39.2
-#>  8         1  44.2
-#>  9         1  15.2
-#> 10         1  39.2
+#>  1         1  44.2
+#>  2         1  37.2
+#>  3         1  39.2
+#>  4         1  47.2
+#>  5         1  39.2
+#>  6         1  39.2
+#>  7         1  43.2
+#>  8         1  59.2
+#>  9         1  39.2
+#> 10         1  61.2
 #> # … with 8,779,990 more rows
 ```
 
-In the above example, we take 1000 bootstrap samples to form our null distribution.
+In the above example, we take 5000 bootstrap samples to form our null distribution.
 
-To generate a null distribution for the independence of two variables, we could also randomly reshuffle the pairings of explanatory and response variables to break any existing association. For instance, to generate 1000 replicates that can be used to create a null distribution under the assumption that political party affiliation is not affected by age:
+To generate a null distribution for the independence of two variables, we could also randomly reshuffle the pairings of explanatory and response variables to break any existing association. For instance, to generate 5000 replicates that can be used to create a null distribution under the assumption that political party affiliation is not affected by age:
 
 
 ```r
@@ -274,21 +278,21 @@ gss %>%
 #>    partyid   age replicate
 #>    <fct>   <dbl>     <int>
 #>  1 rep        37         1
-#>  2 dem        29         1
-#>  3 dem        58         1
-#>  4 ind        40         1
+#>  2 rep        29         1
+#>  3 rep        58         1
+#>  4 rep        40         1
 #>  5 dem        39         1
 #>  6 rep        37         1
 #>  7 ind        53         1
 #>  8 ind        41         1
-#>  9 rep        55         1
-#> 10 rep        47         1
+#>  9 ind        55         1
+#> 10 ind        47         1
 #> # … with 14,814,990 more rows
 ```
 
-# calculate(): Calculating Summary Statistics
+# Calculate statistics
 
-Depending on whether you're carrying out computation-based inference or theory-based inference, you will either supply `calculate()` with the output of `generate()` or `hypothesize`, respectively. The function, for one, takes in a `stat` argument, which is currently one of "mean", "median", "sum", "sd", "prop", "count", "diff in means", "diff in medians", "diff in props", "Chisq", "F", "t", "z", "slope", or "correlation". For example, continuing our example above to calculate the null distribution of mean hours worked per week:
+Depending on whether you're carrying out computation-based inference or theory-based inference, you will either supply `calculate()` with the output of `generate()` or `hypothesize()`, respectively. The function, for one, takes in a `stat` argument, which is currently one of `"mean"`, `"median"`, `"sum"`, `"sd"`, `"prop"`, `"count"`, `"diff in means"`, `"diff in medians"`, `"diff in props"`, `"Chisq"`, `"F"`, `"t"`, `"z"`, `"slope"`, or `"correlation"`. For example, continuing our example above to calculate the null distribution of mean hours worked per week:
 
 
 ```r
@@ -299,21 +303,21 @@ gss %>%
   calculate(stat = "mean")
 #> # A tibble: 5,000 x 2
 #>    replicate  stat
-#>        <int> <dbl>
-#>  1         1  40.5
-#>  2         2  39.9
-#>  3         3  39.7
+#>  *     <int> <dbl>
+#>  1         1  40.4
+#>  2         2  39.6
+#>  3         3  40.2
 #>  4         4  40.0
-#>  5         5  40.3
-#>  6         6  40.2
-#>  7         7  39.3
-#>  8         8  40.0
-#>  9         9  40.0
-#> 10        10  40.5
+#>  5         5  40.6
+#>  6         6  39.5
+#>  7         7  39.7
+#>  8         8  40.6
+#>  9         9  39.6
+#> 10        10  39.8
 #> # … with 4,990 more rows
 ```
 
-The output of `calculate()` here shows us the sample statistic (in this case, the mean) for each of our 1000 replicates. If you're carrying out inference on differences in means, medians, or proportions, or t and z statistics, you will need to supply an `order` argument, giving the order in which the explanatory variables should be subtracted. For instance, to find the difference in mean age of those that have a college degree and those that don't, we might write:
+The output of `calculate()` here shows us the sample statistic (in this case, the mean) for each of our 1000 replicates. If you're carrying out inference on differences in means, medians, or proportions, or `\(t\)` and `\(z\)` statistics, you will need to supply an `order` argument, giving the order in which the explanatory variables should be subtracted. For instance, to find the difference in mean age of those that have a college degree and those that don't, we might write:
 
 
 ```r
@@ -323,24 +327,24 @@ gss %>%
   generate(reps = 5000, type = "permute") %>%
   calculate("diff in means", order = c("degree", "no degree"))
 #> # A tibble: 5,000 x 2
-#>    replicate     stat
-#>        <int>    <dbl>
-#>  1         1 -0.414  
-#>  2         2 -0.939  
-#>  3         3 -0.344  
-#>  4         4 -2.34   
-#>  5         5 -0.772  
-#>  6         6 -1.99   
-#>  7         7 -0.418  
-#>  8         8  1.10   
-#>  9         9 -0.00649
-#> 10        10  0.729  
+#>    replicate   stat
+#>  *     <int>  <dbl>
+#>  1         1  0.163
+#>  2         2  0.510
+#>  3         3 -0.998
+#>  4         4  0.262
+#>  5         5  0.627
+#>  6         6  0.384
+#>  7         7  0.332
+#>  8         8 -0.813
+#>  9         9  0.970
+#> 10        10 -0.472
 #> # … with 4,990 more rows
 ```
 
-# Other Utilities
+# Other utilities
 
-infer also offers several utilities to extract the meaning out of summary statistics and null distributions---the package provides functions to visualize where a statistic is relative to a distribution (with `visualize()`), calculate p-values (with `get_p_value()`), and calculate confidence intervals (with `get_confidence_interval()`).
+The infer package also offers several utilities to extract meaning out of summary statistics and null distributions; the package provides functions to visualize where a statistic is relative to a distribution (with `visualize()`), calculate p-values (with `get_p_value()`), and calculate confidence intervals (with `get_confidence_interval()`).
 
 To illustrate, we'll go back to the example of determining whether the mean number of hours worked per week is 40 hours.
 
@@ -386,7 +390,7 @@ null_dist %>%
 
 <img src="figs/visualize2-1.svg" width="672" />
 
-Notice that infer has also shaded the regions of the null distribution that are as (or more) extreme than our observed statistic. (Also, note that we now use the `+` operator to apply the `shade_p_value` function. This is because `visualize` outputs a plot object from `ggplot2` instead of a data frame, and the `+` operator is needed to add the p-value layer to the plot object.) The red bar looks like it's slightly far out on the right tail of the null distribution, so observing a sample mean of 40.772 hours would be somewhat unlikely if the mean was actually 40 hours. How unlikely, though?
+Notice that infer has also shaded the regions of the null distribution that are as (or more) extreme than our observed statistic. (Also, note that we now use the `+` operator to apply the `shade_p_value()` function. This is because `visualize()` outputs a plot object from ggplot2 instead of a dataframe, and the `+` operator is needed to add the p-value layer to the plot object.) The red bar looks like it's slightly far out on the right tail of the null distribution, so observing a sample mean of 40.772 hours would be somewhat unlikely if the mean was actually 40 hours. How unlikely, though?
 
 
 ```r
@@ -398,10 +402,10 @@ p_value
 #> # A tibble: 1 x 1
 #>   p_value
 #>     <dbl>
-#> 1  0.0176
+#> 1  0.0212
 ```
 
-It looks like the p-value is 0.018, which is pretty small---if the true mean number of hours worked per week was actually 40, the probability of our sample mean being this far (0.772 hours) from 40 would be 0.018. This may or may not be statistically significantly different, depending on the significance level `\(\alpha\)` you decided on *before* you ran this analysis. If you had set `\(\alpha = .05\)`, then this difference would be statistically significant, but if you had set `\(\alpha = .01\)`, then it would not be.
+It looks like the p-value is 0.021, which is pretty small---if the true mean number of hours worked per week was actually 40, the probability of our sample mean being this far (0.772 hours) from 40 would be 0.021. This may or may not be statistically significantly different, depending on the significance level `\(\alpha\)` you decided on *before* you ran this analysis. If you had set `\(\alpha = .05\)`, then this difference would be statistically significant, but if you had set `\(\alpha = .01\)`, then it would not be.
 
 To get a confidence interval around our estimate, we can write:
 
@@ -423,9 +427,9 @@ null_dist %>%
 
 As you can see, 40 hours per week is not contained in this interval, which aligns with our previous conclusion that this finding is significant at the confidence level `\(\alpha = .05\)`.
 
-# Theoretical Methods
+# Theoretical methods
 
-{infer} also provides functionality to use theoretical methods for `"Chisq"`, `"F"` and `"t"` test statistics. 
+The infer package also provides functionality to use theoretical methods for `"Chisq"`, `"F"` and `"t"` test statistics. 
 
 Generally, to find a null distribution using theory-based methods, use the same code that you would use to find the null distribution using randomization-based methods, but skip the `generate()` step. For example, if we wanted to find a null distribution for the relationship between age (`age`) and party identification (`partyid`) using randomization, we could write:
 
@@ -448,7 +452,7 @@ null_f_distn_theoretical <- gss %>%
    calculate(stat = "F")
 ```
 
-We'll calculate the observed statistic to make use of in the following visualizations---this procedure is the same, regardless of the methods used to find the null distribution.
+We'll calculate the observed statistic to make use of in the following visualizations; this procedure is the same, regardless of the methods used to find the null distribution.
 
 
 ```r
@@ -467,7 +471,7 @@ visualize(null_f_distn_theoretical, method = "theoretical") +
 
 <img src="figs/unnamed-chunk-4-1.svg" width="672" />
 
-To get a sense of how the theory-based and randomization-based null distributions relate, as well, we can pipe the randomization-based null distribution into `visualize()` and also specify `method = "both"`
+To get a sense of how the theory-based and randomization-based null distributions relate, we can pipe the randomization-based null distribution into `visualize()` and also specify `method = "both"`
 
 
 ```r
@@ -486,33 +490,33 @@ That's it! This vignette covers most all of the key functionality of infer. See 
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.1 (2019-07-05)
-#>  os       macOS Catalina 10.15.3      
+#>  version  R version 3.6.2 (2019-12-12)
+#>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/Los_Angeles         
-#>  date     2020-04-06                  
+#>  tz       America/Denver              
+#>  date     2020-04-07                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version    date       lib source                               
-#>  broom      * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
-#>  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
-#>  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
-#>  ggplot2    * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
-#>  infer      * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                       
-#>  parsnip    * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
-#>  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
-#>  recipes    * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
-#>  rlang        0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
-#>  rsample    * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
-#>  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
-#>  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
-#>  tune       * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
-#>  workflows  * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
-#>  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
+#>  package    * version     date       lib source                               
+#>  broom      * 0.5.5       2020-02-29 [1] CRAN (R 3.6.0)                       
+#>  dials      * 0.0.4.9000  2020-03-20 [1] local                                
+#>  dplyr      * 0.8.99.9002 2020-04-03 [1] Github (tidyverse/dplyr@bda05f7)     
+#>  ggplot2    * 3.3.0       2020-03-05 [1] CRAN (R 3.6.0)                       
+#>  infer      * 0.5.1       2019-11-19 [1] CRAN (R 3.6.0)                       
+#>  parsnip    * 0.0.5.9001  2020-04-03 [1] Github (tidymodels/parsnip@0e83faf)  
+#>  purrr      * 0.3.3       2019-10-18 [1] CRAN (R 3.6.0)                       
+#>  recipes    * 0.1.10.9000 2020-04-03 [1] local                                
+#>  rlang        0.4.5.9000  2020-03-20 [1] Github (r-lib/rlang@a90b04b)         
+#>  rsample    * 0.0.6       2020-03-31 [1] CRAN (R 3.6.2)                       
+#>  tibble     * 3.0.0       2020-03-30 [1] CRAN (R 3.6.2)                       
+#>  tidymodels * 0.1.0       2020-02-16 [1] CRAN (R 3.6.0)                       
+#>  tune       * 0.1.0       2020-04-02 [1] CRAN (R 3.6.2)                       
+#>  workflows  * 0.1.1.9000  2020-03-20 [1] Github (tidymodels/workflows@e995c18)
+#>  yardstick  * 0.0.6       2020-03-17 [1] CRAN (R 3.6.0)                       
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
 ```

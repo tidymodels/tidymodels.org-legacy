@@ -17,9 +17,9 @@ description: |
 
 This article requires that you have the following packages installed: discrim, klaR, readr, ROSE, themis, and tidymodels.
 
-Subsampling a training set (either undersampling or oversampling the appropriate class or classes) can be a helpful approach to dealing with classification data where one or more classes occur very infrequently. With such an approach, most models will overfit to the majority class and produce very good statistics for the class containing the frequently occurring classes while the minority classes have poor performance. 
+Subsampling a training set, either undersampling or oversampling the appropriate class or classes, can be a helpful approach to dealing with classification data where one or more classes occur very infrequently. In such a situation (without compensating for it), most models will overfit to the majority class and produce very good statistics for the class containing the frequently occurring classes while the minority classes have poor performance. 
 
-This article describes this method for dealing with class imbalances. For better understanding, some knowledge of classification metrics like sensitivity, specificity, and receiver operating characteristic curves is required. See Section 3.2.2 for [Kuhn and Johnson (2019)](https://bookdown.org/max/FES/measuring-performance.html) for more information on these metrics.  
+This article describes subsampling for dealing with class imbalances. For better understanding, some knowledge of classification metrics like sensitivity, specificity, and receiver operating characteristic curves is required. See Section 3.2.2 in [Kuhn and Johnson (2019)](https://bookdown.org/max/FES/measuring-performance.html) for more information on these metrics.  
 
 # Simulated data
 
@@ -40,18 +40,18 @@ table(imbal_data$Class)
 
 If "Class1" is the event of interest, it is very likely that a classification model would be able to achieve very good _specificity_ since almost all of the data are of the second class. _Sensitivity_, however, would likely be poor since the models will optimize accuracy (or other loss functions) by predicting everything to be the majority class. 
 
-When there are two classes, one result of class imbalance is that the default probability cutoff of 50% is inappropriate; a different cutoff that is more extreme might be able to achieve good performance. 
+One result of class imbalance when there are two classes is that the default probability cutoff of 50% is inappropriate; a different cutoff that is more extreme might be able to achieve good performance. 
 
 # Subsampling the data
 
-One way to alleviate this issue is to _subsample_ the data. There are a number of ways to do this but the most simple one is to _sample down_ (undersample) the majority class data until it occurs with the same frequency as the minority class. While it may seem counterintuitive, throwing out a large percentage of your data can be effective at producing a useful model that can recognize both the majority and minority class. In some cases, this even means that the overall performance of the model is better (e.g. improved area under the ROC curve). However, subsampling almost always produces models that are _better calibrated_, meaning that the distributions of the class probabilities are more well behaved. As a result, the default 50% cutoff is much more likely to produce better sensitivity and specificity values than they would otherwise. 
+One way to alleviate this issue is to _subsample_ the data. There are a number of ways to do this but the most simple one is to _sample down_ (undersample) the majority class data until it occurs with the same frequency as the minority class. While it may seem counterintuitive, throwing out a large percentage of your data can be effective at producing a useful model that can recognize both the majority and minority classes. In some cases, this even means that the overall performance of the model is better (e.g. improved area under the ROC curve). However, subsampling almost always produces models that are _better calibrated_, meaning that the distributions of the class probabilities are more well behaved. As a result, the default 50% cutoff is much more likely to produce better sensitivity and specificity values than they would otherwise. 
 
-To demonstrate this, `themis::step_rose()` will be used in a recipe for the simulated data. It uses the ROSE (random over sampling examples) method from [Menardi, G. and Torelli, N. (2014)](https://scholar.google.com/scholar?hl=en&q=%22training+and+assessing+classification+rules+with+imbalanced+data%22). This is an example of an oversampling strategy, rather than undersampling.
+Let's explore subsampling using `themis::step_rose()` in a recipe for the simulated data. It uses the ROSE (random over sampling examples) method from [Menardi, G. and Torelli, N. (2014)](https://scholar.google.com/scholar?hl=en&q=%22training+and+assessing+classification+rules+with+imbalanced+data%22). This is an example of an oversampling strategy, rather than undersampling.
 
 In terms of workflow:
 
  * It is extremely important that subsampling occurs _inside of resampling_. Otherwise, the resampling process can produce [poor estimates of model performance](https://topepo.github.io/caret/subsampling-for-class-imbalances.html#resampling). 
- * The subsampling process should only be applied to the analysis set. The assessment set should reflect the event rates seen "in the wild" and, for this reason, the `skip` argument to `step_downsample()` has a default of `TRUE`. 
+ * The subsampling process should only be applied to the analysis set. The assessment set should reflect the event rates seen "in the wild" and, for this reason, the `skip` argument to `step_downsample()` and other subsampling recipes steps has a default of `TRUE`. 
 
 Here is a simple recipe implementing oversampling: 
 
@@ -74,7 +74,7 @@ qda_mod <-
   set_engine("klaR")
 ```
 
-To keep these objects bound together, they are combined in a workflow:
+To keep these objects bound together, they can be combined in a [workflow](https://tidymodels.github.io/workflows/):
 
 
 ```r
@@ -83,16 +83,16 @@ qda_rose_wflw <-
   add_model(qda_mod) %>% 
   add_recipe(imbal_rec)
 qda_rose_wflw
-#> ══ Workflow ══════════════════════════════════════════════════════════
+#> ══ Workflow ══════════════════════════════════════════════════════════════════════════════════════════════════════
 #> Preprocessor: Recipe
 #> Model: discrim_regularized()
 #> 
-#> ── Preprocessor ──────────────────────────────────────────────────────
+#> ── Preprocessor ──────────────────────────────────────────────────────────────────────────────────────────────────
 #> 1 Recipe Step
 #> 
 #> ● step_rose()
 #> 
-#> ── Model ─────────────────────────────────────────────────────────────
+#> ── Model ─────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> Regularized Discriminant Model Specification (classification)
 #> 
 #> Main Arguments:
@@ -102,7 +102,7 @@ qda_rose_wflw
 #> Computational engine: klaR
 ```
 
-## Model performance
+# Model performance
 
 Stratified, repeated 10-fold cross-validation is used to resample the model:
 
@@ -129,13 +129,18 @@ Now, we train the models and generate the results using `tune::fit_resamples()`:
 
 ```r
 set.seed(2180)
-qda_rose_res <- fit_resamples(qda_rose_wflw, resamples = cv_folds, metrics = cls_metrics)
+qda_rose_res <- fit_resamples(
+  qda_rose_wflw, 
+  resamples = cv_folds, 
+  metrics = cls_metrics
+)
+
 collect_metrics(qda_rose_res)
 #> # A tibble: 2 x 5
 #>   .metric .estimator  mean     n std_err
 #>   <chr>   <chr>      <dbl> <int>   <dbl>
-#> 1 j_index binary     0.786    50 0.0214 
-#> 2 roc_auc binary     0.949    50 0.00586
+#> 1 j_index binary     0.775    50 0.0208 
+#> 2 roc_auc binary     0.952    50 0.00483
 ```
 
 What do the results look like without using ROSE? We can create another workflow and fit the QDA model along the same resamples:
@@ -192,38 +197,38 @@ This visually demonstrates that the subsampling mostly affects metrics that use 
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.1 (2019-07-05)
-#>  os       macOS Catalina 10.15.3      
+#>  version  R version 3.6.2 (2019-12-12)
+#>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/Los_Angeles         
-#>  date     2020-04-06                  
+#>  tz       America/Denver              
+#>  date     2020-04-07                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version    date       lib source                               
-#>  broom      * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
-#>  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
-#>  discrim    * 0.0.1      2019-10-11 [1] CRAN (R 3.6.0)                       
-#>  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
-#>  ggplot2    * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
-#>  infer      * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                       
-#>  klaR       * 0.6-15     2020-02-19 [1] CRAN (R 3.6.0)                       
-#>  parsnip    * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
-#>  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
-#>  readr      * 1.3.1      2018-12-21 [1] CRAN (R 3.6.0)                       
-#>  recipes    * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
-#>  rlang        0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
-#>  ROSE       * 0.0-3      2014-07-15 [1] CRAN (R 3.6.0)                       
-#>  rsample    * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
-#>  themis     * 0.1.0      2020-01-13 [1] CRAN (R 3.6.0)                       
-#>  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
-#>  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
-#>  tune       * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
-#>  workflows  * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
-#>  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
+#>  package    * version     date       lib source                               
+#>  broom      * 0.5.5       2020-02-29 [1] CRAN (R 3.6.0)                       
+#>  dials      * 0.0.4.9000  2020-03-20 [1] local                                
+#>  discrim    * 0.0.1       2019-10-11 [1] CRAN (R 3.6.0)                       
+#>  dplyr      * 0.8.99.9002 2020-04-03 [1] Github (tidyverse/dplyr@bda05f7)     
+#>  ggplot2    * 3.3.0       2020-03-05 [1] CRAN (R 3.6.0)                       
+#>  infer      * 0.5.1       2019-11-19 [1] CRAN (R 3.6.0)                       
+#>  klaR       * 0.6-15      2020-02-19 [1] CRAN (R 3.6.0)                       
+#>  parsnip    * 0.0.5.9001  2020-04-03 [1] Github (tidymodels/parsnip@0e83faf)  
+#>  purrr      * 0.3.3       2019-10-18 [1] CRAN (R 3.6.0)                       
+#>  readr      * 1.3.1       2018-12-21 [1] CRAN (R 3.6.0)                       
+#>  recipes    * 0.1.10.9000 2020-04-03 [1] local                                
+#>  rlang        0.4.5.9000  2020-03-20 [1] Github (r-lib/rlang@a90b04b)         
+#>  ROSE       * 0.0-3       2014-07-15 [1] CRAN (R 3.6.0)                       
+#>  rsample    * 0.0.6       2020-03-31 [1] CRAN (R 3.6.2)                       
+#>  themis     * 0.1.0       2020-01-13 [1] CRAN (R 3.6.0)                       
+#>  tibble     * 3.0.0       2020-03-30 [1] CRAN (R 3.6.2)                       
+#>  tidymodels * 0.1.0       2020-02-16 [1] CRAN (R 3.6.0)                       
+#>  tune       * 0.1.0       2020-04-02 [1] CRAN (R 3.6.2)                       
+#>  workflows  * 0.1.1.9000  2020-03-20 [1] Github (tidymodels/workflows@e995c18)
+#>  yardstick  * 0.0.6       2020-03-17 [1] CRAN (R 3.6.0)                       
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
 ```

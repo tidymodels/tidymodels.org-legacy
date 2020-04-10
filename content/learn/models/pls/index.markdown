@@ -15,7 +15,7 @@ description: |
 
 # Introduction
 
-This article requires that you have the following packages installed: modeldata, pls, and tidymodels.
+This article requires that you have the following packages installed: modeldata, pls, tidymodels, and tidyr.
 
 "Multivariate analysis" usually refers to multiple _outcomes_ being modeled, analyzed, and/or predicted. There are multivariate versions of many common statistical tools. For example, suppose there was a data set with columns `y1` and `y2` representing two outcomes to be predicted. The `lm()` function would look something like:
 
@@ -90,12 +90,13 @@ The pls package expects a simple formula to specify the model, but each side of 
 
 The calculation for the proportion of variance explained is straightforward for the predictors; the function `pls::explvar()` will compute that. For the outcomes, the process is more complicated. A ready-made function to compute these is not obvious but there is some code inside of the summary function to do the computation (see below). 
 
-The function `get_var_explained()` shown below will do all these computations and return a data frame with columns `components`, `source` (for the predictors, water, etc) and the `proportion` of variance that is explained by the components. 
+The function `get_var_explained()` shown here will do all these computations and return a data frame with columns `components`, `source` (for the predictors, water, etc), and the `proportion` of variance that is explained by the components. 
 
 
 
 ```r
 library(pls)
+library(tidyr)
 
 get_var_explained <- function(recipe, ...) {
   
@@ -137,13 +138,14 @@ get_var_explained <- function(recipe, ...) {
 }
 ```
 
-We compute this data frame for each resample and save the results in different columns. 
+We compute this data frame for each resample and save the results in the different columns. 
 
 
 ```r
 folds <- 
   folds %>%
-  mutate(var = map(recipes, get_var_explained))
+  mutate(var = map(recipes, get_var_explained),
+         var = unname(var))
 ```
 
 To extract and aggregate these data, simple row binding can be used to stack the data vertically. Most of the action happens in the first 15 components so let's filter the data and compute the _average_ proportion.
@@ -175,35 +177,36 @@ ggplot(variance_data, aes(x = components, y = proportion, col = source)) +
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.1 (2019-07-05)
-#>  os       macOS Catalina 10.15.3      
+#>  version  R version 3.6.2 (2019-12-12)
+#>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/Los_Angeles         
-#>  date     2020-04-06                  
+#>  tz       America/Denver              
+#>  date     2020-04-07                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version    date       lib source                               
-#>  broom      * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
-#>  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
-#>  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
-#>  ggplot2    * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
-#>  infer      * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                       
-#>  modeldata  * 0.0.1      2019-12-19 [1] Github (tidymodels/modeldata@aa91bb1)
-#>  parsnip    * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
-#>  pls        * 2.7-2      2019-10-01 [1] CRAN (R 3.6.0)                       
-#>  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
-#>  recipes    * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
-#>  rlang        0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
-#>  rsample    * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
-#>  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
-#>  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
-#>  tune       * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
-#>  workflows  * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
-#>  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
+#>  package    * version     date       lib source                               
+#>  broom      * 0.5.5       2020-02-29 [1] CRAN (R 3.6.0)                       
+#>  dials      * 0.0.4.9000  2020-03-20 [1] local                                
+#>  dplyr      * 0.8.99.9002 2020-04-03 [1] Github (tidyverse/dplyr@bda05f7)     
+#>  ggplot2    * 3.3.0       2020-03-05 [1] CRAN (R 3.6.0)                       
+#>  infer      * 0.5.1       2019-11-19 [1] CRAN (R 3.6.0)                       
+#>  modeldata  * 0.0.1       2019-12-06 [1] CRAN (R 3.6.0)                       
+#>  parsnip    * 0.0.5.9001  2020-04-03 [1] Github (tidymodels/parsnip@0e83faf)  
+#>  pls        * 2.7-2       2019-10-01 [1] CRAN (R 3.6.0)                       
+#>  purrr      * 0.3.3       2019-10-18 [1] CRAN (R 3.6.0)                       
+#>  recipes    * 0.1.10.9000 2020-04-03 [1] local                                
+#>  rlang        0.4.5.9000  2020-03-20 [1] Github (r-lib/rlang@a90b04b)         
+#>  rsample    * 0.0.6       2020-03-31 [1] CRAN (R 3.6.2)                       
+#>  tibble     * 3.0.0       2020-03-30 [1] CRAN (R 3.6.2)                       
+#>  tidymodels * 0.1.0       2020-02-16 [1] CRAN (R 3.6.0)                       
+#>  tidyr      * 1.0.2       2020-01-24 [1] CRAN (R 3.6.0)                       
+#>  tune       * 0.1.0       2020-04-02 [1] CRAN (R 3.6.2)                       
+#>  workflows  * 0.1.1.9000  2020-03-20 [1] Github (tidymodels/workflows@e995c18)
+#>  yardstick  * 0.0.6       2020-03-17 [1] CRAN (R 3.6.0)                       
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
 ```

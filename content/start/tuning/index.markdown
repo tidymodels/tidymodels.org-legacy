@@ -3,6 +3,8 @@ title: "Tune model parameters"
 weight: 4
 tags: [rsample, parsnip, tune, dials, yardstick]
 categories: [tuning]
+description: | 
+  Estimate the best values for hyperparameters that cannot be learned directly during model training.
 ---
 
 
@@ -13,7 +15,7 @@ Some model parameters cannot be learned directly from a data set during model tr
 
 # Predicting image segmentation, but better
 
-In our [article on resampling](LINKTODO), we introduced a data set of images of cells that were labeled by experts as well-segmented (`WS`) or poorly segmented (`PS`). We trained a random forest model to predict which images are segmented well vs. poorly, so that a biologist could filter out poorly segmented cell images in their analysis. We used resampling to estimate the performance of our model on this data.
+In our [article on resampling](/start/resampling/), we introduced a data set of images of cells that were labeled by experts as well-segmented (`WS`) or poorly segmented (`PS`). We trained a random forest model to predict which images are segmented well vs. poorly, so that a biologist could filter out poorly segmented cell images in their analysis. We used resampling to estimate the performance of our model on this data.
 
 
 ```r
@@ -109,26 +111,35 @@ tree_grid <- grid_regular(cost_complexity(),
                           levels = 5)
 ```
 
-Let's create cross-validation folds for tuning, and then use `tune_grid()` to fit models at all the different values we chose for each tuned hyperparameter.
+Next let's create cross-validation folds for tuning:
 
 
 ```r
 set.seed(234)
 cell_folds <- vfold_cv(cell_train)
+```
 
+Then let's use `tune_grid()` to fit models at all the different values we chose for each tuned hyperparameter. There are several options for building the object for tuning. You can tune a model specification along with a recipe or model, or you can tune a [`workflow()`](https://tidymodels.github.io/workflows/) that bundles together a model specification and a recipe or model preprocessor. Here we use a `workflow()` with a straightforward formula; if this model required more involved data preprocessing, we could use `add_recipe()` instead of `add_formula()`.
+
+
+```r
 set.seed(345)
-tree_res <- tune_spec %>%
-  tune_grid(
-    class ~ .,
-    resamples = cell_folds,
-    grid = tree_grid
-  )
+
+tree_wf <- workflow() %>%
+  add_model(tune_spec) %>%
+  add_formula(class ~ .)
+
+tree_res <- tune_grid(
+  tree_wf,
+  resamples = cell_folds,
+  grid = tree_grid
+)
 
 tree_res
 #> #  10-fold cross-validation 
 #> # A tibble: 10 x 4
 #>    splits             id     .metrics          .notes          
-#>  * <list>             <chr>  <list>            <list>          
+#>    <list>             <chr>  <list>            <list>          
 #>  1 <split [1.4K/152]> Fold01 <tibble [50 × 5]> <tibble [0 × 1]>
 #>  2 <split [1.4K/152]> Fold02 <tibble [50 × 5]> <tibble [0 × 1]>
 #>  3 <split [1.4K/152]> Fold03 <tibble [50 × 5]> <tibble [0 × 1]>
@@ -203,7 +214,7 @@ final_tree <- final_mod %>%
 final_tree
 #> parsnip model object
 #> 
-#> Fit time:  133ms 
+#> Fit time:  113ms 
 #> n= 1515 
 #> 
 #> node), split, n, loss, yval, (yprob)

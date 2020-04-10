@@ -31,11 +31,11 @@ Now that you've made a reprex, you need to share it in an appropriate forum. Her
 
 [twitter-rstats]: https://twitter.com/search?q=%23rstats&src=typd
 
-## Online resources
+## Resources
 
 - See what you need to know to [get started with tidymodels](/start/), and learn more about [using tidymodels for specific tasks](/learn/).
 
 - Each tidymodels package has its own documentation site, full of helpful information. Find [links to all package documentation sites](/packages/) and explore them!
 
-- Compendium link will go here??? Does this exist somewhere?
+- Search [all tidymodels functions](/functions/), and check out [our books on these topics](/books/).
 

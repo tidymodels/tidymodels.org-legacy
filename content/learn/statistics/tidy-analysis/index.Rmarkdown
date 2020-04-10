@@ -14,19 +14,19 @@ source(here::here("content/learn/common.R"))
 
 ```{r load, include = FALSE}
 library(tidymodels)
-pkgs <- c("tidymodels")
+pkgs <- c("tidymodels", "tidyr")
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
 # Introduction
 
-This article only requires that you have the tidymodels package installed.
+`r req_pkgs(pkgs)`
 
-While the tidymodels package [broom](https://broom.tidyverse.org/) is useful for summarizing the result of a single analysis in a consistent format, it is really designed for high-throughput applications, where you must combine results from multiple analyses. These could be subgroups of data, analyses using different models, bootstrap replicates, permutations, and so on. In particular, it plays well with the `nest()/unnest()` functions in tidyr and the `map()` function in purrr.
+While the tidymodels package [broom](https://broom.tidyverse.org/) is useful for summarizing the result of a single analysis in a consistent format, it is really designed for high-throughput applications, where you must combine results from multiple analyses. These could be subgroups of data, analyses using different models, bootstrap replicates, permutations, and so on. In particular, it plays well with the `nest()/unnest()` functions from [tidyr](https://tidyr.tidyverse.org/) and the `map()` function in [purrr](https://purrr.tidyverse.org/).
 
 # Correlation analysis
 
-Let's try this on a simple data set, the built-in `Orange`. We start by coercing `Orange` to a `tibble`. This gives a nicer print method that will especially useful later on when we start working with list-columns.
+Let's demonstrate this with a simple data set, the built-in `Orange`. We start by coercing `Orange` to a `tibble`. This gives a nicer print method that will be especially useful later on when we start working with list-columns.
 
 ```{r}
 library(tidymodels)
@@ -56,7 +56,7 @@ Orange %>%
   summarize(correlation = cor(age, circumference))
 ```
 
-(Note that the correlations are much higher than the aggregated one, and furthermore we can now see it is similar across trees).
+(Note that the correlations are much higher than the aggregated one, and also we can now see the correlation is similar across trees).
 
 Suppose that instead of simply estimating a correlation, we want to perform a hypothesis test with `cor.test()`:
 
@@ -65,7 +65,7 @@ ct <- cor.test(Orange$age, Orange$circumference)
 ct
 ```
 
-This contains multiple values we could want in our output. Some are vectors of length 1, such as the p-value and the estimate, and some are longer, such as the confidence interval. We can get this into a nicely organized tibble using the `tidy()` function:
+This test output contains multiple values we may be interested in. Some are vectors of length 1, such as the p-value and the estimate, and some are longer, such as the confidence interval. We can get this into a nicely organized tibble using the `tidy()` function:
 
 ```{r}
 tidy(ct)
@@ -74,12 +74,14 @@ tidy(ct)
 Often, we want to perform multiple tests or fit multiple models, each on a different part of the data. In this case, we recommend a `nest-map-unnest` workflow. For example, suppose we want to perform correlation tests for each different tree. We start by `nest`ing our data based on the group of interest:
 
 ```{r}
+library(tidyr)
+
 nested <- 
   Orange %>% 
   nest(data = c(age, circumference))
 ```
 
-Then we run a correlation test for each nested tibble using `purrr::map()`:
+Then we perform a correlation test for each nested tibble using `purrr::map()`:
 
 ```{r}
 nested %>% 
@@ -111,14 +113,14 @@ Orange %>%
 
 # Regression models
 
-This workflow becomes even more useful when applied to regressions. Untidy output for a regression looks like:
+This type of workflow becomes even more useful when applied to regressions. Untidy output for a regression looks like:
 
 ```{r}
 lm_fit <- lm(age ~ circumference, data = Orange)
 summary(lm_fit)
 ```
 
-where we tidy these results, we get multiple rows of output for each model:
+When we tidy these results, we get multiple rows of output for each model:
 
 ```{r}
 tidy(lm_fit)
@@ -137,7 +139,7 @@ Orange %>%
   select(-data, -fit)
 ```
 
-You can just as easily use multiple predictors in the regressions, as shown here on the `mtcars` dataset. We nest the data into automatic and manual cars (the `am` column), then perform the regression within each nested tibble.
+You can just as easily use multiple predictors in the regressions, as shown here on the `mtcars` dataset. We nest the data into automatic vs. manual cars (the `am` column), then perform the regression within each nested tibble.
 
 ```{r}
 data(mtcars)
@@ -180,11 +182,11 @@ regressions %>%
   unnest(augmented)
 ```
 
-By combining the estimates and p-values across all groups into the same tidy data frame (instead of a list of output model objects), a new class of analyses and visualizations becomes straightforward. This includes
+By combining the estimates and p-values across all groups into the same tidy data frame (instead of a list of output model objects), a new class of analyses and visualizations becomes straightforward. This includes:
 
-- Sorting by p-value or estimate to find the most significant terms across all tests
-- P-value histograms
-- Volcano plots comparing p-values to effect size estimates
+- sorting by p-value or estimate to find the most significant terms across all tests,
+- p-value histograms, and
+- volcano plots comparing p-values to effect size estimates.
 
 In each of these cases, we can easily filter, facet, or distinguish based on the `term` column. In short, this makes the tools of tidy data analysis available for the *results* of data analysis and models, not just the inputs.
 

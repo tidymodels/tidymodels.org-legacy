@@ -16,7 +16,7 @@ description: |
 
 This article requires that you have the following packages installed: modeldata and tidymodels.
 
-There are many existing recipe steps in packages like recipes, themis, textrecipes, and others. A full list of steps in CRAN packages [can be found here](TODO). However, you might need to define your own preprocessing operations; this article describes how to do that. If you are looking for good examples of existing steps, I would suggest looking at the code for [centering](https://github.com/tidymodels/recipes/blob/master/R/center.R) or [PCA](https://github.com/tidymodels/recipes/blob/master/R/pca.R) to start. 
+There are many existing recipe steps in packages like recipes, themis, textrecipes, and others. A full list of steps in CRAN packages [can be found here](/functions/). However, you might need to define your own preprocessing operations; this article describes how to do that. If you are looking for good examples of existing steps, we suggest looking at the code for [centering](https://github.com/tidymodels/recipes/blob/master/R/center.R) or [PCA](https://github.com/tidymodels/recipes/blob/master/R/pca.R) to start. 
 
 For check operations (e.g. `check_class()`), the process is very similar. Notes on this are available at the end of this article. 
 
@@ -32,7 +32,7 @@ As an example, we will create a step for converting data into percentiles.
 
 # A new step definition
 
-Let's create a step that replaces the value of a variable with its percentile from the training set. The example data we'll use is from the recipes package:
+Let's create a step that replaces the value of a variable with its percentile from the training set. The example data we'll use is from the modeldata package:
 
 
 ```r
@@ -70,7 +70,7 @@ Based on the training set, 42.1% of the data are less than a value of 46.35. The
 
 Our new step will do this computation for any numeric variables of interest. We will call this new recipe step `step_percentile()`. The code below is designed for illustration and not speed or best practices. We've left out a lot of error trapping that we would want in a real implementation.  
 
-# Create the initial function
+# Create the function
 
 To start, there is a _user-facing_ function. Let's call that `step_percentile()`. This is just a simple wrapper around a _constructor function_, which defines the rules for any step object that defines a percentile transformation. We'll call this constructor `step_percentile_new()`. 
 
@@ -128,7 +128,7 @@ It is also important to consider if there are any _main arguments_ to the step. 
 
 There are benefits to following these principles (as shown below). 
 
-# Initialization of a new step_percentile objects
+# Initialize a new object
 
 Now, the constructor function can be created.
 
@@ -140,7 +140,7 @@ step_percentile() calls recipes::add_step()
     └──> step_percentile_new() calls recipes::step()
 ```
 
-`step()` is a general constuctor for recipes that mainly makes sure that the resulting step object is a list with an appropriate S3 class structure. Using `subclass = "percentile"` will set the class of new objects to `"step_percentile()"`. 
+`step()` is a general constructor for recipes that mainly makes sure that the resulting step object is a list with an appropriate S3 class structure. Using `subclass = "percentile"` will set the class of new objects to `"step_percentile()"`. 
 
 
 ```r
@@ -159,11 +159,11 @@ step_percentile_new <-
   }
 ```
 
-This constructor function should have no default argument values. Default should be set in the user-facing step object. 
+This constructor function should have no default argument values. Defaults should be set in the user-facing step object. 
 
-# Define the estimation procedure
+# Define the procedure
 
-You will need to create a new `prep()` method for your step's class. To do this, three arguments that the method should have:
+You will need to create a new `prep()` method for your step's class. To do this, three arguments that the method should have are:
 
 ```r
 function(x, training, info = NULL)
@@ -171,11 +171,11 @@ function(x, training, info = NULL)
 
 where
 
- * `x` will be the `step_percentile` object
- * `training` will be a _tibble_ that has the training set data
+ * `x` will be the `step_percentile` object,
+ * `training` will be a _tibble_ that has the training set data, and
  * `info` will also be a tibble that has information on the current set of data available. This information is updated as each step is evaluated by its specific `prep()` method so it may not have the variables from the original data. The columns in this tibble are `variable` (the variable name), `type` (currently either "numeric" or "nominal"), `role` (defining the variable's role), and `source` (either "original" or "derived" depending on where it originated).
 
-You can define other options. 
+You can define other options as well. 
 
 The first thing that you might want to do in the `prep()` function is to translate the specification listed in the `terms` argument to column names in the current data. There is an internal function called `terms_select()` that can be used to obtain this. 
 
@@ -257,7 +257,7 @@ function(object, new_data, ...)
 
 where `object` is the updated step function that has been through the corresponding `prep()` code and `new_data` is a tibble of data to be processed. 
 
-Here is the code to convert the new data to percentiles. The input data (`x` below) comes in as a numeric vector and the output is a vector if approximate percentiles: 
+Here is the code to convert the new data to percentiles. The input data (`x` below) comes in as a numeric vector and the output is a vector of approximate percentiles: 
 
 
 ```r
@@ -286,7 +286,7 @@ bake.step_percentile <- function(object, new_data, ...) {
 }
 ```
 
-# Running the example
+# Run the example
 
 Let's use the example data to make sure that it works: 
 
@@ -351,7 +351,7 @@ It is strongly recommended that:
  1. The check uses `rlang::abort(paste0(...))` when the conditions are not met
  1. The original data are returned (unaltered) by the check when the conditions are satisfied. 
 
-# Other step-related methods
+# Other step methods
 
 There are a few other S3 methods that can be created for your step function. They are not required unless you plan on using your step in the broader tidymodels package set. 
 
@@ -409,11 +409,11 @@ rec_obj
 #> Percentile transformation on hydrogen, oxygen, nitrogen [trained]
 ```
  
-# A tidy method
+## A tidy method
 
-The `broom::tidy()` method is means to return information about the step in a usable format. For our step, it would be helpful to know the reference values. 
+The `broom::tidy()` method is a means to return information about the step in a usable format. For our step, it would be helpful to know the reference values. 
 
-When the recipe has been prepped, those data are in the list `ref_dist`. A small function can be used to reformat that data into a tibble. It is customary to make the main return values be named `value`:
+When the recipe has been prepped, those data are in the list `ref_dist`. A small function can be used to reformat that data into a tibble. It is customary to return the main values as `value`:
 
 
 ```r
@@ -445,7 +445,7 @@ format_pctl(pctl_step_object$ref_dist[["hydrogen"]])
 #> # … with 77 more rows
 ```
 
-The tidy method could return these values for each selected column. Before prep, missing values can be used as placeholders. 
+The tidy method could return these values for each selected column. Before `prep()`, missing values can be used as placeholders. 
 
 
 ```r
@@ -471,20 +471,20 @@ tidy(rec_obj, number = 1)
 #> # A tibble: 274 x 4
 #>    term     value percentile id              
 #>    <chr>    <dbl>      <dbl> <chr>           
-#>  1 hydrogen 0.03           0 percentile_m799C
-#>  2 hydrogen 0.934          1 percentile_m799C
-#>  3 hydrogen 1.60           2 percentile_m799C
-#>  4 hydrogen 2.07           3 percentile_m799C
-#>  5 hydrogen 2.45           4 percentile_m799C
-#>  6 hydrogen 2.74           5 percentile_m799C
-#>  7 hydrogen 3.15           6 percentile_m799C
-#>  8 hydrogen 3.49           7 percentile_m799C
-#>  9 hydrogen 3.71           8 percentile_m799C
-#> 10 hydrogen 3.99           9 percentile_m799C
+#>  1 hydrogen 0.03           0 percentile_mkhNk
+#>  2 hydrogen 0.934          1 percentile_mkhNk
+#>  3 hydrogen 1.60           2 percentile_mkhNk
+#>  4 hydrogen 2.07           3 percentile_mkhNk
+#>  5 hydrogen 2.45           4 percentile_mkhNk
+#>  6 hydrogen 2.74           5 percentile_mkhNk
+#>  7 hydrogen 3.15           6 percentile_mkhNk
+#>  8 hydrogen 3.49           7 percentile_mkhNk
+#>  9 hydrogen 3.71           8 percentile_mkhNk
+#> 10 hydrogen 3.99           9 percentile_mkhNk
 #> # … with 264 more rows
 ```
 
-# S3 methods for tuning parameters
+## Methods for tuning parameters
 
 The tune package can be used to find reasonable values of step arguments by model tuning. There are some S3 methods that are useful to define for your step. The percentile example doesn't really have any tunable parameters, so we will demonstrate using `step_poly()`, which returns a polynomial expansion of selected columns. Its function definition has the arguments: 
 
@@ -496,7 +496,7 @@ args(step_poly)
 #> NULL
 ```
 
-`degree` is the tunable argument.
+The argument `degree` is tunable.
 
 To work with tune it is _helpful_ (but not required) to use an S3 method called `tunable()` to define which arguments should be tuned and how values of those arguments should be generated. 
 
@@ -561,34 +561,34 @@ tunable.step_poly <- function (x, ...) {
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.1 (2019-07-05)
-#>  os       macOS Catalina 10.15.3      
+#>  version  R version 3.6.2 (2019-12-12)
+#>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/Los_Angeles         
-#>  date     2020-04-06                  
+#>  tz       America/Denver              
+#>  date     2020-04-08                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version    date       lib source                               
-#>  broom      * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
-#>  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
-#>  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
-#>  ggplot2    * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
-#>  infer      * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                       
-#>  modeldata  * 0.0.1      2019-12-19 [1] Github (tidymodels/modeldata@aa91bb1)
-#>  parsnip    * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
-#>  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
-#>  recipes    * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
-#>  rlang        0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
-#>  rsample    * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
-#>  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
-#>  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
-#>  tune       * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
-#>  workflows  * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
-#>  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
+#>  package    * version     date       lib source                               
+#>  broom      * 0.5.5       2020-02-29 [1] CRAN (R 3.6.0)                       
+#>  dials      * 0.0.4.9000  2020-03-20 [1] local                                
+#>  dplyr      * 0.8.5       2020-03-07 [1] CRAN (R 3.6.0)                       
+#>  ggplot2    * 3.3.0       2020-03-05 [1] CRAN (R 3.6.0)                       
+#>  infer      * 0.5.1       2019-11-19 [1] CRAN (R 3.6.0)                       
+#>  modeldata  * 0.0.1       2019-12-06 [1] CRAN (R 3.6.0)                       
+#>  parsnip    * 0.0.5.9001  2020-04-03 [1] Github (tidymodels/parsnip@0e83faf)  
+#>  purrr      * 0.3.3       2019-10-18 [1] CRAN (R 3.6.0)                       
+#>  recipes    * 0.1.10.9000 2020-04-03 [1] local                                
+#>  rlang        0.4.5.9000  2020-03-20 [1] Github (r-lib/rlang@a90b04b)         
+#>  rsample    * 0.0.6       2020-03-31 [1] CRAN (R 3.6.2)                       
+#>  tibble     * 3.0.0       2020-03-30 [1] CRAN (R 3.6.2)                       
+#>  tidymodels * 0.1.0       2020-02-16 [1] CRAN (R 3.6.0)                       
+#>  tune       * 0.1.0       2020-04-02 [1] CRAN (R 3.6.2)                       
+#>  workflows  * 0.1.1.9000  2020-03-20 [1] Github (tidymodels/workflows@e995c18)
+#>  yardstick  * 0.0.6       2020-03-17 [1] CRAN (R 3.6.0)                       
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
 ```
