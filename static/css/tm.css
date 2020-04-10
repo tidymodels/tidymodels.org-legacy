@@ -549,11 +549,14 @@ a.learn-top-nav-item:hover,
 
 /*----DataTables formatting----*/
 
+
 table.dataTable {
+  display: block;
   width: 770px;
 	text-align: left;
 	font-size: 1rem;
 	max-width: 770px;
+	overflow-x: auto;
 }
 
 table.dataTable tbody td {
