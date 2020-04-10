@@ -92,12 +92,12 @@
             </div>
           </div>
         {{ end }}</div>
-      {{ template "_internal/pagination.html" . }}
       </div>
 
 {{ partial "learn-sidebar.html" . }}
 
     </div>
+    <p class="learning-objective-text"><em>{{ .Params.Icon_attribution | markdownify }}</em></p>
   </div>  <!-- bandContent -->
 </div> <!-- band -->
 
