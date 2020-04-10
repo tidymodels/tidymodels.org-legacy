@@ -545,6 +545,6 @@ a.learn-top-nav-item:hover,
 
 /*----Make all TOCs sentence case----*/
 
-#TableOfContents {
+#TableOfContents:first-letter {
   text-transform: capitalize;
 }
