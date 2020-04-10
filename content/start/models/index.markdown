@@ -21,7 +21,7 @@ This article requires that you have the following packages installed: readr, rst
 
 
 ```r
-library(tidymodels)  # for the parsnip package
+library(tidymodels) 
 
 # Helper packages
 library(readr)       # for importing data
@@ -111,7 +111,7 @@ width ~ (initial_volume + food_regime)^2
 
 allows our regression model depending on initial volume to have separate slopes and intercepts for each food regime. 
 
-For this kind of model, ordinary least squares is a good initial approach. With tidymodels, we start by specifying the _functional form_ of the model that we want using the [parsnip package](https://tidymodels.github.io/parsnip/). Since there is a numeric outcome and the model should be linear with slopes and intercepts, the model type is "linear regression". To declare this: 
+For this kind of model, ordinary least squares is a good initial approach. With tidymodels, we start by specifying the _functional form_ of the model that we want using the [parsnip package](https://tidymodels.github.io/parsnip/). Since there is a numeric outcome and the model should be linear with slopes and intercepts, the model type is ["linear regression"](https://tidymodels.github.io/parsnip/reference/linear_reg.html). To declare this: 
 
 
 
@@ -150,7 +150,7 @@ lm_fit <-
 lm_fit
 #> parsnip model object
 #> 
-#> Fit time:  2ms 
+#> Fit time:  3ms 
 #> 
 #> Call:
 #> stats::lm(formula = formula, data = data)
@@ -276,8 +276,8 @@ bayes_fit <-
 #> 
 #> SAMPLING FOR MODEL 'continuous' NOW (CHAIN 1).
 #> Chain 1: 
-#> Chain 1: Gradient evaluation took 8.1e-05 seconds
-#> Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.81 seconds.
+#> Chain 1: Gradient evaluation took 7.8e-05 seconds
+#> Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.78 seconds.
 #> Chain 1: Adjust your expectations accordingly!
 #> Chain 1: 
 #> Chain 1: 
@@ -294,15 +294,15 @@ bayes_fit <-
 #> Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #> Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 #> Chain 1: 
-#> Chain 1:  Elapsed Time: 0.247074 seconds (Warm-up)
-#> Chain 1:                0.183576 seconds (Sampling)
-#> Chain 1:                0.43065 seconds (Total)
+#> Chain 1:  Elapsed Time: 0.269013 seconds (Warm-up)
+#> Chain 1:                0.194067 seconds (Sampling)
+#> Chain 1:                0.46308 seconds (Total)
 #> Chain 1: 
 #> 
 #> SAMPLING FOR MODEL 'continuous' NOW (CHAIN 2).
 #> Chain 2: 
-#> Chain 2: Gradient evaluation took 1.2e-05 seconds
-#> Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.12 seconds.
+#> Chain 2: Gradient evaluation took 1e-05 seconds
+#> Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.1 seconds.
 #> Chain 2: Adjust your expectations accordingly!
 #> Chain 2: 
 #> Chain 2: 
@@ -319,9 +319,9 @@ bayes_fit <-
 #> Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #> Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 #> Chain 2: 
-#> Chain 2:  Elapsed Time: 0.223876 seconds (Warm-up)
-#> Chain 2:                0.151465 seconds (Sampling)
-#> Chain 2:                0.375341 seconds (Total)
+#> Chain 2:  Elapsed Time: 0.240286 seconds (Warm-up)
+#> Chain 2:                0.162117 seconds (Sampling)
+#> Chain 2:                0.402403 seconds (Total)
 #> Chain 2: 
 #> 
 #> SAMPLING FOR MODEL 'continuous' NOW (CHAIN 3).
@@ -344,15 +344,15 @@ bayes_fit <-
 #> Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #> Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
 #> Chain 3: 
-#> Chain 3:  Elapsed Time: 0.2109 seconds (Warm-up)
-#> Chain 3:                0.17997 seconds (Sampling)
-#> Chain 3:                0.39087 seconds (Total)
+#> Chain 3:  Elapsed Time: 0.220459 seconds (Warm-up)
+#> Chain 3:                0.181598 seconds (Sampling)
+#> Chain 3:                0.402057 seconds (Total)
 #> Chain 3: 
 #> 
 #> SAMPLING FOR MODEL 'continuous' NOW (CHAIN 4).
 #> Chain 4: 
-#> Chain 4: Gradient evaluation took 1.2e-05 seconds
-#> Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.12 seconds.
+#> Chain 4: Gradient evaluation took 1.1e-05 seconds
+#> Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.11 seconds.
 #> Chain 4: Adjust your expectations accordingly!
 #> Chain 4: 
 #> Chain 4: 
@@ -369,15 +369,15 @@ bayes_fit <-
 #> Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #> Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 #> Chain 4: 
-#> Chain 4:  Elapsed Time: 0.235365 seconds (Warm-up)
-#> Chain 4:                0.162334 seconds (Sampling)
-#> Chain 4:                0.397699 seconds (Total)
+#> Chain 4:  Elapsed Time: 0.233018 seconds (Warm-up)
+#> Chain 4:                0.17301 seconds (Sampling)
+#> Chain 4:                0.406028 seconds (Total)
 #> Chain 4:
 
 print(bayes_fit, digits = 5)
 #> parsnip model object
 #> 
-#> Fit time:  1.7s 
+#> Fit time:  1.8s 
 #> stan_glm
 #>  family:       gaussian [identity]
 #>  formula:      width ~ (initial_volume + food_regime)^2
