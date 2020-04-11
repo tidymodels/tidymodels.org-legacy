@@ -51,14 +51,20 @@
       </div>
 
       <!--previous article-->
+      <div style="float:left">
       {{ with .NextInSection }}
-        <a href="{{ .RelPermalink }}"><i class="fas fa-angle-double-left"></i> <em>{{ .Title }}</em></a>
+        <div class='itemTitle' align="left" style='font-size:.8em; line-height:2em'>Previous</div>
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
       {{ end }}
+      </div>
       
       <!--next article-->
+      <div style="float:right">
       {{ with .PrevInSection }}
-        <a href="{{ .RelPermalink }}"><em>{{ .Title }}</em> <i class="fas fa-angle-double-right"></i></a>
+      <div class='itemTitle' align="right" style='font-size:.8em; line-height:2em'>Next</div>
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
       {{ end }}
+      </div>
       
       
 
