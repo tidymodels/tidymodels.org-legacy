@@ -20,10 +20,9 @@ pkgs <- c("tidymodels", "nycflights13", "skimr")
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
-
 # Introduction
 
-In the [previous article](/start/models/), we took our first steps to building models using the [parsnip package](https://tidymodels.github.io/parsnip/). Now, let's explore how to use another tidymodels package: [recipes](https://tidymodels.github.io/recipes/). Recipes are designed to preprocess data prior to building and fitting a model. Preprocessing might consist of: 
+In our [first article](/start/models/), we built models using the [parsnip package](https://tidymodels.github.io/parsnip/). Now, let's explore how to use another tidymodels package: [recipes](https://tidymodels.github.io/recipes/). Recipes are designed to preprocess data prior to building and fitting a model. Preprocessing might consist of: 
 
 + converting qualitative predictors to indicator variables (also known as dummy variables),
  

@@ -11,10 +11,9 @@ description: |
 
 
 
-
 # Introduction
 
-In the [previous article](/start/models/), we took our first steps to building models using the [parsnip package](https://tidymodels.github.io/parsnip/). Now, let's explore how to use another tidymodels package: [recipes](https://tidymodels.github.io/recipes/). Recipes are designed to preprocess data prior to building and fitting a model. Preprocessing might consist of: 
+In our [first article](/start/models/), we built models using the [parsnip package](https://tidymodels.github.io/parsnip/). Now, let's explore how to use another tidymodels package: [recipes](https://tidymodels.github.io/recipes/). Recipes are designed to preprocess data prior to building and fitting a model. Preprocessing might consist of: 
 
 + converting qualitative predictors to indicator variables (also known as dummy variables),
  
@@ -339,11 +338,11 @@ flights_wflow <-
   add_model(lr_mod) %>% 
   add_recipe(flights_rec)
 flights_wflow
-#> ══ Workflow ══════════════════════════════════════════════════════════════════════════════════════
+#> ══ Workflow ═══════════════════════════════════════════════════════════
 #> Preprocessor: Recipe
 #> Model: logistic_reg()
 #> 
-#> ── Preprocessor ──────────────────────────────────────────────────────────────────────────────────
+#> ── Preprocessor ───────────────────────────────────────────────────────
 #> 5 Recipe Steps
 #> 
 #> ● step_date()
@@ -352,7 +351,7 @@ flights_wflow
 #> ● step_dummy()
 #> ● step_zv()
 #> 
-#> ── Model ─────────────────────────────────────────────────────────────────────────────────────────
+#> ── Model ──────────────────────────────────────────────────────────────
 #> Logistic Regression Model Specification (classification)
 #> 
 #> Computational engine: glm
@@ -452,7 +451,7 @@ Not too bad!
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Los_Angeles         
-#>  date     2020-04-10                  
+#>  date     2020-04-11                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package      * version    date       lib source                               
