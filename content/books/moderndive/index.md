@@ -1,0 +1,15 @@
+---
+title: 'Statistical Inference via Data Science: A ModernDive into R and the tidyverse'
+authors: [Chester Ismay, Albert Y. Kim]
+---
+
+![](cover.png) 
+
+This book is intended to be a gentle introduction to the practice of analyzing data and answering questions using data the way data scientists, statisticians, data journalists, and other researchers would. Over the course of this book, you will develop your "data science toolbox," equipping yourself with tools such as data visualization, data formatting, data wrangling, and data modeling using regression.
+
+An **HTML version** of this text can be found at [`https://moderndive.com/`](https://moderndive.com/). 
+
+The data sets and R code are available in the GitHub repository [`https://github.com/moderndive/ModernDive_book`](https://github.com/moderndive/ModernDive_book). 
+
+The physical copies are sold by [**Amazon**](https://www.amazon.com/Statistical-Inference-via-Data-Science/dp/0367409828/) and [**CRC Press**](https://www.crcpress.com/Statistical-Inference-via-Data-Science-A-ModernDive-into-R-and-the-Tidyverse/Ismay-Kim/p/book/9780367409821). 
+
