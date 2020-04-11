@@ -20,6 +20,7 @@ Depends:
 Imports:
     AmesHousing,
     caret,
+    devtools,
     dials (>= 0.0.6),
     discrim,
     doMC,
@@ -40,6 +41,7 @@ Imports:
     modeldata,
     nycflights13,
     partykit,
+    pkgdown,
     pls,
     randomForest,
     ranger,
