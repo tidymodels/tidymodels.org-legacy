@@ -62,7 +62,7 @@
                  <div class="author article-content learn-list">
                     <ul>
                     <!-- Ranges through content/posts/*.md -->
-                    {{ range .Pages.ByWeight }}
+                    {{ range first 5 .Pages.ByWeight }}
                         <li>
                         <a class="article-title" href="{{.Permalink}}">{{.Title}}</a>
                         {{ with .Description }}
@@ -92,12 +92,12 @@
             </div>
           </div>
         {{ end }}</div>
-      {{ template "_internal/pagination.html" . }}
       </div>
 
 {{ partial "learn-sidebar.html" . }}
 
     </div>
+    <p class="learning-objective-text"><em>{{ .Params.Icon_attribution | markdownify }}</em></p>
   </div>  <!-- bandContent -->
 </div> <!-- band -->
 

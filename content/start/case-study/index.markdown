@@ -1,7 +1,7 @@
 ---
 title: "A predictive modeling case study"
 weight: 5
-tags: [parsnip, recipe, rsample, tune]
+tags: [parsnip, recipes, rsample, tune]
 categories: [model fitting, tuning]
 description: | 
   Develop, from beginning to end, a predictive model using best practices.
@@ -129,7 +129,6 @@ lr_res <-
             grid = lr_reg_grid,
             control = tune_ctrl,
             metrics = roc_only)
-#> ! validation: recipe: The `x` argument of `as_tibble.matrix()` must have column names ...
 ```
 
 The resulting validation set metrics are computed and plotted against the amount of penalization: 
@@ -163,7 +162,7 @@ lr_best
 #> # A tibble: 1 x 6
 #>    penalty .metric .estimator  mean     n std_err
 #>      <dbl> <chr>   <chr>      <dbl> <int>   <dbl>
-#> 1 0.000530 roc_auc binary     0.871     1      NA
+#> 1 0.000161 roc_auc binary     0.881     1      NA
 ```
 
 This value has effectively the same performance as the numerically best, but might eliminate more predictors. For this specific penalty value, the validation set ROC curve is:
@@ -204,7 +203,7 @@ The computations required for model tuning can usually be easily parallelized. H
 ```r
 cores <- parallel::detectCores()
 cores
-#> [1] 8
+#> [1] 12
 ```
 
 To declare that parallel processing should be used, the `num.threads` argument for `ranger::ranger()` can be passed when setting the computational engine: 
@@ -236,10 +235,6 @@ rf_res <-
             control = tune_ctrl,
             metrics = roc_only)
 #> i Creating pre-processing data to finalize unknown parameter: mtry
-#> Warning: The `x` argument of `as_tibble.matrix()` must have column names if `.name_repair` is omitted as of tibble 2.0.0.
-#> Using compatibility `.name_repair`.
-#> This warning is displayed once every 8 hours.
-#> Call `lifecycle::last_warnings()` to see where this warning was generated.
 ```
 
 The note about "finalizing the unknown parameter" is related to the size of the data set. Since `mtry` depends on the number of predictors in the data set, `tune_grid()` determines the upper bound for `mtry` once it receives the data. 
@@ -334,7 +329,7 @@ rf_fit %>%
 #> # A tibble: 1 x 3
 #>   .metric .estimator .estimate
 #>   <chr>   <chr>          <dbl>
-#> 1 roc_auc binary         0.930
+#> 1 roc_auc binary         0.925
 
 rf_fit %>% 
   collect_predictions() %>% 
@@ -352,36 +347,36 @@ Based on these results, the validation set and test set performance statistics a
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.2 (2019-12-12)
-#>  os       macOS Mojave 10.14.6        
+#>  version  R version 3.6.1 (2019-07-05)
+#>  os       macOS Catalina 10.15.3      
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/Denver              
+#>  tz       America/Los_Angeles         
 #>  date     2020-04-09                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version     date       lib source                               
-#>  broom      * 0.5.5       2020-02-29 [1] CRAN (R 3.6.0)                       
-#>  dials      * 0.0.4.9000  2020-03-20 [1] local                                
-#>  dplyr      * 0.8.5       2020-03-07 [1] CRAN (R 3.6.0)                       
-#>  ggplot2    * 3.3.0       2020-03-05 [1] CRAN (R 3.6.0)                       
-#>  infer      * 0.5.1       2019-11-19 [1] CRAN (R 3.6.0)                       
-#>  parsnip    * 0.0.5.9001  2020-04-03 [1] Github (tidymodels/parsnip@0e83faf)  
-#>  purrr      * 0.3.3       2019-10-18 [1] CRAN (R 3.6.0)                       
-#>  ranger       0.12.1      2020-01-10 [1] CRAN (R 3.6.0)                       
-#>  readr      * 1.3.1       2018-12-21 [1] CRAN (R 3.6.0)                       
-#>  recipes    * 0.1.10.9000 2020-04-03 [1] local                                
-#>  rlang        0.4.5.9000  2020-03-20 [1] Github (r-lib/rlang@a90b04b)         
-#>  rsample    * 0.0.6       2020-03-31 [1] CRAN (R 3.6.2)                       
-#>  tibble     * 3.0.0       2020-03-30 [1] CRAN (R 3.6.2)                       
-#>  tidymodels * 0.1.0       2020-02-16 [1] CRAN (R 3.6.0)                       
-#>  tune       * 0.1.0       2020-04-02 [1] CRAN (R 3.6.2)                       
-#>  vip        * 0.2.1       2020-01-20 [1] CRAN (R 3.6.0)                       
-#>  workflows  * 0.1.1.9000  2020-03-20 [1] Github (tidymodels/workflows@e995c18)
-#>  yardstick  * 0.0.6       2020-03-17 [1] CRAN (R 3.6.0)                       
+#>  package    * version    date       lib source                               
+#>  broom      * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
+#>  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
+#>  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
+#>  ggplot2    * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
+#>  infer      * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                       
+#>  parsnip    * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
+#>  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
+#>  ranger       0.11.2     2019-03-07 [1] CRAN (R 3.6.0)                       
+#>  readr      * 1.3.1      2018-12-21 [1] CRAN (R 3.6.0)                       
+#>  recipes    * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
+#>  rlang        0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
+#>  rsample    * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
+#>  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
+#>  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
+#>  tune       * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
+#>  vip        * 0.1.3.9000 2019-12-20 [1] Github (koalaverse/vip@4a7776b)      
+#>  workflows  * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
+#>  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
 ```

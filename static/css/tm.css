@@ -573,4 +573,9 @@ table.dataTable.no-footer,
 table.dataTable thead {
 	background-color: #eab0c41a;
 	text-transform: uppercase;
+
+/*----Make all TOCs sentence case----*/
+
+#TableOfContents:first-letter {
+  text-transform: capitalize;
 }
