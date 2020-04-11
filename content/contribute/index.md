@@ -45,13 +45,11 @@ If you are a more experienced R programmer, you may have the inclination, intere
 
 In tidymodels packages, we use the [tidyverse style guide](http://style.tidyverse.org/) which will make sure that your new code and documentation matches the existing style. This makes the review process much smoother.
 
-The tidymodels packages are explicitly built to support the creation of other modeling packages, and we would love to hear about what you build yourself! Check out [all our developer sources](/learn/TODO/), and read to learn about:
+The tidymodels packages are explicitly built to support the creation of other modeling packages, and we would love to hear about what you build yourself! Check out [all our developer sources](/learn/developer/), and read to learn about:
 
-- [Making a parsnip model from scratch](/learn/TODO/)
+- [Making a parsnip model from scratch](/learn/developer/models/)
 
-- [Creating custom recipe step functions](/learn/TODO/)
+- [Creating custom recipe step functions](/learn/developer/recipes/)
 
-- [Making custom yardstick metrics](/learn/TODO/)
-
-
+- [Making custom yardstick metrics](/learn/developer/metrics/)
 
