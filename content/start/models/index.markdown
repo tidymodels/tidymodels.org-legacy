@@ -13,7 +13,7 @@ description: |
 
 
 
-# Introduction
+# Introduction {#intro}
 
 How do you create a statistical model using tidymodels? In this article, we will walk you through the steps. We start with data for modeling, learn how to specify and train models with different engines using the [parsnip package](https://tidymodels.github.io/parsnip/), and understand why these functions are designed this way.
 
@@ -31,7 +31,7 @@ library(rstanarm)    # for Bayesian analysis
 ```
 
 
-# The Sea Urchins Data
+# The Sea Urchins Data {#data}
 
 Let's use the data from [Constable (1993)](https://link.springer.com/article/10.1007/BF00349318) to explore how three different feeding regimes affect the size of sea urchins over time. The initial size of the sea urchins at the beginning of the experiment probably affects how big they grow as they are fed. 
 
@@ -100,7 +100,7 @@ ggplot(urchins,
 
 We can see that urchins that were larger in volume at the start of the experiment tended to have wider sutures at the end, but this effect may depend on the feeding regime condition.
 
-# How to create and use a model
+# Build and fit a model {#build-model}
 
 A standard analysis of covariance ([ANCOVA](https://en.wikipedia.org/wiki/Analysis_of_covariance)) model makes sense for this dataset because we have both a continuous predictor and a categorical predictor. Since the slopes appear to be different for at least two of the feeding regimes, let's build a model that allows for two-way interactions. Specifying an R formula with our variables in this way: 
 
@@ -150,7 +150,7 @@ lm_fit <-
 lm_fit
 #> parsnip model object
 #> 
-#> Fit time:  3ms 
+#> Fit time:  4ms 
 #> 
 #> Call:
 #> stats::lm(formula = formula, data = data)
@@ -182,7 +182,7 @@ tidy(lm_fit)
 #> 6 initial_volume:food_regimeHigh  0.000525  0.000702     0.748 0.457
 ```
 
-# Predict with a fitted model
+# Use a model to predict {#predict-model}
 
 Suppose that, for a publication, it would be particularly interesting to make a plot of the mean body size for urchins that started the experiment with an initial volume of 20ml. To create such a graph, we start with some new example data that we will make predictions for, to show in our graph:
 
@@ -249,7 +249,7 @@ ggplot(plot_data, aes(x = food_regime)) +
 
 <img src="figs/lm-all-pred-1.svg" width="672" />
 
-# Modeling with a different engine
+# Model with a different engine {#new-engine}
 
 Every one on your team is happy with that plot _except_ that one person who just read their first book on [Bayesian analysis](https://bayesian.org/what-is-bayesian-analysis/). They are interested in knowing if the results would be different if the model were estimated using a Bayesian approach. In such an analysis, a [_prior distribution_](https://towardsdatascience.com/introduction-to-bayesian-linear-regression-e66e60791ea7) needs to be declared for each model parameter that represents the possible values of the parameters (before being exposed to the observed data). After some discussion, the group agrees that the priors should be bell-shaped but, since no one has any idea what the range of values should be, to take a conservative approach and make the priors _wide_ using a Cauchy distribution (which is the same as a t-distribution with a single degree of freedom).
 
@@ -276,8 +276,8 @@ bayes_fit <-
 #> 
 #> SAMPLING FOR MODEL 'continuous' NOW (CHAIN 1).
 #> Chain 1: 
-#> Chain 1: Gradient evaluation took 7.8e-05 seconds
-#> Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.78 seconds.
+#> Chain 1: Gradient evaluation took 7.7e-05 seconds
+#> Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.77 seconds.
 #> Chain 1: Adjust your expectations accordingly!
 #> Chain 1: 
 #> Chain 1: 
@@ -294,15 +294,15 @@ bayes_fit <-
 #> Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #> Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 #> Chain 1: 
-#> Chain 1:  Elapsed Time: 0.269013 seconds (Warm-up)
-#> Chain 1:                0.194067 seconds (Sampling)
-#> Chain 1:                0.46308 seconds (Total)
+#> Chain 1:  Elapsed Time: 0.248589 seconds (Warm-up)
+#> Chain 1:                0.186165 seconds (Sampling)
+#> Chain 1:                0.434754 seconds (Total)
 #> Chain 1: 
 #> 
 #> SAMPLING FOR MODEL 'continuous' NOW (CHAIN 2).
 #> Chain 2: 
-#> Chain 2: Gradient evaluation took 1e-05 seconds
-#> Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.1 seconds.
+#> Chain 2: Gradient evaluation took 1.3e-05 seconds
+#> Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.13 seconds.
 #> Chain 2: Adjust your expectations accordingly!
 #> Chain 2: 
 #> Chain 2: 
@@ -319,15 +319,15 @@ bayes_fit <-
 #> Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #> Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 #> Chain 2: 
-#> Chain 2:  Elapsed Time: 0.240286 seconds (Warm-up)
-#> Chain 2:                0.162117 seconds (Sampling)
-#> Chain 2:                0.402403 seconds (Total)
+#> Chain 2:  Elapsed Time: 0.231187 seconds (Warm-up)
+#> Chain 2:                0.152979 seconds (Sampling)
+#> Chain 2:                0.384166 seconds (Total)
 #> Chain 2: 
 #> 
 #> SAMPLING FOR MODEL 'continuous' NOW (CHAIN 3).
 #> Chain 3: 
-#> Chain 3: Gradient evaluation took 1.2e-05 seconds
-#> Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.12 seconds.
+#> Chain 3: Gradient evaluation took 1.3e-05 seconds
+#> Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.13 seconds.
 #> Chain 3: Adjust your expectations accordingly!
 #> Chain 3: 
 #> Chain 3: 
@@ -344,9 +344,9 @@ bayes_fit <-
 #> Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #> Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
 #> Chain 3: 
-#> Chain 3:  Elapsed Time: 0.220459 seconds (Warm-up)
-#> Chain 3:                0.181598 seconds (Sampling)
-#> Chain 3:                0.402057 seconds (Total)
+#> Chain 3:  Elapsed Time: 0.221548 seconds (Warm-up)
+#> Chain 3:                0.182823 seconds (Sampling)
+#> Chain 3:                0.404371 seconds (Total)
 #> Chain 3: 
 #> 
 #> SAMPLING FOR MODEL 'continuous' NOW (CHAIN 4).
@@ -369,9 +369,9 @@ bayes_fit <-
 #> Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #> Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 #> Chain 4: 
-#> Chain 4:  Elapsed Time: 0.233018 seconds (Warm-up)
-#> Chain 4:                0.17301 seconds (Sampling)
-#> Chain 4:                0.406028 seconds (Total)
+#> Chain 4:  Elapsed Time: 0.227294 seconds (Warm-up)
+#> Chain 4:                0.159186 seconds (Sampling)
+#> Chain 4:                0.38648 seconds (Total)
 #> Chain 4:
 
 print(bayes_fit, digits = 5)
@@ -440,7 +440,7 @@ ggplot(bayes_plot_data, aes(x = food_regime)) +
 This isn't very different from the non-Bayesian results (except in interpretation). 
 
 
-# Why does it work that way? 
+# Why does it work that way? {#why}
 
 The extra step of defining the model using a function like `linear_reg()` might seem superfluous since a call to `lm()` is much more succinct. However, the problem with standard modeling functions is that they don't separate what you want to do from the execution. For example, the process of executing a formula has to happen repeatedly across model calls even when the formula does not change; we can't recycle those computations. 
 
@@ -481,7 +481,7 @@ ggplot(urchins,
 ```
 
 
-# Session information
+# Session information {#session-info}
 
 
 ```
@@ -495,7 +495,7 @@ ggplot(urchins,
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Los_Angeles         
-#>  date     2020-04-10                  
+#>  date     2020-04-11                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version    date       lib source                               
