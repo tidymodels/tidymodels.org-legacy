@@ -548,3 +548,8 @@ a.learn-top-nav-item:hover,
 #TableOfContents:first-letter {
   text-transform: capitalize;
 }
+
+sup {
+  vertical-align: super;
+  font-size: smaller;
+}
