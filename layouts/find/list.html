@@ -20,7 +20,7 @@
             </ul>
           </div>
         
-        <!--range across all subsections-->
+        <!--range across all pages-->
         <div>{{ range $index, $element := .Pages }}
               {{ $post := . }}
               
@@ -28,57 +28,48 @@
           <div class="listItem anchor-container">
             <div class="anchor" style="top: -100px; position: absolute;" id="{{ anchorize (.Title) }}"></div>
             <div class="itemDetails">
-              <div class="itemHeader">
-                <div class="itemTitle">
-                  <a href="{{ .RelPermalink }}">{{ .Title | markdownify }}</a>
-                </div>
-              </div>
               
               <div class="itemDescription">
               {{ if eq .Weight 1 }}
+                <div class="itemTitle">
+                  <h1><a href="{{ .RelPermalink }}">{{ .Title | markdownify }}</a></h1>
+                </div>
                 {{ .Content }}
               {{ end }}
               </div>
               
               {{ if ne .Weight 1 }}
-              <div class="itemMeta">
-                <div class="flex-container learn-list">
+              <div class="listItem">
                   
-                  <!--thumbnail images-->
-                  <div class="image-container learn-list">
-                    <div class="image-cropper">
-                      {{ $thumb := (.Resources.ByType "image").GetMatch "*thumbnail*" }}
-                        {{ with $thumb }}
-                        <img class="circle-thumbnail" src="{{ .RelPermalink }}">
-                        {{ end }} 
-                    </div>
-                  </div>
+              <!--thumbnail images-->
+              <div class="listItem">
+                {{ $thumb := (.Resources.ByType "image").GetMatch "*thumbnail*" }}
+                {{ with $thumb }}
+                <a class="itemImage project" href="{{ $post.RelPermalink }}" style="background-image: url('{{ .RelPermalink }}');"></a>
+                {{ end }} 
+              </div>
                   
-                 <div class="author article-content learn-list">
-                    <ul>
-                    <!-- Ranges through content/posts/*.md -->
-                    {{ range .Pages.ByWeight }}
-                        <li>
-                        <a class="article-title" href="{{.Permalink}}">{{.Title}}</a>
-                        {{ with .Description }}
-                        <br> <p class="learning-objective-text"><em>{{ . | markdownify }}</em></p>
-                      {{ end }}
-                    </li>
-                    {{ end }}
-                  </ul>
-                  <div class="itemDescription learn-list">{{ default .Description | markdownify }}
-                    <a class="readMore" href="{{ .RelPermalink }}">Read more &rarr;</a>
-                  </div>
+              <!--metadata-->
+              <div class="itemDetails">
+                <div class="itemHeader">
+                  <div class="anchor" style="top: -100px; position: absolute;" id="{{ anchorize (.Title) }}"></div>
+                  <div class="itemTitle"><a href="{{ .RelPermalink }}">{{ .Title | markdownify }}</a></div>
+                </div>
+                
+                <div class="itemMeta">
+                  <div class="itemDescription">{{ default .Description | markdownify }}
+                      <a class="readMore" href="{{ .RelPermalink }}">Read more ...</a>
+                  </div>  
                 </div>
               </div>
- 
               
               </div>
-            {{ end }}
+              {{ end }}
+              
+            
             </div>
           </div>
         {{ end }}</div>
-      {{ template "_internal/pagination.html" . }}
       </div>
 
       <div class="column25">
