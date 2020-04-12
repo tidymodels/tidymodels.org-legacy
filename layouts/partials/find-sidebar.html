@@ -1,0 +1,10 @@
+<div class="section">
+{{ $page := . }}
+{{ range (where .Site.RegularPages.ByWeight "Section" "find" ) }}
+<nav id="TableOfContents">
+      <div class="articleCategory">
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+      </div>
+{{ end }}
+</div>
+</nav>
