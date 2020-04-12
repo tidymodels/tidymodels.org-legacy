@@ -556,6 +556,8 @@ table.dataTable {
 	text-align: left;
 	font-size: 1rem;
 	max-width: 770px;
+	table-layout: fixed;
+	word-wrap:break-word;
 	overflow-x: auto;
 }
 
