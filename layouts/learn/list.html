@@ -5,7 +5,9 @@
   <div class="bandContent">
     <div class="full splitColumns withMobileMargins">
       <div class="column75 learn-list">
-        <div class="sectionTitle">{{ .Title }}</div>
+        <div class="sectionTitle">
+          <h1 class="article-title">{{ .Title }}</h1>
+        </div>
         
           <p>{{ .Content | markdownify }}</p>
 
