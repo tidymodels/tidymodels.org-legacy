@@ -1,7 +1,7 @@
 ---
 subtitle: Recipes
 title: Search recipe steps
-weight: 2
+weight: 3
 description: | 
   Find recipe steps in the tidymodels framework to help you prep your data for modeling.
 ---
