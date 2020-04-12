@@ -1,9 +1,9 @@
 ---
 subtitle: Recipes
-title: Explore recipe steps
+title: Search recipe steps
 weight: 2
 description: | 
-  Find recipe steps to help you prep your data for modeling.
+  Find recipe steps in the tidymodels framework to help you prep your data for modeling.
 ---
 
 ```{r ex_setup, include=FALSE}
@@ -26,7 +26,8 @@ The recipes package and its specialized extension [packages](packages/#create-ro
 
 ```{r table-compute, include = FALSE}
 pkg_urls <- get_pkgdown_urls(pkgs, fltr = "(^check_)|(^step_)") %>% 
-  select(title, topic, package)
+  select(title, topic, package) %>% 
+  mutate(package = as.factor(package))
 ```
 
 ```{r table-display, echo = FALSE, results = "asis"}
