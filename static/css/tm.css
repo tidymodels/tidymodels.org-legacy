@@ -575,9 +575,32 @@ table.dataTable.no-footer,
 table.dataTable thead {
 	background-color: #eab0c41a;
 	text-transform: uppercase;
+}
 
 /*----Make all TOCs sentence case----*/
 
 #TableOfContents:first-letter {
   text-transform: capitalize;
+}
+
+.tags-list {
+  margin-bottom: 20px;
+}
+
+.tags-list a {
+  color: #1a162d99;
+	transition: color 0.3s;
+}
+
+.tags-list a:hover {
+	color: #1a162dde;
+	text-decoration: none;
+}
+
+.article-footer {
+  border-top: solid #d9d9d9 1pt;
+	margin-top: 30px;
+	padding-top: 10px;
+	font-size: .9em;
+	color: #707070;
 }
