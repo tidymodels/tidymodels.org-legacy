@@ -6,6 +6,8 @@ description: |
   Find model types, engines, and arguments to fit and predict in the tidymodels framework.
 ---
 
+To learn about the parsnip package, see [*Get Started: Build a Model*](/start/models/). Use the tables below to find [model types and engines](#models) and to explore [model arguments](#model-args).
+
 ```{r ex_setup, include=FALSE}
 knitr::opts_chunk$set(
   message = FALSE,
@@ -22,17 +24,9 @@ library(discrim)
 library(parsnip)
 ```
 
-To learn about the parsnip package, see [Building a Model](/start/models/) to get started. To go deeper, read the articles in [Creating Robust Models](/learn/models/).
 
-The searchable table below will help you find the key pieces you need to use a parsnip model: 
 
-1. A model **type**, like a random forest or a boosted tree.
-
-1. A model **mode**, which maps onto your modeling goal: either regression or classification.
-
-1. A model **engine**, which maps onto an existing R modeling packag or a connection to an external system (such as Spark). 
-
-<br>
+# Explore models {#models}
 
 ```{r model-table, include = FALSE}
 mod_names <- get_from_env("models")
@@ -78,7 +72,7 @@ DT::datatable(
 
 Models can be added by the user too. The article [How to build a parsnip model](/learn/developer/models/) walks you through the steps.
 
-# Explore model arguments
+# Explore model arguments {#model-args}
 
 The parsnip package provides consistent interface for working with similar models across different engines. This means that parsnip adopts standardized parameter names as arguments, and those names may be different from those used by the individual engines. The searchable table below provides a mapping between the parsnip and the engine arguments: 
 

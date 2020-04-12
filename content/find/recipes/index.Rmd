@@ -20,9 +20,7 @@ library(DT)
 pkgs <- c("recipes", "embed", "textrecipes", "themis")
 ```
 
-To learn about the recipes package, see [Preprocess your data with recipes](/start/recipes/) to get started. To go deeper, read the articles in [Creating Robust Models](/learn/models/).
-
-The recipes package and its specialized extension [packages](packages/#create-robust-models) offer many steps to help you 
+To learn about the recipes package, see [*Get Started: Preprocess your data with recipes*](/start/recipes/). The table below allows you to search for recipe steps across tidymodels packages.
 
 ```{r table-compute, include = FALSE}
 pkg_urls <- get_pkgdown_urls(pkgs, fltr = "(^check_)|(^step_)") %>% 
