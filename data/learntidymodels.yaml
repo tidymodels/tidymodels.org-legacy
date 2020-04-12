@@ -1,0 +1,14 @@
+resources:
+- url: /start/
+  title: Get Started
+  icon: fa-flag-checkered fw
+  icon_pack: fas
+  what: |
+    See what you need to know to get started now.
+
+- url: /learn/
+  title: Learn
+  icon: fa-lightbulb fw
+  icon_pack: far
+  what: |
+    Learn about specific tasks using tidymodels in your modeling and machine learning projects.
