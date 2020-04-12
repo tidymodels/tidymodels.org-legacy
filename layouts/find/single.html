@@ -1,0 +1,31 @@
+{{ define "main" }}
+
+<div class="band padForHeader pushFooter">
+  <div class="bandContent">
+    <div class="full splitColumns withMobileMargins">
+      <div class="column75">
+
+      <h1 class="article-title">{{ .Title | markdownify }}</h1>
+
+      <div class="article-content">
+      {{ .Content }}
+      </div>
+
+      </div>
+
+      <div class="column25">
+        <div class="section hideOnMobile">
+          <div class="sectionTitle">Explore tidymodels</div>
+          {{ partial "find-sidebar.html" .}}
+        </div>
+        <div class="section">
+          <div class="sectionTitle">Resources</div>
+          {{ partial "resources_sticky.html" .}}
+        </div>
+      </div>
+
+    </div>
+  </div>  <!-- bandContent -->
+</div> <!-- band -->
+
+{{ end }}

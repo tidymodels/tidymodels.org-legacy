@@ -543,6 +543,39 @@ a.learn-top-nav-item:hover,
 	padding-left: 0px;
 }
 
+#rStudioHeader #menu .menuItem:last-of-type {
+	padding-right: 0px;
+}
+
+/*----DataTables formatting----*/
+
+
+table.dataTable {
+  display: block;
+  width: 770px;
+	text-align: left;
+	font-size: 1rem;
+	max-width: 770px;
+	table-layout: fixed;
+	word-wrap:break-word;
+	overflow-x: auto;
+}
+
+table.dataTable tbody td {
+	line-height: 1.5em;
+}
+
+table.dataTable thead th, 
+table.dataTable thead td,
+table.dataTable.no-footer, 
+.dataTables_wrapper.no-footer .dataTables_scrollBody {
+	border-bottom: 1px solid #a19ea936 !important;
+}
+
+table.dataTable thead {
+	background-color: #eab0c41a;
+	text-transform: uppercase;
+
 /*----Make all TOCs sentence case----*/
 
 #TableOfContents:first-letter {
