@@ -18,7 +18,7 @@ library(DT)
 ```
 
 
-In the searchable table below, you'll find all the functions available in the [tidymodels packages](/packages/). The first column called **topic** provides a link to the function's reference page on each package's documentation site.
+Here are all the functions available across all of the [tidymodels packages](/packages/). Click on the link in the **topic** column to find the relevant reference documentation.
 
 <br>
 
