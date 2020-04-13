@@ -360,7 +360,7 @@ a.productName {
   } 
   
 #homeContent .bee1 {
-  display: none;
+  display: block;
 }
 
 /*-----TABLES-----*/
