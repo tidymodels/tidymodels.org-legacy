@@ -32,13 +32,13 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 
 Once we have a model trained, we need a way to measure how well that model is doing. This tutorial explains how to characterize model performance based on **resampling** statistics. 
 
-# Predicting image segmentation
+# Predicting image segmentation quality
 
 Some biologists conduct experiments on cells. In drug discovery, a particular type of cell can be treated with either a drug or control and then observed to see what the effect is (if any). A common approach for this kind of measurement is cell imaging. Different parts of the cells can be colored so that the locations of a cell can be determined. 
 
 For example, in top panel of this image of five cells, the green color is meant to define the boundary of the cell (coloring something called the cytoskeleton) while the blue color defines the nucleus of the cell. 
 
-```{r cell-fig, echo = FALSE, fig.align='center'}
+```{r cell-fig, echo = FALSE, fig.align='center', out.width="70%"}
 knitr::include_graphics("img/cells.png")
 ```
 
@@ -171,7 +171,7 @@ To understand that second point better, think about an analogy from teaching. Su
 
 Resampling methods, such as cross-validation and the bootstrap, are empirical simulation systems. They create a series of data sets similar to the training/testing split discussed previously; a subset of the data are used for creating the model and a different subset is used to measure performance. Resampling is always used with the _training set_. This schematic from [Kuhn and Johnson (2019)](https://bookdown.org/max/FES/resampling.html) illustrates data usage for resampling methods:
 
-```{r resampling-fig, echo = FALSE, fig.align='center', out.width="70%"}
+```{r resampling-fig, echo = FALSE, fig.align='center', out.width="85%"}
 knitr::include_graphics("img/resampling.svg")
 ```
 

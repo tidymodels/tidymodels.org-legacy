@@ -214,7 +214,7 @@ final_tree <- final_mod %>%
 final_tree
 #> parsnip model object
 #> 
-#> Fit time:  113ms 
+#> Fit time:  107ms 
 #> n= 1515 
 #> 
 #> node), split, n, loss, yval, (yprob)
@@ -241,30 +241,13 @@ final_tree
 #>       15) shape_p_2_a_ch_1< 1.225676 155  18 WS (0.11612903 0.88387097) *
 ```
 
-We can also visualize the decision tree using the [partykit](http://partykit.r-forge.r-project.org/partykit/) package.
-
-
-```r
-library(partykit)
-
-tree_party <- as.party(final_tree$fit) ## currently broken
-plot(tree_party)
-```
-
-
 Perhaps we would also like to understand what variables are important in this final model. We can use the [vip](https://koalaverse.github.io/vip/) package to estimate variable importance.
 
 
 ```r
 library(vip)
-#> 
-#> Attaching package: 'vip'
-#> The following object is masked from 'package:utils':
-#> 
-#>     vi
 
-final_tree %>%
-  vip(geom = "point")
+vip(final_tree)
 ```
 
 <img src="figs/vip-1.svg" width="576" />

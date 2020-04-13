@@ -16,6 +16,7 @@ library(tidymodels)
 library(ranger)
 library(modeldata)
 library(kableExtra)
+library(vip)
 theme_set(theme_bw())
 doParallel::registerDoParallel()
 ```
@@ -142,23 +143,12 @@ final_tree <- final_mod %>%
 final_tree
 ```
 
-We can also visualize the decision tree using the [partykit](http://partykit.r-forge.r-project.org/partykit/) package.
-
-```{r eval=FALSE}
-library(partykit)
-
-tree_party <- as.party(final_tree$fit) ## currently broken
-plot(tree_party)
-```
-
-
 Perhaps we would also like to understand what variables are important in this final model. We can use the [vip](https://koalaverse.github.io/vip/) package to estimate variable importance.
 
 ```{r vip, dependson="final-tree", fig.width=6, fig.height=5}
 library(vip)
 
-final_tree %>%
-  vip(geom = "point")
+vip(final_tree)
 ```
 
 These are the automated image analysis measurements that are the most important in driving segmentation quality predictions.
