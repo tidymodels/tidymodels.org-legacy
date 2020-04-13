@@ -8,13 +8,7 @@
   <meta name="og:image" content="{{ . }}" >
 {{- end -}}
 
-{{ hugo.Generator }}
-
-<title>{{ .Site.Title }}</title>
-<meta property="og:title" content="{{ .Site.Title }}">
-<meta property="og:type" content="website">
-<meta property="description" content="{{ .Site.Params.description }}">
-<meta property="og:description" content="{{ .Site.Params.description }}">
+<!--twitter large summary cards should be same for every page-->
 {{ $twitter_card := "summary_large_image" }}
   <meta property="twitter:card" content="{{ $twitter_card }}">
 {{ $twitter_image := "" }}
@@ -22,3 +16,28 @@
 {{- with $twitter_image -}}
   <meta name="twitter:image" content="{{ . }}" >
 {{- end -}}
+
+{{ hugo.Generator }}
+
+<!--homepage-->
+{{- if .IsHome -}}
+<title>{{ .Site.Title }}</title>
+<meta property="og:title" content="{{ .Site.Title }}">
+<meta property="og:type" content="website">
+<meta property="description" content="{{ .Site.Params.description }}">
+<meta property="og:description" content="{{ .Site.Params.description }}">
+
+<!--every other page-->
+{{- else -}}
+  <title>{{ .Title }}{{ with .Params.subtitle }} - {{ . }} {{ end }} - {{ .Site.Title }}</title>
+  <meta property="og:title" content="{{ .Title }} - {{ .Site.Title }}">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary">
+  {{ $thumbnail := (.Resources.ByType "image").GetMatch "*-sq*" }}
+  {{ if $thumbnail }}
+    <meta name="twitter:image" content="{{ $thumbnail.Permalink }}" >
+  {{ end }}
+  <meta property="description" content="{{ .Params.description }}">
+  <meta property="og:description" content="{{ .Params.description }}">
+
+{{- end }}
