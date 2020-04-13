@@ -1,5 +1,5 @@
 # Description for social sharing and search engines.
-description = "The tidymodels packages make the process of creating high-quality models easier."
+description = "A collection of R packages for modeling and machine learning using tidyverse principles."
 
 # Default image for social sharing and search engines. Place image in `static/images/` folder and specify image name here.
 sharing_image = "01.rstudio.flowers-sharing.jpg"
