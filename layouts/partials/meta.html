@@ -26,9 +26,22 @@
 <meta property="og:type" content="website">
 <meta property="description" content="{{ .Site.Params.description }}">
 <meta property="og:description" content="{{ .Site.Params.description }}">
+{{- end }}
 
-<!--every other page-->
-{{- else -}}
-{{ template "_internal/opengraph.html" . }}
-{{ template "_internal/twitter_cards.html" . }}
+<!--start section-->
+{{- if eq .Section "start" -}}
+<title>{{ with .Site.GetPage "/start" }}{{ .Title }}{{ end }} - {{ .Title }}</title>
+<meta property="og:title" content="{{ with .Site.GetPage "/start" }}{{ .Title }}{{ end }} - {{ .Title }}">
+<meta property="og:type" content="website">
+<meta property="description" content="{{ .Params.Description }}">
+<meta property="og:description" content="{{ .Params.Description }}">
+{{- end }}
+
+<!--learn section-->
+{{- if eq .Section "learn" -}}
+<title>{{ with .Site.GetPage "/learn" }}{{ .Title }}{{ end }} - {{ .Title }}</title>
+<meta property="og:title" content="{{ with .Site.GetPage "/start" }}{{ .Title }}{{ end }} - {{ .Title }}">
+<meta property="og:type" content="website">
+<meta property="description" content="{{ .Params.Description }}">
+<meta property="og:description" content="{{ .Params.Description }}">
 {{- end }}
