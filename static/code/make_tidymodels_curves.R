@@ -103,9 +103,9 @@ card <- p +
   theme_transparent() +
   theme(panel.background = element_rect(fill = "#1a162d")) +
   expand_limits(y = c(-3, 1)) +
-  coord_cartesian(xlim = c(-4, 4)) +
+  coord_cartesian(xlim = c(-4.5, 4.5)) +
   annotate("text", x = 0, y = -1.5, label = "tidymodels", 
-           colour = "white", size = 10, family = "Lato")
+           colour = "white", size = 12, family = "Lato")
 
-ggsave(here::here("static/code/curves_card.png"))
+ggsave(here::here("static/code/curves_card.jpg"))
 
