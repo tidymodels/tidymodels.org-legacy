@@ -36,7 +36,7 @@ The tidymodels team often focuses on one package at a time to reduce context swi
 
 # Contribute documention
 
-Documentation is a high priority for tidymodels, and pull requests to correct or improve documentation are welcome. The most important thing to know is that tidymodels packages use [roxygen2](https://github.com/klutometis/roxygen); this means that documentation is found in the R code close to the source of each function. There are some special tags, but most tiydmodels packages now use markdown in the documentation. This makes it particularly easy to get started!
+Documentation is a high priority for tidymodels, and pull requests to correct or improve documentation are welcome. The most important thing to know is that tidymodels packages use [roxygen2](https://github.com/klutometis/roxygen); this means that documentation is found in the R code close to the source of each function. There are some special tags, but most tidymodels packages now use markdown in the documentation. This makes it particularly easy to get started!
 
 
 # Contribute code
