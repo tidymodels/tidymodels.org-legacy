@@ -32,11 +32,6 @@
   <title>{{ .Title }}{{ with .Params.subtitle }} - {{ . }} {{ end }} - {{ .Site.Title }}</title>
   <meta property="og:title" content="{{ .Title }} - {{ .Site.Title }}">
   <meta property="og:type" content="article">
-  <meta name="twitter:card" content="summary">
-  {{ $thumbnail := (.Resources.ByType "image").GetMatch "*-sq*" }}
-  {{ if $thumbnail }}
-    <meta name="twitter:image" content="{{ $thumbnail.Permalink }}" >
-  {{ end }}
   <meta property="description" content="{{ .Params.description }}">
   <meta property="og:description" content="{{ .Params.description }}">
 
