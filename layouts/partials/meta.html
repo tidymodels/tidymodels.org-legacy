@@ -29,10 +29,6 @@
 
 <!--every other page-->
 {{- else -}}
-  <title>{{ .Title }}{{ with .Params.subtitle }} - {{ . }} {{ end }} - {{ .Site.Title }}</title>
-  <meta property="og:title" content="{{ .Title }} - {{ .Site.Title }}">
-  <meta property="og:type" content="article">
-  <meta property="description" content="{{ .Params.description }}">
-  <meta property="og:description" content="{{ .Params.description }}">
-
+{{ template "_internal/opengraph.html" . }}
+{{ template "_internal/twitter_cards.html" . }}
 {{- end }}
