@@ -14,7 +14,7 @@
             </a>
             {{ end }}
             
-            {{ if ne .Section "tags" }}
+            {{ if not (eq .Section "tags" "books") }}
             <a href="{{ .FirstSection.RelPermalink }}">
               <i class="fas fa-chevron-left"></i>&nbsp;Back to {{ .Section | title }}
             </a>
