@@ -2,8 +2,8 @@
 description = "A collection of R packages for modeling and machine learning using tidyverse principles."
 
 # Default image for social sharing and search engines. Place image in `static/images/` folder and specify image name here.
-sharing_image = "01.rstudio.flowers-sharing.jpg"
-twitter_image = "01.rstudio.flowers-sharing.jpg"
+sharing_image = "tm-card.png"
+twitter_image = "tm-card.png"
 
 # Link custom CSS and JS assets
 #   (relative to /static/css and /static/js respectively)
