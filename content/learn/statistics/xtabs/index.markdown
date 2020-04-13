@@ -142,12 +142,12 @@ p_value_independence <- null_distribution_simulated %>%
 
 p_value_independence
 #> # A tibble: 1 x 1
-#>   p_value
-#>     <dbl>
-#> 1  0.0002
+#>    p_value
+#>      <dbl>
+#> 1 0.000600
 ```
 
-Thus, if there were really no relationship between cognition and genotype, the probability that we would see a statistic as or more extreme than 21.577 is approximately 2\times 10^{-4}.
+Thus, if there were really no relationship between cognition and genotype, the probability that we would see a statistic as or more extreme than 21.577 is approximately 6\times 10^{-4}.
 
 Note that, equivalently to the steps shown above, the package supplies a wrapper function, `chisq_test`, to carry out Chi-Squared tests of independence on tidy data. The syntax goes like this:
 
@@ -237,12 +237,12 @@ p_value_gof <- null_distribution_gof %>%
 
 p_value_gof
 #> # A tibble: 1 x 1
-#>   p_value
-#>     <dbl>
-#> 1   0.001
+#>    p_value
+#>      <dbl>
+#> 1 0.000600
 ```
 
-Thus, if each genotype occurred at the same rate as the Song paper, the probability that we would see a distribution like the one we did is approximately 0.001.
+Thus, if each genotype occurred at the same rate as the Song paper, the probability that we would see a distribution like the one we did is approximately 6\times 10^{-4}.
 
 Again, equivalently to the steps shown above, the package supplies a wrapper function, `chisq_test`, to carry out chi-squared goodness of fit tests on tidy data. The syntax goes like this:
 
@@ -277,7 +277,7 @@ chisq_test(ad_data, response = Genotype, p = meta_rates)
 #>  package    * version     date       lib source                               
 #>  broom      * 0.5.5       2020-02-29 [1] CRAN (R 3.6.0)                       
 #>  dials      * 0.0.4.9000  2020-03-20 [1] local                                
-#>  dplyr      * 0.8.99.9002 2020-04-09 [1] Github (tidyverse/dplyr@648064b)     
+#>  dplyr      * 0.8.5       2020-03-07 [1] CRAN (R 3.6.0)                       
 #>  ggplot2    * 3.3.0       2020-03-05 [1] CRAN (R 3.6.0)                       
 #>  infer      * 0.5.1       2019-11-19 [1] CRAN (R 3.6.0)                       
 #>  parsnip    * 0.0.5.9001  2020-04-03 [1] Github (tidymodels/parsnip@0e83faf)  
