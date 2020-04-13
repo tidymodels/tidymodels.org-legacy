@@ -19,7 +19,12 @@ options(digits = 3)
 script <- here::here("static/code/get_pkgdown_urls.R")
 source(script)
 library(DT)
-pkgs <- c("parsnip", "discrim")
+library(tibble)
+pkgs <- 
+  tibble(
+    pkg = c("parsnip", "discrim"), 
+    base_url = "https://tidymodels.github.io/"
+  )
 library(discrim)
 library(parsnip)
 ```

@@ -37,5 +37,5 @@ Now that you've made a reprex, you need to share it in an appropriate forum. Her
 
 - Each tidymodels package has its own documentation site, full of helpful information. Find [links to all package documentation sites](/packages/) and explore them!
 
-- Search [all tidymodels functions](/functions/), and check out [our books on these topics](/books/).
+- Search [all tidymodels functions](/find/), and check out [our books on these topics](/books/).
 
