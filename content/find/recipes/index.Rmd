@@ -17,7 +17,35 @@ options(digits = 3)
 script <- here::here("static/code/get_pkgdown_urls.R")
 source(script)
 library(DT)
-pkgs <- c("recipes", "embed", "textrecipes", "themis")
+library(tibble)
+pkgs <- 
+  tibble(
+    pkg = c("recipes", "embed", "textrecipes", "themis"), 
+    base_url = "https://tidymodels.github.io/"
+  ) %>% 
+  dplyr::bind_rows(
+    tibble(
+      pkg = "timetk", 
+      base_url = "https://business-science.github.io/"
+    )
+  ) 
+  # MachineShop has step functions but pkgdown reference pages 
+  # redirect to https://www.rdocumentation.org/
+  # dplyr::bind_rows(
+  #   tibble(
+  #     pkg = "MachineShop", 
+  #     base_url = "https://brian-j-smith.github.io/"
+  #   ) 
+  # ) 
+  # healthcareai has a number of step functions but they are not documented
+  # on their pkgdown site
+  # dplyr::bind_rows(
+  #   tibble(
+  #     pkg = "healthcareai", 
+  #     base_url = "https://docs.healthcare.ai/"
+  #   ) 
+  # )
+  # customsteps package has no pkgdown site
 ```
 
 To learn about the recipes package, see [*Get Started: Preprocess your data with recipes*](/start/recipes/). The table below allows you to search for recipe steps across tidymodels packages.
