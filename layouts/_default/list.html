@@ -14,7 +14,7 @@
             </a>
             {{ end }}
             
-            {{ if ne .Section "tags" }}
+            {{ if not (eq .Section "tags" "books") }}
             <a href="{{ .FirstSection.RelPermalink }}">
               <i class="fas fa-chevron-left"></i>&nbsp;Back to {{ .Section | title }}
             </a>
@@ -27,6 +27,17 @@
         <div>{{ range .Pages }}
               {{ $post := . }}
           <div class="listItem">
+            
+            
+              <!--thumbnail images-->
+              <div class="listItem">
+                {{ $cover := (.Resources.ByType "image").GetMatch "*cover*" }}
+                {{ with $cover }}
+                  {{ $fit_thumb := .Fill "500x500 Top" }}
+                <a class="itemImage project" href="{{ $post.RelPermalink }}" style="background-image: url('{{ $fit_thumb.RelPermalink }}');"></a>
+                {{ end }} 
+              </div>
+              
             <div class="itemDetails">
               <div class="itemHeader">
 
@@ -36,19 +47,23 @@
               </div>
               <div class="itemMeta">
                 <div class="itemDescription learning-objective-text"><em>{{ default .Description | markdownify }}</em>
-                  <a class="readMore" href="{{ .RelPermalink }}">Read article &#187;</a>
+                  <a class="readMore" href="{{ .RelPermalink }}">Read more &#187;</a>
                 </div>
-                <div class="itemDate">
-                  <div class="created">
-                  <i class="fas fa-box-open"></i>&nbsp;
+              
+                {{ if .Params.tags }}
+                <div class="itemDate"> 
+                <div class="created">
+                <i class="fas fa-box-open"></i>&nbsp;
                   {{ range $i, $tags := (.GetTerms "tags") }}
                       {{- if $i -}}, {{ end -}}
                       {{ with $tags }}
                       <a href="{{ .Permalink }}">{{- .LinkTitle -}}</a>
                       {{- end -}}
-                  {{- end -}} 
-                  </div>
+                  {{- end -}}
                 </div>
+                </div> 
+                {{ end }}
+                
               </div>
             </div>
           </div>
@@ -57,7 +72,7 @@
       </div>
 
       <div class="column25">
-        {{ if ne .Section "tags" }}
+        {{ if not (eq .Section "tags" "books") }}
           {{ partial "topics-sidebar.html" . }}
         {{ end }}
         
