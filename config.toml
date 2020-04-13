@@ -3,7 +3,7 @@ title = "Tidymodels"
 
 # The URL of your site.
 # End your URL with a `/` trailing slash, e.g. `https://example.com/`.
-baseurl = "/"
+baseurl = "https://tidymodels.org/"
 
 # Name the theme folder in `themes/`.
 theme = "hugo-tourmaline"
