@@ -49,7 +49,23 @@
       </div>
 
 
-      {{ partial "disqus.html" .}}
+      <div class="article-footer">
+      <!--previous article-->
+      <div style="float:left">
+      {{ with .NextInSection }}
+        <div class='itemTitle' align="left" style='font-size:.8em; line-height:2em'>Previous</div>
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+      {{ end }}
+      </div>
+      
+      <!--next article-->
+      <div style="float:right">
+      {{ with .PrevInSection }}
+      <div class='itemTitle' align="right" style='font-size:.8em; line-height:2em'>Next</div>
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+      {{ end }}
+      </div>
+     </div> 
 
       </div>
 
@@ -64,6 +80,8 @@
           {{ partial "resources_sticky.html" .}}
         </div>
       </div>
+      
+
 
     </div>
   </div>  <!-- bandContent -->
