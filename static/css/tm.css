@@ -284,6 +284,12 @@ h2 {
   color: #1a162d9e;
 }
 
+.icon-attribution, 
+.icon-attribution a {
+  font-size: 9pt;
+  text-transform: uppercase;
+  color: #a19ea9;
+}
 
 /* Learn subsection*/
 
