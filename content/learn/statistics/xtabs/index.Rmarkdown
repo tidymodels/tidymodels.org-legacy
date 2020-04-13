@@ -45,11 +45,11 @@ To carry out a chi-squared test of independence, we'll examine the association b
 ```{r plot-indep, echo = FALSE}
 ad_data %>%
   ggplot() +
-  aes(x = Genotype, fill = Class) +
+  aes(y = Genotype, fill = Class) +
   geom_bar(position = "fill") +
   scale_fill_brewer(type = "qual") +
-  labs(x = "Genotype: Apolipoprotein E Genetics",
-       y = "Proportion") 
+  labs(y = "Genotype: Apolipoprotein E Genetics",
+       x = "Proportion") 
 ```
 
 If there were no relationship, we would expect to see the purple bars reaching to the same length, regardless of cognitive ability. Are the differences we see here, though, just due to random noise?
