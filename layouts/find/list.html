@@ -1,0 +1,89 @@
+{{ define "main" }}
+
+
+<div class="band padForHeader pushFooter">
+  <div class="bandContent">
+    <div class="full splitColumns withMobileMargins">
+      <div class="column75 learn-list">
+        <div class="sectionTitle article-title">{{ .Title }}</div>
+        
+          <p>{{ .Content | markdownify }}</p>
+
+          <!--beginning of jump to section-->
+          <div class="listItem learn-top-nav">
+            <ul>
+            {{ range $index, $element := .Pages }}
+              <li>
+                <a class="learn-top-nav-item" href="#{{ anchorize (.Title) }}">{{ .Title | markdownify }}</a>
+              </li>
+            {{ end }}
+            </ul>
+          </div>
+        
+        <!--range across all pages-->
+        <div>{{ range $index, $element := .Pages }}
+              {{ $post := . }}
+              
+        <!--anchorizing all subsection links-->
+          <div class="listItem anchor-container">
+            <div class="anchor" style="top: -100px; position: absolute;" id="{{ anchorize (.Title) }}"></div>
+            <div class="itemDetails">
+              
+              <div class="itemDescription">
+              {{ if eq .Weight 1 }}
+                <div class="itemTitle">
+                  <h1><a href="{{ .RelPermalink }}">{{ .Title | markdownify }}</a></h1>
+                </div>
+                <p>{{ .Content }}</p>
+              {{ end }}
+              </div>
+              
+              {{ if ne .Weight 1 }}
+              <div class="listItem">
+                  
+              <!--thumbnail images-->
+              <div class="listItem">
+                {{ $thumb := (.Resources.ByType "image").GetMatch "*thumbnail*" }}
+                {{ with $thumb }}
+                <a class="itemImage project" href="{{ $post.RelPermalink }}" style="background-image: url('{{ .RelPermalink }}');"></a>
+                {{ end }} 
+              </div>
+                  
+              <!--metadata-->
+              <div class="itemDetails">
+                <div class="itemHeader">
+                  <div class="anchor" style="top: -100px; position: absolute;" id="{{ anchorize (.Title) }}"></div>
+                  <div class="itemTitle"><a href="{{ .RelPermalink }}">{{ .Title | markdownify }}</a></div>
+                </div>
+                
+                <div class="itemMeta">
+                  <div class="itemDescription">{{ default .Description | markdownify }}
+                      <a class="readMore" href="{{ .RelPermalink }}">Read more ...</a>
+                  </div>  
+                </div>
+              </div>
+              
+              </div>
+              {{ end }}
+              
+            
+            </div>
+          </div>
+        {{ end }}</div>
+      </div>
+
+      <div class="column25">
+        <div class="section">
+          <div class="sectionTitle">Resources</div>
+          {{ partial "resources_sticky.html" .}}
+        </div>
+      </div>
+
+    </div>
+  </div>  <!-- bandContent -->
+</div> <!-- band -->
+
+{{ end }}
+
+
+

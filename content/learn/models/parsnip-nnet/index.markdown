@@ -77,7 +77,7 @@ nnet_fit <-
 nnet_fit
 #> parsnip model object
 #> 
-#> Fit time:  8.3s 
+#> Fit time:  8.9s 
 #> Model
 #> Model: "sequential"
 #> ________________________________________________________________________________
@@ -113,17 +113,17 @@ val_results %>% slice(1:5)
 #> # A tibble: 5 x 6
 #>       A     B Class .pred_class .pred_One .pred_Two
 #>   <dbl> <dbl> <fct> <fct>           <dbl>     <dbl>
-#> 1 1061.  74.5 One   Two             0.471    0.529 
-#> 2 1241.  83.4 One   Two             0.484    0.516 
-#> 3  939.  71.9 One   One             0.633    0.367 
-#> 4  813.  77.1 One   One             0.923    0.0766
+#> 1 1061.  74.5 One   Two             0.465    0.535 
+#> 2 1241.  83.4 One   Two             0.479    0.521 
+#> 3  939.  71.9 One   One             0.624    0.376 
+#> 4  813.  77.1 One   One             0.923    0.0767
 #> 5 1706.  92.8 Two   Two             0.355    0.645
 
 val_results %>% roc_auc(truth = Class, .pred_One)
 #> # A tibble: 1 x 3
 #>   .metric .estimator .estimate
 #>   <chr>   <chr>          <dbl>
-#> 1 roc_auc binary         0.814
+#> 1 roc_auc binary         0.815
 
 val_results %>% accuracy(truth = Class, .pred_class)
 #> # A tibble: 1 x 3
