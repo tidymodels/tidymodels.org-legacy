@@ -1,6 +1,6 @@
 resources:
 - url: /start/
-  title: Get Started
+  title: Start
   icon: fa-flag-checkered fw
   icon_pack: fas
   what: |
