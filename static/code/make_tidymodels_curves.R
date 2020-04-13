@@ -4,8 +4,11 @@ library(RColorBrewer)
 library(tidyverse)
 library(tidymodels)
 library(ggpubr)
+
 # alison added
 library(beyonce)
+library(showtext)
+font_add_google("Lato")
 
 
 set.seed(2115)
@@ -95,10 +98,14 @@ for(i in seq_along(cols))
     alpha = 1
   )
 
-p <- p + 
+card <- p + 
   theme_void() + 
   theme_transparent() +
-  theme(panel.background = element_rect(fill = "#1a162d"))
+  theme(panel.background = element_rect(fill = "#1a162d")) +
+  expand_limits(y = c(-3, 1)) +
+  coord_cartesian(xlim = c(-4, 4)) +
+  annotate("text", x = 0, y = -1.5, label = "tidymodels", 
+           colour = "white", size = 10, family = "Lato")
 
 ggsave(here::here("static/code/curves_card.png"))
 
