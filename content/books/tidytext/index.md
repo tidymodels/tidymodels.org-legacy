@@ -5,7 +5,7 @@ authors: [Julia Silge, David Robinson]
 
 ![](cover.png)
 
-This book serves as an introduction of text mining using the tidytext package and other tidy tools in R. The functions provided by the tidytext package are relatively simple; what is important are the possible applications. Thus, this book provides compelling examples of real text mining problems.
+This practical book provides an introduction to text mining using tidy data principles in R, focusing on exploratory data analysis for text. Using tidy data principles can make text mining task easier and more effective; in this book, learn how to manipulate, summarize, and visualize characteristics of text using these methods and R packages from the tidy tool ecosystem.
 
 An **HTML version** of this text can be found at [`https://www.tidytextmining.com/`](https://www.tidytextmining.com/). 
 
