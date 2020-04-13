@@ -238,7 +238,7 @@ h2 {
   transition: color 0.3s;
   font-size: 15px !important;
   text-transform: none;
-  letter-spacing: 1pt; /* do we like? */
+  letter-spacing: 1pt;
   font-weight: normal;
 }
 
@@ -284,6 +284,12 @@ h2 {
   color: #1a162d9e;
 }
 
+.icon-attribution, 
+.icon-attribution a {
+  font-size: 9pt;
+  text-transform: uppercase;
+  color: #a19ea9;
+}
 
 /* Learn subsection*/
 
@@ -353,14 +359,11 @@ a.productName {
   border-top: solid 1pt #d9d9d9;
 } 
 
-#homeContent .band.second a{
-  } 
-  
-#homeContent .band.second a:hover {
-  } 
-  
+
+/* Easter egg in corner of homepage */
+
 #homeContent .bee1 {
-  display: none;
+  display: block;
 }
 
 /*-----TABLES-----*/
@@ -623,27 +626,45 @@ table.dataTable thead {
 	margin: 60px 40px 40px 40px;
 }
 
-.event {
-	border: 1pt solid #a19ea936;
-	background-color: #eab0c41a;
+
+
+/*stickies in the  bands */
+#homeContent .blurb .event {
+  background-color: #eab0c400;
 }
 
-.event a {
+
+#homeContent .blurb .event {
+	border: 1pt solid #eab0c452;
+	background-color: #f5e2e800;
+}
+
+#homeContent .blurb .event a {
 	color: #1a162d;
 }
 
-#homeContent .band .blurb .event a {
-	font-weight: 300;
+#homeContent .blurb .event .eventTitle,
+#homeContent .blurb .event .eventTitle a {
+  text-transform: uppercase;
+  letter-spacing: 2pt;
+  font-weight: bold !important;
+  color: #ca235e;
+  font-size: 0.85em;
 }
 
-#homeContent .band .blurb .event a:hover {
-	color: #CA225E;
-	text-decoration: none;
+#homeContent .event .eventTitle a:hover {
+  color: #3c061e;
+  text-decoration: none;
+}
+
+#homeContent .event .eventTitle a .fa-xs { /* font awesome icon */
+  font-size: .8em; 
 }
 
 #homeContent .event .eventDetails {
-	font-size: 18px;
-	line-height: 30px;
+  color: #272626;
+  line-height: 30px;
+  font-size: 18px;
 }
 
 #homeContent .event .eventDetails a {
