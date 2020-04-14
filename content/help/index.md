@@ -38,3 +38,5 @@ Now that you've made a reprex, you need to share it in an appropriate forum. Her
 
 - Search [all tidymodels functions](/find/), and check out [our books on these topics](/books/).
 
+- Stay up to date with the latest news about tidymodels through our posts on the [tidyverse blog](https://www.tidyverse.org/tags/tidymodels/).
+
