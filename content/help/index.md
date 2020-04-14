@@ -4,7 +4,7 @@ title: Get Help
 
 # Asking for help
 
-If you're asking for R help, reporting a bug, or requesting a new feature, you're more likely to succeed if you include a good reproducible example, which is precisely what the [reprex](http://reprex.tidymodels.org/) package is built for. You can learn more about reprex, along with other tips on how to help others help you in the [tidyverse.org help section](https://www.tidyverse.org/help/).
+If you're asking for R help, reporting a bug, or requesting a new feature, you're more likely to succeed if you include a good reproducible example, which is precisely what the [reprex](https://reprex.tidyverse.org/) package is built for. You can learn more about reprex, along with other tips on how to help others help you in the [tidyverse.org help section](https://www.tidyverse.org/help/).
 
 # Where to ask
 
