@@ -114,9 +114,4 @@ The tidymodels framework also includes many other packages designed for speciali
 
 ## Develop custom modeling tools
 
-* [hardhat](https://tidymodels.github.io/hardhat/) helps beginning developers create high-quality R packages for modeling. 
-
-
-
-
-
+* [hardhat](https://tidymodels.github.io/hardhat/) is a _developer-focused_ package that helps beginners create high-quality R packages for modeling. 
