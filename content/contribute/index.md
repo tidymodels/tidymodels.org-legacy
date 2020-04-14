@@ -43,7 +43,7 @@ Documentation is a high priority for tidymodels, and pull requests to correct or
 
 If you are a more experienced R programmer, you may have the inclination, interest, and ability to contribute directly to package development. Before you submit a pull request on a tidymodels package, always file an issue and confirm the tidymodels team agrees with your idea and is happy with your basic proposal.
 
-In tidymodels packages, we use the [tidyverse style guide](http://style.tidyverse.org/) which will make sure that your new code and documentation matches the existing style. This makes the review process much smoother.
+In tidymodels packages, we use the [tidyverse style guide](https://style.tidyverse.org/) which will make sure that your new code and documentation matches the existing style. This makes the review process much smoother.
 
 The tidymodels packages are explicitly built to support the creation of other modeling packages, and we would love to hear about what you build yourself! Check out [all our developer sources](/learn/developer/), and read to learn about:
 
