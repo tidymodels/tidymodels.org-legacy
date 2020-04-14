@@ -67,11 +67,11 @@ skimr::skim(flight_data)
 #>  n obs: 325819 
 #>  n variables: 10 
 #> 
-#> ── Variable type:Date ──────────────────────────────────────────────────────────────────────────────────
+#> ── Variable type:Date ─────────────────────────────────────────────────────────────────────────────────────────
 #>  variable missing complete      n        min        max     median n_unique
 #>      date       0   325819 325819 2013-01-01 2013-12-30 2013-07-03      364
 #> 
-#> ── Variable type:factor ────────────────────────────────────────────────────────────────────────────────
+#> ── Variable type:factor ───────────────────────────────────────────────────────────────────────────────────────
 #>   variable missing complete      n n_unique
 #>  arr_delay       0   325819 325819        2
 #>    carrier       0   325819 325819       16
@@ -83,7 +83,7 @@ skimr::skim(flight_data)
 #>  ATL: 16771, ORD: 16507, LAX: 15942, BOS: 14948   FALSE
 #>    EWR: 116504, JFK: 108539, LGA: 100776, NA: 0   FALSE
 #> 
-#> ── Variable type:integer ───────────────────────────────────────────────────────────────────────────────
+#> ── Variable type:integer ──────────────────────────────────────────────────────────────────────────────────────
 #>  variable missing complete      n    mean      sd p0 p25  p50  p75 p100
 #>  dep_time       0   325819 325819 1348.15  487.92  1 907 1400 1743 2400
 #>    flight       0   325819 325819 1943.54 1621.73  1 544 1471 3416 8500
@@ -91,12 +91,12 @@ skimr::skim(flight_data)
 #>  ▁▁▇▆▆▇▆▂
 #>  ▇▅▂▃▂▁▁▁
 #> 
-#> ── Variable type:numeric ───────────────────────────────────────────────────────────────────────────────
+#> ── Variable type:numeric ──────────────────────────────────────────────────────────────────────────────────────
 #>  variable missing complete      n    mean     sd p0 p25 p50  p75 p100     hist
 #>  air_time       0   325819 325819  150.63  93.66 20  82 129  191  695 ▇▇▂▃▁▁▁▁
 #>  distance       0   325819 325819 1048.18 735.86 80 509 888 1389 4983 ▇▇▂▂▁▁▁▁
 #> 
-#> ── Variable type:POSIXct ───────────────────────────────────────────────────────────────────────────────
+#> ── Variable type:POSIXct ──────────────────────────────────────────────────────────────────────────────────────
 #>   variable missing complete      n        min        max     median n_unique
 #>  time_hour       0   325819 325819 2013-01-01 2013-12-30 2013-07-03     6885
 ```
@@ -277,11 +277,11 @@ flights_wflow <-
   add_model(lr_mod) %>% 
   add_recipe(flights_rec)
 flights_wflow
-#> ══ Workflow ════════════════════════════════════════════════════════════════════════════════════════════
+#> ══ Workflow ═══════════════════════════════════════════════════════════════════════════════════════════════════
 #> Preprocessor: Recipe
 #> Model: logistic_reg()
 #> 
-#> ── Preprocessor ────────────────────────────────────────────────────────────────────────────────────────
+#> ── Preprocessor ───────────────────────────────────────────────────────────────────────────────────────────────
 #> 5 Recipe Steps
 #> 
 #> ● step_date()
@@ -290,7 +290,7 @@ flights_wflow
 #> ● step_dummy()
 #> ● step_zv()
 #> 
-#> ── Model ───────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Model ──────────────────────────────────────────────────────────────────────────────────────────────────────
 #> Logistic Regression Model Specification (classification)
 #> 
 #> Computational engine: glm
@@ -301,10 +301,6 @@ There are two nice properties of using a `workflow()`. First, the model and reci
 
 ```r
 flights_fit <- fit(flights_wflow, data = train_data)
-#> Warning: The `x` argument of `as_tibble.matrix()` must have column names if `.name_repair` is omitted as of tibble 2.0.0.
-#> Using compatibility `.name_repair`.
-#> This warning is displayed once every 8 hours.
-#> Call `lifecycle::last_warnings()` to see where this warning was generated.
 ```
  
 This object has the finalized recipe and model objects inside. To extract those objects, use the functions `pull_workflow_fit()` and `pull_workflow_recipe()`. For example, use the `broom::tidy()` function to get data on the model coefficients: 
@@ -394,20 +390,20 @@ Not too bad!
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package      * version date       lib source        
 #>  broom        * 0.5.4   2020-01-27 [1] CRAN (R 3.6.0)
-#>  dials        * 0.0.6   2020-04-03 [1] CRAN (R 3.6.2)
+#>  dials        * 0.0.6   2020-04-03 [1] CRAN (R 3.6.1)
 #>  dplyr        * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
 #>  ggplot2      * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
 #>  infer        * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
 #>  nycflights13 * 1.0.1   2019-09-16 [1] CRAN (R 3.6.0)
-#>  parsnip      * 0.1.0   2020-04-09 [1] CRAN (R 3.6.2)
+#>  parsnip      * 0.1.0   2020-04-09 [1] CRAN (R 3.6.1)
 #>  purrr        * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
 #>  recipes      * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
 #>  rlang          0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
-#>  rsample      * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
+#>  rsample      * 0.0.6   2020-03-31 [1] CRAN (R 3.6.1)
 #>  skimr        * 1.0.7   2019-06-20 [1] CRAN (R 3.6.0)
-#>  tibble       * 3.0.0   2020-03-30 [1] CRAN (R 3.6.1)
-#>  tidymodels   * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
-#>  tune         * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
+#>  tibble       * 2.1.3   2019-06-06 [1] CRAN (R 3.6.1)
+#>  tidymodels   * 0.1.0   2020-02-16 [1] CRAN (R 3.6.1)
+#>  tune         * 0.1.0   2020-04-02 [1] CRAN (R 3.6.1)
 #>  workflows    * 0.1.0   2019-12-30 [1] CRAN (R 3.6.1)
 #>  yardstick    * 0.0.5   2020-01-23 [1] CRAN (R 3.6.0)
 #> 

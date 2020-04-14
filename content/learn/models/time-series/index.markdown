@@ -29,8 +29,8 @@ library(tidymodels)
 library(modeldata)
 data("drinks")
 glimpse(drinks)
-#> Rows: 309
-#> Columns: 2
+#> Observations: 309
+#> Variables: 2
 #> $ date           <date> 1992-01-01, 1992-02-01, 1992-03-01, 1992-04-01, 1992-…
 #> $ S4248SM144NCEN <dbl> 3459, 3458, 4002, 4564, 4221, 4529, 4466, 4137, 4126, …
 ```
@@ -287,22 +287,22 @@ mutate(
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
 #>  broom      * 0.5.4   2020-01-27 [1] CRAN (R 3.6.0)
-#>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 3.6.2)
+#>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 3.6.1)
 #>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
 #>  forecast   * 8.9     2019-08-22 [1] CRAN (R 3.6.0)
 #>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
 #>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
-#>  parsnip    * 0.1.0   2020-04-09 [1] CRAN (R 3.6.2)
+#>  parsnip    * 0.1.0   2020-04-09 [1] CRAN (R 3.6.1)
 #>  purrr      * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
 #>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
 #>  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
-#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
+#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.1)
 #>  sweep      * 0.2.2   2019-10-08 [1] CRAN (R 3.6.0)
-#>  tibble     * 3.0.0   2020-03-30 [1] CRAN (R 3.6.1)
-#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
+#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.1)
+#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.1)
 #>  tidyr      * 1.0.2   2020-01-24 [1] CRAN (R 3.6.0)
-#>  timetk     * 0.1.3   2020-03-18 [1] CRAN (R 3.6.0)
-#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
+#>  timetk     * 0.1.3   2020-03-18 [1] CRAN (R 3.6.1)
+#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.1)
 #>  workflows  * 0.1.0   2019-12-30 [1] CRAN (R 3.6.1)
 #>  yardstick  * 0.0.5   2020-01-23 [1] CRAN (R 3.6.0)
 #>  zoo        * 1.8-7   2020-01-10 [1] CRAN (R 3.6.0)

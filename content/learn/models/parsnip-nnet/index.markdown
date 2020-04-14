@@ -77,7 +77,7 @@ nnet_fit <-
 nnet_fit
 #> parsnip model object
 #> 
-#> Fit time:  5.6s 
+#> Fit time:  5.9s 
 #> Model
 #> Model: "sequential"
 #> ________________________________________________________________________________
@@ -113,11 +113,11 @@ val_results %>% slice(1:5)
 #> # A tibble: 5 x 6
 #>       A     B Class .pred_class .pred_One .pred_Two
 #>   <dbl> <dbl> <fct> <fct>           <dbl>     <dbl>
-#> 1 1061.  74.5 One   Two             0.472    0.528 
-#> 2 1241.  83.4 One   Two             0.484    0.516 
-#> 3  939.  71.9 One   One             0.633    0.367 
-#> 4  813.  77.1 One   One             0.924    0.0758
-#> 5 1706.  92.8 Two   Two             0.356    0.644
+#> 1 1061.  74.5 One   Two             0.470    0.530 
+#> 2 1241.  83.4 One   Two             0.482    0.518 
+#> 3  939.  71.9 One   One             0.632    0.368 
+#> 4  813.  77.1 One   One             0.924    0.0762
+#> 5 1706.  92.8 Two   Two             0.355    0.645
 
 val_results %>% roc_auc(truth = Class, .pred_One)
 #> # A tibble: 1 x 3
@@ -183,19 +183,19 @@ ggplot(x_grid, aes(x = A, y = B)) +
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
 #>  broom      * 0.5.4   2020-01-27 [1] CRAN (R 3.6.0)
-#>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 3.6.2)
+#>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 3.6.1)
 #>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
 #>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
 #>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
 #>  keras        2.2.5.0 2019-10-08 [1] CRAN (R 3.6.0)
-#>  parsnip    * 0.1.0   2020-04-09 [1] CRAN (R 3.6.2)
+#>  parsnip    * 0.1.0   2020-04-09 [1] CRAN (R 3.6.1)
 #>  purrr      * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
 #>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
 #>  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
-#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
-#>  tibble     * 3.0.0   2020-03-30 [1] CRAN (R 3.6.1)
-#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
-#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
+#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.1)
+#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.1)
+#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.1)
+#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.1)
 #>  workflows  * 0.1.0   2019-12-30 [1] CRAN (R 3.6.1)
 #>  yardstick  * 0.0.5   2020-01-23 [1] CRAN (R 3.6.0)
 #> 

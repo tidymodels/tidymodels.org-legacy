@@ -263,10 +263,10 @@ results <-
 
 summary(results$RMSE)
 #>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-#>    1.57    2.09    2.68    2.69    3.26    4.32
+#>    1.67    2.09    2.67    2.70    3.26    4.30
 ```
 
-The estimated RMSE for the model tuning process is 2.69. 
+The estimated RMSE for the model tuning process is 2.7. 
 
 What is the RMSE estimate for the non-nested procedure when only the outer resampling method is used? For each cost value in the tuning grid, 50 SVM models are fit and their RMSE values are averaged. The table of cost values and mean RMSE estimates is used to determine the best cost value. The associated RMSE is the biased estimate. 
 
@@ -339,22 +339,22 @@ The nested procedure produces a closer estimate to the approximate truth but the
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
 #>  broom      * 0.5.4   2020-01-27 [1] CRAN (R 3.6.0)
-#>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 3.6.2)
+#>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 3.6.1)
 #>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
-#>  furrr      * 0.1.0   2018-05-16 [1] CRAN (R 3.6.0)
+#>  furrr      * 0.1.0   2018-05-16 [1] CRAN (R 3.6.1)
 #>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
 #>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
 #>  kernlab    * 0.9-29  2019-11-12 [1] CRAN (R 3.6.0)
 #>  mlbench    * 2.1-1   2012-07-10 [1] CRAN (R 3.6.0)
-#>  parsnip    * 0.1.0   2020-04-09 [1] CRAN (R 3.6.2)
+#>  parsnip    * 0.1.0   2020-04-09 [1] CRAN (R 3.6.1)
 #>  purrr      * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
 #>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
 #>  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
-#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
+#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.1)
 #>  scales     * 1.1.0   2019-11-18 [1] CRAN (R 3.6.0)
-#>  tibble     * 3.0.0   2020-03-30 [1] CRAN (R 3.6.1)
-#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
-#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
+#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.1)
+#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.1)
+#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.1)
 #>  workflows  * 0.1.0   2019-12-30 [1] CRAN (R 3.6.1)
 #>  yardstick  * 0.0.5   2020-01-23 [1] CRAN (R 3.6.0)
 #> 

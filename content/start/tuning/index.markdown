@@ -139,7 +139,7 @@ tree_res
 #> #  10-fold cross-validation 
 #> # A tibble: 10 x 4
 #>    splits             id     .metrics          .notes          
-#>    <list>             <chr>  <list>            <list>          
+#>  * <list>             <chr>  <list>            <list>          
 #>  1 <split [1.4K/152]> Fold01 <tibble [50 × 5]> <tibble [0 × 1]>
 #>  2 <split [1.4K/152]> Fold02 <tibble [50 × 5]> <tibble [0 × 1]>
 #>  3 <split [1.4K/152]> Fold03 <tibble [50 × 5]> <tibble [0 × 1]>
@@ -214,7 +214,7 @@ final_tree <- final_mod %>%
 final_tree
 #> parsnip model object
 #> 
-#> Fit time:  104ms 
+#> Fit time:  107ms 
 #> n= 1515 
 #> 
 #> node), split, n, loss, yval, (yprob)

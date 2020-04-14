@@ -77,7 +77,7 @@ rf_xy_fit <-
 rf_xy_fit
 #> parsnip model object
 #> 
-#> Fit time:  933ms 
+#> Fit time:  899ms 
 #> Ranger result
 #> 
 #> Call:
@@ -145,7 +145,7 @@ rand_forest(mode = "regression", mtry = 3, trees = 1000) %>%
   )
 #> parsnip model object
 #> 
-#> Fit time:  2.7s 
+#> Fit time:  2.6s 
 #> Ranger result
 #> 
 #> Call:
@@ -176,7 +176,7 @@ rand_forest(mode = "regression", mtry = 3, trees = 1000) %>%
   )
 #> parsnip model object
 #> 
-#> Fit time:  1.9s 
+#> Fit time:  1.8s 
 #> 
 #> Call:
 #>  randomForest(x = as.data.frame(x), y = y, ntree = ~1000, mtry = ~3) 
@@ -213,7 +213,7 @@ rand_forest(mode = "regression", mtry = .preds(), trees = 1000) %>%
   )
 #> parsnip model object
 #> 
-#> Fit time:  3.6s 
+#> Fit time:  3.4s 
 #> Ranger result
 #> 
 #> Call:
@@ -262,7 +262,7 @@ glmn_fit <-
 glmn_fit
 #> parsnip model object
 #> 
-#> Fit time:  8ms 
+#> Fit time:  7ms 
 #> 
 #> Call:  glmnet::glmnet(x = as.matrix(x), y = y, family = "gaussian",      alpha = ~0.5) 
 #> 
@@ -405,23 +405,23 @@ This final plot compares the performance of the random forest and regularized re
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package      * version date       lib source        
-#>  AmesHousing  * 0.0.3   2017-12-17 [1] CRAN (R 3.6.0)
+#>  AmesHousing  * 0.0.3   2017-12-17 [1] CRAN (R 3.6.1)
 #>  broom        * 0.5.4   2020-01-27 [1] CRAN (R 3.6.0)
-#>  dials        * 0.0.6   2020-04-03 [1] CRAN (R 3.6.2)
+#>  dials        * 0.0.6   2020-04-03 [1] CRAN (R 3.6.1)
 #>  dplyr        * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
 #>  ggplot2      * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
 #>  glmnet       * 3.0-2   2019-12-11 [1] CRAN (R 3.6.0)
 #>  infer        * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
-#>  parsnip      * 0.1.0   2020-04-09 [1] CRAN (R 3.6.2)
+#>  parsnip      * 0.1.0   2020-04-09 [1] CRAN (R 3.6.1)
 #>  purrr        * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
 #>  randomForest * 4.6-14  2018-03-25 [1] CRAN (R 3.6.0)
 #>  ranger       * 0.12.1  2020-01-10 [1] CRAN (R 3.6.0)
 #>  recipes      * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
 #>  rlang          0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
-#>  rsample      * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
-#>  tibble       * 3.0.0   2020-03-30 [1] CRAN (R 3.6.1)
-#>  tidymodels   * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
-#>  tune         * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
+#>  rsample      * 0.0.6   2020-03-31 [1] CRAN (R 3.6.1)
+#>  tibble       * 2.1.3   2019-06-06 [1] CRAN (R 3.6.1)
+#>  tidymodels   * 0.1.0   2020-02-16 [1] CRAN (R 3.6.1)
+#>  tune         * 0.1.0   2020-04-02 [1] CRAN (R 3.6.1)
 #>  workflows    * 0.1.0   2019-12-30 [1] CRAN (R 3.6.1)
 #>  yardstick    * 0.0.5   2020-01-23 [1] CRAN (R 3.6.0)
 #> 

@@ -83,16 +83,16 @@ qda_rose_wflw <-
   add_model(qda_mod) %>% 
   add_recipe(imbal_rec)
 qda_rose_wflw
-#> ══ Workflow ════════════════════════════════════════════════════════════════════════════════════════════
+#> ══ Workflow ═══════════════════════════════════════════════════════════════════════════════════════════════════
 #> Preprocessor: Recipe
 #> Model: discrim_regularized()
 #> 
-#> ── Preprocessor ────────────────────────────────────────────────────────────────────────────────────────
+#> ── Preprocessor ───────────────────────────────────────────────────────────────────────────────────────────────
 #> 1 Recipe Step
 #> 
 #> ● step_rose()
 #> 
-#> ── Model ───────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Model ──────────────────────────────────────────────────────────────────────────────────────────────────────
 #> Regularized Discriminant Model Specification (classification)
 #> 
 #> Main Arguments:
@@ -139,8 +139,8 @@ collect_metrics(qda_rose_res)
 #> # A tibble: 2 x 5
 #>   .metric .estimator  mean     n std_err
 #>   <chr>   <chr>      <dbl> <int>   <dbl>
-#> 1 j_index binary     0.778    50 0.0211 
-#> 2 roc_auc binary     0.950    50 0.00433
+#> 1 j_index binary     0.777    50 0.0235 
+#> 2 roc_auc binary     0.953    50 0.00458
 ```
 
 What do the results look like without using ROSE? We can create another workflow and fit the QDA model along the same resamples:
@@ -210,23 +210,23 @@ This visually demonstrates that the subsampling mostly affects metrics that use 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
 #>  broom      * 0.5.4   2020-01-27 [1] CRAN (R 3.6.0)
-#>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 3.6.2)
-#>  discrim    * 0.0.2   2020-04-09 [1] CRAN (R 3.6.2)
+#>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 3.6.1)
+#>  discrim    * 0.0.2   2020-04-09 [1] CRAN (R 3.6.1)
 #>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
 #>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
 #>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
 #>  klaR       * 0.6-14  2018-03-19 [1] CRAN (R 3.6.0)
-#>  parsnip    * 0.1.0   2020-04-09 [1] CRAN (R 3.6.2)
+#>  parsnip    * 0.1.0   2020-04-09 [1] CRAN (R 3.6.1)
 #>  purrr      * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
 #>  readr      * 1.3.1   2018-12-21 [1] CRAN (R 3.6.0)
 #>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
 #>  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
 #>  ROSE       * 0.0-3   2014-07-15 [1] CRAN (R 3.6.0)
-#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
-#>  themis     * 0.1.0   2020-01-13 [1] CRAN (R 3.6.0)
-#>  tibble     * 3.0.0   2020-03-30 [1] CRAN (R 3.6.1)
-#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
-#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
+#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.1)
+#>  themis     * 0.1.0   2020-01-13 [1] CRAN (R 3.6.1)
+#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.1)
+#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.1)
+#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.1)
 #>  workflows  * 0.1.0   2019-12-30 [1] CRAN (R 3.6.1)
 #>  yardstick  * 0.0.5   2020-01-23 [1] CRAN (R 3.6.0)
 #> 
