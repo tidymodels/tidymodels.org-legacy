@@ -47,7 +47,13 @@ title: Tidymodels packages
       <p>recipes is a tidy interface to data pre-processing tools for feature engineering. <a href="https://tidymodels.github.io/rsample/" aria-hidden="true">Go to package ...</a></p>
     </div>
   </div>
-
+  <div class="package">
+    <img class="package-image" src="/images/placeholder.png" alt=""></img>
+    <div class="package-info">
+      <h3><a href="https://tidymodels.github.io/workflows/"> workflows </a></h3>
+      <p>workflows bundle your pre-processing, modeling, and post-processing together. <a href="https://tidymodels.github.io/workflows/" aria-hidden="true">Go to package ...</a></p>
+    </div>
+  </div> 
   <div class="package">
     <img class="package-image" src="/images/tune.png" alt=""></img>
     <div class="package-info">
