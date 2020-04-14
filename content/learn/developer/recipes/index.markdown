@@ -471,16 +471,16 @@ tidy(rec_obj, number = 1)
 #> # A tibble: 274 x 4
 #>    term     value percentile id              
 #>    <chr>    <dbl>      <dbl> <chr>           
-#>  1 hydrogen 0.03           0 percentile_mkhNk
-#>  2 hydrogen 0.934          1 percentile_mkhNk
-#>  3 hydrogen 1.60           2 percentile_mkhNk
-#>  4 hydrogen 2.07           3 percentile_mkhNk
-#>  5 hydrogen 2.45           4 percentile_mkhNk
-#>  6 hydrogen 2.74           5 percentile_mkhNk
-#>  7 hydrogen 3.15           6 percentile_mkhNk
-#>  8 hydrogen 3.49           7 percentile_mkhNk
-#>  9 hydrogen 3.71           8 percentile_mkhNk
-#> 10 hydrogen 3.99           9 percentile_mkhNk
+#>  1 hydrogen 0.03           0 percentile_heJ9z
+#>  2 hydrogen 0.934          1 percentile_heJ9z
+#>  3 hydrogen 1.60           2 percentile_heJ9z
+#>  4 hydrogen 2.07           3 percentile_heJ9z
+#>  5 hydrogen 2.45           4 percentile_heJ9z
+#>  6 hydrogen 2.74           5 percentile_heJ9z
+#>  7 hydrogen 3.15           6 percentile_heJ9z
+#>  8 hydrogen 3.49           7 percentile_heJ9z
+#>  9 hydrogen 3.71           8 percentile_heJ9z
+#> 10 hydrogen 3.99           9 percentile_heJ9z
 #> # … with 264 more rows
 ```
 
@@ -561,34 +561,34 @@ tunable.step_poly <- function (x, ...) {
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.2 (2019-12-12)
+#>  version  R version 3.6.1 (2019-07-05)
 #>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/Denver              
-#>  date     2020-04-08                  
+#>  tz       America/New_York            
+#>  date     2020-04-13                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version     date       lib source                               
-#>  broom      * 0.5.5       2020-02-29 [1] CRAN (R 3.6.0)                       
-#>  dials      * 0.0.4.9000  2020-03-20 [1] local                                
-#>  dplyr      * 0.8.5       2020-03-07 [1] CRAN (R 3.6.0)                       
-#>  ggplot2    * 3.3.0       2020-03-05 [1] CRAN (R 3.6.0)                       
-#>  infer      * 0.5.1       2019-11-19 [1] CRAN (R 3.6.0)                       
-#>  modeldata  * 0.0.1       2019-12-06 [1] CRAN (R 3.6.0)                       
-#>  parsnip    * 0.0.5.9001  2020-04-03 [1] Github (tidymodels/parsnip@0e83faf)  
-#>  purrr      * 0.3.3       2019-10-18 [1] CRAN (R 3.6.0)                       
-#>  recipes    * 0.1.10.9000 2020-04-03 [1] local                                
-#>  rlang        0.4.5.9000  2020-03-20 [1] Github (r-lib/rlang@a90b04b)         
-#>  rsample    * 0.0.6       2020-03-31 [1] CRAN (R 3.6.2)                       
-#>  tibble     * 3.0.0       2020-03-30 [1] CRAN (R 3.6.2)                       
-#>  tidymodels * 0.1.0       2020-02-16 [1] CRAN (R 3.6.0)                       
-#>  tune       * 0.1.0       2020-04-02 [1] CRAN (R 3.6.2)                       
-#>  workflows  * 0.1.1.9000  2020-03-20 [1] Github (tidymodels/workflows@e995c18)
-#>  yardstick  * 0.0.6       2020-03-17 [1] CRAN (R 3.6.0)                       
+#>  package    * version date       lib source        
+#>  broom      * 0.5.4   2020-01-27 [1] CRAN (R 3.6.0)
+#>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 3.6.2)
+#>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
+#>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
+#>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
+#>  modeldata  * 0.0.1   2019-12-06 [1] CRAN (R 3.6.0)
+#>  parsnip    * 0.1.0   2020-04-09 [1] CRAN (R 3.6.2)
+#>  purrr      * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
+#>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
+#>  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
+#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
+#>  tibble     * 3.0.0   2020-03-30 [1] CRAN (R 3.6.1)
+#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
+#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
+#>  workflows  * 0.1.0   2019-12-30 [1] CRAN (R 3.6.1)
+#>  yardstick  * 0.0.5   2020-01-23 [1] CRAN (R 3.6.0)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
 ```

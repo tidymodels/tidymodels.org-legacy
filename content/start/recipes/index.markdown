@@ -63,56 +63,43 @@ Using this estimate, about 16% of the flights in this data set had late arrivals
 
 ```r
 skimr::skim(flight_data)
+#> Skim summary statistics
+#>  n obs: 325819 
+#>  n variables: 10 
+#> 
+#> ── Variable type:Date ──────────────────────────────────────────────────────────────────────────────────
+#>  variable missing complete      n        min        max     median n_unique
+#>      date       0   325819 325819 2013-01-01 2013-12-30 2013-07-03      364
+#> 
+#> ── Variable type:factor ────────────────────────────────────────────────────────────────────────────────
+#>   variable missing complete      n n_unique
+#>  arr_delay       0   325819 325819        2
+#>    carrier       0   325819 325819       16
+#>       dest       0   325819 325819      104
+#>     origin       0   325819 325819        3
+#>                                      top_counts ordered
+#>                  on_: 273279, lat: 52540, NA: 0   FALSE
+#>      UA: 57489, B6: 53715, EV: 50868, DL: 47465   FALSE
+#>  ATL: 16771, ORD: 16507, LAX: 15942, BOS: 14948   FALSE
+#>    EWR: 116504, JFK: 108539, LGA: 100776, NA: 0   FALSE
+#> 
+#> ── Variable type:integer ───────────────────────────────────────────────────────────────────────────────
+#>  variable missing complete      n    mean      sd p0 p25  p50  p75 p100
+#>  dep_time       0   325819 325819 1348.15  487.92  1 907 1400 1743 2400
+#>    flight       0   325819 325819 1943.54 1621.73  1 544 1471 3416 8500
+#>      hist
+#>  ▁▁▇▆▆▇▆▂
+#>  ▇▅▂▃▂▁▁▁
+#> 
+#> ── Variable type:numeric ───────────────────────────────────────────────────────────────────────────────
+#>  variable missing complete      n    mean     sd p0 p25 p50  p75 p100     hist
+#>  air_time       0   325819 325819  150.63  93.66 20  82 129  191  695 ▇▇▂▃▁▁▁▁
+#>  distance       0   325819 325819 1048.18 735.86 80 509 888 1389 4983 ▇▇▂▂▁▁▁▁
+#> 
+#> ── Variable type:POSIXct ───────────────────────────────────────────────────────────────────────────────
+#>   variable missing complete      n        min        max     median n_unique
+#>  time_hour       0   325819 325819 2013-01-01 2013-12-30 2013-07-03     6885
 ```
-
-
-|                         |            |
-|:------------------------|:-----------|
-|Name                     |flight_data |
-|Number of rows           |325819      |
-|Number of columns        |10          |
-|_______________________  |            |
-|Column type frequency:   |            |
-|Date                     |1           |
-|factor                   |4           |
-|numeric                  |4           |
-|POSIXct                  |1           |
-|________________________ |            |
-|Group variables          |None        |
-
-
-**Variable type: Date**
-
-|skim_variable | n_missing| complete_rate|min        |max        |median     | n_unique|
-|:-------------|---------:|-------------:|:----------|:----------|:----------|--------:|
-|date          |         0|             1|2013-01-01 |2013-12-30 |2013-07-03 |      364|
-
-
-**Variable type: factor**
-
-|skim_variable | n_missing| complete_rate|ordered | n_unique|top_counts                                     |
-|:-------------|---------:|-------------:|:-------|--------:|:----------------------------------------------|
-|origin        |         0|             1|FALSE   |        3|EWR: 116504, JFK: 108539, LGA: 100776          |
-|dest          |         0|             1|FALSE   |      104|ATL: 16771, ORD: 16507, LAX: 15942, BOS: 14948 |
-|carrier       |         0|             1|FALSE   |       16|UA: 57489, B6: 53715, EV: 50868, DL: 47465     |
-|arr_delay     |         0|             1|FALSE   |        2|on_: 273279, lat: 52540                        |
-
-
-**Variable type: numeric**
-
-|skim_variable | n_missing| complete_rate|    mean|      sd| p0| p25|  p50|  p75| p100|hist  |
-|:-------------|---------:|-------------:|-------:|-------:|--:|---:|----:|----:|----:|:-----|
-|dep_time      |         0|             1| 1348.15|  487.92|  1| 907| 1400| 1743| 2400|▁▇▆▇▃ |
-|flight        |         0|             1| 1943.54| 1621.73|  1| 544| 1471| 3416| 8500|▇▃▃▁▁ |
-|air_time      |         0|             1|  150.63|   93.66| 20|  82|  129|  191|  695|▇▂▂▁▁ |
-|distance      |         0|             1| 1048.18|  735.86| 80| 509|  888| 1389| 4983|▇▃▂▁▁ |
-
-
-**Variable type: POSIXct**
-
-|skim_variable | n_missing| complete_rate|min                 |max                 |median              | n_unique|
-|:-------------|---------:|-------------:|:-------------------|:-------------------|:-------------------|--------:|
-|time_hour     |         0|             1|2013-01-01 05:00:00 |2013-12-30 18:00:00 |2013-07-03 15:00:00 |     6885|
 
 There are some interesting things to notice from this output. First, the flight number is a numeric value. In our analyses below, this column won't be used as a predictor but retained as an identification variable (along with `time_hour`) that can be used to troubleshoot poorly predicted data points.  
 
@@ -290,11 +277,11 @@ flights_wflow <-
   add_model(lr_mod) %>% 
   add_recipe(flights_rec)
 flights_wflow
-#> ══ Workflow ══════════════════════════════════════════════════════════════════════════════════════════════════════
+#> ══ Workflow ════════════════════════════════════════════════════════════════════════════════════════════
 #> Preprocessor: Recipe
 #> Model: logistic_reg()
 #> 
-#> ── Preprocessor ──────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Preprocessor ────────────────────────────────────────────────────────────────────────────────────────
 #> 5 Recipe Steps
 #> 
 #> ● step_date()
@@ -303,7 +290,7 @@ flights_wflow
 #> ● step_dummy()
 #> ● step_zv()
 #> 
-#> ── Model ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Model ───────────────────────────────────────────────────────────────────────────────────────────────
 #> Logistic Regression Model Specification (classification)
 #> 
 #> Computational engine: glm
@@ -394,53 +381,35 @@ Not too bad!
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.2 (2019-12-12)
+#>  version  R version 3.6.1 (2019-07-05)
 #>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/Denver              
-#>  date     2020-04-09                  
+#>  tz       America/New_York            
+#>  date     2020-04-13                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package      * version     date       lib
-#>  broom        * 0.5.5       2020-02-29 [1]
-#>  dials        * 0.0.4.9000  2020-03-20 [1]
-#>  dplyr        * 0.8.5       2020-03-07 [1]
-#>  ggplot2      * 3.3.0       2020-03-05 [1]
-#>  infer        * 0.5.1       2019-11-19 [1]
-#>  nycflights13 * 1.0.1       2019-09-16 [1]
-#>  parsnip      * 0.0.5.9001  2020-04-03 [1]
-#>  purrr        * 0.3.3       2019-10-18 [1]
-#>  recipes      * 0.1.10.9000 2020-04-03 [1]
-#>  rlang          0.4.5.9000  2020-03-20 [1]
-#>  rsample      * 0.0.6       2020-03-31 [1]
-#>  skimr        * 2.1         2020-02-01 [1]
-#>  tibble       * 3.0.0       2020-03-30 [1]
-#>  tidymodels   * 0.1.0       2020-02-16 [1]
-#>  tune         * 0.1.0       2020-04-02 [1]
-#>  workflows    * 0.1.1.9000  2020-03-20 [1]
-#>  yardstick    * 0.0.6       2020-03-17 [1]
-#>  source                               
-#>  CRAN (R 3.6.0)                       
-#>  local                                
-#>  CRAN (R 3.6.0)                       
-#>  CRAN (R 3.6.0)                       
-#>  CRAN (R 3.6.0)                       
-#>  CRAN (R 3.6.0)                       
-#>  Github (tidymodels/parsnip@0e83faf)  
-#>  CRAN (R 3.6.0)                       
-#>  local                                
-#>  Github (r-lib/rlang@a90b04b)         
-#>  CRAN (R 3.6.2)                       
-#>  CRAN (R 3.6.0)                       
-#>  CRAN (R 3.6.2)                       
-#>  CRAN (R 3.6.0)                       
-#>  CRAN (R 3.6.2)                       
-#>  Github (tidymodels/workflows@e995c18)
-#>  CRAN (R 3.6.0)                       
+#>  package      * version date       lib source        
+#>  broom        * 0.5.4   2020-01-27 [1] CRAN (R 3.6.0)
+#>  dials        * 0.0.6   2020-04-03 [1] CRAN (R 3.6.2)
+#>  dplyr        * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
+#>  ggplot2      * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
+#>  infer        * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
+#>  nycflights13 * 1.0.1   2019-09-16 [1] CRAN (R 3.6.0)
+#>  parsnip      * 0.1.0   2020-04-09 [1] CRAN (R 3.6.2)
+#>  purrr        * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
+#>  recipes      * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
+#>  rlang          0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
+#>  rsample      * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
+#>  skimr        * 1.0.7   2019-06-20 [1] CRAN (R 3.6.0)
+#>  tibble       * 3.0.0   2020-03-30 [1] CRAN (R 3.6.1)
+#>  tidymodels   * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
+#>  tune         * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
+#>  workflows    * 0.1.0   2019-12-30 [1] CRAN (R 3.6.1)
+#>  yardstick    * 0.0.5   2020-01-23 [1] CRAN (R 3.6.0)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
 ```

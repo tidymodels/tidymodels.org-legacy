@@ -247,16 +247,16 @@ gss %>%
 #> # Groups:   replicate [5,000]
 #>    replicate hours
 #>        <int> <dbl>
-#>  1         1  44.2
-#>  2         1  37.2
+#>  1         1  45.2
+#>  2         1  31.2
 #>  3         1  39.2
-#>  4         1  47.2
-#>  5         1  39.2
-#>  6         1  39.2
-#>  7         1  43.2
-#>  8         1  59.2
-#>  9         1  39.2
-#> 10         1  61.2
+#>  4         1  11.2
+#>  5         1  34.2
+#>  6         1  49.2
+#>  7         1  88.2
+#>  8         1  39.2
+#>  9         1  29.2
+#> 10         1  47.2
 #> # … with 8,779,990 more rows
 ```
 
@@ -278,14 +278,14 @@ gss %>%
 #>    partyid   age replicate
 #>    <fct>   <dbl>     <int>
 #>  1 rep        37         1
-#>  2 rep        29         1
-#>  3 rep        58         1
-#>  4 rep        40         1
-#>  5 dem        39         1
-#>  6 rep        37         1
-#>  7 ind        53         1
+#>  2 ind        29         1
+#>  3 ind        58         1
+#>  4 dem        40         1
+#>  5 ind        39         1
+#>  6 ind        37         1
+#>  7 dem        53         1
 #>  8 ind        41         1
-#>  9 ind        55         1
+#>  9 dem        55         1
 #> 10 ind        47         1
 #> # … with 14,814,990 more rows
 ```
@@ -303,17 +303,17 @@ gss %>%
   calculate(stat = "mean")
 #> # A tibble: 5,000 x 2
 #>    replicate  stat
-#>  *     <int> <dbl>
-#>  1         1  40.4
-#>  2         2  39.6
-#>  3         3  40.2
-#>  4         4  40.0
-#>  5         5  40.6
-#>  6         6  39.5
-#>  7         7  39.7
-#>  8         8  40.6
-#>  9         9  39.6
-#> 10        10  39.8
+#>        <int> <dbl>
+#>  1         1  40.2
+#>  2         2  40.5
+#>  3         3  39.9
+#>  4         4  39.9
+#>  5         5  39.7
+#>  6         6  39.4
+#>  7         7  39.4
+#>  8         8  40.1
+#>  9         9  40.2
+#> 10        10  40.4
 #> # … with 4,990 more rows
 ```
 
@@ -327,18 +327,18 @@ gss %>%
   generate(reps = 5000, type = "permute") %>%
   calculate("diff in means", order = c("degree", "no degree"))
 #> # A tibble: 5,000 x 2
-#>    replicate   stat
-#>  *     <int>  <dbl>
-#>  1         1  0.163
-#>  2         2  0.510
-#>  3         3 -0.998
-#>  4         4  0.262
-#>  5         5  0.627
-#>  6         6  0.384
-#>  7         7  0.332
-#>  8         8 -0.813
-#>  9         9  0.970
-#> 10        10 -0.472
+#>    replicate    stat
+#>        <int>   <dbl>
+#>  1         1 -0.810 
+#>  2         2 -0.248 
+#>  3         3 -0.0693
+#>  4         4 -1.08  
+#>  5         5 -0.168 
+#>  6         6  0.255 
+#>  7         7 -0.283 
+#>  8         8 -0.484 
+#>  9         9 -0.394 
+#> 10        10 -0.615 
 #> # … with 4,990 more rows
 ```
 
@@ -402,10 +402,10 @@ p_value
 #> # A tibble: 1 x 1
 #>   p_value
 #>     <dbl>
-#> 1  0.0212
+#> 1  0.0216
 ```
 
-It looks like the p-value is 0.021, which is pretty small---if the true mean number of hours worked per week was actually 40, the probability of our sample mean being this far (0.772 hours) from 40 would be 0.021. This may or may not be statistically significantly different, depending on the significance level `\(\alpha\)` you decided on *before* you ran this analysis. If you had set `\(\alpha = .05\)`, then this difference would be statistically significant, but if you had set `\(\alpha = .01\)`, then it would not be.
+It looks like the p-value is 0.022, which is pretty small---if the true mean number of hours worked per week was actually 40, the probability of our sample mean being this far (0.772 hours) from 40 would be 0.022. This may or may not be statistically significantly different, depending on the significance level `\(\alpha\)` you decided on *before* you ran this analysis. If you had set `\(\alpha = .05\)`, then this difference would be statistically significant, but if you had set `\(\alpha = .01\)`, then it would not be.
 
 To get a confidence interval around our estimate, we can write:
 
@@ -490,33 +490,33 @@ That's it! This vignette covers most all of the key functionality of infer. See 
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.2 (2019-12-12)
+#>  version  R version 3.6.1 (2019-07-05)
 #>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/Denver              
-#>  date     2020-04-07                  
+#>  tz       America/New_York            
+#>  date     2020-04-13                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version     date       lib source                               
-#>  broom      * 0.5.5       2020-02-29 [1] CRAN (R 3.6.0)                       
-#>  dials      * 0.0.4.9000  2020-03-20 [1] local                                
-#>  dplyr      * 0.8.99.9002 2020-04-03 [1] Github (tidyverse/dplyr@bda05f7)     
-#>  ggplot2    * 3.3.0       2020-03-05 [1] CRAN (R 3.6.0)                       
-#>  infer      * 0.5.1       2019-11-19 [1] CRAN (R 3.6.0)                       
-#>  parsnip    * 0.0.5.9001  2020-04-03 [1] Github (tidymodels/parsnip@0e83faf)  
-#>  purrr      * 0.3.3       2019-10-18 [1] CRAN (R 3.6.0)                       
-#>  recipes    * 0.1.10.9000 2020-04-03 [1] local                                
-#>  rlang        0.4.5.9000  2020-03-20 [1] Github (r-lib/rlang@a90b04b)         
-#>  rsample    * 0.0.6       2020-03-31 [1] CRAN (R 3.6.2)                       
-#>  tibble     * 3.0.0       2020-03-30 [1] CRAN (R 3.6.2)                       
-#>  tidymodels * 0.1.0       2020-02-16 [1] CRAN (R 3.6.0)                       
-#>  tune       * 0.1.0       2020-04-02 [1] CRAN (R 3.6.2)                       
-#>  workflows  * 0.1.1.9000  2020-03-20 [1] Github (tidymodels/workflows@e995c18)
-#>  yardstick  * 0.0.6       2020-03-17 [1] CRAN (R 3.6.0)                       
+#>  package    * version date       lib source        
+#>  broom      * 0.5.4   2020-01-27 [1] CRAN (R 3.6.0)
+#>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 3.6.2)
+#>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
+#>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
+#>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
+#>  parsnip    * 0.1.0   2020-04-09 [1] CRAN (R 3.6.2)
+#>  purrr      * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
+#>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
+#>  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
+#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
+#>  tibble     * 3.0.0   2020-03-30 [1] CRAN (R 3.6.1)
+#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
+#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
+#>  workflows  * 0.1.0   2019-12-30 [1] CRAN (R 3.6.1)
+#>  yardstick  * 0.0.5   2020-01-23 [1] CRAN (R 3.6.0)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
 ```
