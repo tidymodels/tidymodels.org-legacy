@@ -75,7 +75,7 @@ DT::datatable(
 
 <br>
 
-Models can be added by the user too. The article [How to build a parsnip model](/learn/developer/models/) walks you through the steps.
+Models can be added by the user too. The article [How to build a parsnip model](/learn/develop/models/) walks you through the steps.
 
 # Explore model arguments {#model-args}
 

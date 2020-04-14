@@ -45,5 +45,5 @@ If you are a more experienced R programmer, you may have the inclination, intere
 
 In tidymodels packages, we use the [tidyverse style guide](https://style.tidyverse.org/) which will make sure that your new code and documentation matches the existing style. This makes the review process much smoother.
 
-The tidymodels packages are explicitly built to support the creation of other modeling packages, and we would love to hear about what you build yourself! Check out our learning resources for [developing custom modeling tools](/learn/developer/).
+The tidymodels packages are explicitly built to support the creation of other modeling packages, and we would love to hear about what you build yourself! Check out our learning resources for [developing custom modeling tools](/learn/develop/).
 
