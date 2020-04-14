@@ -9,7 +9,6 @@ If you're asking for R help, reporting a bug, or requesting a new feature, you'r
 # Where to ask
 
 <img src="https://raw.githubusercontent.com/allisonhorst/stats-illustrations/master/rstats-artwork/reprex.png" alt="" width="400" height="285" align="right" style="padding:1em;" />
-<!-- Thanks to Mark Hansen for the image! https://twitter.com/cocteau/status/893811714420088832 -->
 
 Now that you've made a reprex, you need to share it in an appropriate forum. Here are some options:
 
