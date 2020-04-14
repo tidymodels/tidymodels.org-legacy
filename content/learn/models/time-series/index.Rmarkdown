@@ -28,7 +28,7 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 
 `r req_pkgs(pkgs)`
 
-"[Demo Week: Tidy Forecasting with sweep](http://www.business-science.io/code-tools/2017/10/25/demo_week_sweep.html)" is an excellent article that uses tidy methods with time series. This article uses their analysis with rsample to find performance estimates for future observations using [rolling forecast origin resampling](https://robjhyndman.com/hyndsight/crossvalidation/). 
+"[Demo Week: Tidy Forecasting with sweep](https://www.business-science.io/code-tools/2017/10/25/demo_week_sweep.html)" is an excellent article that uses tidy methods with time series. This article uses their analysis with rsample to find performance estimates for future observations using [rolling forecast origin resampling](https://robjhyndman.com/hyndsight/crossvalidation/). 
 
 # Example data
 

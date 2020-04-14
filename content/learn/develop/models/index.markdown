@@ -343,7 +343,7 @@ mda_fit <- mda_spec %>%
 mda_fit
 #> parsnip model object
 #> 
-#> Fit time:  23ms 
+#> Fit time:  29ms 
 #> Call:
 #> mda::mda(formula = formula, data = data, subclasses = ~2)
 #> 
@@ -432,7 +432,7 @@ linear_reg() %>%
   fit(mpg ~ ., data = mtcars)
 #> parsnip model object
 #> 
-#> Fit time:  4ms 
+#> Fit time:  5ms 
 #> Call:
 #> rlm(formula = formula, data = data)
 #> Converged in 8 iterations
@@ -677,34 +677,34 @@ If you have a suggestion, please add a [GitHub issue](https://github.com/tidymod
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.2 (2019-12-12)
-#>  os       macOS Mojave 10.14.6        
+#>  version  R version 3.6.1 (2019-07-05)
+#>  os       macOS Catalina 10.15.3      
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/Denver              
-#>  date     2020-04-08                  
+#>  tz       America/Los_Angeles         
+#>  date     2020-04-14                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version     date       lib source                               
-#>  broom      * 0.5.5       2020-02-29 [1] CRAN (R 3.6.0)                       
-#>  dials      * 0.0.4.9000  2020-03-20 [1] local                                
-#>  dplyr      * 0.8.5       2020-03-07 [1] CRAN (R 3.6.0)                       
-#>  ggplot2    * 3.3.0       2020-03-05 [1] CRAN (R 3.6.0)                       
-#>  infer      * 0.5.1       2019-11-19 [1] CRAN (R 3.6.0)                       
-#>  mda        * 0.4-10      2017-11-02 [1] CRAN (R 3.6.0)                       
-#>  parsnip    * 0.0.5.9001  2020-04-03 [1] Github (tidymodels/parsnip@0e83faf)  
-#>  purrr      * 0.3.3       2019-10-18 [1] CRAN (R 3.6.0)                       
-#>  recipes    * 0.1.10.9000 2020-04-03 [1] local                                
-#>  rlang        0.4.5.9000  2020-03-20 [1] Github (r-lib/rlang@a90b04b)         
-#>  rsample    * 0.0.6       2020-03-31 [1] CRAN (R 3.6.2)                       
-#>  tibble     * 3.0.0       2020-03-30 [1] CRAN (R 3.6.2)                       
-#>  tidymodels * 0.1.0       2020-02-16 [1] CRAN (R 3.6.0)                       
-#>  tune       * 0.1.0       2020-04-02 [1] CRAN (R 3.6.2)                       
-#>  workflows  * 0.1.1.9000  2020-03-20 [1] Github (tidymodels/workflows@e995c18)
-#>  yardstick  * 0.0.6       2020-03-17 [1] CRAN (R 3.6.0)                       
+#>  package    * version    date       lib source                               
+#>  broom      * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                       
+#>  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                       
+#>  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                       
+#>  ggplot2    * 3.3.0.9000 2020-02-21 [1] Github (tidyverse/ggplot2@b434351)   
+#>  infer      * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                       
+#>  mda        * 0.4-10     2017-11-02 [1] CRAN (R 3.6.0)                       
+#>  parsnip    * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                       
+#>  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                       
+#>  recipes    * 0.1.9      2020-01-14 [1] Github (tidymodels/recipes@5e7c702)  
+#>  rlang        0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                       
+#>  rsample    * 0.0.5.9000 2020-03-20 [1] Github (tidymodels/rsample@4fdbd6c)  
+#>  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                       
+#>  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                       
+#>  tune       * 0.0.1.9000 2020-03-17 [1] Github (tidymodels/tune@93f7b2e)     
+#>  workflows  * 0.1.0.9000 2020-01-14 [1] Github (tidymodels/workflows@c89bc0c)
+#>  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                       
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
 ```
