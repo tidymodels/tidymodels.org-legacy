@@ -4,12 +4,11 @@ title: Get Help
 
 # Asking for help
 
-If you're asking for R help, reporting a bug, or requesting a new feature, you're more likely to succeed if you include a good reproducible example, which is precisely what the [reprex](http://reprex.tidymodels.org/) package is built for. You can learn more about reprex, along with other tips on how to help others help you in the [tidyverse.org help section](https://www.tidyverse.org/help/).
+If you're asking for R help, reporting a bug, or requesting a new feature, you're more likely to succeed if you include a good reproducible example, which is precisely what the [reprex](https://reprex.tidyverse.org/) package is built for. You can learn more about reprex, along with other tips on how to help others help you in the [tidyverse.org help section](https://www.tidyverse.org/help/).
 
 # Where to ask
 
 <img src="https://raw.githubusercontent.com/allisonhorst/stats-illustrations/master/rstats-artwork/reprex.png" alt="" width="400" height="285" align="right" style="padding:1em;" />
-<!-- Thanks to Mark Hansen for the image! https://twitter.com/cocteau/status/893811714420088832 -->
 
 Now that you've made a reprex, you need to share it in an appropriate forum. Here are some options:
 
@@ -38,4 +37,6 @@ Now that you've made a reprex, you need to share it in an appropriate forum. Her
 - Each tidymodels package has its own documentation site, full of helpful information. Find [links to all package documentation sites](/packages/) and explore them!
 
 - Search [all tidymodels functions](/find/), and check out [our books on these topics](/books/).
+
+- Stay up to date with the latest news about tidymodels through our posts on the [tidyverse blog](https://www.tidyverse.org/tags/tidymodels/).
 

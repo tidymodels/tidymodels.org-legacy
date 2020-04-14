@@ -88,7 +88,7 @@ title: Tidymodels packages
 </div>
 </div>
 
-Learn more about the tidymodels metapackage itself at <http://tidymodels.tidymodels.org>.
+Learn more about the tidymodels metapackage itself at <https://tidymodels.github.io/tidymodels/>.
 
 # Specialized packages
 
@@ -96,7 +96,7 @@ The tidymodels framework also includes many other packages designed for speciali
 
 ## Perform statistical analysis
 
-* [infer](http://infer.netlify.com/) is a high-level API for tidyverse-friendly statistical inference.
+* [infer](https://infer.netlify.com/) is a high-level API for tidyverse-friendly statistical inference.
 
 * The [corrr](https://tidymodels.github.io/corrr/) package has tidy interfaces for working with correlation matrices.
 
@@ -120,9 +120,4 @@ The tidymodels framework also includes many other packages designed for speciali
 
 ## Develop custom modeling tools
 
-* [hardhat](https://tidymodels.github.io/hardhat/) helps beginners setup high-quality R packages for modeling. 
-
-
-
-
-
+* [hardhat](https://tidymodels.github.io/hardhat/) is a _developer-focused_ package that helps beginners create high-quality R packages for modeling. 
