@@ -43,7 +43,7 @@
     <title>{{ .FirstSection.Title }} - {{ .Title }}</title>
     <meta property="og:title" content="{{ .FirstSection.Title }} - {{ .Title }}">
     {{ $section_description := "" }}
-    {{ $section_description := cond (isset .FirstSection "description") .FirstSection.Description .Site.Params.description }}
+    {{ $section_description := cond (ne .FirstSection.Description "") .FirstSection.Description .Site.Params.description }}
     {{ $page_description := "" }}
     {{ $page_description := cond (isset .Params "description") .Params.Description $section_description }}
     <meta property="description" content="{{ $page_description }}">
