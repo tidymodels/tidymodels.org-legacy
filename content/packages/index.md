@@ -21,7 +21,7 @@ title: Tidymodels packages
   <div class="package">
     <img class="package-image" src="/images/tidymodels.png" alt=""></img>
     <div class="package-info">
-      <h3><a href="https://tidymodels.tidymodels.org/"> tidymodels </a></h3>
+      <h3><a href="https://tidymodels.github.io/tidymodels/"> tidymodels </a></h3>
       <p>tidymodels is a meta-package that installs and load the core packages listed below that you need for modeling and machine learning.
       <a href="https://tidymodels.github.io/tidymodels/" aria-hidden="true">Go to package ...</a></p>
     </div>
