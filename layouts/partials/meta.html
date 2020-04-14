@@ -28,20 +28,25 @@
 <meta property="og:description" content="{{ .Site.Params.description }}">
 {{- end }}
 
-<!--start section-->
-{{- if eq .Section "start" -}}
-<title>{{ with .Site.GetPage "/start" }}{{ .Title }}{{ end }} - {{ .Title }}</title>
-<meta property="og:title" content="{{ with .Site.GetPage "/start" }}{{ .Title }}{{ end }} - {{ .Title }}">
+{{- if not .IsHome -}}
 <meta property="og:type" content="website">
-<meta property="description" content="{{ .Params.Description }}">
-<meta property="og:description" content="{{ .Params.Description }}">
-{{- end }}
+    {{- if eq .Title .FirstSection.Title -}}
+    <title>{{ .Title }}</title>
+    <meta property="og:title" content="{{ .Title }}">
+    {{ $page_description := "" }}
+    {{ $page_description := cond (isset .Params "description") .Params.Description .Site.Params.description }}
+    <meta property="description" content="{{ $page_description }}">
+    <meta property="og:description" content="{{ $page_description }}">
+    {{- end -}}
 
-<!--learn section-->
-{{- if eq .Section "learn" -}}
-<title>{{ with .Site.GetPage "/learn" }}{{ .Title }}{{ end }} - {{ .Title }}</title>
-<meta property="og:title" content="{{ with .Site.GetPage "/start" }}{{ .Title }}{{ end }} - {{ .Title }}">
-<meta property="og:type" content="website">
-<meta property="description" content="{{ .Params.Description }}">
-<meta property="og:description" content="{{ .Params.Description }}">
+    {{- if ne .Title .FirstSection.Title -}}
+    <title>{{ .FirstSection.Title }} - {{ .Title }}</title>
+    <meta property="og:title" content="{{ .FirstSection.Title }} - {{ .Title }}">
+    {{ $section_description := "" }}
+    {{ $section_description := cond (isset .FirstSection "description") .FirstSection.Description .Site.Params.description }}
+    {{ $page_description := "" }}
+    {{ $page_description := cond (isset .Params "description") .Params.Description $section_description }}
+    <meta property="description" content="{{ $page_description }}">
+    <meta property="og:description" content="{{ $page_description }}">
+    {{- end }}
 {{- end }}
