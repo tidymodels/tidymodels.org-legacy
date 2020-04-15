@@ -23,7 +23,7 @@ Imports:
     devtools,
     dials (>= 0.0.6),
     discrim,
-    doMC,
+    doParallel,
     DT,
     embed,
     forecast,

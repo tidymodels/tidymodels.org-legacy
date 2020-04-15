@@ -516,13 +516,6 @@
       "Repository": "CRAN",
       "Hash": "a094c75432de3e7f2e913ef7f7324506"
     },
-    "doMC": {
-      "Package": "doMC",
-      "Version": "1.3.6",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "5d7e205a5ff1b3a1a10ca65e0ec79fed"
-    },
     "doParallel": {
       "Package": "doParallel",
       "Version": "1.0.15",

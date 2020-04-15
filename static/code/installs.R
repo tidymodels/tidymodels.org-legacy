@@ -1,4 +1,4 @@
-pkgs <- c("AmesHousing", "caret", "devtools", "discrim", "doMC", "DT", 
+pkgs <- c("AmesHousing", "caret", "devtools", "discrim", "doParallel", "DT", 
           "embed", "forecast", "fs", "furrr", "ggiraph", "glmnet", "glue", 
           "keras", "kernlab", "klaR", "mlbench", "modeldata", "pls", "randomForest", 
           "ranger", "rlang", "scales", "stringr", "survivial", "sweep", 

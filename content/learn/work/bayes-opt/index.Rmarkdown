@@ -17,8 +17,9 @@ library(tidymodels)
 library(tune)
 library(kernlab)
 library(rlang)
-library(doMC)
-registerDoMC(cores = parallel::detectCores())
+library(doParallel)
+cl <- makePSOCKcluster(parallel::detectCores(logical = FALSE))
+registerDoParallel(cl)
 
 pkgs <- c("modeldata", "kernlab", "tidymodels", "tidyr")
 

@@ -16,8 +16,9 @@ source(here::here("content/learn/common.R"))
 library(tidymodels)
 library(mlbench)
 library(kernlab)
-library(doMC)
-registerDoMC(cores = parallel::detectCores())
+library(doParallel)
+cl <- makePSOCKcluster(parallel::detectCores(logical = FALSE))
+registerDoParallel(cl)
 
 pkgs <- c("tidymodels", "mlbench", "kernlab")
 
