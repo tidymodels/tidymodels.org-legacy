@@ -677,10 +677,12 @@ table.dataTable thead {
   #homeContent .bookCover {
     margin: 40px auto;
   }
+  
   .column25 {
 	padding-left: 0em;
 	border-left: none;
 }
+
   .column25-left {
   position: static;
 	padding-top: 0px;
@@ -688,8 +690,13 @@ table.dataTable thead {
 	border-right: none; 
 	max-width: 100%;
 }
+  
   .column25-left .section .section {
    margin-bottom: 25px;
+}
+
+  .start {
+	flex-direction: column-reverse;
 }
 }
 
