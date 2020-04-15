@@ -675,4 +675,20 @@ table.dataTable thead {
   #homeContent .bookCover {
     margin: 40px auto;
   }
+  .column25 {
+	padding-left: 0em;
+	border-left: none;
 }
+  .column25-left {
+  position: static;
+	padding-top: 0px;
+	padding-right: 0em;
+	border-right: none; 
+}
+  .sectionTitle {
+	line-height: 18px;
+	margin-bottom: 0em;
+}
+}
+
+
