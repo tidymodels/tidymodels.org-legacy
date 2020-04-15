@@ -694,3 +694,12 @@ table.dataTable thead {
 }
 
 
+@media screen and (max-width: 700px) {
+  .flex-container.learn-list {
+    display: block;
+  }
+  
+  .image-container.learn-list {
+    margin: 0 auto;
+  }
+}
