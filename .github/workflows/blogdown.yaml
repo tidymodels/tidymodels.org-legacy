@@ -14,6 +14,10 @@ jobs:
 
       - name: Install pandoc
         uses: r-lib/actions/setup-pandoc@master
+        
+      - name: Install curl package dependencies
+        run: |
+        sudo apt-get install -y libcurl4-openssl-dev
 
       - name: Cache Renv packages
         uses: actions/cache@v1
