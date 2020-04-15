@@ -17,9 +17,13 @@ jobs:
           brew install pandoc
           brew install pandoc-citeproc
 
-      - name: Install cairo freetype2
+      - name: Install sysfont package requirements
         run: |
           brew install cairo
+          brew install freetype
+          brew install libpng
+          brew install zlib
+          
 
       - name: Cache Renv packages
         uses: actions/cache@v1
