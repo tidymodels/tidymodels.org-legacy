@@ -671,6 +671,8 @@ table.dataTable thead {
 	text-decoration: underline;
 }
 
+/*----Mobile display----*/
+
 @media screen and (max-width: 1023px) {
   #homeContent .bookCover {
     margin: 40px auto;
@@ -684,10 +686,10 @@ table.dataTable thead {
 	padding-top: 0px;
 	padding-right: 0em;
 	border-right: none; 
+	max-width: 100%;
 }
-  .sectionTitle {
-	line-height: 1.5em;
-	margin-bottom: 0em;
+  .column25-left .section .section {
+   margin-bottom: 25px;
 }
 }
 
