@@ -24,7 +24,7 @@ Imports:
     dials (>= 0.0.6),
     discrim,
     doMC,
-    DT,
+    DT (>= 0.13.2),
     embed,
     forecast,
     fs,
@@ -40,6 +40,7 @@ Imports:
     mlbench,
     modeldata,
     nycflights13,
+    parsnip,
     partykit,
     pkgdown,
     pls,
@@ -47,12 +48,12 @@ Imports:
     ranger,
     rlang,
     ROSE,
+    rsample,
     rstanarm,
     scales,
     sessioninfo,
     skimr,
     stringr,
-    survivial,
     sweep,
     textfeatures,
     textrecipes,
@@ -69,5 +70,4 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.0.2.9000
 Language: en-US
 Remotes:
-    tidymodels/tidymodels,
-    therneau/survival
+    rstudio/DT
