@@ -31,6 +31,7 @@ jobs:
       - name: Install packages
         run: |
           R -e 'install.packages("renv")'
+          R -e 'renv::consent(provided = TRUE)'
           R -e 'renv::restore()'
 
       - name: Install TensorFlow
