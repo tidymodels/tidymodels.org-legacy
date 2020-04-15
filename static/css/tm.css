@@ -685,10 +685,10 @@ table.dataTable thead {
 
   .column25-left {
   position: static;
-	padding-top: 0px;
 	padding-right: 0em;
 	border-right: none; 
 	max-width: 100%;
+	border-top: 1px solid #80808094;
 }
   
   .column25-left .section .section {
