@@ -31,6 +31,12 @@ jobs:
           R -e 'install.packages("renv")'
           R -e 'renv::restore()'
 
+      - name: Install TensorFlow
+        run: |
+          Rscript -e "reticulate::install_miniconda()"
+          Rscript -e "reticulate::conda_create('r-reticulate', packages = 'python==3.6.9')"
+          Rscript -e "tensorflow::install_tensorflow(version='1.14.0')"
+
       - name: Install hugo
         run: |
           R -e 'blogdown::install_hugo()'
