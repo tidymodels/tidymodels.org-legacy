@@ -9,7 +9,7 @@ Here, learn what you need to get started with tidymodels in five articles, start
 
 ## If you are new to R or the tidyverse
 
-To get the most out of tidymodels, we recommend that you start by learning some basics about R and the [tidyverse](https://www.tidyverse.org/) first, then returning here when you feel ready. Here are some resources to start learning:
+To get the most out of tidymodels, we recommend that you start by learning some basics about R and the [tidyverse](https://www.tidyverse.org/) first, then return here when you feel ready. Here are some resources to start learning:
 
 * [Finding Your Way To R](https://education.rstudio.com/learn/), from the RStudio Education team.
 
