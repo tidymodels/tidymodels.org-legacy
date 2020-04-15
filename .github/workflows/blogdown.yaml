@@ -13,9 +13,7 @@ jobs:
         uses: r-lib/actions/setup-r@master
 
       - name: Install pandoc and pandoc citeproc
-        run: |
-          brew install pandoc
-          brew install pandoc-citeproc
+        uses: r-lib/actions/setup-pandoc@master
 
       - name: Cache Renv packages
         uses: actions/cache@v1
