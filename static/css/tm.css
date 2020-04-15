@@ -670,3 +670,9 @@ table.dataTable thead {
 #homeContent .event .eventDetails a {
 	text-decoration: underline;
 }
+
+@media screen and (max-width: 1023px) {
+  #homeContent .bookCover {
+    margin: 40px auto;
+  }
+}
