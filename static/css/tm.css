@@ -686,7 +686,7 @@ table.dataTable thead {
 	border-right: none; 
 }
   .sectionTitle {
-	line-height: 18px;
+	line-height: 1.5em;
 	margin-bottom: 0em;
 }
 }
