@@ -674,6 +674,7 @@ table.dataTable thead {
 /*----Mobile display----*/
 
 @media screen and (max-width: 1023px) {
+
   #homeContent .bookCover {
     margin: 40px auto;
   }
@@ -685,6 +686,7 @@ table.dataTable thead {
 
   .column25-left {
   position: static;
+  padding-top: 50px;
 	padding-right: 0em;
 	border-right: none; 
 	max-width: 100%;
