@@ -682,26 +682,12 @@
       "Repository": "CRAN",
       "Hash": "20c20385da360f28c07364f2d099a6d7"
     },
-    "gdtools": {
-      "Package": "gdtools",
-      "Version": "0.2.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "3ebb7d637c77d4ccbda689ffc40c0622"
-    },
     "generics": {
       "Package": "generics",
       "Version": "0.0.2",
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "b8cff1d1391fd1ad8b65877f4c7f2e53"
-    },
-    "ggiraph": {
-      "Package": "ggiraph",
-      "Version": "0.6.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "352bd7e8f0f4f121b7f8773c023065af"
     },
     "ggplot2": {
       "Package": "ggplot2",
@@ -1814,13 +1800,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "dcae252f838195aaae0c5ac1b27a7545"
-    },
-    "systemfonts": {
-      "Package": "systemfonts",
-      "Version": "0.1.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "95ee5991b25547f27d6ead41767362f4"
     },
     "tensorflow": {
       "Package": "tensorflow",
