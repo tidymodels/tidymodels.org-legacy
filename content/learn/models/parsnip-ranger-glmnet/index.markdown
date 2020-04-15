@@ -29,19 +29,6 @@ We'll use the Ames housing data set to demonstrate how to create regression mode
 ```r
 library(AmesHousing)
 ames <- make_ames()
-#> Warning: `funs()` is deprecated as of dplyr 0.8.0.
-#> Please use a list of either functions or lambdas: 
-#> 
-#>   # Simple named list: 
-#>   list(mean = mean, median = median)
-#> 
-#>   # Auto named with `tibble::lst()`: 
-#>   tibble::lst(mean, median)
-#> 
-#>   # Using lambdas
-#>   list(~ mean(., trim = .2), ~ median(., na.rm = TRUE))
-#> This warning is displayed once every 8 hours.
-#> Call `lifecycle::last_warnings()` to see where this warning was generated.
 
 library(tidymodels)
 
@@ -90,7 +77,7 @@ rf_xy_fit <-
 rf_xy_fit
 #> parsnip model object
 #> 
-#> Fit time:  936ms 
+#> Fit time:  907ms 
 #> Ranger result
 #> 
 #> Call:
@@ -135,7 +122,7 @@ test_results %>% slice(1:5)
 test_results %>% metrics(truth = Sale_Price, estimate = .pred) 
 #> # A tibble: 3 x 3
 #>   .metric .estimator .estimate
-#> * <chr>   <chr>          <dbl>
+#>   <chr>   <chr>          <dbl>
 #> 1 rmse    standard      0.0914
 #> 2 rsq     standard      0.717 
 #> 3 mae     standard      0.0662
@@ -158,7 +145,7 @@ rand_forest(mode = "regression", mtry = 3, trees = 1000) %>%
   )
 #> parsnip model object
 #> 
-#> Fit time:  2.6s 
+#> Fit time:  2.5s 
 #> Ranger result
 #> 
 #> Call:
@@ -189,7 +176,7 @@ rand_forest(mode = "regression", mtry = 3, trees = 1000) %>%
   )
 #> parsnip model object
 #> 
-#> Fit time:  2s 
+#> Fit time:  1.8s 
 #> 
 #> Call:
 #>  randomForest(x = as.data.frame(x), y = y, ntree = ~1000, mtry = ~3) 
@@ -226,7 +213,7 @@ rand_forest(mode = "regression", mtry = .preds(), trees = 1000) %>%
   )
 #> parsnip model object
 #> 
-#> Fit time:  3.8s 
+#> Fit time:  3.5s 
 #> Ranger result
 #> 
 #> Call:
@@ -275,7 +262,7 @@ glmn_fit <-
 glmn_fit
 #> parsnip model object
 #> 
-#> Fit time:  12ms 
+#> Fit time:  10ms 
 #> 
 #> Call:  glmnet::glmnet(x = as.matrix(x), y = y, family = "gaussian",      alpha = ~0.5) 
 #> 
@@ -366,7 +353,7 @@ test_results <-
 test_results
 #> # A tibble: 731 x 3
 #>    Sale_Price `random forest` glmnet
-#>  *      <dbl>           <dbl>  <dbl>
+#>         <dbl>           <dbl>  <dbl>
 #>  1       5.33            5.22   5.27
 #>  2       5.02            5.21   5.17
 #>  3       5.27            5.25   5.23
@@ -382,7 +369,7 @@ test_results
 test_results %>% metrics(truth = Sale_Price, estimate = glmnet) 
 #> # A tibble: 3 x 3
 #>   .metric .estimator .estimate
-#> * <chr>   <chr>          <dbl>
+#>   <chr>   <chr>          <dbl>
 #> 1 rmse    standard      0.132 
 #> 2 rsq     standard      0.410 
 #> 3 mae     standard      0.0956
@@ -406,57 +393,37 @@ This final plot compares the performance of the random forest and regularized re
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.2 (2019-12-12)
+#>  version  R version 3.6.1 (2019-07-05)
 #>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/Denver              
-#>  date     2020-04-07                  
+#>  tz       America/New_York            
+#>  date     2020-04-14                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package      * version     date       lib
-#>  AmesHousing  * 0.0.3       2017-12-17 [1]
-#>  broom        * 0.5.5       2020-02-29 [1]
-#>  dials        * 0.0.4.9000  2020-03-20 [1]
-#>  dplyr        * 0.8.99.9002 2020-04-03 [1]
-#>  ggplot2      * 3.3.0       2020-03-05 [1]
-#>  glmnet       * 3.0-2       2019-12-11 [1]
-#>  infer        * 0.5.1       2019-11-19 [1]
-#>  parsnip      * 0.0.5.9001  2020-04-03 [1]
-#>  purrr        * 0.3.3       2019-10-18 [1]
-#>  randomForest * 4.6-14      2018-03-25 [1]
-#>  ranger       * 0.12.1      2020-01-10 [1]
-#>  recipes      * 0.1.10.9000 2020-04-03 [1]
-#>  rlang          0.4.5.9000  2020-03-20 [1]
-#>  rsample      * 0.0.6       2020-03-31 [1]
-#>  tibble       * 3.0.0       2020-03-30 [1]
-#>  tidymodels   * 0.1.0       2020-02-16 [1]
-#>  tune         * 0.1.0       2020-04-02 [1]
-#>  workflows    * 0.1.1.9000  2020-03-20 [1]
-#>  yardstick    * 0.0.6       2020-03-17 [1]
-#>  source                               
-#>  CRAN (R 3.6.0)                       
-#>  CRAN (R 3.6.0)                       
-#>  local                                
-#>  Github (tidyverse/dplyr@bda05f7)     
-#>  CRAN (R 3.6.0)                       
-#>  CRAN (R 3.6.0)                       
-#>  CRAN (R 3.6.0)                       
-#>  Github (tidymodels/parsnip@0e83faf)  
-#>  CRAN (R 3.6.0)                       
-#>  CRAN (R 3.6.0)                       
-#>  CRAN (R 3.6.0)                       
-#>  local                                
-#>  Github (r-lib/rlang@a90b04b)         
-#>  CRAN (R 3.6.2)                       
-#>  CRAN (R 3.6.2)                       
-#>  CRAN (R 3.6.0)                       
-#>  CRAN (R 3.6.2)                       
-#>  Github (tidymodels/workflows@e995c18)
-#>  CRAN (R 3.6.0)                       
+#>  package      * version date       lib source        
+#>  AmesHousing  * 0.0.3   2017-12-17 [1] CRAN (R 3.6.1)
+#>  broom        * 0.5.4   2020-01-27 [1] CRAN (R 3.6.0)
+#>  dials        * 0.0.6   2020-04-03 [1] CRAN (R 3.6.1)
+#>  dplyr        * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
+#>  ggplot2      * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
+#>  glmnet       * 3.0-2   2019-12-11 [1] CRAN (R 3.6.0)
+#>  infer        * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
+#>  parsnip      * 0.1.0   2020-04-09 [1] CRAN (R 3.6.1)
+#>  purrr        * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
+#>  randomForest * 4.6-14  2018-03-25 [1] CRAN (R 3.6.0)
+#>  ranger       * 0.12.1  2020-01-10 [1] CRAN (R 3.6.0)
+#>  recipes      * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
+#>  rlang          0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
+#>  rsample      * 0.0.6   2020-03-31 [1] CRAN (R 3.6.1)
+#>  tibble       * 2.1.3   2019-06-06 [1] CRAN (R 3.6.1)
+#>  tidymodels   * 0.1.0   2020-02-16 [1] CRAN (R 3.6.1)
+#>  tune         * 0.1.0   2020-04-02 [1] CRAN (R 3.6.1)
+#>  workflows    * 0.1.0   2019-12-30 [1] CRAN (R 3.6.1)
+#>  yardstick    * 0.0.5   2020-01-23 [1] CRAN (R 3.6.0)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
 ```

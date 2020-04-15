@@ -145,15 +145,15 @@ formula_res
 #> # Bootstrap sampling 
 #> # A tibble: 30 x 4
 #>    splits            id          .metrics          .notes          
-#>    <list>            <chr>       <list>            <list>          
-#>  1 <split [351/120]> Bootstrap01 <tibble [10 × 5]> <tibble [1 × 1]>
-#>  2 <split [351/130]> Bootstrap02 <tibble [10 × 5]> <tibble [1 × 1]>
-#>  3 <split [351/137]> Bootstrap03 <tibble [10 × 5]> <tibble [1 × 1]>
-#>  4 <split [351/141]> Bootstrap04 <tibble [10 × 5]> <tibble [1 × 1]>
-#>  5 <split [351/131]> Bootstrap05 <tibble [10 × 5]> <tibble [1 × 1]>
-#>  6 <split [351/131]> Bootstrap06 <tibble [10 × 5]> <tibble [1 × 1]>
-#>  7 <split [351/127]> Bootstrap07 <tibble [10 × 5]> <tibble [1 × 1]>
-#>  8 <split [351/123]> Bootstrap08 <tibble [10 × 5]> <tibble [1 × 1]>
+#>  * <list>            <chr>       <list>            <list>          
+#>  1 <split [351/120]> Bootstrap01 <tibble [10 × 5]> <tibble [0 × 1]>
+#>  2 <split [351/130]> Bootstrap02 <tibble [10 × 5]> <tibble [0 × 1]>
+#>  3 <split [351/137]> Bootstrap03 <tibble [10 × 5]> <tibble [0 × 1]>
+#>  4 <split [351/141]> Bootstrap04 <tibble [10 × 5]> <tibble [0 × 1]>
+#>  5 <split [351/131]> Bootstrap05 <tibble [10 × 5]> <tibble [0 × 1]>
+#>  6 <split [351/131]> Bootstrap06 <tibble [10 × 5]> <tibble [0 × 1]>
+#>  7 <split [351/127]> Bootstrap07 <tibble [10 × 5]> <tibble [0 × 1]>
+#>  8 <split [351/123]> Bootstrap08 <tibble [10 × 5]> <tibble [0 × 1]>
 #>  9 <split [351/131]> Bootstrap09 <tibble [10 × 5]> <tibble [0 × 1]>
 #> 10 <split [351/117]> Bootstrap10 <tibble [10 × 5]> <tibble [0 × 1]>
 #> # … with 20 more rows
@@ -238,7 +238,7 @@ recipe_res
 #> # Bootstrap sampling 
 #> # A tibble: 30 x 4
 #>    splits            id          .metrics          .notes          
-#>    <list>            <chr>       <list>            <list>          
+#>  * <list>            <chr>       <list>            <list>          
 #>  1 <split [351/120]> Bootstrap01 <tibble [10 × 5]> <tibble [0 × 1]>
 #>  2 <split [351/130]> Bootstrap02 <tibble [10 × 5]> <tibble [0 × 1]>
 #>  3 <split [351/137]> Bootstrap03 <tibble [10 × 5]> <tibble [0 × 1]>
@@ -275,35 +275,35 @@ show_best(recipe_res, metric = "roc_auc")
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.2 (2019-12-12)
+#>  version  R version 3.6.1 (2019-07-05)
 #>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/Denver              
-#>  date     2020-04-07                  
+#>  tz       America/New_York            
+#>  date     2020-04-14                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version     date       lib source                               
-#>  broom      * 0.5.5       2020-02-29 [1] CRAN (R 3.6.0)                       
-#>  dials      * 0.0.4.9000  2020-03-20 [1] local                                
-#>  dplyr      * 0.8.5       2020-03-07 [1] CRAN (R 3.6.0)                       
-#>  ggplot2    * 3.3.0       2020-03-05 [1] CRAN (R 3.6.0)                       
-#>  infer      * 0.5.1       2019-11-19 [1] CRAN (R 3.6.0)                       
-#>  kernlab    * 0.9-29      2019-11-12 [1] CRAN (R 3.6.0)                       
-#>  mlbench    * 2.1-1       2012-07-10 [1] CRAN (R 3.6.0)                       
-#>  parsnip    * 0.0.5.9001  2020-04-03 [1] Github (tidymodels/parsnip@0e83faf)  
-#>  purrr      * 0.3.3       2019-10-18 [1] CRAN (R 3.6.0)                       
-#>  recipes    * 0.1.10.9000 2020-04-03 [1] local                                
-#>  rlang        0.4.5.9000  2020-03-20 [1] Github (r-lib/rlang@a90b04b)         
-#>  rsample    * 0.0.6       2020-03-31 [1] CRAN (R 3.6.2)                       
-#>  tibble     * 3.0.0       2020-03-30 [1] CRAN (R 3.6.2)                       
-#>  tidymodels * 0.1.0       2020-02-16 [1] CRAN (R 3.6.0)                       
-#>  tune       * 0.1.0       2020-04-02 [1] CRAN (R 3.6.2)                       
-#>  workflows  * 0.1.1.9000  2020-03-20 [1] Github (tidymodels/workflows@e995c18)
-#>  yardstick  * 0.0.6       2020-03-17 [1] CRAN (R 3.6.0)                       
+#>  package    * version date       lib source        
+#>  broom      * 0.5.4   2020-01-27 [1] CRAN (R 3.6.0)
+#>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 3.6.1)
+#>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
+#>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
+#>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
+#>  kernlab    * 0.9-29  2019-11-12 [1] CRAN (R 3.6.0)
+#>  mlbench    * 2.1-1   2012-07-10 [1] CRAN (R 3.6.0)
+#>  parsnip    * 0.1.0   2020-04-09 [1] CRAN (R 3.6.1)
+#>  purrr      * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
+#>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
+#>  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
+#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.1)
+#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.1)
+#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.1)
+#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.1)
+#>  workflows  * 0.1.0   2019-12-30 [1] CRAN (R 3.6.1)
+#>  yardstick  * 0.0.5   2020-01-23 [1] CRAN (R 3.6.0)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
 ```

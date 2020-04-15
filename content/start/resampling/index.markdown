@@ -19,13 +19,13 @@ This article requires that you have the following packages installed: modeldata,
 
 Once we have a model trained, we need a way to measure how well that model is doing. This tutorial explains how to characterize model performance based on **resampling** statistics. 
 
-# Predicting image segmentation
+# Predicting image segmentation quality
 
 Some biologists conduct experiments on cells. In drug discovery, a particular type of cell can be treated with either a drug or control and then observed to see what the effect is (if any). A common approach for this kind of measurement is cell imaging. Different parts of the cells can be colored so that the locations of a cell can be determined. 
 
 For example, in top panel of this image of five cells, the green color is meant to define the boundary of the cell (coloring something called the cytoskeleton) while the blue color defines the nucleus of the cell. 
 
-<img src="img/cells.png" width="242" style="display: block; margin: auto;" />
+<img src="img/cells.png" width="70%" style="display: block; margin: auto;" />
 
 Using these colors, the cells in an image can be _segmented_ so that we know which pixels belong to which cell. If this is done well, the cell can be measured in different ways that are important to the biology. Sometimes the shape of the cell matters and different mathematical tools are used to summarize characteristics like the size or "oblongness" of the cell. 
 
@@ -144,7 +144,7 @@ rf_fit <- rf_mod %>% fit(class ~ ., data = cell_train)
 rf_fit
 #> parsnip model object
 #> 
-#> Fit time:  2.4s 
+#> Fit time:  2.5s 
 #> Ranger result
 #> 
 #> Call:
@@ -238,7 +238,7 @@ To understand that second point better, think about an analogy from teaching. Su
 
 Resampling methods, such as cross-validation and the bootstrap, are empirical simulation systems. They create a series of data sets similar to the training/testing split discussed previously; a subset of the data are used for creating the model and a different subset is used to measure performance. Resampling is always used with the _training set_. This schematic from [Kuhn and Johnson (2019)](https://bookdown.org/max/FES/resampling.html) illustrates data usage for resampling methods:
 
-<img src="img/resampling.svg" width="70%" style="display: block; margin: auto;" />
+<img src="img/resampling.svg" width="85%" style="display: block; margin: auto;" />
 
 Let's use 10-fold cross-validation (CV) in this example. This method randomly allocates the 1515 cells in the training set to 10 groups of roughly equal size, called "folds". For the first iteration of resampling, the first fold of about 151 cells are held out for the purpose of measuring performance. This is similar to a test set but, to avoid confusion, we call these data the _assessment set_. The other 90% of the data (about 1363 cells) are used to fit the model and is called the _analysis set_. This model is applied to the assessment set and performance statistics are computed on that assessment set. 
 
@@ -369,7 +369,7 @@ rf_fit_rs
 #> #  10-fold cross-validation 
 #> # A tibble: 10 x 4
 #>    splits             id     .metrics         .notes          
-#>    <list>             <chr>  <list>           <list>          
+#>  * <list>             <chr>  <list>           <list>          
 #>  1 <split [1.4K/152]> Fold01 <tibble [2 × 3]> <tibble [0 × 1]>
 #>  2 <split [1.4K/152]> Fold02 <tibble [2 × 3]> <tibble [0 × 1]>
 #>  3 <split [1.4K/152]> Fold03 <tibble [2 × 3]> <tibble [0 × 1]>
@@ -420,35 +420,35 @@ The performance metrics from the test set are much closer to the performance met
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.2 (2019-12-12)
+#>  version  R version 3.6.1 (2019-07-05)
 #>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/Denver              
-#>  date     2020-04-09                  
+#>  tz       America/New_York            
+#>  date     2020-04-14                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version     date       lib source                               
-#>  broom      * 0.5.5       2020-02-29 [1] CRAN (R 3.6.0)                       
-#>  dials      * 0.0.4.9000  2020-03-20 [1] local                                
-#>  dplyr      * 0.8.5       2020-03-07 [1] CRAN (R 3.6.0)                       
-#>  ggplot2    * 3.3.0       2020-03-05 [1] CRAN (R 3.6.0)                       
-#>  infer      * 0.5.1       2019-11-19 [1] CRAN (R 3.6.0)                       
-#>  modeldata  * 0.0.1       2019-12-06 [1] CRAN (R 3.6.0)                       
-#>  parsnip    * 0.0.5.9001  2020-04-03 [1] Github (tidymodels/parsnip@0e83faf)  
-#>  purrr      * 0.3.3       2019-10-18 [1] CRAN (R 3.6.0)                       
-#>  ranger     * 0.12.1      2020-01-10 [1] CRAN (R 3.6.0)                       
-#>  recipes    * 0.1.10.9000 2020-04-03 [1] local                                
-#>  rlang        0.4.5.9000  2020-03-20 [1] Github (r-lib/rlang@a90b04b)         
-#>  rsample    * 0.0.6       2020-03-31 [1] CRAN (R 3.6.2)                       
-#>  tibble     * 3.0.0       2020-03-30 [1] CRAN (R 3.6.2)                       
-#>  tidymodels * 0.1.0       2020-02-16 [1] CRAN (R 3.6.0)                       
-#>  tune       * 0.1.0       2020-04-02 [1] CRAN (R 3.6.2)                       
-#>  workflows  * 0.1.1.9000  2020-03-20 [1] Github (tidymodels/workflows@e995c18)
-#>  yardstick  * 0.0.6       2020-03-17 [1] CRAN (R 3.6.0)                       
+#>  package    * version date       lib source        
+#>  broom      * 0.5.4   2020-01-27 [1] CRAN (R 3.6.0)
+#>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 3.6.1)
+#>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
+#>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
+#>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
+#>  modeldata  * 0.0.1   2019-12-06 [1] CRAN (R 3.6.1)
+#>  parsnip    * 0.1.0   2020-04-09 [1] CRAN (R 3.6.1)
+#>  purrr      * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
+#>  ranger     * 0.12.1  2020-01-10 [1] CRAN (R 3.6.0)
+#>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
+#>  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
+#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.1)
+#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.1)
+#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.1)
+#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.1)
+#>  workflows  * 0.1.0   2019-12-30 [1] CRAN (R 3.6.1)
+#>  yardstick  * 0.0.5   2020-01-23 [1] CRAN (R 3.6.0)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
 ```

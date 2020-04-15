@@ -21,7 +21,7 @@ title: Tidymodels packages
   <div class="package">
     <img class="package-image" src="/images/tidymodels.png" alt=""></img>
     <div class="package-info">
-      <h3><a href="https://tidymodels.tidymodels.org/"> tidymodels </a></h3>
+      <h3><a href="https://tidymodels.github.io/tidymodels/"> tidymodels </a></h3>
       <p>tidymodels is a meta-package that installs and load the core packages listed below that you need for modeling and machine learning.
       <a href="https://tidymodels.github.io/tidymodels/" aria-hidden="true">Go to package ...</a></p>
     </div>
@@ -47,7 +47,13 @@ title: Tidymodels packages
       <p>recipes is a tidy interface to data pre-processing tools for feature engineering. <a href="https://tidymodels.github.io/rsample/" aria-hidden="true">Go to package ...</a></p>
     </div>
   </div>
-
+  <div class="package">
+    <img class="package-image" src="/images/placeholder.png" alt=""></img>
+    <div class="package-info">
+      <h3><a href="https://tidymodels.github.io/workflows/"> workflows </a></h3>
+      <p>workflows bundle your pre-processing, modeling, and post-processing together. <a href="https://tidymodels.github.io/workflows/" aria-hidden="true">Go to package ...</a></p>
+    </div>
+  </div> 
   <div class="package">
     <img class="package-image" src="/images/tune.png" alt=""></img>
     <div class="package-info">
@@ -82,7 +88,7 @@ title: Tidymodels packages
 </div>
 </div>
 
-Learn more about the tidymodels metapackage itself at <http://tidymodels.tidymodels.org>.
+Learn more about the tidymodels metapackage itself at <https://tidymodels.github.io/tidymodels/>.
 
 # Specialized packages
 
@@ -90,7 +96,7 @@ The tidymodels framework also includes many other packages designed for speciali
 
 ## Perform statistical analysis
 
-* [infer](http://infer.netlify.com/) is a high-level API for tidyverse-friendly statistical inference.
+* [infer](https://infer.netlify.com/) is a high-level API for tidyverse-friendly statistical inference.
 
 * The [corrr](https://tidymodels.github.io/corrr/) package has tidy interfaces for working with correlation matrices.
 
@@ -114,9 +120,4 @@ The tidymodels framework also includes many other packages designed for speciali
 
 ## Develop custom modeling tools
 
-* [hardhat](https://tidymodels.github.io/hardhat/) helps beginners setup high-quality R packages for modeling. 
-
-
-
-
-
+* [hardhat](https://tidymodels.github.io/hardhat/) is a _developer-focused_ package that helps beginners create high-quality R packages for modeling. 
