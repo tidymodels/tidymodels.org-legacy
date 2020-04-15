@@ -17,6 +17,10 @@ jobs:
           brew install pandoc
           brew install pandoc-citeproc
 
+      - name: Install cairo freetype2
+        run: |
+          brew install cairo
+
       - name: Cache Renv packages
         uses: actions/cache@v1
         with:
