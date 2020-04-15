@@ -4,7 +4,7 @@ name: blogdown
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-16.0
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
@@ -18,7 +18,7 @@ jobs:
       - name: Cache Renv packages
         uses: actions/cache@v1
         with:
-          path: ~\AppData\Local\renv
+          path: ~/.local/share/renv
           key: ${{ runner.os }}-renv-${{ hashFiles('**/renv.lock') }}
           restore-keys: |
             ${{ runner.os }}-renv-
