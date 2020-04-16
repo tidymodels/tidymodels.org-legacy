@@ -126,7 +126,6 @@ train_data <- training(data_split)
 test_data  <- testing(data_split)
 ```
 
-In practice, our preferred approach is to use [resampling methods](https://bookdown.org/max/FES/resampling.html) with the training set first, before using the testing set. We'll work with this single split now, then return to more advanced resampling methods in the [next article](/start/resampling/).
  
 # Create recipe and roles {#recipe}
 
