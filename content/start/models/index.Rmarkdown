@@ -50,7 +50,7 @@ To start, let's read our urchins data into R, which we'll do by providing [`read
 urchins <-
   # Data were assembled for a tutorial 
   # at https://www.flutterbys.com.au/stats/tut/tut7.5a.html
-  read_csv("https://bit.ly/urchin_data") %>% 
+  read_csv("https://tidymodels.org/start/models/urchins.csv") %>% 
   # Change the names to be a little more verbose
   setNames(c("food_regime", "initial_volume", "width")) %>% 
   # Factors are very helpful for modeling, so we convert one column

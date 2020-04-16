@@ -670,3 +670,45 @@ table.dataTable thead {
 #homeContent .event .eventDetails a {
 	text-decoration: underline;
 }
+
+/*----Mobile display----*/
+
+@media screen and (max-width: 1023px) {
+
+  #homeContent .bookCover {
+    margin: 40px auto;
+  }
+  
+  .column25 {
+	padding-left: 0em;
+	border-left: none;
+}
+
+  .column25-left {
+  position: static;
+  padding-top: 50px;
+	padding-right: 0em;
+	border-right: none; 
+	max-width: 100%;
+	border-top: 1px solid #80808094;
+}
+  
+  .column25-left .section .section {
+   margin-bottom: 25px;
+}
+
+  .start {
+	flex-direction: column-reverse;
+}
+}
+
+
+@media screen and (max-width: 700px) {
+  .flex-container.learn-list {
+    display: block;
+  }
+  
+  .image-container.learn-list {
+    margin: 0 auto;
+  }
+}
