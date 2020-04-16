@@ -586,6 +586,11 @@ table.dataTable thead {
   text-transform: capitalize;
 }
 
+sup {
+  vertical-align: super;
+  font-size: smaller;
+}
+
 /*----Format tags taxonomy list on start pages----*/
 
 .tags-list {
