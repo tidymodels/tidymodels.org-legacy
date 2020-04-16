@@ -23,7 +23,7 @@ In our [*Build a Model*](/start/models/) article, we learned how to specify and 
 
 + extracting key features from raw variables (e.g., getting the day of the week out of a date variable),
  
-and so on. This might sound an awful lot of steps to do within a model formula, if you have used R's formula interface. Recipes can be used to do many of the same things, but they have a much wider range of possibilities. This article shows how to use recipes for modeling. 
+and so on. If you are familiar with R's formula interface, a lot of this might sound familiar and like what a formula already does. Recipes can be used to do many of the same things, but they have a much wider range of possibilities. This article shows how to use recipes for modeling. 
 
 This article requires that you have the following packages installed: nycflights13, skimr, and tidymodels.
 
@@ -41,7 +41,7 @@ library(skimr)           # for variable summaries
 
 
 
-Let's use the [nycflights13 data](https://github.com/hadley/nycflights13) to predict whether a plane arrives more than 30 minutes late. This data set contains information on 325819 flights departing near New York City in 2013. Let's start by loading the data and making a few changes to the variables:
+Let's use the [nycflights13 data](https://github.com/hadley/nycflights13) to predict whether a plane arrives more than 30 minutes late. This data set contains information on 325,819 flights departing near New York City in 2013. Let's start by loading the data and making a few changes to the variables:
 
 
 ```r
@@ -217,7 +217,6 @@ train_data <- training(data_split)
 test_data  <- testing(data_split)
 ```
 
-In practice, our preferred approach is to use [resampling methods](https://bookdown.org/max/FES/resampling.html) with the training set first, before using the testing set. We'll work with this single split now, then return to more advanced resampling methods in the [next article](/start/resampling/).
  
 # Create recipe and roles {#recipe}
 
@@ -231,7 +230,7 @@ flights_rec <-
   recipe(arr_delay ~ ., data = train_data) 
 ```
 
-The [`recipe()` function](https://tidymodels.github.io/recipes/reference/recipe.html) has two arguments:
+The [`recipe()` function](https://tidymodels.github.io/recipes/reference/recipe.html) as we used it here has two arguments:
 
 + A **formula**. Any variable on the left-hand side of the tilde (`~`) is considered the model outcome (here, `arr_delay`). On the right-hand side of the tilde are the predictors. Variables may be listed by name, or you can use the dot (`.`) to indicate all other variables as predictors.
 
@@ -353,7 +352,7 @@ For factors like `dest` and `origin`, [standard practice](https://bookdown.org/m
 </table>
 
 
-But, unlike the standard model formula methods in R, a recipe **does not** automatically create these dummy variables for you- you'll need to tell your recipe to add this step. This is for two reasons. First, many models do not require [numeric predictors](https://bookdown.org/max/FES/categorical-trees.html), so dummy variables may not always be preferred. Second, recipes can also be used for purposes outside of modeling, where non-dummy versions of the variables may work better. For example, you may want to make a table or a plot with a variable as a single factor. For those reasons, you need to explicitly tell recipes to create dummy variables using `step_dummy()`: 
+But, unlike the standard model formula methods in R, a recipe **does not** automatically create these dummy variables for you; you'll need to tell your recipe to add this step. This is for two reasons. First, many models do not require [numeric predictors](https://bookdown.org/max/FES/categorical-trees.html), so dummy variables may not always be preferred. Second, recipes can also be used for purposes outside of modeling, where non-dummy versions of the variables may work better. For example, you may want to make a table or a plot with a variable as a single factor. For those reasons, you need to explicitly tell recipes to create dummy variables using `step_dummy()`: 
 
 
 ```r
@@ -440,11 +439,11 @@ flights_wflow <-
   add_model(lr_mod) %>% 
   add_recipe(flights_rec)
 flights_wflow
-#> ══ Workflow ════════════════════════════════════════════════════════════════════
+#> ══ Workflow ══════════════════════════════════════════════════════
 #> Preprocessor: Recipe
 #> Model: logistic_reg()
 #> 
-#> ── Preprocessor ────────────────────────────────────────────────────────────────
+#> ── Preprocessor ──────────────────────────────────────────────────
 #> 5 Recipe Steps
 #> 
 #> ● step_date()
@@ -453,7 +452,7 @@ flights_wflow
 #> ● step_dummy()
 #> ● step_zv()
 #> 
-#> ── Model ───────────────────────────────────────────────────────────────────────
+#> ── Model ─────────────────────────────────────────────────────────
 #> Logistic Regression Model Specification (classification)
 #> 
 #> Computational engine: glm
@@ -512,7 +511,7 @@ predict(flights_fit, test_data)
 #> # … with 8.145e+04 more rows
 ```
 
-Because our outcome variable here is a factor, the output from `predict()` returns the predicted class: `late` versus `on_time`. But, let's say we want the predicted class probabilities for each flight instead. To return those, we can specify `type = "prob"` when we use `predict()`. We'll also bind the output with some variables from the test data too and save them together:
+Because our outcome variable here is a factor, the output from `predict()` returns the predicted class: `late` versus `on_time`. But, let's say we want the predicted class probabilities for each flight instead. To return those, we can specify `type = "prob"` when we use `predict()`. We'll also bind the output with some variables from the test data and save them together:
 
 
 ```r
@@ -533,7 +532,7 @@ flights_pred
 #> # … with 8.145e+04 more rows
 ```
 
-Now that we have a tibble with our predicted class probabilities, how will we evaluate the performance of our workflow? We can see from these first few rows that our model predicted these 5 on time flights correctly because the values of `.pred_on_time` are *p* > .50. But we also know that we have 81454 rows total to predict. We would like to calculate a metric that tells how well our model predicted late arrivals, compared to the true status of our outcome variable, `arr_delay`.
+Now that we have a tibble with our predicted class probabilities, how will we evaluate the performance of our workflow? We can see from these first few rows that our model predicted these 5 on time flights correctly because the values of `.pred_on_time` are *p* > .50. But we also know that we have 81,454 rows total to predict. We would like to calculate a metric that tells how well our model predicted late arrivals, compared to the true status of our outcome variable, `arr_delay`.
 
 Let's use the area under the [ROC curve](https://bookdown.org/max/FES/measuring-performance.html#class-metrics) as our metric, computed using `roc_curve()` and `roc_auc()` from the [yardstick package](https://tidymodels.github.io/yardstick/). 
 
@@ -579,7 +578,7 @@ Not too bad! We leave it to the reader to test out this workflow [*without*](htt
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Los_Angeles         
-#>  date     2020-04-15                  
+#>  date     2020-04-16                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package      * version date       lib source        
