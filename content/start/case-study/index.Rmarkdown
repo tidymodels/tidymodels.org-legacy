@@ -111,7 +111,7 @@ lr_workflow <-
 Finally a grid of penalty values are created and the model is tuned. The validation set predictions are saved (via the call to `control_grid()` below) so that diagnostic information can be available after the model fit. Also, the area under the ROC curve is used to quantify how well the model performs across a continuum of event thresholds (recall that the event rate is very low for these data). 
 
 
-```{r logistic-fit, cache = TRUE}
+```{r logistic-fit}
 lr_reg_grid <- expand.grid(penalty = 10^seq(-4, -1, length.out = 30))
 
 tune_ctrl <- control_grid(save_pred = TRUE)
@@ -204,7 +204,7 @@ Again, if any other resampling method were used, it is better to parallel proces
 
 To tune, a space-filling design with 25 candidate models is used: 
 
-```{r rf-fit, cache = TRUE}
+```{r rf-fit}
 set.seed(345)
 rf_res <- 
   rf_workflow %>% 
@@ -252,7 +252,7 @@ If this model were chosen to be better than the other models, it can be used onc
 
 However, the model object is redefined so that the _variable importance_ scores are computed for this model. This should give some insight into which predictors are driving model performance.
 
-```{r rf-final, cache = TRUE}
+```{r rf-final}
 rf_mod <- 
   rand_forest(mtry = 5, min_n = 3, trees = 1000) %>% 
   set_engine("ranger", num.threads = cores, importance = 'impurity') %>% 
