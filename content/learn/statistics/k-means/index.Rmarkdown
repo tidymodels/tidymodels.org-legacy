@@ -19,7 +19,7 @@ pkgs <- c("tidymodels", "tidyr")
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
-# Introduction
+## Introduction
 
 `r req_pkgs(pkgs)`
 
@@ -59,7 +59,7 @@ ggplot(labelled_points, aes(x1, x2, color = cluster)) +
 
 This is an ideal case for k-means clustering. 
 
-# How does K-means work?
+## How does K-means work?
 
 Rather than using equations, this short animation using the [artwork](https://github.com/allisonhorst/stats-illustrations) of Allison Horst explains the clustering process:
 
@@ -67,7 +67,7 @@ Rather than using equations, this short animation using the [artwork](https://gi
 knitr::include_graphics("kmeans.gif")
 ```
 
-# Clustering in R
+## Clustering in R
 
 We'll use the built-in `kmeans()` function, which accepts a data frame with all numeric columns as it's primary argument.
 
@@ -107,7 +107,7 @@ And as it always does, the `glance()` function extracts a single-row summary:
 glance(kclust)
 ```
 
-# Exploratory clustering
+## Exploratory clustering
 
 While these summaries are useful, they would not have been too difficult to extract out from the data set yourself. The real power comes from combining these analyses with other tools like [dplyr](https://dplyr.tidyverse.org/).
 
@@ -169,7 +169,7 @@ ggplot(clusterings, aes(k, tot.withinss)) +
 
 This represents the variance within the clusters. It decreases as `k` increases, but notice a bend (or "elbow") around `k = 3`. This bend indicates that additional clusters beyond the third have little value. (See [here](https://web.stanford.edu/~hastie/Papers/gap.pdf) for a more mathematically rigorous interpretation and implementation of this method). Thus, all three methods of tidying data provided by broom are useful for summarizing clustering output.
 
-# Session information
+## Session information
 
 ```{r si, echo = FALSE}
 small_session(pkgs)
