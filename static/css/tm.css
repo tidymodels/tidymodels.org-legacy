@@ -323,25 +323,11 @@ h4 {
 }
 
 .single-learning-objective-text {
+    color: #1a162d9e;
+    font-style: italic;
   }
 
-.single-learning-objective-text:after,
-.single-learning-objective-text:before {
-    border: 1pt solid #ca225e3d; 
-    bottom: 0;    
-    content: '';
-    position: absolute;
-    top: 0;
-    width: 5%;
-}
-.single-learning-objective-text:after {
-    border-left: none;
-    right: 0;
-}
-.single-learning-objective-text:before {
-    border-right: none;
-    left: 0;
-}
+
 
 
 
