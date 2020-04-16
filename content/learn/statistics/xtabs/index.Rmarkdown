@@ -20,7 +20,7 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
 
-# Introduction
+## Introduction
 
 This article only requires that you have the tidymodels package installed.
 
@@ -38,7 +38,7 @@ ad_data %>%
 
 The three main genetic variants are called E2, E3, and E4. The values in `Genotype` represent the genetic makeup of patients based on what they inherited from their parents (i.e, a value of "E2E4" means E2 from one parent and E4 from the other). 
 
-# Test of independence
+## Test of independence
 
 To carry out a chi-squared test of independence, we'll examine the association between their cognitive ability (impaired and healthy) and the genetic makeup. This is what the relationship looks like in the sample data:
 
@@ -139,7 +139,7 @@ chisq_test(ad_data, Genotype ~ Class)
 ```
 
 
-# Goodness of fit
+## Goodness of fit
 
 Now, moving on to a chi-squared goodness of fit test, we'll take a look at just the genotype data. Many papers have investigated the relationship of Apolipoprotein E to diseases. For example, [Song _et al_ (2004)](https://annals.org/aim/article-abstract/717641/meta-analysis-apolipoprotein-e-genotypes-risk-coronary-heart-disease) conducted a meta-analysis of numerous studies that looked at this gene and heart disease. In their paper, they describe the frequency of the different genotypes across many samples. For the cognition study, it might be interesting to see if our sample of genotypes was consistent with this literature (treating the rates, for this analysis, as known). 
 
@@ -212,7 +212,7 @@ chisq_test(ad_data, response = Genotype, p = meta_rates)
 
 
 
-# Session information
+## Session information
 
 ```{r si, echo = FALSE}
 small_session(pkgs)

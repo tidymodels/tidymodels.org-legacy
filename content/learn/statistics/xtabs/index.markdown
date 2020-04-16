@@ -13,7 +13,7 @@ description: |
 
 
 
-# Introduction
+## Introduction
 
 This article only requires that you have the tidymodels package installed.
 
@@ -46,7 +46,7 @@ ad_data %>%
 
 The three main genetic variants are called E2, E3, and E4. The values in `Genotype` represent the genetic makeup of patients based on what they inherited from their parents (i.e, a value of "E2E4" means E2 from one parent and E4 from the other). 
 
-# Test of independence
+## Test of independence
 
 To carry out a chi-squared test of independence, we'll examine the association between their cognitive ability (impaired and healthy) and the genetic makeup. This is what the relationship looks like in the sample data:
 
@@ -144,10 +144,10 @@ p_value_independence
 #> # A tibble: 1 x 1
 #>   p_value
 #>     <dbl>
-#> 1  0.0002
+#> 1  0.0008
 ```
 
-Thus, if there were really no relationship between cognition and genotype, the probability that we would see a statistic as or more extreme than 21.577 is approximately 2\times 10^{-4}.
+Thus, if there were really no relationship between cognition and genotype, the probability that we would see a statistic as or more extreme than 21.577 is approximately 8\times 10^{-4}.
 
 Note that, equivalently to the steps shown above, the package supplies a wrapper function, `chisq_test`, to carry out Chi-Squared tests of independence on tidy data. The syntax goes like this:
 
@@ -161,7 +161,7 @@ chisq_test(ad_data, Genotype ~ Class)
 ```
 
 
-# Goodness of fit
+## Goodness of fit
 
 Now, moving on to a chi-squared goodness of fit test, we'll take a look at just the genotype data. Many papers have investigated the relationship of Apolipoprotein E to diseases. For example, [Song _et al_ (2004)](https://annals.org/aim/article-abstract/717641/meta-analysis-apolipoprotein-e-genotypes-risk-coronary-heart-disease) conducted a meta-analysis of numerous studies that looked at this gene and heart disease. In their paper, they describe the frequency of the different genotypes across many samples. For the cognition study, it might be interesting to see if our sample of genotypes was consistent with this literature (treating the rates, for this analysis, as known). 
 
@@ -239,10 +239,10 @@ p_value_gof
 #> # A tibble: 1 x 1
 #>   p_value
 #>     <dbl>
-#> 1 0.00120
+#> 1  0.0004
 ```
 
-Thus, if each genotype occurred at the same rate as the Song paper, the probability that we would see a distribution like the one we did is approximately 0.001.
+Thus, if each genotype occurred at the same rate as the Song paper, the probability that we would see a distribution like the one we did is approximately 4\times 10^{-4}.
 
 Again, equivalently to the steps shown above, the package supplies a wrapper function, `chisq_test`, to carry out chi-squared goodness of fit tests on tidy data. The syntax goes like this:
 
@@ -257,38 +257,38 @@ chisq_test(ad_data, response = Genotype, p = meta_rates)
 
 
 
-# Session information
+## Session information
 
 
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
 #>  version  R version 3.6.1 (2019-07-05)
-#>  os       macOS Mojave 10.14.6        
+#>  os       macOS Catalina 10.15.3      
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/New_York            
-#>  date     2020-04-14                  
+#>  tz       America/Los_Angeles         
+#>  date     2020-04-16                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
-#>  broom      * 0.5.4   2020-01-27 [1] CRAN (R 3.6.0)
-#>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 3.6.1)
+#>  broom      * 0.5.5   2020-02-29 [1] CRAN (R 3.6.0)
+#>  dials      * 0.0.4   2019-12-02 [1] CRAN (R 3.6.0)
 #>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
 #>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
 #>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
-#>  parsnip    * 0.1.0   2020-04-09 [1] CRAN (R 3.6.1)
+#>  parsnip    * 0.0.5   2020-01-07 [1] CRAN (R 3.6.0)
 #>  purrr      * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
 #>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
 #>  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
-#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.1)
-#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.1)
-#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.1)
-#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.1)
-#>  workflows  * 0.1.0   2019-12-30 [1] CRAN (R 3.6.1)
+#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
+#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.0)
+#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
+#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
+#>  workflows  * 0.1.1   2020-03-17 [1] CRAN (R 3.6.0)
 #>  yardstick  * 0.0.5   2020-01-23 [1] CRAN (R 3.6.0)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
