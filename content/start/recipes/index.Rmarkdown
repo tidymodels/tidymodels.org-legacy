@@ -33,7 +33,7 @@ In our [*Build a Model*](/start/models/) article, we learned how to specify and 
 
 + extracting key features from raw variables (e.g., getting the day of the week out of a date variable),
  
-and so on. This might sound an awful lot of steps to do within a model formula, if you have used R's formula interface. Recipes can be used to do many of the same things, but they have a much wider range of possibilities. This article shows how to use recipes for modeling. 
+and so on. If you are familiar with R's formula interface, a lot of this might sound familiar and like what a formula already does. Recipes can be used to do many of the same things, but they have a much wider range of possibilities. This article shows how to use recipes for modeling. 
 
 `r req_pkgs(pkgs)`
 
