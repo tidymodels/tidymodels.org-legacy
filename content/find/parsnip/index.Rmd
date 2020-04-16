@@ -31,7 +31,7 @@ library(parsnip)
 
 
 
-# Explore models {#models}
+## Explore models {#models}
 
 ```{r model-table, include = FALSE}
 mod_names <- get_from_env("models")
@@ -77,7 +77,7 @@ DT::datatable(
 
 Models can be added by the user too. The article [How to build a parsnip model](/learn/develop/models/) walks you through the steps.
 
-# Explore model arguments {#model-args}
+## Explore model arguments {#model-args}
 
 The parsnip package provides consistent interface for working with similar models across different engines. This means that parsnip adopts standardized parameter names as arguments, and those names may be different from those used by the individual engines. The searchable table below provides a mapping between the parsnip and the engine arguments: 
 
