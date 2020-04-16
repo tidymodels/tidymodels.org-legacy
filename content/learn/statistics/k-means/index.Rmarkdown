@@ -57,7 +57,19 @@ ggplot(labelled_points, aes(x1, x2, color = cluster)) +
   geom_point(alpha = 0.3)
 ```
 
-This is an ideal case for k-means clustering. We'll use the built-in `kmeans()` function, which accepts a dataframe with all numeric columns as it's primary argument.
+This is an ideal case for k-means clustering. 
+
+# How does K-means work?
+
+Rather than using equations, this short animation using the [artwork](https://github.com/allisonhorst/stats-illustrations) of Allison Horst explains the clustering process:
+
+```{r illustrations, echo = FALSE, results = 'asis', fig.align="center"}
+knitr::include_graphics("kmeans.gif")
+```
+
+# Clustering in R
+
+We'll use the built-in `kmeans()` function, which accepts a data frame with all numeric columns as it's primary argument.
 
 ```{r}
 points <- 

@@ -53,7 +53,17 @@ ggplot(labelled_points, aes(x1, x2, color = cluster)) +
 
 <img src="figs/unnamed-chunk-1-1.svg" width="672" />
 
-This is an ideal case for k-means clustering. We'll use the built-in `kmeans()` function, which accepts a dataframe with all numeric columns as it's primary argument.
+This is an ideal case for k-means clustering. 
+
+# How does K-means work?
+
+Rather than using equations, this short animation using the [artwork](https://github.com/allisonhorst/stats-illustrations) of Allison Horst explains the clustering process:
+
+<img src="kmeans.gif" style="display: block; margin: auto;" />
+
+# Clustering in R
+
+We'll use the built-in `kmeans()` function, which accepts a data frame with all numeric columns as it's primary argument.
 
 
 ```r
@@ -255,7 +265,7 @@ This represents the variance within the clusters. It decreases as `k` increases,
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/New_York            
-#>  date     2020-04-14                  
+#>  date     2020-04-16                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
@@ -268,7 +278,7 @@ This represents the variance within the clusters. It decreases as `k` increases,
 #>  purrr      * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
 #>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
 #>  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
-#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.1)
+#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
 #>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.1)
 #>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.1)
 #>  tidyr      * 1.0.2   2020-01-24 [1] CRAN (R 3.6.0)
