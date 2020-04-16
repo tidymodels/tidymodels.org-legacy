@@ -49,6 +49,11 @@
       <div class='itemTitle' align="right" style='font-size:.8em; line-height:2em'>Next</div>
         <a href="{{ .RelPermalink }}">{{ .Title }}</a>
       {{ end }}
+      {{ if not .PrevInSection }}
+        <a href="https://tinystats.github.io/teacups-giraffes-and-statistics/" target="_blank">
+        <div class="giraffe"></div>
+        </a>
+      {{ end }}
       </div>
      </div> 
       
