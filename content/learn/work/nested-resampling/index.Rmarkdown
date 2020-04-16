@@ -25,13 +25,13 @@ pkgs <- c("tidymodels", "scales", "mlbench", "kernlab", "furrr")
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
-# Introduction
+## Introduction
 
 `r req_pkgs(pkgs)`
 
 In this article, we discuss an alternative method for evaluating and tuning models, called [nested resampling](https://scholar.google.com/scholar?hl=en&as_sdt=0%2C7&q=%22nested+resampling%22+inner+outer&btnG=). While it is more computationally taxing and challenging to implement than other resampling methods, it has the potential to produce better estimates of model performance. 
 
-# Resampling models
+## Resampling models
 
 A typical scheme for splitting the data when developing a predictive model is to create an initial split of the data into a training and test set. If resampling is used, it is executed on the training set. A series of binary splits is created. In rsample, we use the term _analysis set_ for the data that are used to fit the model and the term _assessment set_ for the set used to compute performance: 
 
@@ -64,7 +64,7 @@ train_dat <- sim_data(100)
 large_dat <- sim_data(10^5)
 ```
 
-# Nested resampling
+## Nested resampling
 
 To get started, the types of resampling methods need to be specified. This isn't a large data set, so 5 repeats of 10-fold cross validation will be used as the _outer_ resampling method for generating the estimate of overall performance. To tune the model, it would be good to have precise estimates for each of the values of the tuning parameter so let's use 25 iterations of the bootstrap. This means that there will eventually be `5 * 10 * 25 = 1250` models that are fit to the data _per tuning parameter_. These models will be discarded once the performance of the model has been quantified. 
 
@@ -258,7 +258,7 @@ sqrt(mean((large_dat$y - large_pred) ^ 2, na.rm = TRUE))
 The nested procedure produces a closer estimate to the approximate truth but the non-nested estimate is very similar.
 
 
-# Session information
+## Session information
 
 ```{r si, echo = FALSE}
 small_session(pkgs)

@@ -24,13 +24,13 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
 
-# Introduction
+## Introduction
 
 `r req_pkgs(pkgs)`
 
 "[Demo Week: Tidy Forecasting with sweep](https://www.business-science.io/code-tools/2017/10/25/demo_week_sweep.html)" is an excellent article that uses tidy methods with time series. This article uses their analysis with rsample to find performance estimates for future observations using [rolling forecast origin resampling](https://robjhyndman.com/hyndsight/crossvalidation/). 
 
-# Example data
+## Example data
 
 The data for this article are sales of alcoholic beverages originally from [the Federal Reserve Bank of St. Louis website](https://fred.stlouisfed.org/series/S4248SM144NCEN).
 
@@ -43,7 +43,7 @@ glimpse(drinks)
 
 Each row represents one month of sales (in millions of US dollars). 
 
-# Time series resampling
+## Time series resampling
 
 Suppose that we need predictions for one year ahead and our model should use the most recent data from the last 20 years. To set up this resampling scheme:
 
@@ -109,7 +109,7 @@ roll_rs$arima[[1]]
 
 (There are some warnings produced by these regarding extra columns in the data that can be ignored.)
 
-# Model performance
+## Model performance
 
 Using the model fits, let's measure performance in two ways:
 
@@ -195,7 +195,7 @@ mutate(
 ```
 
 
-# Session information
+## Session information
 
 ```{r si, echo = FALSE}
 small_session(pkgs)

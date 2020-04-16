@@ -18,13 +18,13 @@ library(tidymodels)
 pkgs <- c("dials", "scales")
 ```
 
-# Introduction
+## Introduction
 
 `r req_pkgs(pkgs)`
 
 Some models and recipe steps contain parameters that dials does not know about. You can construct new quantitative and qualitative parameters using `new_quant_param()` or `new_qual_param()`, respectively.  This article is a guide to creating new parameters. 
 
-# Quantitative parameters
+## Quantitative parameters
 
 As an example, let's consider the multivariate adaptive regression spline ([MARS](https://en.wikipedia.org/wiki/Multivariate_adaptive_regression_spline)) model, which creates nonlinear features from predictors and adds them to a linear regression models. The earth package is an excellent implementation of this method. 
 
@@ -90,7 +90,7 @@ set.seed(4832856)
 num_initial_terms() %>% value_sample(5)
 ```
 
-## Finalizing parameters
+### Finalizing parameters
 
 It might be the case that the range of the parameter is unknown. For example, parameters that are related to the number of columns in a data set cannot be exactly specified in the absence of data. In those cases, a placeholder of `unknown()` can be added. This will force the user to "finalize" the parameter object for their particular data set. Let's redefine our function with an `unknown()` value: 
 
@@ -149,7 +149,7 @@ num_initial_terms <- function(range = c(1L, unknown()), trans = NULL) {
 num_initial_terms() %>% finalize(x = mtcars[, -1])
 ```
 
-# Qualitative parameters
+## Qualitative parameters
 
 Now let's look at an example of a qualitative parameter. If a model includes a data aggregation step, we want to allow users to tune how our parameters are aggregated.  For example, in embedding methods, possible values might be `min`, `max`, `mean`, `sum`, or to not aggregate at all ("none"). Since these cannot be put on a numeric scale, they are possible values of a qualitative parameter. We'll take "character" input (not "logical"), and we must specify the allowed values. By default we won't aggregate.
 
@@ -192,7 +192,7 @@ aggregation()
 aggregation() %>% value_sample(3)
 ```
 
-# Session information
+## Session information
 
 ```{r si, echo = FALSE}
 small_session(pkgs)
