@@ -12,7 +12,7 @@ description: |
 
 
 
-# Introduction
+## Introduction
 
 This article only requires the tidymodels package. 
 
@@ -64,7 +64,7 @@ dplyr::glimpse(gss)
 
 Each row is an individual survey response, containing some basic demographic information on the respondent as well as some additional variables. See `?gss` for more information on the variables included and their source. Note that this data (and our examples on it) are for demonstration purposes only, and will not necessarily provide accurate estimates unless weighted properly. For these examples, let's suppose that this data set is a representative sample of a population we want to learn about: American adults.
 
-# Specify variables
+## Specify variables
 
 The `specify()` function can be used to specify which of the variables in the data set you're interested in. If you're only interested in, say, the `age` of the respondents, you might write:
 
@@ -170,7 +170,7 @@ gss %>%
 #> # … with 2,980 more rows
 ```
 
-# Declare the hypothesis
+## Declare the hypothesis
 
 The next step in the infer pipeline is often to declare a null hypothesis using `hypothesize()`. The first step is to supply one of "independence" or "point" to the `null` argument. If your null hypothesis assumes independence between two variables, then this is all you need to supply to `hypothesize()`:
 
@@ -225,7 +225,7 @@ gss %>%
 
 Again, from the front-end, the dataframe outputted from `hypothesize()` looks almost exactly the same as it did when it came out of `specify()`, but infer now "knows" your null hypothesis.
 
-# Generate the distribution
+## Generate the distribution
 
 Once we've asserted our null hypothesis using `hypothesize()`, we can construct a null distribution based on this hypothesis. We can do this using one of several methods, supplied in the `type` argument:
 
@@ -247,16 +247,16 @@ gss %>%
 #> # Groups:   replicate [5,000]
 #>    replicate hours
 #>        <int> <dbl>
-#>  1         1  79.2
+#>  1         1  41.2
 #>  2         1  39.2
-#>  3         1  39.2
-#>  4         1  49.2
-#>  5         1  49.2
-#>  6         1  49.2
+#>  3         1  14.2
+#>  4         1  44.2
+#>  5         1  39.2
+#>  6         1  57.2
 #>  7         1  39.2
-#>  8         1  59.2
-#>  9         1  31.2
-#> 10         1  79.2
+#>  8         1  49.2
+#>  9         1  39.2
+#> 10         1  47.2
 #> # … with 8,779,990 more rows
 ```
 
@@ -277,20 +277,20 @@ gss %>%
 #> # Groups:   replicate [5,000]
 #>    partyid   age replicate
 #>    <fct>   <dbl>     <int>
-#>  1 dem        37         1
-#>  2 ind        29         1
-#>  3 rep        58         1
-#>  4 dem        40         1
+#>  1 ind        37         1
+#>  2 rep        29         1
+#>  3 ind        58         1
+#>  4 rep        40         1
 #>  5 ind        39         1
-#>  6 ind        37         1
-#>  7 ind        53         1
+#>  6 rep        37         1
+#>  7 other      53         1
 #>  8 rep        41         1
-#>  9 dem        55         1
+#>  9 ind        55         1
 #> 10 ind        47         1
 #> # … with 14,814,990 more rows
 ```
 
-# Calculate statistics
+## Calculate statistics
 
 Depending on whether you're carrying out computation-based inference or theory-based inference, you will either supply `calculate()` with the output of `generate()` or `hypothesize()`, respectively. The function, for one, takes in a `stat` argument, which is currently one of `"mean"`, `"median"`, `"sum"`, `"sd"`, `"prop"`, `"count"`, `"diff in means"`, `"diff in medians"`, `"diff in props"`, `"Chisq"`, `"F"`, `"t"`, `"z"`, `"slope"`, or `"correlation"`. For example, continuing our example above to calculate the null distribution of mean hours worked per week:
 
@@ -304,16 +304,16 @@ gss %>%
 #> # A tibble: 5,000 x 2
 #>    replicate  stat
 #>        <int> <dbl>
-#>  1         1  39.5
-#>  2         2  40.1
-#>  3         3  40.7
-#>  4         4  40.3
-#>  5         5  39.6
-#>  6         6  40.1
-#>  7         7  39.6
-#>  8         8  40.3
-#>  9         9  40.2
-#> 10        10  40.3
+#>  1         1  40.8
+#>  2         2  40.2
+#>  3         3  39.8
+#>  4         4  40.1
+#>  5         5  39.4
+#>  6         6  39.9
+#>  7         7  40.3
+#>  8         8  39.8
+#>  9         9  40.6
+#> 10        10  41.1
 #> # … with 4,990 more rows
 ```
 
@@ -327,22 +327,22 @@ gss %>%
   generate(reps = 5000, type = "permute") %>%
   calculate("diff in means", order = c("degree", "no degree"))
 #> # A tibble: 5,000 x 2
-#>    replicate    stat
-#>        <int>   <dbl>
-#>  1         1  0.257 
-#>  2         2 -0.170 
-#>  3         3 -0.248 
-#>  4         4 -0.358 
-#>  5         5 -0.732 
-#>  6         6  0.459 
-#>  7         7 -0.565 
-#>  8         8 -0.385 
-#>  9         9  0.807 
-#> 10        10 -0.0863
+#>    replicate   stat
+#>        <int>  <dbl>
+#>  1         1 -0.990
+#>  2         2 -0.927
+#>  3         3 -0.852
+#>  4         4  0.146
+#>  5         5 -1.76 
+#>  6         6  0.102
+#>  7         7 -1.03 
+#>  8         8  0.561
+#>  9         9 -0.747
+#> 10        10  1.39 
 #> # … with 4,990 more rows
 ```
 
-# Other utilities
+## Other utilities
 
 The infer package also offers several utilities to extract meaning out of summary statistics and null distributions; the package provides functions to visualize where a statistic is relative to a distribution (with `visualize()`), calculate p-values (with `get_p_value()`), and calculate confidence intervals (with `get_confidence_interval()`).
 
@@ -402,10 +402,10 @@ p_value
 #> # A tibble: 1 x 1
 #>   p_value
 #>     <dbl>
-#> 1  0.0204
+#> 1  0.0216
 ```
 
-It looks like the p-value is 0.02, which is pretty small---if the true mean number of hours worked per week was actually 40, the probability of our sample mean being this far (0.772 hours) from 40 would be 0.02. This may or may not be statistically significantly different, depending on the significance level `\(\alpha\)` you decided on *before* you ran this analysis. If you had set `\(\alpha = .05\)`, then this difference would be statistically significant, but if you had set `\(\alpha = .01\)`, then it would not be.
+It looks like the p-value is 0.022, which is pretty small---if the true mean number of hours worked per week was actually 40, the probability of our sample mean being this far (0.772 hours) from 40 would be 0.022. This may or may not be statistically significantly different, depending on the significance level `\(\alpha\)` you decided on *before* you ran this analysis. If you had set `\(\alpha = .05\)`, then this difference would be statistically significant, but if you had set `\(\alpha = .01\)`, then it would not be.
 
 To get a confidence interval around our estimate, we can write:
 
@@ -427,7 +427,7 @@ null_dist %>%
 
 As you can see, 40 hours per week is not contained in this interval, which aligns with our previous conclusion that this finding is significant at the confidence level `\(\alpha = .05\)`.
 
-# Theoretical methods
+## Theoretical methods
 
 The infer package also provides functionality to use theoretical methods for `"Chisq"`, `"F"` and `"t"` test statistics. 
 
@@ -484,38 +484,38 @@ visualize(null_f_distn, method = "both") +
 That's it! This vignette covers most all of the key functionality of infer. See `help(package = "infer")` for a full list of functions and vignettes.
 
 
-# Session information
+## Session information
 
 
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
 #>  version  R version 3.6.1 (2019-07-05)
-#>  os       macOS Mojave 10.14.6        
+#>  os       macOS Catalina 10.15.3      
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/New_York            
-#>  date     2020-04-14                  
+#>  tz       America/Los_Angeles         
+#>  date     2020-04-16                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
-#>  broom      * 0.5.4   2020-01-27 [1] CRAN (R 3.6.0)
-#>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 3.6.1)
+#>  broom      * 0.5.5   2020-02-29 [1] CRAN (R 3.6.0)
+#>  dials      * 0.0.4   2019-12-02 [1] CRAN (R 3.6.0)
 #>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
 #>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
 #>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
-#>  parsnip    * 0.1.0   2020-04-09 [1] CRAN (R 3.6.1)
+#>  parsnip    * 0.0.5   2020-01-07 [1] CRAN (R 3.6.0)
 #>  purrr      * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
 #>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
 #>  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
-#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.1)
-#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.1)
-#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.1)
-#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.1)
-#>  workflows  * 0.1.0   2019-12-30 [1] CRAN (R 3.6.1)
+#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
+#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.0)
+#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
+#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
+#>  workflows  * 0.1.1   2020-03-17 [1] CRAN (R 3.6.0)
 #>  yardstick  * 0.0.5   2020-01-23 [1] CRAN (R 3.6.0)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
