@@ -336,7 +336,7 @@ The next step is to use the trained workflow (`flights_fit`) to predict with the
 predict(flights_fit, test_data)
 ```
 
-Because our outcome variable here is a factor, the output from `predict()` returns the predicted class: `late` versus `on_time`. But, let's say we want the predicted class probabilities for each flight instead. To return those, we can specify `type = "prob"` when we use `predict()`. We'll also bind the output with some variables from the test data too and save them together:
+Because our outcome variable here is a factor, the output from `predict()` returns the predicted class: `late` versus `on_time`. But, let's say we want the predicted class probabilities for each flight instead. To return those, we can specify `type = "prob"` when we use `predict()`. We'll also bind the output with some variables from the test data and save them together:
 
 ```{r test-pred, R.options = list(tibble.print_min = 5)}
 flights_pred <- 
