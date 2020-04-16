@@ -12,13 +12,13 @@ description: |
 
 
 
-# Introduction
+## Introduction
 
 This article requires that you have the following packages installed: tidymodels and tidyr.
 
 While the tidymodels package [broom](https://broom.tidyverse.org/) is useful for summarizing the result of a single analysis in a consistent format, it is really designed for high-throughput applications, where you must combine results from multiple analyses. These could be subgroups of data, analyses using different models, bootstrap replicates, permutations, and so on. In particular, it plays well with the `nest()/unnest()` functions from [tidyr](https://tidyr.tidyverse.org/) and the `map()` function in [purrr](https://purrr.tidyverse.org/).
 
-# Correlation analysis
+## Correlation analysis
 
 Let's demonstrate this with a simple data set, the built-in `Orange`. We start by coercing `Orange` to a `tibble`. This gives a nicer print method that will be especially useful later on when we start working with list-columns.
 
@@ -179,7 +179,7 @@ Orange %>%
 #> # … with 1 more variable: alternative <chr>
 ```
 
-# Regression models
+## Regression models
 
 This type of workflow becomes even more useful when applied to regressions. Untidy output for a regression looks like:
 
@@ -356,39 +356,39 @@ By combining the estimates and p-values across all groups into the same tidy dat
 In each of these cases, we can easily filter, facet, or distinguish based on the `term` column. In short, this makes the tools of tidy data analysis available for the *results* of data analysis and models, not just the inputs.
 
 
-# Session information
+## Session information
 
 
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
 #>  version  R version 3.6.1 (2019-07-05)
-#>  os       macOS Mojave 10.14.6        
+#>  os       macOS Catalina 10.15.3      
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/New_York            
-#>  date     2020-04-14                  
+#>  tz       America/Los_Angeles         
+#>  date     2020-04-16                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
-#>  broom      * 0.5.4   2020-01-27 [1] CRAN (R 3.6.0)
-#>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 3.6.1)
+#>  broom      * 0.5.5   2020-02-29 [1] CRAN (R 3.6.0)
+#>  dials      * 0.0.4   2019-12-02 [1] CRAN (R 3.6.0)
 #>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
 #>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
 #>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
-#>  parsnip    * 0.1.0   2020-04-09 [1] CRAN (R 3.6.1)
+#>  parsnip    * 0.0.5   2020-01-07 [1] CRAN (R 3.6.0)
 #>  purrr      * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
 #>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
 #>  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
-#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.1)
-#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.1)
-#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.1)
+#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
+#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.0)
+#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
 #>  tidyr      * 1.0.2   2020-01-24 [1] CRAN (R 3.6.0)
-#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.1)
-#>  workflows  * 0.1.0   2019-12-30 [1] CRAN (R 3.6.1)
+#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
+#>  workflows  * 0.1.1   2020-03-17 [1] CRAN (R 3.6.0)
 #>  yardstick  * 0.0.5   2020-01-23 [1] CRAN (R 3.6.0)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
