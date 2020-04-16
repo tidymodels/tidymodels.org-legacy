@@ -1,6 +1,6 @@
 on:
-  push:
-    branches: master
+  schedule:
+    - cron:  '1 1 1 12 *'
     
     
 name: blogdown
