@@ -19,17 +19,15 @@ Depends:
     R (>= 2.10)
 Imports:
     AmesHousing,
-    caret,
     devtools,
     dials (>= 0.0.6),
     discrim,
-    doMC,
+    doParallel,
     DT (>= 0.13.2),
     embed,
     forecast,
     fs,
     furrr,
-    ggiraph,
     glmnet,
     glue,
     kableExtra,
