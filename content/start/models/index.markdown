@@ -35,7 +35,7 @@ library(rstanarm)    # for Bayesian analysis
 
 Let's use the data from [Constable (1993)](https://link.springer.com/article/10.1007/BF00349318) to explore how three different feeding regimes affect the size of sea urchins over time. The initial size of the sea urchins at the beginning of the experiment probably affects how big they grow as they are fed. 
 
-To start, let's read our urchins data into R, which we'll do by providing [`readr::read_csv()`](https://readr.tidyverse.org/reference/read_delim.html) with a url ("<https://bit.ly/urchin_data>"):
+To start, let's read our urchins data into R, which we'll do by providing [`readr::read_csv()`](https://readr.tidyverse.org/reference/read_delim.html) with a url where our CSV data is located ("<https://tidymodels.org/start/models/urchins.csv>"):
 
 
 ```r
@@ -76,7 +76,7 @@ urchins
 #> # … with 62 more rows
 ```
 
-The urchins data is a [tibble](https://tibble.tidyverse.org/index.html). If you are new to tibbles, the best place to start is the [tibbles chapter](https://r4ds.had.co.nz/tibbles.html) in *R for data science*. For each of the 72 urchins, we know their:
+The urchins data is a [tibble](https://tibble.tidyverse.org/index.html). If you are new to tibbles, the best place to start is the [tibbles chapter](https://r4ds.had.co.nz/tibbles.html) in *R for Data Science*. For each of the 72 urchins, we know their:
 
 + experimental feeding regime group (`food_regime`: either `Initial`, `Low`, or `High`),
 + size in milliliters at the start of the experiment (`initial_volume`), and
@@ -98,7 +98,7 @@ ggplot(urchins,
 
 <img src="figs/urchin-plot-1.svg" width="672" />
 
-We can see that urchins that were larger in volume at the start of the experiment tended to have wider sutures at the end, but this effect may depend on the feeding regime condition.
+We can see that urchins that were larger in volume at the start of the experiment tended to have wider sutures at the end, but the slopes of the lines look different so this effect may depend on the feeding regime condition.
 
 ## Build and fit a model {#build-model}
 
@@ -111,7 +111,7 @@ width ~ (initial_volume + food_regime)^2
 
 allows our regression model depending on initial volume to have separate slopes and intercepts for each food regime. 
 
-For this kind of model, ordinary least squares is a good initial approach. With tidymodels, we start by specifying the _functional form_ of the model that we want using the [parsnip package](https://tidymodels.github.io/parsnip/). Since there is a numeric outcome and the model should be linear with slopes and intercepts, the model type is ["linear regression"](https://tidymodels.github.io/parsnip/reference/linear_reg.html). To declare this: 
+For this kind of model, ordinary least squares is a good initial approach. With tidymodels, we start by specifying the _functional form_ of the model that we want using the [parsnip package](https://tidymodels.github.io/parsnip/). Since there is a numeric outcome and the model should be linear with slopes and intercepts, the model type is ["linear regression"](https://tidymodels.github.io/parsnip/reference/linear_reg.html). We can declare this with: 
 
 
 
@@ -120,7 +120,7 @@ linear_reg()
 #> Linear Regression Model Specification (regression)
 ```
 
-That is pretty underwhelming since, on its own, it doesn't really do much. However, now that the type of model has been specified, a method for _fitting_ the model can be stated using the **engine**. The engine value is often a mash-up of the software that can be used to fit the model as well as the estimation method. For example, to use ordinary least squares, we can set the engine to be `lm`:
+That is pretty underwhelming since, on its own, it doesn't really do much. However, now that the type of model has been specified, a method for _fitting_ or training the model can be stated using the **engine**. The engine value is often a mash-up of the software that can be used to fit or train the model as well as the estimation method. For example, to use ordinary least squares, we can set the engine to be `lm`:
 
 
 ```r
@@ -140,7 +140,7 @@ lm_mod <-
   set_engine("lm")
 ```
 
-From here, the model can be estimated using the [`fit()`](https://tidymodels.github.io/parsnip/reference/fit.html) function:
+From here, the model can be estimated or trained using the [`fit()`](https://tidymodels.github.io/parsnip/reference/fit.html) function:
 
 
 ```r
@@ -164,9 +164,7 @@ lm_fit
 #>                     -0.0012594                       0.0005254
 ```
 
-This fitted object has the `lm` model built-in, which you can access with `lm_fit$fit`. But, there are some benefits of the fitted parsnip model object.
-
-For example, perhaps our analysis requires a description of the model parameter estimates and their statistical properties. Although the `summary()` function for `lm` objects can provide that, it gives the results back in an unwieldy format. Many models have a `tidy()` method that provides the summary results in a more predictable and useful format (e.g. a data frame with standard column names): 
+Perhaps our analysis requires a description of the model parameter estimates and their statistical properties. Although the `summary()` function for `lm` objects can provide that, it gives the results back in an unwieldy format. Many models have a `tidy()` method that provides the summary results in a more predictable and useful format (e.g. a data frame with standard column names): 
 
 
 ```r
@@ -184,6 +182,8 @@ tidy(lm_fit)
 
 ## Use a model to predict {#predict-model}
 
+This fitted object `lm_fit` has the `lm` model output built-in, which you can access with `lm_fit$fit`, but there are some benefits to using the fitted parsnip model object when it comes to predicting.
+
 Suppose that, for a publication, it would be particularly interesting to make a plot of the mean body size for urchins that started the experiment with an initial volume of 20ml. To create such a graph, we start with some new example data that we will make predictions for, to show in our graph:
 
 
@@ -199,7 +199,7 @@ new_points
 
 To get our predicted results, we can use the `predict()` function to find the mean values at 20ml. 
 
-It is also important to communicate the variability, so we also need to find the predicted confidence intervals. If we had used `lm()` to fit the model directly, a few minutes of reading the [documentation page](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/predict.lm.html) for `predict.lm()` would explain how to do this. However, if we decide to use a different model to estimate urchin size (_spoiler:_ we will), it is likely that a completely different syntax would be required. 
+It is also important to communicate the variability, so we also need to find the predicted confidence intervals. If we had used `lm()` to fit the model directly, a few minutes of reading the [documentation page](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/predict.lm.html) for `predict.lm()` would explain how to do this. However, if we decide to use a different model to estimate urchin size (_spoiler:_ we will!), it is likely that a completely different syntax would be required. 
 
 Instead, with tidymodels, the types of predicted values are standardized so that we can use the same syntax to get these values. 
 
@@ -269,15 +269,15 @@ bayes_mod <-
              prior_intercept = prior_dist, 
              prior = prior_dist) 
 
-# fit the model
+# train the model
 bayes_fit <- 
   bayes_mod %>% 
   fit(width ~ (initial_volume + food_regime)^2, data = urchins)
 #> 
 #> SAMPLING FOR MODEL 'continuous' NOW (CHAIN 1).
 #> Chain 1: 
-#> Chain 1: Gradient evaluation took 8.1e-05 seconds
-#> Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.81 seconds.
+#> Chain 1: Gradient evaluation took 7.8e-05 seconds
+#> Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.78 seconds.
 #> Chain 1: Adjust your expectations accordingly!
 #> Chain 1: 
 #> Chain 1: 
@@ -294,15 +294,15 @@ bayes_fit <-
 #> Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #> Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 #> Chain 1: 
-#> Chain 1:  Elapsed Time: 0.257627 seconds (Warm-up)
-#> Chain 1:                0.19644 seconds (Sampling)
-#> Chain 1:                0.454067 seconds (Total)
+#> Chain 1:  Elapsed Time: 0.255939 seconds (Warm-up)
+#> Chain 1:                0.197625 seconds (Sampling)
+#> Chain 1:                0.453564 seconds (Total)
 #> Chain 1: 
 #> 
 #> SAMPLING FOR MODEL 'continuous' NOW (CHAIN 2).
 #> Chain 2: 
-#> Chain 2: Gradient evaluation took 1.3e-05 seconds
-#> Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.13 seconds.
+#> Chain 2: Gradient evaluation took 1.2e-05 seconds
+#> Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.12 seconds.
 #> Chain 2: Adjust your expectations accordingly!
 #> Chain 2: 
 #> Chain 2: 
@@ -319,15 +319,15 @@ bayes_fit <-
 #> Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #> Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 #> Chain 2: 
-#> Chain 2:  Elapsed Time: 0.235507 seconds (Warm-up)
-#> Chain 2:                0.156917 seconds (Sampling)
-#> Chain 2:                0.392424 seconds (Total)
+#> Chain 2:  Elapsed Time: 0.234718 seconds (Warm-up)
+#> Chain 2:                0.153443 seconds (Sampling)
+#> Chain 2:                0.388161 seconds (Total)
 #> Chain 2: 
 #> 
 #> SAMPLING FOR MODEL 'continuous' NOW (CHAIN 3).
 #> Chain 3: 
-#> Chain 3: Gradient evaluation took 1.3e-05 seconds
-#> Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.13 seconds.
+#> Chain 3: Gradient evaluation took 1.4e-05 seconds
+#> Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.14 seconds.
 #> Chain 3: Adjust your expectations accordingly!
 #> Chain 3: 
 #> Chain 3: 
@@ -344,15 +344,15 @@ bayes_fit <-
 #> Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #> Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
 #> Chain 3: 
-#> Chain 3:  Elapsed Time: 0.216443 seconds (Warm-up)
-#> Chain 3:                0.183532 seconds (Sampling)
-#> Chain 3:                0.399975 seconds (Total)
+#> Chain 3:  Elapsed Time: 0.213665 seconds (Warm-up)
+#> Chain 3:                0.18064 seconds (Sampling)
+#> Chain 3:                0.394305 seconds (Total)
 #> Chain 3: 
 #> 
 #> SAMPLING FOR MODEL 'continuous' NOW (CHAIN 4).
 #> Chain 4: 
-#> Chain 4: Gradient evaluation took 1.2e-05 seconds
-#> Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.12 seconds.
+#> Chain 4: Gradient evaluation took 1.1e-05 seconds
+#> Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.11 seconds.
 #> Chain 4: Adjust your expectations accordingly!
 #> Chain 4: 
 #> Chain 4: 
@@ -369,9 +369,9 @@ bayes_fit <-
 #> Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #> Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 #> Chain 4: 
-#> Chain 4:  Elapsed Time: 0.219439 seconds (Warm-up)
-#> Chain 4:                0.156114 seconds (Sampling)
-#> Chain 4:                0.375553 seconds (Total)
+#> Chain 4:  Elapsed Time: 0.229782 seconds (Warm-up)
+#> Chain 4:                0.163734 seconds (Sampling)
+#> Chain 4:                0.393516 seconds (Total)
 #> Chain 4:
 
 print(bayes_fit, digits = 5)
