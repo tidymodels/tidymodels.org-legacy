@@ -138,7 +138,7 @@ flights_rec <-
   recipe(arr_delay ~ ., data = train_data) 
 ```
 
-The [`recipe()` function](https://tidymodels.github.io/recipes/reference/recipe.html) has two arguments:
+The [`recipe()` function](https://tidymodels.github.io/recipes/reference/recipe.html) as we used it here has two arguments:
 
 + A **formula**. Any variable on the left-hand side of the tilde (`~`) is considered the model outcome (here, `arr_delay`). On the right-hand side of the tilde are the predictors. Variables may be listed by name, or you can use the dot (`.`) to indicate all other variables as predictors.
 
