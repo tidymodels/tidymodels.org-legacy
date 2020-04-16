@@ -25,7 +25,7 @@ body, button, input, textarea {
 
 /* ----WHITE SPACE ----*/
 
-.article-content h1 {
+.article-content h2 {
   margin-bottom: 1.5em; /* increased from 0.5 main-site.css */
 }
 
@@ -137,7 +137,7 @@ h1, h2, .itemTitle {
   letter-spacing: 1.5pt;
 }
 
-h1 {
+h2 {
   color: #1a162d;
 }
 
@@ -150,7 +150,7 @@ h1 {
   text-decoration: none;
 }
 
-h2 {
+h3 {
   font-size: 1.1em;
   color: #1a162d90;
 }
