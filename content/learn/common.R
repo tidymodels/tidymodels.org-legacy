@@ -7,8 +7,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   cache.path = "cache/"
 )
-options(width = 80, digits = 3)
-
+options(width = 80, digits = 3, crayon.enabled = FALSE)
 
 req_pkgs <- function(x, what = "This article") {
   x <- sort(x)
