@@ -12,13 +12,13 @@ description: |
 
 
 
-# Introduction
+## Introduction
 
 This article requires that you have the following packages installed: dials and scales.
 
 Some models and recipe steps contain parameters that dials does not know about. You can construct new quantitative and qualitative parameters using `new_quant_param()` or `new_qual_param()`, respectively.  This article is a guide to creating new parameters. 
 
-# Quantitative parameters
+## Quantitative parameters
 
 As an example, let's consider the multivariate adaptive regression spline ([MARS](https://en.wikipedia.org/wiki/Multivariate_adaptive_regression_spline)) model, which creates nonlinear features from predictors and adds them to a linear regression models. The earth package is an excellent implementation of this method. 
 
@@ -116,7 +116,7 @@ num_initial_terms() %>% value_sample(5)
 #> [1]  6  4  9 10  4
 ```
 
-## Finalizing parameters
+### Finalizing parameters
 
 It might be the case that the range of the parameter is unknown. For example, parameters that are related to the number of columns in a data set cannot be exactly specified in the absence of data. In those cases, a placeholder of `unknown()` can be added. This will force the user to "finalize" the parameter object for their particular data set. Let's redefine our function with an `unknown()` value: 
 
@@ -193,7 +193,7 @@ num_initial_terms() %>% finalize(x = mtcars[, -1])
 #> Range: [1, 21]
 ```
 
-# Qualitative parameters
+## Qualitative parameters
 
 Now let's look at an example of a qualitative parameter. If a model includes a data aggregation step, we want to allow users to tune how our parameters are aggregated.  For example, in embedding methods, possible values might be `min`, `max`, `mean`, `sum`, or to not aggregate at all ("none"). Since these cannot be put on a numeric scale, they are possible values of a qualitative parameter. We'll take "character" input (not "logical"), and we must specify the allowed values. By default we won't aggregate.
 
@@ -243,39 +243,39 @@ aggregation() %>% value_sample(3)
 #> [1] "min"  "sum"  "mean"
 ```
 
-# Session information
+## Session information
 
 
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
 #>  version  R version 3.6.1 (2019-07-05)
-#>  os       macOS Mojave 10.14.6        
+#>  os       macOS Catalina 10.15.3      
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/New_York            
-#>  date     2020-04-14                  
+#>  tz       America/Los_Angeles         
+#>  date     2020-04-16                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
-#>  broom      * 0.5.4   2020-01-27 [1] CRAN (R 3.6.0)
-#>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 3.6.1)
+#>  broom      * 0.5.5   2020-02-29 [1] CRAN (R 3.6.0)
+#>  dials      * 0.0.4   2019-12-02 [1] CRAN (R 3.6.0)
 #>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
 #>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
 #>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
-#>  parsnip    * 0.1.0   2020-04-09 [1] CRAN (R 3.6.1)
+#>  parsnip    * 0.0.5   2020-01-07 [1] CRAN (R 3.6.0)
 #>  purrr      * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
 #>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
 #>  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
-#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.1)
+#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
 #>  scales     * 1.1.0   2019-11-18 [1] CRAN (R 3.6.0)
-#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.1)
-#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.1)
-#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.1)
-#>  workflows  * 0.1.0   2019-12-30 [1] CRAN (R 3.6.1)
+#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.0)
+#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
+#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
+#>  workflows  * 0.1.1   2020-03-17 [1] CRAN (R 3.6.0)
 #>  yardstick  * 0.0.5   2020-01-23 [1] CRAN (R 3.6.0)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
