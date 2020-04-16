@@ -242,6 +242,13 @@ h3 {
   font-weight: normal;
 }
 
+.column25-left .sectionTitle.start:first-of-type a { /* GET STARTED LABEL */
+  text-transform: uppercase;
+  letter-spacing: 2pt;
+  font-size: 0.8rem !important;
+  font-weight: bold;
+}
+
 .column25-left .sectionTitle a:hover:not(.current) {
   color: #1a162dde;
   text-decoration: none;
@@ -262,6 +269,10 @@ h3 {
   padding-right: 3em;
   border-right: solid #d9d9d9 1pt;
   max-width: 250px;
+}
+
+.column25-left .section {
+  margin-bottom: 20px;
 }
 
 /* Learn List Page */
