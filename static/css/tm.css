@@ -712,3 +712,12 @@ table.dataTable thead {
     margin: 0 auto;
   }
 }
+
+/*---Giraffe easter egg */
+.giraffe {
+  height: 70px;
+  width: 50px;
+  background-image: url('../images/giraffe.jpg');
+  background-size: contain;
+  background-repeat: no-repeat;
+}
