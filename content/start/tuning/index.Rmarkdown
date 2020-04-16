@@ -23,7 +23,7 @@ doParallel::registerDoParallel()
 
 Some model parameters cannot be learned directly from a data set during model training; these kinds of parameters are called **hyperparameters**. Some examples of hyperparameters include the number of predictors that are sampled at splits in a tree-based model (we call this `mtry` in tidymodels) or the learning rate in a boosted tree model (we call this `learn_rate`). Instead of learning these kinds of hyperparameters during model training, we can estimate the best values for these values by training many models on resampled data sets and exploring how well all these models perform. This process is called **tuning**.
 
-# Predicting image segmentation, but better
+## Predicting image segmentation, but better
 
 In our [article on resampling](/start/resampling/), we introduced a data set of images of cells that were labeled by experts as well-segmented (`WS`) or poorly segmented (`PS`). We trained a random forest model to predict which images are segmented well vs. poorly, so that a biologist could filter out poorly segmented cell images in their analysis. We used resampling to estimate the performance of our model on this data.
 
@@ -50,7 +50,7 @@ cell_test  <- testing(cell_split)
 
 We use the training data for tuning the model.
 
-# Tuning hyperparameters
+## Tuning hyperparameters
 
 To tune the decision tree hyperparameters `cost_complexity` and `tree_depth`, we create a model specification that identifies which model parameters we will `tune()`.
 
@@ -131,7 +131,7 @@ final_mod
 
 Our tuning is done!
 
-# Exploring results
+## Exploring results
 
 Let's fit this final model to the training data. What does the decision tree look like?
 
