@@ -1,0 +1,52 @@
+<!--meta tags-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="apple-mobile-web-app-capable" content="yes" />
+{{ $og_image := "" }}
+{{ $og_image = printf "images/%s" .Site.Params.sharing_image | absURL }}
+{{- with $og_image -}}
+  <meta name="og:image" content="{{ . }}" >
+{{- end -}}
+
+<!--twitter large summary cards should be same for every page-->
+{{ $twitter_card := "summary_large_image" }}
+  <meta property="twitter:card" content="{{ $twitter_card }}">
+{{ $twitter_image := "" }}
+{{ $twitter_image = printf "images/%s" .Site.Params.twitter_image | absURL }}
+{{- with $twitter_image -}}
+  <meta name="twitter:image" content="{{ . }}" >
+{{- end -}}
+
+{{ hugo.Generator }}
+
+<!--homepage-->
+{{- if .IsHome -}}
+<title>{{ .Site.Title }}</title>
+<meta property="og:title" content="{{ .Site.Title }}">
+<meta property="og:type" content="website">
+<meta property="description" content="{{ .Site.Params.description }}">
+<meta property="og:description" content="{{ .Site.Params.description }}">
+{{- end }}
+
+{{- if not .IsHome -}}
+<meta property="og:type" content="website">
+    {{- if eq .Title .FirstSection.Title -}}
+    <title>{{ .Title }}</title>
+    <meta property="og:title" content="{{ .Title }}">
+    {{ $page_description := "" }}
+    {{ $page_description := cond (isset .Params "description") .Params.Description .Site.Params.description }}
+    <meta property="description" content="{{ $page_description }}">
+    <meta property="og:description" content="{{ $page_description }}">
+    {{- end -}}
+
+    {{- if ne .Title .FirstSection.Title -}}
+    <title>{{ .FirstSection.Title }} - {{ .Title }}</title>
+    <meta property="og:title" content="{{ .FirstSection.Title }} - {{ .Title }}">
+    {{ $section_description := "" }}
+    {{ $section_description := cond (ne .FirstSection.Description "") .FirstSection.Description .Site.Params.description }}
+    {{ $page_description := "" }}
+    {{ $page_description := cond (isset .Params "description") .Params.Description $section_description }}
+    <meta property="description" content="{{ $page_description }}">
+    <meta property="og:description" content="{{ $page_description }}">
+    {{- end }}
+{{- end }}

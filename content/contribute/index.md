@@ -36,20 +36,14 @@ The tidymodels team often focuses on one package at a time to reduce context swi
 
 # Contribute documention
 
-Documentation is a high priority for tidymodels, and pull requests to correct or improve documentation are welcome. The most important thing to know is that tidymodels packages use [roxygen2](https://github.com/klutometis/roxygen); this means that documentation is found in the R code close to the source of each function. There are some special tags, but most tiydmodels packages now use markdown in the documentation. This makes it particularly easy to get started!
+Documentation is a high priority for tidymodels, and pull requests to correct or improve documentation are welcome. The most important thing to know is that tidymodels packages use [roxygen2](https://roxygen2.r-lib.org/); this means that documentation is found in the R code close to the source of each function. There are some special tags, but most tidymodels packages now use markdown in the documentation. This makes it particularly easy to get started!
 
 
 # Contribute code
 
 If you are a more experienced R programmer, you may have the inclination, interest, and ability to contribute directly to package development. Before you submit a pull request on a tidymodels package, always file an issue and confirm the tidymodels team agrees with your idea and is happy with your basic proposal.
 
-In tidymodels packages, we use the [tidyverse style guide](http://style.tidyverse.org/) which will make sure that your new code and documentation matches the existing style. This makes the review process much smoother.
+In tidymodels packages, we use the [tidyverse style guide](https://style.tidyverse.org/) which will make sure that your new code and documentation matches the existing style. This makes the review process much smoother.
 
-The tidymodels packages are explicitly built to support the creation of other modeling packages, and we would love to hear about what you build yourself! Check out [all our developer sources](/learn/developer/), and read to learn about:
-
-- [Making a parsnip model from scratch](/learn/developer/models/)
-
-- [Creating custom recipe step functions](/learn/developer/recipes/)
-
-- [Making custom yardstick metrics](/learn/developer/metrics/)
+The tidymodels packages are explicitly built to support the creation of other modeling packages, and we would love to hear about what you build yourself! Check out our learning resources for [developing custom modeling tools](/learn/develop/).
 

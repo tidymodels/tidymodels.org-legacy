@@ -3,7 +3,7 @@ title = "Tidymodels"
 
 # The URL of your site.
 # End your URL with a `/` trailing slash, e.g. `https://example.com/`.
-baseurl = "/"
+baseurl = "https://www.tidymodels.org/"
 
 # Name the theme folder in `themes/`.
 theme = "hugo-tourmaline"
@@ -13,7 +13,7 @@ googleAnalytics = "UA-20375833-29"
 
 relativeurls = false
 languageCode = "en-us"
-description = "An opinionated collection of R packages designed for data science."
+description = "A collection of R packages for modeling and machine learning using tidyverse principles."
 disqusShortname = ""
 ignoreFiles = ["\\.Rmd$", "_files$", "_cache$"]
 # below is critical for non-authors to show up in article listing
