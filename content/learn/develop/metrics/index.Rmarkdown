@@ -20,7 +20,7 @@ pkgs <- c("tidymodels", "rlang")
 ```
 
 
-# Introduction
+## Introduction
 
 `r req_pkgs(pkgs)`
 
@@ -37,7 +37,7 @@ Why create custom metrics? With the infrastructure yardstick provides, you get:
 
 The implementation for metrics differ slightly depending on whether you are implementing a numeric, class, or class probability metric. Examples for numeric and classification metrics are given below. We would encourage you to look into the implementation of `roc_auc()` after reading this vignette if you want to work on a class probability metric.
 
-# Numeric example: MSE
+## Numeric example: MSE
 
 Mean squared error (sometimes MSE or from here on, `mse()`) is a numeric metric that measures the average of the squared errors. Numeric metrics are generally the simplest to create with yardstick, as they do not have multiclass implementations. The formula for `mse()` is:
 
@@ -45,7 +45,7 @@ $$ MSE = \frac{1}{N} \sum_{i=1}^{N} (truth_i - estimate_i) ^ 2 = mean( (truth - 
 
 All metrics should have a data frame version, and a vector version. The data frame version here will be named `mse()`, and the vector version will be `mse_vec()`. 
 
-## Vector implementation
+### Vector implementation
 
 To start, create the vector version. Generally, all metrics have the  same arguments unless the metric requires an extra parameter (such as `beta` in `f_meas()`). To create the vector function, you need to do two things:
 
@@ -108,7 +108,7 @@ mse_vec(truth = c(NA, .5, .4), estimate = c(1, .6, .5))
 mse_vec(truth = c(NA, .5, .4), estimate = c(1, .6, .5), na_rm = FALSE)
 ```
 
-## Data frame implementation
+### Data frame implementation
 
 The data frame version of the metric should be fairly simple. It is a generic function with a `data.frame` method that calls the yardstick helper, `metric_summarizer()`, and passes along the `mse_vec()` function to it along with versions of `truth` and `estimate` that have been wrapped in `rlang::enquo()` and then unquoted with `!!` so that non-standard evaluation can be supported.
 
@@ -167,7 +167,7 @@ solubility_resampled %>%
   mse(solubility, prediction)
 ```
 
-# Class example: miss rate
+## Class example: miss rate
 
 Miss rate is another name for the false negative rate, and is a classification metric in the same family as `sens()` and `spec()`. It follows the formula:
 
@@ -177,7 +177,7 @@ This metric, like other classification metrics, is more easily computed when exp
 
 Classification metrics are more complicated than numeric ones because you have to think about extensions to the multiclass case. For now, let's start with  the binary case.
 
-## Vector implementation
+### Vector implementation
 
 The vector implementation for classification metrics initially has the same setup  as numeric metrics, but has an additional argument, `estimator` that determines the type of estimator to use (binary or some kind of multiclass implementation or averaging). This argument is auto-selected for the user, so default it to  `NULL`. Additionally, pass it along to `metric_vec_template()` so that it can check the provided `estimator` against the classes of `truth` and `estimate` to see if they are allowed.
 
@@ -298,7 +298,7 @@ miss_rate_vec(fold1$obs, fold1$pred)
 miss_rate_vec(fold1$obs, fold1$pred, estimator = "macro")
 ```
 
-## Supporting multiclass miss rate
+### Supporting multiclass miss rate
 
 Like many other classification metrics such as `precision()` or `recall()`, miss rate does not have a natural multiclass extension, but one can be created using methods such as macro, weighted macro, and micro averaging. If you have not, I encourage you to read `vignette("multiclass", "yardstick")` for more information about how these methods work.
 
@@ -399,7 +399,7 @@ miss_rate_vec(two_class_example$truth, two_class_example$predicted)
 miss_rate_vec(fold1$obs, fold1$pred)
 ```
 
-### Data frame implementation
+#### Data frame implementation
 
 Luckily, the data frame implementation is as simple as the numeric case, we just need to add an extra `estimator` argument and pass that through.
 
@@ -442,7 +442,7 @@ hpc_cv %>%
 miss_rate(hpc_cv, obs, VF)
 ```
 
-# Using custom metrics
+## Using custom metrics
 
 The `metric_set()` function validates that all metric functions are of the same metric type by checking the class of the function. If any metrics are not of the right class,`metric_set()` fails. This means that to use your function with `metric_set()`, you need to add the correct class.
 
@@ -462,7 +462,7 @@ numeric_mets(solubility_test, solubility, prediction)
 ```
 
 
-# Session information
+## Session information
 
 ```{r si, echo = FALSE}
 small_session("yardstick")

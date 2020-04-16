@@ -24,13 +24,13 @@ pkgs <- c("tidymodels", "mlbench", "kernlab")
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
-# Introduction
+## Introduction
 
 `r req_pkgs(pkgs)`
 
 This article demonstrates how to tune a model using grid search. Many models have **hyperparameters** that can't be learned directly from a single data set when training the model. Instead, we can train many models in a grid of possible hyperparameter values and see which ones turn out best. 
 
-# Example data
+## Example data
 
 To demonstrate model tuning, we'll use the Ionosphere data in the mlbench package:
 
@@ -69,7 +69,7 @@ At a minimum, let's get rid of the most problematic variable:
 Ionosphere <- Ionosphere %>% select(-V2)
 ```
 
-# Inputs for the search
+## Inputs for the search
 
 To demonstrate, we'll fit a radial basis function support vector machine to these data and tune the SVM cost parameter and the $\sigma$ parameter in the kernel function:
 
@@ -105,7 +105,7 @@ set.seed(4943)
 iono_rs <- bootstraps(Ionosphere, times = 30)
 ```
 
-# Optional inputs
+## Optional inputs
 
 An _optional_ step for model tuning is to specify which metrics should be computed using the out-of-sample predictions. For classification, the default is to calculate the log-likelihood statistic and overall accuracy. Instead of the defaults, the area under the ROC curve will be used. To do this, a yardstick package function can be used to create a metric set:
 
@@ -121,7 +121,7 @@ Also, a control object can be passed that specifies different aspects of the sea
 ctrl <- control_grid(verbose = FALSE)
 ```
 
-# Executing with a formula
+## Executing with a formula
 
 First, we can use the formula interface:
 
@@ -160,7 +160,7 @@ The top combinations are:
 show_best(formula_res, metric = "roc_auc")
 ```
 
-#  Executing with a recipe
+##  Executing with a recipe
 
 Next, we can use the same syntax but pass a *recipe* in as the pre-processor argument:
 
@@ -185,7 +185,7 @@ show_best(recipe_res, metric = "roc_auc")
 
 
 
-# Session information
+## Session information
 
 ```{r si, echo = FALSE}
 small_session(pkgs)

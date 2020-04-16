@@ -25,7 +25,7 @@ pkgs <- c("modeldata", "kernlab", "tidymodels", "tidyr")
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
-# Introduction
+## Introduction
 
 `r req_pkgs(pkgs)`
 
@@ -42,7 +42,7 @@ There are a variety of methods for iterative search and the focus in this articl
 * [Other articles!](https://scholar.google.com/scholar?hl=en&as_sdt=0%2C7&q="Bayesian+Optimization"&btnG=)
 
 
-# Cell segmenting revisited
+## Cell segmenting revisited
 
 To demonstrate this approach to tuning models, let's return to the cell segmentation data from the [Getting Started](/start/resampling/) article on resampling: 
 
@@ -62,7 +62,7 @@ set.seed(1697)
 folds <- vfold_cv(cell_train, v = 10)
 ```
 
-# The tuning scheme
+## The tuning scheme
 
 Since the predictors are highly correlated, we can used a recipe to convert the original predictors to principal component scores. There is also slight class imbalance in these data; about `r floor(mean(cells$class == "PS") * 100)`% of the data are poorly segmented. To mitigate this, the data will be down-sampled at the end of the pre-processing so that the number of poorly and well segmented cells occur with equal frequency. We can use a recipe for all this pre-processing, but the number of principal components will need to be _tuned_ so that we have enough (but not too many) representations of the data. 
 
@@ -107,7 +107,7 @@ svm_set <-
   update(num_comp = num_comp(c(0L, 20L)))
 ```
 
-# Sequential tuning 
+## Sequential tuning 
 
 Bayesian optimization is a sequential method that uses a model to predict new candidate parameters for assessment. When scoring potential parameter value, the mean and variance of performance are predicted. The strategy used to define how these two statistical quantities are used is defined by an _acquisition function_. 
 
@@ -190,7 +190,7 @@ collect_metrics(search_res) %>%
 
 
 
-# Session information
+## Session information
 
 ```{r si, echo = FALSE}
 small_session(pkgs)

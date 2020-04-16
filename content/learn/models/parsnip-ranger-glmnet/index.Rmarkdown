@@ -28,7 +28,7 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
 
-# Introduction
+## Introduction
 
 `r req_pkgs(pkgs)`
 
@@ -36,7 +36,7 @@ We can create regression models with the tidymodels package [parsnip](https://ti
 
 Second, let's fit a regularized linear regression model to demonstrate how to move between different types of models using parsnip. 
 
-# The Ames housing data
+## The Ames housing data
 
 We'll use the Ames housing data set to demonstrate how to create regression models using parsnip. First, set up the data set and create a simple training/test set split:
 
@@ -55,7 +55,7 @@ ames_test  <- testing(data_split)
 
 The use of the test set here is _only for illustration_; normally in a data analysis these data would be saved to the very end after many models have been evaluated. 
 
-# Random forest
+## Random forest
 
 We'll start by fitting a random forest model to a small set of parameters. Let's create a model with the predictors `r knitr::combine_words(pred_names)`. A simple random forest model can be specified via:
 
@@ -159,7 +159,7 @@ rand_forest(mode = "regression", mtry = .preds(), trees = 1000) %>%
 ```
 
 
-# Regularized regression
+## Regularized regression
 
 A linear model might work for this data set as well. We can use the `linear_reg()` parsnip model. There are two engines that can perform regularization/penalization, the glmnet and sparklyr packages. Let's use the former here. The glmnet package only implements a non-formula method, but parsnip will allow either one to be used. 
 
@@ -218,7 +218,7 @@ test_results %>%
 
 This final plot compares the performance of the random forest and regularized regression models.
 
-# Session information
+## Session information
 
 ```{r si, echo = FALSE}
 small_session(pkgs)
