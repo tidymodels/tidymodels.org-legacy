@@ -72,7 +72,7 @@ flight_data <-
   mutate_if(is.character, as.factor)
 ```
 
-Let's use the [nycflights13 data](https://github.com/hadley/nycflights13) to predict whether a plane arrives more than 30 minutes late. This data set contains information on `r nrow(flight_data)` flights departing near New York City in 2013. Let's start by loading the data and making a few changes to the variables:
+Let's use the [nycflights13 data](https://github.com/hadley/nycflights13) to predict whether a plane arrives more than 30 minutes late. This data set contains information on `r scales::comma(nrow(flight_data))` flights departing near New York City in 2013. Let's start by loading the data and making a few changes to the variables:
 
 ```{r ref.label='flight-start'}
 
