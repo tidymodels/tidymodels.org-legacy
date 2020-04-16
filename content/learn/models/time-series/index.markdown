@@ -13,13 +13,13 @@ description: |
 
 
 
-# Introduction
+## Introduction
 
 This article requires that you have the following packages installed: forecast, sweep, tidymodels, tidyr, timetk, and zoo.
 
 "[Demo Week: Tidy Forecasting with sweep](https://www.business-science.io/code-tools/2017/10/25/demo_week_sweep.html)" is an excellent article that uses tidy methods with time series. This article uses their analysis with rsample to find performance estimates for future observations using [rolling forecast origin resampling](https://robjhyndman.com/hyndsight/crossvalidation/). 
 
-# Example data
+## Example data
 
 The data for this article are sales of alcoholic beverages originally from [the Federal Reserve Bank of St. Louis website](https://fred.stlouisfed.org/series/S4248SM144NCEN).
 
@@ -37,7 +37,7 @@ glimpse(drinks)
 
 Each row represents one month of sales (in millions of US dollars). 
 
-# Time series resampling
+## Time series resampling
 
 Suppose that we need predictions for one year ahead and our model should use the most recent data from the last 20 years. To set up this resampling scheme:
 
@@ -138,7 +138,7 @@ roll_rs$arima[[1]]
 
 (There are some warnings produced by these regarding extra columns in the data that can be ignored.)
 
-# Model performance
+## Model performance
 
 Using the model fits, let's measure performance in two ways:
 
@@ -268,42 +268,42 @@ mutate(
 ```
 
 
-# Session information
+## Session information
 
 
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
 #>  version  R version 3.6.1 (2019-07-05)
-#>  os       macOS Mojave 10.14.6        
+#>  os       macOS Catalina 10.15.3      
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/New_York            
-#>  date     2020-04-14                  
+#>  tz       America/Los_Angeles         
+#>  date     2020-04-16                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
-#>  broom      * 0.5.4   2020-01-27 [1] CRAN (R 3.6.0)
-#>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 3.6.1)
+#>  broom      * 0.5.5   2020-02-29 [1] CRAN (R 3.6.0)
+#>  dials      * 0.0.4   2019-12-02 [1] CRAN (R 3.6.0)
 #>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
-#>  forecast   * 8.9     2019-08-22 [1] CRAN (R 3.6.0)
+#>  forecast   * 8.11    2020-02-09 [1] CRAN (R 3.6.0)
 #>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
 #>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
-#>  parsnip    * 0.1.0   2020-04-09 [1] CRAN (R 3.6.1)
+#>  parsnip    * 0.0.5   2020-01-07 [1] CRAN (R 3.6.0)
 #>  purrr      * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
 #>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
 #>  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
-#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.1)
+#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
 #>  sweep      * 0.2.2   2019-10-08 [1] CRAN (R 3.6.0)
-#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.1)
-#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.1)
+#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.0)
+#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
 #>  tidyr      * 1.0.2   2020-01-24 [1] CRAN (R 3.6.0)
-#>  timetk     * 0.1.3   2020-03-18 [1] CRAN (R 3.6.1)
-#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.1)
-#>  workflows  * 0.1.0   2019-12-30 [1] CRAN (R 3.6.1)
+#>  timetk     * 0.1.3   2020-03-18 [1] CRAN (R 3.6.0)
+#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
+#>  workflows  * 0.1.1   2020-03-17 [1] CRAN (R 3.6.0)
 #>  yardstick  * 0.0.5   2020-01-23 [1] CRAN (R 3.6.0)
 #>  zoo        * 1.8-7   2020-01-10 [1] CRAN (R 3.6.0)
 #> 
