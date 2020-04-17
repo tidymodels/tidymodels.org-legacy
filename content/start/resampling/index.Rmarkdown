@@ -26,11 +26,22 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
 
-`r req_pkgs(pkgs)`
-
 ## Introduction
 
-Once we have a model trained, we need a way to measure how well that model is doing. This tutorial explains how to characterize model performance based on **resampling** statistics. 
+So far, we have [built a model](/start/models/) and [preprocessed data with a recipe](/start/recipes/). We also introduced [workflows](/start/recipes/#fit-workflow) as a way to bundle a [parsnip model](https://tidymodels.github.io/parsnip/) and [recipe](https://tidymodels.github.io/recipes/) together. Once we have a workflow trained, we need a way to measure how well that workflow predicts new data. This tutorial explains how to characterize model performance based on **resampling** statistics. 
+
+`r req_pkgs(pkgs)`
+
+```{r eval=FALSE}
+library(tidymodels) # for the rsample package, along with the rest of tidymodels
+
+# Helper packages
+library(modeldata)  # for the cells data
+
+# Modeling packages
+library(ranger)     # for the random forest model and engine
+```
+
 
 ## Predicting image segmentation quality
 
@@ -77,8 +88,6 @@ Since random sampling uses random numbers, it is important to set the random num
 The function `rsample::initial_split()` takes the original data and saves the information on how to make the partitions. After that, the `training()` and `testing()` functions return the actual data sets:
 
 ```{r cell-split}
-library(tidymodels) # Load the rsample package, along with the rest of tidymodels
-
 set.seed(123)
 cell_split <- initial_split(cells %>% select(-case), strata = class)
 cell_train <- training(cell_split)
