@@ -15,7 +15,7 @@ description: |
 
 ## Introduction
 
-This article requires that you have the following packages installed: keras and tidymodels. You will also need the python keras library installed (see `?keras::install_keras()`).
+To use the code in this article, you will need to install the following packages: keras and tidymodels. You will also need the python keras library installed (see `?keras::install_keras()`).
 
 We can create classification models with the tidymodels package [parsnip](https://tidymodels.github.io/parsnip/) to predict categorical quantities or class labels. Here, let's fit a single classification model using a neural network and evaluate using a validation set. While the [tune](https://tidymodels.github.io/tune/) package has functionality to also do this, the parsnip package is the center of attention in this article so that we can better understand its usage. 
 
@@ -77,7 +77,7 @@ nnet_fit <-
 nnet_fit
 #> parsnip model object
 #> 
-#> Fit time:  11.3s 
+#> Fit time:  8.7s 
 #> Model
 #> Model: "sequential"
 #> ________________________________________________________________________________
@@ -113,11 +113,11 @@ val_results %>% slice(1:5)
 #> # A tibble: 5 x 6
 #>       A     B Class .pred_class .pred_One .pred_Two
 #>   <dbl> <dbl> <fct> <fct>           <dbl>     <dbl>
-#> 1 1061.  74.5 One   Two             0.469    0.531 
-#> 2 1241.  83.4 One   Two             0.479    0.521 
-#> 3  939.  71.9 One   One             0.630    0.370 
-#> 4  813.  77.1 One   One             0.924    0.0765
-#> 5 1706.  92.8 Two   Two             0.354    0.646
+#> 1 1061.  74.5 One   Two             0.473    0.527 
+#> 2 1241.  83.4 One   Two             0.484    0.516 
+#> 3  939.  71.9 One   One             0.636    0.364 
+#> 4  813.  77.1 One   One             0.925    0.0746
+#> 5 1706.  92.8 Two   Two             0.355    0.645
 
 val_results %>% roc_auc(truth = Class, .pred_One)
 #> # A tibble: 1 x 3
@@ -129,13 +129,13 @@ val_results %>% accuracy(truth = Class, .pred_class)
 #> # A tibble: 1 x 3
 #>   .metric  .estimator .estimate
 #>   <chr>    <chr>          <dbl>
-#> 1 accuracy binary         0.733
+#> 1 accuracy binary         0.737
 
 val_results %>% conf_mat(truth = Class, .pred_class)
 #>           Truth
 #> Prediction One Two
-#>        One 149  27
-#>        Two  53  71
+#>        One 150  27
+#>        Two  52  71
 ```
 
 Let's also create a grid to get a visual sense of the class boundary for the validation set.
@@ -170,34 +170,34 @@ ggplot(x_grid, aes(x = A, y = B)) +
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.1 (2019-07-05)
-#>  os       macOS Catalina 10.15.3      
+#>  version  R version 3.6.2 (2019-12-12)
+#>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/Los_Angeles         
-#>  date     2020-04-16                  
+#>  tz       America/Denver              
+#>  date     2020-04-17                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
 #>  broom      * 0.5.5   2020-02-29 [1] CRAN (R 3.6.0)
-#>  dials      * 0.0.4   2019-12-02 [1] CRAN (R 3.6.0)
+#>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 3.6.2)
 #>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
 #>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
 #>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
 #>  keras        2.2.5.0 2019-10-08 [1] CRAN (R 3.6.0)
-#>  parsnip    * 0.0.5   2020-01-07 [1] CRAN (R 3.6.0)
+#>  parsnip    * 0.1.0   2020-04-09 [1] CRAN (R 3.6.2)
 #>  purrr      * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
 #>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
 #>  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
 #>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
-#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.0)
+#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.2)
 #>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
 #>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
 #>  workflows  * 0.1.1   2020-03-17 [1] CRAN (R 3.6.0)
-#>  yardstick  * 0.0.5   2020-01-23 [1] CRAN (R 3.6.0)
+#>  yardstick  * 0.0.6   2020-03-17 [1] CRAN (R 3.6.0)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
 ```
