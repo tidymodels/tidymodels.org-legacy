@@ -171,7 +171,7 @@ The ROC curve uses the class probability estimates to give us a sense of perform
 
 The [yardstick package](https://tidymodels.github.io/yardstick/) has functions for computing both of these measures called `roc_auc()` and `accuracy()`. 
 
-At first glance, it might seem like a good idea to use the training set data to compute these statistics. What could go wrong? Let's see what happens if we try this. To evaluate performance based on the training set, we call the `predict()` method to get both types of predictions (i.e. probabilities and hard class predictions).
+At first glance, it might seem like a good idea to use the training set data to compute these statistics. (This is actually a very bad idea.) Let's see what happens if we try this. To evaluate performance based on the training set, we call the `predict()` method to get both types of predictions (i.e. probabilities and hard class predictions).
 
 ```{r rf-train-pred}
 rf_training_pred <- 
