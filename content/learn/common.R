@@ -10,12 +10,12 @@ knitr::opts_chunk$set(
 options(width = 80, digits = 3)
 
 
-req_pkgs <- function(x, what = "This article") {
+req_pkgs <- function(x, what = "To use the code in this article,") {
   x <- sort(x)
   x <- knitr::combine_words(x, and = " and ")
   paste0(
     what,
-    " requires that you have the following packages installed: ",
+    " you will need to install the following packages: ",
     x, "." 
   )
 }
