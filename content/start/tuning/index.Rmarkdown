@@ -234,7 +234,7 @@ Finally, let's return to our test data and estimate the model performance we exp
 ```{r last-fit, dependson=c("final_mod", "cell-split")}
 final_wf %>%
   last_fit(cell_split) %>%
-  collect_metrics
+  collect_metrics()
 ```
 
 The performance metrics from the test set indicate that we did not overfit during our tuning procedure.
