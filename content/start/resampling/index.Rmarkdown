@@ -88,17 +88,17 @@ cells %>%
 
 ## Data splitting
 
-When beginning a modeling project, it is common to [separate the data set](https://bookdown.org/max/FES/data-splitting.html) into two partitions: 
+In our previous [*Preprocess your data with recipes*](/start/recipes/#data-split) article, we started by splitting our data. It is common when beginning a modeling project to [separate the data set](https://bookdown.org/max/FES/data-splitting.html) into two partitions: 
 
  * The _training set_ is used to estimate parameters, compare models and feature engineering techniques, tune models, etc.
 
  * The _test set_ is held in reserve until the end of the project, at which point there should only be one or two models under serious consideration. It is used as an unbiased source for measuring final model performance. 
 
-There are different ways to create these partitions of the data. The most common approach is to use a random sample. Suppose that one quarter of the data were reserved for the test set. Random sampling would randomly select 25% for the test set and use the remainder for the training set. We can use the [rsample](https://tidymodels.github.io/rsample/) package for this purpose. In the original analysis, the authors made their own training/test set and that information is contained in the column `case`. To demonstrate how to make a split, we'll remove this column before we make our own split. 
+There are different ways to create these partitions of the data. The most common approach is to use a random sample. Suppose that one quarter of the data were reserved for the test set. Random sampling would randomly select 25% for the test set and use the remainder for the training set. We can use the [rsample](https://tidymodels.github.io/rsample/) package for this purpose. 
 
 Since random sampling uses random numbers, it is important to set the random number seed. This ensures that the random numbers can be reproduced at a later time (if needed). 
 
-The function `rsample::initial_split()` takes the original data and saves the information on how to make the partitions. After that, the `training()` and `testing()` functions return the actual data sets:
+The function `rsample::initial_split()` takes the original data and saves the information on how to make the partitions. After that, the `training()` and `testing()` functions return the actual data sets. In the original analysis, the authors made their own training/test set and that information is contained in the column `case`. To demonstrate how to make a split, we'll remove this column before we make our own split:
 
 ```{r cell-split}
 set.seed(123)
