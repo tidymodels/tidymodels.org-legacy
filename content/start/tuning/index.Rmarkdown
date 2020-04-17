@@ -72,9 +72,9 @@ cell_test  <- testing(cell_split)
 
 We use the training data for tuning the model.
 
-## Tuning hyperparameters
+## Tuning hyperparameters {#tuning}
 
-To tune the decision tree hyperparameters `cost_complexity` and `tree_depth`, we create a model specification that identifies which model parameters we will `tune()`.
+Let’s start with the parsnip package, using a [`decision_tree()`](https://tidymodels.github.io/parsnip/reference/decision_tree.html) model with the [rpart](https://cran.r-project.org/web/packages/rpart/index.html) engine. To tune the decision tree hyperparameters `cost_complexity` and `tree_depth`, we create a model specification that identifies which hyperparameters we intent to tune. 
 
 ```{r tune-spec}
 tune_spec <- 
@@ -88,7 +88,9 @@ tune_spec <-
 tune_spec
 ```
 
-We can't train this specification on a single data set (such as the entire training set) and learn what the hyperparameter values should be, but we can train many models using resampled data and see which models turn out best. We can create a regular grid of values to try using some convenience functions for each hyperparameter:
+Think of `tune()` here as a placeholder. After the tuning process, we will select a single numeric value for each of these hyperparameters. But for now, we specify our parsnip model object with these `tune()` tags.
+
+We can't train this specification on a single data set (such as the entire training set) and learn what the hyperparameter values should be, but we _can_ train many models using resampled data and see which models turn out best. We can create a regular grid of values to try using some convenience functions for each hyperparameter:
 
 ```{r tree-grid}
 tree_grid <- grid_regular(cost_complexity(),
@@ -96,13 +98,28 @@ tree_grid <- grid_regular(cost_complexity(),
                           levels = 5)
 ```
 
-Next let's create cross-validation folds for tuning:
+The function [`grid_regular()`](https://tidymodels.github.io/dials/reference/grid_regular.html) is from the [dials](https://tidymodels.github.io/dials/) package. It chooses sensible values to try for each hyperparameter; here, we asked for 5 of each. Since we have two to tune, `grid_regular()` returns 5 $\times$ 5 = 25 different possible tuning combinations to try in a tidy tibble format.
+
+```{r tree-grid-tibble}
+tree_grid
+```
+
+Here, you can see all 5 values of `cost_complexity` ranging up to `r max(tree_grid$cost_complexity)`. These values get repeated for each of the 5 values of `tree_depth`:
+
+```{r}
+tree_grid %>% 
+  count(tree_depth)
+```
+
+
+Armed with our grid filled with 25 candidate decision tree models, let's create [cross-validation folds](/start/resampling/) for tuning:
 
 ```{r cell-folds, dependson="cell-split"}
 set.seed(234)
 cell_folds <- vfold_cv(cell_train)
-
 ```
+
+Tuning in tidymodels will require a resampled object created with the [rsample](https://tidymodels.github.io/rsample/) package.
 
 Then let's use `tune_grid()` to fit models at all the different values we chose for each tuned hyperparameter. There are several options for building the object for tuning. You can tune a model specification along with a recipe or model, or you can tune a [`workflow()`](https://tidymodels.github.io/workflows/) that bundles together a model specification and a recipe or model preprocessor. Here we use a `workflow()` with a straightforward formula; if this model required more involved data preprocessing, we could use `add_recipe()` instead of `add_formula()`.
 
