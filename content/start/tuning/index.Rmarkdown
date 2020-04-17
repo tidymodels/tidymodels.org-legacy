@@ -121,7 +121,15 @@ cell_folds <- vfold_cv(cell_train)
 
 Tuning in tidymodels will require a resampled object created with the [rsample](https://tidymodels.github.io/rsample/) package.
 
-Then let's use `tune_grid()` to fit models at all the different values we chose for each tuned hyperparameter. There are several options for building the object for tuning. You can tune a model specification along with a recipe or model, or you can tune a [`workflow()`](https://tidymodels.github.io/workflows/) that bundles together a model specification and a recipe or model preprocessor. Here we use a `workflow()` with a straightforward formula; if this model required more involved data preprocessing, we could use `add_recipe()` instead of `add_formula()`.
+## Model tuning with a grid {#tune-grid}
+
+We are ready to tune! Let's use [`tune_grid()`](https://tidymodels.github.io/tune/reference/tune_grid.html) to fit models at all the different values we chose for each tuned hyperparameter. There are several options for building the object for tuning:
+
++ Tune a model specification along with a recipe or model, or 
+
++ Tune a [`workflow()`](https://tidymodels.github.io/workflows/) that bundles together a model specification and a recipe or model preprocessor. 
+
+Here we use a `workflow()` with a straightforward formula; if this model required more involved data preprocessing, we could use `add_recipe()` instead of `add_formula()`.
 
 ```{r tree-res, dependson=c("tune-spec", "cell-folds", "tree-grid")}
 set.seed(345)
@@ -130,16 +138,24 @@ tree_wf <- workflow() %>%
   add_model(tune_spec) %>%
   add_formula(class ~ .)
 
-tree_res <- tune_grid(
-  tree_wf,
-  resamples = cell_folds,
-  grid = tree_grid
-)
+tree_res <- 
+  tree_wf %>% 
+  tune_grid(
+    resamples = cell_folds,
+    grid = tree_grid
+    )
 
 tree_res
 ```
 
-Once we have our tuning results, we can both explore them through visualization and then select the best result.
+Once we have our tuning results, we can both explore them through visualization and then select the best result. The function `collect_metrics()` gives us a tidy tibble with all the results. We had 25 candidate models and two metrics, `accuracy` and `roc_auc`, and we get a row for each `.metric` and model. 
+
+```{r collect-trees, dependson="tree-res"}
+tree_res %>% 
+  collect_metrics()
+```
+
+But we might get more out of plotting these results:
 
 ```{r best-tree, dependson="tree-res", fig.width=8, fig.height=7}
 tree_res %>%
@@ -150,7 +166,18 @@ tree_res %>%
   geom_point() +
   facet_wrap(~ .metric, scales = "free", nrow = 2) +
   scale_x_log10()
+```
 
+We can see that our "stubbiest" tree, with a depth of 1, is the worst model according to both metrics and across all candidate values of `cost_complexity`. Our deepest tree tested, with a depth of 15, did better. But, the best tree seems to be between these values with a tree depth of 4. The [`show_best()`](https://tidymodels.github.io/tune/reference/show_best.html) function shows us the top 5 candidate models by default:
+
+```{r show-best-tree, dependson="tree-res"}
+tree_res %>%
+  show_best("roc_auc")
+```
+
+We can also use the [`select_best()`](https://tidymodels.github.io/tune/reference/show_best.html) function to pull out the single set of hyperparameter values for our best decision tree model:
+
+```{r select-best-tree, dependson="tree-res"}
 best_tree <- tree_res %>%
   select_best("roc_auc")
 
