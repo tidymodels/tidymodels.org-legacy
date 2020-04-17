@@ -114,11 +114,13 @@ The majority of the modeling work is then conducted on the training set data.
 
 ## Modeling
 
-Random forest models are ensembles of decisions trees. A large number of tree models are created for the ensemble based on slightly different versions of the training set. When creating the individual decision trees, the fitting process encourages them to be as diverse as possible. The collection of trees are combined into the random forest model and, when a new sample is predicted, the votes from each tree are used to calculate the final predicted value for the new sample. 
+[Random forest models](https://en.wikipedia.org/wiki/Random_forest) are [ensembles](https://en.wikipedia.org/wiki/Ensemble_learning) of [decision trees](https://en.wikipedia.org/wiki/Decision_tree). A large number of decision tree models are created for the ensemble based on slightly different versions of the training set. When creating the individual decision trees, the fitting process encourages them to be as diverse as possible. The collection of trees are combined into the random forest model and, when a new sample is predicted, the votes from each tree are used to calculate the final predicted value for the new sample. For categorical outcome variables like `class` in our `cells` data example, the majority vote across all the trees in the random forest determines the predicted class for the new sample.
 
-This model is very low maintenance; it requires very little preprocessing of the data and, while it can be tuned, the default parameters tend to give reasonable results. At the same time, the number of trees in the ensemble should be large (in the thousands) and this makes the model moderately expensive to compute. 
+One of the benefits of a random forest model is that it is very low maintenance;  it requires very little preprocessing of the data and the default parameters tend to give reasonable results. For that reason, we won't create a recipe for the `cells` data.
 
-To fit a random forest model on the training set, let's use the [parsnip](https://tidymodels.github.io/parsnip/) package in conjunction with the ranger package. We first define the model that we want to create:
+At the same time, the number of trees in the ensemble should be large (in the thousands) and this makes the model moderately expensive to compute. 
+
+To fit a random forest model on the training set, let's use the [parsnip](https://tidymodels.github.io/parsnip/) package with the [ranger](https://cran.r-project.org/web/packages/ranger/index.html) engine. We first define the model that we want to create:
 
 ```{r rf-def}
 rf_mod <- 
@@ -127,13 +129,18 @@ rf_mod <-
   set_mode("classification")
 ```
 
-From this, the `fit()` function can be used with a simple model formula. Since random forest models use random numbers, we again set the seed prior to computing: 
+Starting with this parsnip model object, the `fit()` function can be used with a model formula. Since random forest models use random numbers, we again set the seed prior to computing: 
 
 ```{r rf-fit}
 set.seed(234)
-rf_fit <- rf_mod %>% fit(class ~ ., data = cell_train)
+rf_fit <- 
+  rf_mod %>% 
+  fit(class ~ ., data = cell_train)
 rf_fit
 ```
+
+This new `rf_fit` object is our fitted model, trained on our training data set. 
+
 
 ## Estimating performance
 
