@@ -184,49 +184,63 @@ best_tree <- tree_res %>%
 best_tree
 ```
 
-These are the values for `tree_depth` and `cost_complexity` that maximize AUC in this data set of cell images. We can update (or "finalize") our model with these values.
+These are the values for `tree_depth` and `cost_complexity` that maximize AUC in this data set of cell images. 
 
-```{r final-mod, dependson="best-tree"}
-final_mod <- finalize_model(
-  tune_spec,
-  best_tree
-)
 
-final_mod
+## Finalizing our model {#final-model}
+
+We can update (or "finalize") our workflow object `tree_wf` with the values from `select_best()`. 
+
+```{r final-wf, dependson="best-tree"}
+final_wf <- 
+  tree_wf %>% 
+  finalize_workflow(best_tree)
+
+final_wf
 ```
 
 Our tuning is done!
 
-## Exploring results
+### Exploring results
 
 Let's fit this final model to the training data. What does the decision tree look like?
 
 ```{r final-tree, dependson="final-mod"}
-final_tree <- final_mod %>%
-  fit(class ~ .,
-      data = cell_train) 
+final_tree <- 
+  final_wf %>%
+  fit(data = cell_train) 
 
 final_tree
 ```
 
-Perhaps we would also like to understand what variables are important in this final model. We can use the [vip](https://koalaverse.github.io/vip/) package to estimate variable importance.
+This `final_tree` object has the finalized, fitted model object inside. You may want to extract the model object from the workflow. To do this, you can use the helper function [`pull_workflow_fit()`](https://tidymodels.github.io/workflows/reference/workflow-extractors.html).
+
+For example, perhaps we would also like to understand what variables are important in this final model. We can use the [vip](https://koalaverse.github.io/vip/) package to estimate variable importance. 
 
 ```{r vip, dependson="final-tree", fig.width=6, fig.height=5}
 library(vip)
 
-vip(final_tree)
+final_tree %>% 
+  pull_workflow_fit() %>% 
+  vip()
 ```
 
 These are the automated image analysis measurements that are the most important in driving segmentation quality predictions.
 
-Finally, let's return to our test data and estimate the model performance we expect to see on new data. We can use the function `last_fit()` with our finalized model; this function _fits_ the finalized model on the training data and _evaluates_ the finalized model on the testing data.
+### The last fit
+
+Finally, let's return to our test data and estimate the model performance we expect to see on new data. We can use the function [`last_fit()`](https://tidymodels.github.io/tune/reference/last_fit.html) with our finalized model; this function _fits_ the finalized model on the full training data set and _evaluates_ the finalized model on the testing data.
 
 ```{r last-fit, dependson=c("final_mod", "cell-split")}
-final_mod %>%
-  last_fit(class ~ ., 
-           cell_split) %>%
+final_tree %>%
+  last_fit(cell_split) %>%
   collect_metrics
 ```
 
 The performance metrics from the test set indicate that we did not overfit during our tuning procedure.
 
+## Session information
+
+```{r si, echo = FALSE}
+small_session(pkgs)
+```
