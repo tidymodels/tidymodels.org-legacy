@@ -98,19 +98,36 @@ There are different ways to create these partitions of the data. The most common
 
 Since random sampling uses random numbers, it is important to set the random number seed. This ensures that the random numbers can be reproduced at a later time (if needed). 
 
-The function `rsample::initial_split()` takes the original data and saves the information on how to make the partitions. After that, the `training()` and `testing()` functions return the actual data sets. In the original analysis, the authors made their own training/test set and that information is contained in the column `case`. To demonstrate how to make a split, we'll remove this column before we make our own split:
+The function `rsample::initial_split()` takes the original data and saves the information on how to make the partitions. In the original analysis, the authors made their own training/test set and that information is contained in the column `case`. To demonstrate how to make a split, we'll remove this column before we make our own split:
 
 ```{r cell-split}
 set.seed(123)
-cell_split <- initial_split(cells %>% select(-case), strata = class)
+cell_split <- initial_split(cells %>% select(-case), 
+                            strata = class)
+```
+
+Here we used the [`strata` argument](https://tidymodels.github.io/rsample/reference/initial_split.html), which conducts a stratified split. This ensures that, despite the imbalance we noticed in our `class` variable, our training and test data sets will keep roughly the same proportions of poorly and well-segmented cells as in the original data. After the `initial_split`, the `training()` and `testing()` functions return the actual data sets. 
+
+```{r cell-train-test}
 cell_train <- training(cell_split)
 cell_test  <- testing(cell_split)
 
 nrow(cell_train)
 nrow(cell_train)/nrow(cells)
+
+# training set proportions by class
+cell_train %>% 
+  count(class) %>% 
+  mutate(prop = n/sum(n))
+
+# test set proportions by class
+cell_test %>% 
+  count(class) %>% 
+  mutate(prop = n/sum(n))
 ```
 
 The majority of the modeling work is then conducted on the training set data. 
+
 
 ## Modeling
 
