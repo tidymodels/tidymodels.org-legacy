@@ -358,26 +358,25 @@ Based on these results, the validation set and test set performance statistics a
 #>  date     2020-04-16                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version    date       lib source                         
-#>  broom      * 0.5.5      2020-02-29 [1] CRAN (R 3.6.0)                 
-#>  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.0)                 
-#>  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                 
-#>  ggplot2    * 3.3.0      2020-03-05 [1] CRAN (R 3.6.0)                 
-#>  glmnet       3.0-2      2019-12-11 [1] CRAN (R 3.6.0)                 
-#>  infer      * 0.5.1      2019-11-19 [1] CRAN (R 3.6.0)                 
-#>  parsnip    * 0.0.5      2020-01-07 [1] CRAN (R 3.6.0)                 
-#>  purrr      * 0.3.3      2019-10-18 [1] CRAN (R 3.6.0)                 
-#>  ranger       0.11.2     2019-03-07 [1] CRAN (R 3.6.0)                 
-#>  readr      * 1.3.1      2018-12-21 [1] CRAN (R 3.6.0)                 
-#>  recipes    * 0.1.10     2020-03-18 [1] CRAN (R 3.6.0)                 
-#>  rlang        0.4.5      2020-03-01 [1] CRAN (R 3.6.0)                 
-#>  rsample    * 0.0.6      2020-03-31 [1] CRAN (R 3.6.2)                 
-#>  tibble     * 2.1.3      2019-06-06 [1] CRAN (R 3.6.0)                 
-#>  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.0)                 
-#>  tune       * 0.1.0      2020-04-02 [1] CRAN (R 3.6.2)                 
-#>  vip        * 0.1.3.9000 2019-12-20 [1] Github (koalaverse/vip@4a7776b)
-#>  workflows  * 0.1.1      2020-03-17 [1] CRAN (R 3.6.0)                 
-#>  yardstick  * 0.0.5      2020-01-23 [1] CRAN (R 3.6.0)                 
+#>  package    * version date       lib source        
+#>  broom      * 0.5.5   2020-02-29 [1] CRAN (R 3.6.0)
+#>  dials      * 0.0.4   2019-12-02 [1] CRAN (R 3.6.0)
+#>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
+#>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
+#>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
+#>  parsnip    * 0.0.5   2020-01-07 [1] CRAN (R 3.6.0)
+#>  purrr      * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
+#>  ranger       0.11.2  2019-03-07 [1] CRAN (R 3.6.0)
+#>  readr      * 1.3.1   2018-12-21 [1] CRAN (R 3.6.0)
+#>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
+#>  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
+#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
+#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.0)
+#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
+#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
+#>  vip        * 0.2.2   2020-04-06 [1] CRAN (R 3.6.2)
+#>  workflows  * 0.1.1   2020-03-17 [1] CRAN (R 3.6.0)
+#>  yardstick  * 0.0.5   2020-01-23 [1] CRAN (R 3.6.0)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
 ```
