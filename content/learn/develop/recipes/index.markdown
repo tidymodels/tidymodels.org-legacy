@@ -14,7 +14,7 @@ description: |
 
 ## Introduction
 
-This article requires that you have the following packages installed: modeldata and tidymodels.
+To use the code in this article, you will need to install the following packages: modeldata and tidymodels.
 
 There are many existing recipe steps in packages like recipes, themis, textrecipes, and others. A full list of steps in CRAN packages [can be found here](/functions/). However, you might need to define your own preprocessing operations; this article describes how to do that. If you are looking for good examples of existing steps, we suggest looking at the code for [centering](https://github.com/tidymodels/recipes/blob/master/R/center.R) or [PCA](https://github.com/tidymodels/recipes/blob/master/R/pca.R) to start. 
 
@@ -471,16 +471,16 @@ tidy(rec_obj, number = 1)
 #> # A tibble: 274 x 4
 #>    term     value percentile id              
 #>    <chr>    <dbl>      <dbl> <chr>           
-#>  1 hydrogen 0.03           0 percentile_NHiDe
-#>  2 hydrogen 0.934          1 percentile_NHiDe
-#>  3 hydrogen 1.60           2 percentile_NHiDe
-#>  4 hydrogen 2.07           3 percentile_NHiDe
-#>  5 hydrogen 2.45           4 percentile_NHiDe
-#>  6 hydrogen 2.74           5 percentile_NHiDe
-#>  7 hydrogen 3.15           6 percentile_NHiDe
-#>  8 hydrogen 3.49           7 percentile_NHiDe
-#>  9 hydrogen 3.71           8 percentile_NHiDe
-#> 10 hydrogen 3.99           9 percentile_NHiDe
+#>  1 hydrogen 0.03           0 percentile_n10AC
+#>  2 hydrogen 0.934          1 percentile_n10AC
+#>  3 hydrogen 1.60           2 percentile_n10AC
+#>  4 hydrogen 2.07           3 percentile_n10AC
+#>  5 hydrogen 2.45           4 percentile_n10AC
+#>  6 hydrogen 2.74           5 percentile_n10AC
+#>  7 hydrogen 3.15           6 percentile_n10AC
+#>  8 hydrogen 3.49           7 percentile_n10AC
+#>  9 hydrogen 3.71           8 percentile_n10AC
+#> 10 hydrogen 3.99           9 percentile_n10AC
 #> # … with 264 more rows
 ```
 
@@ -561,34 +561,34 @@ tunable.step_poly <- function (x, ...) {
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.1 (2019-07-05)
-#>  os       macOS Catalina 10.15.3      
+#>  version  R version 3.6.2 (2019-12-12)
+#>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/Los_Angeles         
-#>  date     2020-04-16                  
+#>  tz       America/Denver              
+#>  date     2020-04-17                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
 #>  broom      * 0.5.5   2020-02-29 [1] CRAN (R 3.6.0)
-#>  dials      * 0.0.4   2019-12-02 [1] CRAN (R 3.6.0)
+#>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 3.6.2)
 #>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
 #>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
 #>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
 #>  modeldata  * 0.0.1   2019-12-06 [1] CRAN (R 3.6.0)
-#>  parsnip    * 0.0.5   2020-01-07 [1] CRAN (R 3.6.0)
+#>  parsnip    * 0.1.0   2020-04-09 [1] CRAN (R 3.6.2)
 #>  purrr      * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
 #>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
 #>  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
 #>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
-#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.0)
+#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.2)
 #>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
 #>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
 #>  workflows  * 0.1.1   2020-03-17 [1] CRAN (R 3.6.0)
-#>  yardstick  * 0.0.5   2020-01-23 [1] CRAN (R 3.6.0)
+#>  yardstick  * 0.0.6   2020-03-17 [1] CRAN (R 3.6.0)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
 ```
