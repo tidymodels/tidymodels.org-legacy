@@ -43,7 +43,18 @@ library(ranger)     # for the random forest model and engine
 ```
 
 
-## Predicting image segmentation quality
+## The cell image data
+
+Let's use data from [Hill, LaPan, Li and Haney (2007)](http://www.biomedcentral.com/1471-2105/8/340), available in the [modeldata package](https://cran.r-project.org/web/packages/modeldata/index.html), to predict cell image segmentation quality with resampling. To start, we load this data into R:
+
+```{r cell-import, R.options = list(tibble.print_min = 5, tibble.max_extra_cols = 5)}
+data(cells, package = "modeldata")
+cells
+```
+
+We have data for `r nrow(cells)` cells, with `r ncol(cells)` variables. The main outcome variable of interest for us here is called `class`, which you can see is a factor. But before we jump into predicting the `class` variable, we need to understand it better. Below is a brief primer on cell image segmentation.
+
+### Predicting image segmentation quality
 
 Some biologists conduct experiments on cells. In drug discovery, a particular type of cell can be treated with either a drug or control and then observed to see what the effect is (if any). A common approach for this kind of measurement is cell imaging. Different parts of the cells can be colored so that the locations of a cell can be determined. 
 
@@ -59,18 +70,20 @@ The bottom panel shows some segmentation results. Cells 1 and 5 are fairly well 
 
 A cell-based experiment might involve millions of cells so it is unfeasible to visually assess them all. Instead, a subsample can be created and these cells can be manually labeled by experts as either poorly segmented (`PS`) or well-segmented (`WS`). If we can predict these labels accurately, the larger data set can be improved by filtering out the cells most likely to be poorly segmented.
 
-An example data set called `cells` is contained in the modeldata package. It has labeled data for `r nrow(cells)` cells. Each also has a total of `r ncol(cells) - 2` predictors based on automated image analysis measurements. For example, `avg_inten_ch_1` is the mean intensity of the data contained in the nucleus, `area_ch_1` is the total size of the cell, and so on (some predictors are fairly arcane in nature). 
+### Back to the cells data
 
-```{r cell-import}
-data(cells, package = "modeldata")
+The `cells` data has `class` labels for `r nrow(cells)` cells &mdash; each cell is labeled as either poorly segmented (`PS`) or well-segmented (`WS`). Each also has a total of `r ncol(cells) - 2` predictors based on automated image analysis measurements. For example, `avg_inten_ch_1` is the mean intensity of the data contained in the nucleus, `area_ch_1` is the total size of the cell, and so on (some predictors are fairly arcane in nature). 
+
+```{r cells-show, R.options = list(tibble.print_min = 5, tibble.max_extra_cols = 5)}
 cells
 ```
 
 The rates of the classes are somewhat imbalanced; there are more poorly segmented cells than well-segmented cells:
 
 ```{r rates}
-class_rates <- table(cells$class)/nrow(cells)
-class_rates
+cells %>% 
+  count(class) %>% 
+  mutate(prop = n/sum(n))
 ```
 
 ## Data splitting
