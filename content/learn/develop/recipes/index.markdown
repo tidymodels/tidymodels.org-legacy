@@ -12,7 +12,7 @@ description: |
 
 
 
-# Introduction
+## Introduction
 
 This article requires that you have the following packages installed: modeldata and tidymodels.
 
@@ -30,7 +30,7 @@ The general process to follow is to:
 
 As an example, we will create a step for converting data into percentiles. 
 
-# A new step definition
+## A new step definition
 
 Let's create a step that replaces the value of a variable with its percentile from the training set. The example data we'll use is from the modeldata package:
 
@@ -70,7 +70,7 @@ Based on the training set, 42.1% of the data are less than a value of 46.35. The
 
 Our new step will do this computation for any numeric variables of interest. We will call this new recipe step `step_percentile()`. The code below is designed for illustration and not speed or best practices. We've left out a lot of error trapping that we would want in a real implementation.  
 
-# Create the function
+## Create the function
 
 To start, there is a _user-facing_ function. Let's call that `step_percentile()`. This is just a simple wrapper around a _constructor function_, which defines the rules for any step object that defines a percentile transformation. We'll call this constructor `step_percentile_new()`. 
 
@@ -128,7 +128,7 @@ It is also important to consider if there are any _main arguments_ to the step. 
 
 There are benefits to following these principles (as shown below). 
 
-# Initialize a new object
+## Initialize a new object
 
 Now, the constructor function can be created.
 
@@ -161,7 +161,7 @@ step_percentile_new <-
 
 This constructor function should have no default argument values. Defaults should be set in the user-facing step object. 
 
-# Define the procedure
+## Define the procedure
 
 You will need to create a new `prep()` method for your step's class. To do this, three arguments that the method should have are:
 
@@ -247,7 +247,7 @@ prep.step_percentile <- function(x, training, info = NULL, ...) {
 We suggest favoring `rlang::abort()` and `rlang::warn()` over `stop()` and `warning()`. The former can be used for better traceback results.
 
 
-# Create the `bake` method
+## Create the `bake` method
 
 Remember that the `prep()` function does not _apply_ the step to the data; it only estimates any required values such as `ref_dist`. We will need to create a new method for our `step_percentile()` class. The minimum arguments for this are
 
@@ -286,7 +286,7 @@ bake.step_percentile <- function(object, new_data, ...) {
 }
 ```
 
-# Run the example
+## Run the example
 
 Let's use the example data to make sure that it works: 
 
@@ -338,7 +338,7 @@ ggplot(biomass_tr, aes(x = hydrogen)) +
 
 These line up very nicely! 
 
-# Custom check operations 
+## Custom check operations 
 
 The process here is exactly the same as steps; the internal functions have a similar naming convention: 
 
@@ -351,11 +351,11 @@ It is strongly recommended that:
  1. The check uses `rlang::abort(paste0(...))` when the conditions are not met
  1. The original data are returned (unaltered) by the check when the conditions are satisfied. 
 
-# Other step methods
+## Other step methods
 
 There are a few other S3 methods that can be created for your step function. They are not required unless you plan on using your step in the broader tidymodels package set. 
 
-## A print method
+### A print method
 
 Printing `rec_obj` is a bit ugly; since there is no print method for `step_percentile()` it prints it as a list of (potentially large) objects. The recipes package contains a helper function called `printer()` that should work for most cases. It requires the the names of the selected columns that are resolved after `prep()` has been run as well as the original terms specification. For the former, our step object is structured so that the list object `ref_dist` has the names of the selected variables: 
 
@@ -409,7 +409,7 @@ rec_obj
 #> Percentile transformation on hydrogen, oxygen, nitrogen [trained]
 ```
  
-## A tidy method
+### A tidy method
 
 The `broom::tidy()` method is a means to return information about the step in a usable format. For our step, it would be helpful to know the reference values. 
 
@@ -471,20 +471,20 @@ tidy(rec_obj, number = 1)
 #> # A tibble: 274 x 4
 #>    term     value percentile id              
 #>    <chr>    <dbl>      <dbl> <chr>           
-#>  1 hydrogen 0.03           0 percentile_MIkTy
-#>  2 hydrogen 0.934          1 percentile_MIkTy
-#>  3 hydrogen 1.60           2 percentile_MIkTy
-#>  4 hydrogen 2.07           3 percentile_MIkTy
-#>  5 hydrogen 2.45           4 percentile_MIkTy
-#>  6 hydrogen 2.74           5 percentile_MIkTy
-#>  7 hydrogen 3.15           6 percentile_MIkTy
-#>  8 hydrogen 3.49           7 percentile_MIkTy
-#>  9 hydrogen 3.71           8 percentile_MIkTy
-#> 10 hydrogen 3.99           9 percentile_MIkTy
+#>  1 hydrogen 0.03           0 percentile_NHiDe
+#>  2 hydrogen 0.934          1 percentile_NHiDe
+#>  3 hydrogen 1.60           2 percentile_NHiDe
+#>  4 hydrogen 2.07           3 percentile_NHiDe
+#>  5 hydrogen 2.45           4 percentile_NHiDe
+#>  6 hydrogen 2.74           5 percentile_NHiDe
+#>  7 hydrogen 3.15           6 percentile_NHiDe
+#>  8 hydrogen 3.49           7 percentile_NHiDe
+#>  9 hydrogen 3.71           8 percentile_NHiDe
+#> 10 hydrogen 3.99           9 percentile_NHiDe
 #> # … with 264 more rows
 ```
 
-## Methods for tuning parameters
+### Methods for tuning parameters
 
 The tune package can be used to find reasonable values of step arguments by model tuning. There are some S3 methods that are useful to define for your step. The percentile example doesn't really have any tunable parameters, so we will demonstrate using `step_poly()`, which returns a polynomial expansion of selected columns. Its function definition has the arguments: 
 
@@ -555,39 +555,39 @@ tunable.step_poly <- function (x, ...) {
 ```
 
 
-# Session information
+## Session information
 
 
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
 #>  version  R version 3.6.1 (2019-07-05)
-#>  os       macOS Mojave 10.14.6        
+#>  os       macOS Catalina 10.15.3      
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/New_York            
-#>  date     2020-04-14                  
+#>  tz       America/Los_Angeles         
+#>  date     2020-04-16                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
-#>  broom      * 0.5.4   2020-01-27 [1] CRAN (R 3.6.0)
-#>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 3.6.1)
+#>  broom      * 0.5.5   2020-02-29 [1] CRAN (R 3.6.0)
+#>  dials      * 0.0.4   2019-12-02 [1] CRAN (R 3.6.0)
 #>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
 #>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
 #>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
-#>  modeldata  * 0.0.1   2019-12-06 [1] CRAN (R 3.6.1)
-#>  parsnip    * 0.1.0   2020-04-09 [1] CRAN (R 3.6.1)
+#>  modeldata  * 0.0.1   2019-12-06 [1] CRAN (R 3.6.0)
+#>  parsnip    * 0.0.5   2020-01-07 [1] CRAN (R 3.6.0)
 #>  purrr      * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
 #>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
 #>  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
-#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.1)
-#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.1)
-#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.1)
-#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.1)
-#>  workflows  * 0.1.0   2019-12-30 [1] CRAN (R 3.6.1)
+#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
+#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.0)
+#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
+#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
+#>  workflows  * 0.1.1   2020-03-17 [1] CRAN (R 3.6.0)
 #>  yardstick  * 0.0.5   2020-01-23 [1] CRAN (R 3.6.0)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library

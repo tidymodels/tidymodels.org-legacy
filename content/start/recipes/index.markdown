@@ -11,7 +11,7 @@ description: |
 
 
 
-# Introduction {#intro}
+## Introduction {#intro}
 
 In our [*Build a Model*](/start/models/) article, we learned how to specify and train models with different engines using the [parsnip package](https://tidymodels.github.io/parsnip/). In this article, we'll explore another tidymodels package, [recipes](https://tidymodels.github.io/recipes/), which is designed to help you preprocess your data *before* training your model. Recipes are built as a series of preprocessing steps, such as: 
 
@@ -37,7 +37,7 @@ library(skimr)           # for variable summaries
 ```
 
 
-# The New York City flight data {#data}
+## The New York City flight data {#data}
 
 
 
@@ -198,7 +198,7 @@ flight_data %>%
 
 Because we'll be using a simple logistic regression model, the variables `dest` and `carrier` will be converted to [dummy variables](https://bookdown.org/max/FES/creating-dummy-variables-for-unordered-categories.html). However, some of these values do not occur very frequently and this could complicate our analysis. We'll discuss specific steps later in this article that we can add to our recipe to address this issue before modeling. 
 
-# Data splitting {#data-split}
+## Data splitting {#data-split}
 
 To get started, let's split this single dataset into two: a _training_ set and a _testing_ set. We'll keep most of the rows in the original dataset (subset chosen randomly) in the _training_ set. The training data will be used to *fit* the model, and the _testing_ set will be used to measure model performance. 
 
@@ -218,7 +218,7 @@ test_data  <- testing(data_split)
 ```
 
  
-# Create recipe and roles {#recipe}
+## Create recipe and roles {#recipe}
 
 To get started, let's create a recipe for a simple logistic regression model. Before training the model, we can use a recipe to create a few new predictors and conduct some preprocessing required by the model. 
 
@@ -269,7 +269,7 @@ summary(flights_rec)
 
 
 
-# Create features {#features}
+## Create features {#features}
 
 Now we can start adding steps onto our recipe using the pipe operator. Perhaps it is reasonable for the date of the flight to have an effect on the likelihood of a late arrival. A little bit of **feature engineering** might go a long way to improving our model. How should the date be encoded into the model? The `date` column has an R `date` object so including that column "as is" will mean that the model will convert it to a numeric format equal to the number of days after a reference date: 
 
@@ -410,7 +410,7 @@ flights_rec <-
 
 Now we've created a _specification_ of what should be done with the data. How do we use the recipe we made? 
 
-# Fit a model with a recipe {#fit-workflow}
+## Fit a model with a recipe {#fit-workflow}
 
 Let's use logistic regression to model the flight data. As we saw in [*Build a Model*](/start/models/), we start by [building a model specification](/start/models/#build-model) using the parsnip package: 
 
@@ -439,11 +439,11 @@ flights_wflow <-
   add_model(lr_mod) %>% 
   add_recipe(flights_rec)
 flights_wflow
-#> ══ Workflow ══════════════════════════════════════════════════════
+#> ══ Workflow ═════════════════════════════════════════════════════════
 #> Preprocessor: Recipe
 #> Model: logistic_reg()
 #> 
-#> ── Preprocessor ──────────────────────────────────────────────────
+#> ── Preprocessor ─────────────────────────────────────────────────────
 #> 5 Recipe Steps
 #> 
 #> ● step_date()
@@ -452,7 +452,7 @@ flights_wflow
 #> ● step_dummy()
 #> ● step_zv()
 #> 
-#> ── Model ─────────────────────────────────────────────────────────
+#> ── Model ────────────────────────────────────────────────────────────
 #> Logistic Regression Model Specification (classification)
 #> 
 #> Computational engine: glm
@@ -483,7 +483,7 @@ flights_fit %>%
 #> # … with 152 more rows
 ```
 
-# Use a trained workflow to predict {#predict-workflow}
+## Use a trained workflow to predict {#predict-workflow}
 
 Our goal was to predict whether a plane arrives more than 30 minutes late. We have just:
 
@@ -564,7 +564,7 @@ Not too bad! We leave it to the reader to test out this workflow [*without*](htt
 
 
 
-# Session information {#session-info}
+## Session information {#session-info}
 
 
 ```

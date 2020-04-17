@@ -18,13 +18,13 @@ pkgs <- c("tidymodels", "tidyr")
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
-# Introduction
+## Introduction
 
 `r req_pkgs(pkgs)`
 
 While the tidymodels package [broom](https://broom.tidyverse.org/) is useful for summarizing the result of a single analysis in a consistent format, it is really designed for high-throughput applications, where you must combine results from multiple analyses. These could be subgroups of data, analyses using different models, bootstrap replicates, permutations, and so on. In particular, it plays well with the `nest()/unnest()` functions from [tidyr](https://tidyr.tidyverse.org/) and the `map()` function in [purrr](https://purrr.tidyverse.org/).
 
-# Correlation analysis
+## Correlation analysis
 
 Let's demonstrate this with a simple data set, the built-in `Orange`. We start by coercing `Orange` to a `tibble`. This gives a nicer print method that will be especially useful later on when we start working with list-columns.
 
@@ -111,7 +111,7 @@ Orange %>%
   select(-data, -test)
 ```
 
-# Regression models
+## Regression models
 
 This type of workflow becomes even more useful when applied to regressions. Untidy output for a regression looks like:
 
@@ -191,7 +191,7 @@ By combining the estimates and p-values across all groups into the same tidy dat
 In each of these cases, we can easily filter, facet, or distinguish based on the `term` column. In short, this makes the tools of tidy data analysis available for the *results* of data analysis and models, not just the inputs.
 
 
-# Session information
+## Session information
 
 ```{r si, echo = FALSE}
 small_session(pkgs)

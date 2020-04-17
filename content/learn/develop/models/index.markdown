@@ -12,7 +12,7 @@ description: |
 
 
 
-# Introduction
+## Introduction
 
 This article requires that you have the following packages installed: mda, modeldata, and tidymodels.
 
@@ -25,7 +25,7 @@ A parsnip model function is itself very general. For example, the `logistic_reg(
 
 This article describes the process of creating a new model function. Before proceeding, take a minute and read our [guidelines on creating modeling packages](https://tidymodels.github.io/model-implementation-principles/) to understand the general themes and conventions that we use.  
 
-# An example model
+## An example model
 
 As an example, we'll create a function for _mixture discriminant analysis_. There are [a few packages](http://search.r-project.org/cgi-bin/namazu.cgi?query=%22mixture+discriminant%22&max=100&result=normal&sort=score&idxname=functions) that implement this but we'll focus on `mda::mda`:
 
@@ -40,7 +40,7 @@ str(mda::mda)
 
 The main hyperparameter is the number of subclasses. We'll name our function `discrim_mixture`. 
 
-# Aspects of models
+## Aspects of models
 
 Before proceeding, it helps to to review how parsnip categorizes models:
 
@@ -52,13 +52,13 @@ Before proceeding, it helps to to review how parsnip categorizes models:
 
 When adding a model into parsnip, the user has to specify which modes and engines are used. The package also enables users to add a new mode or engine to an existing model. 
 
-# The general process
+## The general process
 
 The parsnip package stores information about the models in an internal environment object. The environment can be accessed via the function `get_model_env()`. The package includes a variety of functions that can get or set the different aspects of the models. 
 
 If you are adding a new model from your own package, you can use these functions to add new entries into the model environment. 
 
-## Step 1. Register the model, modes, and arguments
+### Step 1. Register the model, modes, and arguments
 
 We will add the MDA model using the model type `discrim_mixture`. Since this is a classification method, we only have to register a single mode:
 
@@ -131,7 +131,7 @@ show_model_info("discrim_mixture")
 #>  no registered prediction modules.
 ```
 
-## Step 2. Create the model function
+### Step 2. Create the model function
 
 This is a fairly simple function that can follow a basic template. The main arguments to our function will be:
 
@@ -165,7 +165,7 @@ discrim_mixture <-
 
 This is pretty simple since the data are not exposed to this function. 
 
-## Step 3. Add a fit module
+### Step 3. Add a fit module
 
 Now that parsnip knows about the model, mode, and engine, we can give it the information on fitting the model for our engine. The information needed to fit the model is contained in another list. The elements are:
 
@@ -210,7 +210,7 @@ show_model_info("discrim_mixture")
 #>  no registered prediction modules.
 ```
 
-## Step 4. Add modules for prediction
+### Step 4. Add modules for prediction
 
 Similar to the fitting module, we specify the code for making different types of predictions. To make hard class predictions, the `class` object contains the details. The elements of the list are:
 
@@ -304,7 +304,7 @@ If this model could be used for regression situations, we could also add a "nume
 Examples are [here](https://github.com/tidymodels/parsnip/blob/master/R/linear_reg_data.R) and [here](https://github.com/tidymodels/parsnip/blob/master/R/rand_forest_data.R). 
 
 
-## Does it work? 
+### Does it work? 
 
 As a developer, one thing that may come in handy is the `translate()` function. This will tell you what the model's eventual syntax will be. 
 
@@ -343,7 +343,7 @@ mda_fit <- mda_spec %>%
 mda_fit
 #> parsnip model object
 #> 
-#> Fit time:  20ms 
+#> Fit time:  29ms 
 #> Call:
 #> mda::mda(formula = formula, data = data, subclasses = ~2)
 #> 
@@ -387,7 +387,7 @@ predict(mda_fit, new_data = example_test) %>%
 ```
 
 
-# Add an engine
+## Add an engine
 
 The process for adding an engine to an existing model is _almost_ the same as building a new model but simpler with fewer steps. You only need to add the engine-specific aspects of the model. For example, if we wanted to fit a linear regression model using M-estimation, we could only add a new engine. The code for the `rlm()` function in MASS is pretty similar to `lm()`, so we can copy that code and change the package/function names:
 
@@ -432,7 +432,7 @@ linear_reg() %>%
   fit(mpg ~ ., data = mtcars)
 #> parsnip model object
 #> 
-#> Fit time:  4ms 
+#> Fit time:  5ms 
 #> Call:
 #> rlm(formula = formula, data = data)
 #> Converged in 8 iterations
@@ -447,7 +447,7 @@ linear_reg() %>%
 #> Scale estimate: 2.15
 ```
 
-# Add parsnip models to another package
+## Add parsnip models to another package
 
 The process here is almost the same. All of the previous functions are still required but their execution is a little different. 
 
@@ -479,7 +479,7 @@ This function is then executed when your package is loaded:
 For an example package that uses parsnip definitions, take a look at the [discrim](https://github.com/tidymodels/discrim) package.
 
 
-# Your model, tuning parameters, and you
+## Your model, tuning parameters, and you
 
 The tune package can be used to find reasonable values of model arguments via tuning. There are some S3 methods that are useful to define for your model. `discrim_mixture()` has one main tuning parameter: `sub_classes`. To work with tune it is _helpful_ (but not required) to use an S3 method called `tunable()` to define which arguments should be tuned and how values of those arguments should be generated. 
 
@@ -568,7 +568,7 @@ show_best(mda_tune_res, metric = "roc_auc")
 ```
 
 
-# Pro-tips, what-ifs, exceptions, FAQ, and minutiae
+## Pro-tips, what-ifs, exceptions, FAQ, and minutiae
 
 There are various things that came to mind while developing this resource.
 
@@ -671,39 +671,39 @@ Not yet but there will be. For example, it might make sense to have a different 
 If you have a suggestion, please add a [GitHub issue](https://github.com/tidymodels/parsnip/issues) to discuss it. 
 
  
-# Session information
+## Session information
 
 
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
 #>  version  R version 3.6.1 (2019-07-05)
-#>  os       macOS Mojave 10.14.6        
+#>  os       macOS Catalina 10.15.3      
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/New_York            
-#>  date     2020-04-14                  
+#>  tz       America/Los_Angeles         
+#>  date     2020-04-16                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
-#>  broom      * 0.5.4   2020-01-27 [1] CRAN (R 3.6.0)
-#>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 3.6.1)
+#>  broom      * 0.5.5   2020-02-29 [1] CRAN (R 3.6.0)
+#>  dials      * 0.0.4   2019-12-02 [1] CRAN (R 3.6.0)
 #>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
 #>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
 #>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
 #>  mda        * 0.4-10  2017-11-02 [1] CRAN (R 3.6.0)
-#>  parsnip    * 0.1.0   2020-04-09 [1] CRAN (R 3.6.1)
+#>  parsnip    * 0.0.5   2020-01-07 [1] CRAN (R 3.6.0)
 #>  purrr      * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
 #>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
 #>  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
-#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.1)
-#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.1)
-#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.1)
-#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.1)
-#>  workflows  * 0.1.0   2019-12-30 [1] CRAN (R 3.6.1)
+#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
+#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.0)
+#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
+#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
+#>  workflows  * 0.1.1   2020-03-17 [1] CRAN (R 3.6.0)
 #>  yardstick  * 0.0.5   2020-01-23 [1] CRAN (R 3.6.0)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library

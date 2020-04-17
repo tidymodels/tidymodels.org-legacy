@@ -20,13 +20,13 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
 
-# Introduction
+## Introduction
 
 `r req_pkgs(pkgs)` You will also need the python keras library installed (see `?keras::install_keras()`).
 
 We can create classification models with the tidymodels package [parsnip](https://tidymodels.github.io/parsnip/) to predict categorical quantities or class labels. Here, let's fit a single classification model using a neural network and evaluate using a validation set. While the [tune](https://tidymodels.github.io/tune/) package has functionality to also do this, the parsnip package is the center of attention in this article so that we can better understand its usage. 
 
-# Fitting a neural network
+## Fitting a neural network
 
 
 Let's fit a model to a small, two predictor classification data set. The data are in the modeldata package (part of tidymodels) and have been split into training, validation, and test data sets. In this analysis, the test set is left untouched; this article tries to emulate a good data usage methodology where the test set would only be evaluated once at the end after a variety of models have been considered. 
@@ -76,7 +76,7 @@ nnet_fit <-
 nnet_fit
 ```
 
-# Model performance
+## Model performance
 
 In parsnip, the `predict()` function can be used to characterize performance on the validation set. Since parsnip always produces tibble outputs, these can just be column bound to the original data: 
 
@@ -119,7 +119,7 @@ ggplot(x_grid, aes(x = A, y = B)) +
 
 
 
-# Session information
+## Session information
 
 ```{r si, echo = FALSE}
 small_session(pkgs)

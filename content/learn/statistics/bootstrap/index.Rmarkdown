@@ -20,7 +20,7 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
 
-# Introduction
+## Introduction
 
 `r req_pkgs(pkgs)`
 
@@ -50,7 +50,7 @@ ggplot(mtcars, aes(wt, mpg)) +
 
 While this does provide a p-value and confidence intervals for the parameters, these are based on model assumptions that may not hold in real data. Bootstrapping is a popular method for providing confidence intervals and predictions that are more robust to the nature of the data.
 
-# Bootstrapping models
+## Bootstrapping models
 
 We can use the `bootstraps()` function in the rsample package to sample bootstrap replications. First, we construct 2000 bootstrap replicates of the data, each of which has been randomly sampled with replacement. The resulting object is an `rset`, which is a data frame with a column of `rsplit` objects.
 
@@ -86,7 +86,7 @@ The unnested coefficient information contains a summary of each replication comb
 boot_coefs
 ```
 
-# Confidence intervals
+## Confidence intervals
 
 We can then calculate confidence intervals (using what is called the [percentile method](https://www.uvm.edu/~dhowell/StatPages/Randomization%20Tests/ResamplingWithR/BootstMeans/bootstrapping_means.html)):
 
@@ -107,7 +107,7 @@ ggplot(boot_coefs, aes(estimate)) +
 
 The rsample package also has functions for [other types of confidence intervals](https://tidymodels.github.io/rsample/reference/int_pctl.html). 
 
-# Possible model fits
+## Possible model fits
 
 We can use `augment()` to visualize the uncertainty in the fitted curve. Since there are so many bootstrap samples, we'll only show a sample of the model fits in our visualization:
 
@@ -152,7 +152,7 @@ ggplot(splines_aug, aes(x, y)) +
 
 
 
-# Session information
+## Session information
 
 ```{r si, echo = FALSE}
 small_session(pkgs)

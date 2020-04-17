@@ -13,7 +13,7 @@ description: |
 
 
 
-# Introduction
+## Introduction
 
 This article requires that you have the following packages installed: rlang and tidymodels.
 
@@ -30,7 +30,7 @@ Why create custom metrics? With the infrastructure yardstick provides, you get:
 
 The implementation for metrics differ slightly depending on whether you are implementing a numeric, class, or class probability metric. Examples for numeric and classification metrics are given below. We would encourage you to look into the implementation of `roc_auc()` after reading this vignette if you want to work on a class probability metric.
 
-# Numeric example: MSE
+## Numeric example: MSE
 
 Mean squared error (sometimes MSE or from here on, `mse()`) is a numeric metric that measures the average of the squared errors. Numeric metrics are generally the simplest to create with yardstick, as they do not have multiclass implementations. The formula for `mse()` is:
 
@@ -38,7 +38,7 @@ $$ MSE = \frac{1}{N} \sum_{i=1}^{N} (truth_i - estimate_i) ^ 2 = mean( (truth - 
 
 All metrics should have a data frame version, and a vector version. The data frame version here will be named `mse()`, and the vector version will be `mse_vec()`. 
 
-## Vector implementation
+### Vector implementation
 
 To start, create the vector version. Generally, all metrics have the  same arguments unless the metric requires an extra parameter (such as `beta` in `f_meas()`). To create the vector function, you need to do two things:
 
@@ -110,7 +110,7 @@ mse_vec(truth = c(NA, .5, .4), estimate = c(1, .6, .5), na_rm = FALSE)
 #> [1] NA
 ```
 
-## Data frame implementation
+### Data frame implementation
 
 The data frame version of the metric should be fairly simple. It is a generic function with a `data.frame` method that calls the yardstick helper, `metric_summarizer()`, and passes along the `mse_vec()` function to it along with versions of `truth` and `estimate` that have been wrapped in `rlang::enquo()` and then unquoted with `!!` so that non-standard evaluation can be supported.
 
@@ -190,7 +190,7 @@ solubility_resampled %>%
 #> 10 9        mse     standard       0.479
 ```
 
-# Class example: miss rate
+## Class example: miss rate
 
 Miss rate is another name for the false negative rate, and is a classification metric in the same family as `sens()` and `spec()`. It follows the formula:
 
@@ -200,7 +200,7 @@ This metric, like other classification metrics, is more easily computed when exp
 
 Classification metrics are more complicated than numeric ones because you have to think about extensions to the multiclass case. For now, let's start with  the binary case.
 
-## Vector implementation
+### Vector implementation
 
 The vector implementation for classification metrics initially has the same setup  as numeric metrics, but has an additional argument, `estimator` that determines the type of estimator to use (binary or some kind of multiclass implementation or averaging). This argument is auto-selected for the user, so default it to  `NULL`. Additionally, pass it along to `metric_vec_template()` so that it can check the provided `estimator` against the classes of `truth` and `estimate` to see if they are allowed.
 
@@ -330,7 +330,7 @@ miss_rate_vec(fold1$obs, fold1$pred, estimator = "macro")
 #> Error: `estimator` must be one of: "binary". Not "macro".
 ```
 
-## Supporting multiclass miss rate
+### Supporting multiclass miss rate
 
 Like many other classification metrics such as `precision()` or `recall()`, miss rate does not have a natural multiclass extension, but one can be created using methods such as macro, weighted macro, and micro averaging. If you have not, I encourage you to read `vignette("multiclass", "yardstick")` for more information about how these methods work.
 
@@ -436,7 +436,7 @@ miss_rate_vec(fold1$obs, fold1$pred)
 #> [1] 0.548
 ```
 
-### Data frame implementation
+#### Data frame implementation
 
 Luckily, the data frame implementation is as simple as the numeric case, we just need to add an extra `estimator` argument and pass that through.
 
@@ -503,7 +503,7 @@ miss_rate(hpc_cv, obs, VF)
 #> Error: `estimate` should be a factor but a numeric was supplied.
 ```
 
-# Using custom metrics
+## Using custom metrics
 
 The `metric_set()` function validates that all metric functions are of the same metric type by checking the class of the function. If any metrics are not of the right class,`metric_set()` fails. This means that to use your function with `metric_set()`, you need to add the correct class.
 
@@ -536,38 +536,38 @@ numeric_mets(solubility_test, solubility, prediction)
 ```
 
 
-# Session information
+## Session information
 
 
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
 #>  version  R version 3.6.1 (2019-07-05)
-#>  os       macOS Mojave 10.14.6        
+#>  os       macOS Catalina 10.15.3      
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/New_York            
-#>  date     2020-04-14                  
+#>  tz       America/Los_Angeles         
+#>  date     2020-04-16                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
-#>  broom      * 0.5.4   2020-01-27 [1] CRAN (R 3.6.0)
-#>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 3.6.1)
+#>  broom      * 0.5.5   2020-02-29 [1] CRAN (R 3.6.0)
+#>  dials      * 0.0.4   2019-12-02 [1] CRAN (R 3.6.0)
 #>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
 #>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
 #>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
-#>  parsnip    * 0.1.0   2020-04-09 [1] CRAN (R 3.6.1)
+#>  parsnip    * 0.0.5   2020-01-07 [1] CRAN (R 3.6.0)
 #>  purrr      * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
 #>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
 #>  rlang      * 0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
-#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.1)
-#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.1)
-#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.1)
-#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.1)
-#>  workflows  * 0.1.0   2019-12-30 [1] CRAN (R 3.6.1)
+#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
+#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.0)
+#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
+#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
+#>  workflows  * 0.1.1   2020-03-17 [1] CRAN (R 3.6.0)
 #>  yardstick  * 0.0.5   2020-01-23 [1] CRAN (R 3.6.0)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library

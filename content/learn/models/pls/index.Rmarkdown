@@ -22,7 +22,7 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
 
-# Introduction
+## Introduction
 
 `r req_pkgs(pkgs)`
 
@@ -51,7 +51,7 @@ data(meats)
 
 The three _outcomes_ have fairly high correlations also. 
 
-# Preprocessing the data
+## Preprocessing the data
 
 If the outcomes can be predicted using a linear model, partial least squares (PLS) is an ideal method. PLS models the data as a function of a set of unobserved _latent_ variables that are derived in a manner similar to principal component analysis (PCA). 
 
@@ -82,7 +82,7 @@ folds <-
   mutate(recipes = map(splits, prepper, recipe = norm_rec))
 ```
 
-# Partial least squares
+## Partial least squares
 
 The complicated parts for moving forward are:
 
@@ -170,7 +170,7 @@ ggplot(variance_data, aes(x = components, y = proportion, col = source)) +
 ```
 
 
-# Session information
+## Session information
 
 ```{r si, echo = FALSE}
 small_session(pkgs)

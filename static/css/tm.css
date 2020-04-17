@@ -25,7 +25,7 @@ body, button, input, textarea {
 
 /* ----WHITE SPACE ----*/
 
-.article-content h1 {
+.article-content h2 {
   margin-bottom: 1.5em; /* increased from 0.5 main-site.css */
 }
 
@@ -129,7 +129,7 @@ div.tagline {
   font-size: 2.4em; /* same as main-site, but duplicated here so it applies to Learn .sectionTitle */
 }
 
-h1, h2, .itemTitle {   
+h1, h2, h3, .itemTitle {   
   font-family: 'Lato', sans-serif;
   font-weight: normal;
   font-size: 1.3em;
@@ -137,7 +137,7 @@ h1, h2, .itemTitle {
   letter-spacing: 1.5pt;
 }
 
-h1 {
+h2 {
   color: #1a162d;
 }
 
@@ -150,11 +150,22 @@ h1 {
   text-decoration: none;
 }
 
-h2 {
+h3 {
   font-size: 1.1em;
   color: #1a162d90;
 }
 
+h3 a {
+  color: #CA225E;
+  text-transform: none;
+  font-size: 1.5em;
+  letter-spacing: normal;
+}
+
+h4 {
+  font-size: 1.1em;
+  color: #1a162d90;
+}
 
 /*---------TOC----------*/
 
@@ -242,6 +253,13 @@ h2 {
   font-weight: normal;
 }
 
+.column25-left .sectionTitle.start:first-of-type a { /* GET STARTED LABEL */
+  text-transform: uppercase;
+  letter-spacing: 2pt;
+  font-size: 0.8rem !important;
+  font-weight: bold;
+}
+
 .column25-left .sectionTitle a:hover:not(.current) {
   color: #1a162dde;
   text-decoration: none;
@@ -262,6 +280,10 @@ h2 {
   padding-right: 3em;
   border-right: solid #d9d9d9 1pt;
   max-width: 250px;
+}
+
+.column25-left .section {
+  margin-bottom: 20px;
 }
 
 /* Learn List Page */
@@ -301,25 +323,11 @@ h2 {
 }
 
 .single-learning-objective-text {
+    color: #1a162d9e;
+    font-style: italic;
   }
 
-.single-learning-objective-text:after,
-.single-learning-objective-text:before {
-    border: 1pt solid #ca225e3d; 
-    bottom: 0;    
-    content: '';
-    position: absolute;
-    top: 0;
-    width: 5%;
-}
-.single-learning-objective-text:after {
-    border-left: none;
-    right: 0;
-}
-.single-learning-objective-text:before {
-    border-right: none;
-    left: 0;
-}
+
 
 
 

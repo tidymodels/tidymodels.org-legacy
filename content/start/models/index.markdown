@@ -13,7 +13,7 @@ description: |
 
 
 
-# Introduction {#intro}
+## Introduction {#intro}
 
 How do you create a statistical model using tidymodels? In this article, we will walk you through the steps. We start with data for modeling, learn how to specify and train models with different engines using the [parsnip package](https://tidymodels.github.io/parsnip/), and understand why these functions are designed this way.
 
@@ -31,7 +31,7 @@ library(rstanarm)    # for Bayesian analysis
 ```
 
 
-# The Sea Urchins Data {#data}
+## The Sea Urchins Data {#data}
 
 Let's use the data from [Constable (1993)](https://link.springer.com/article/10.1007/BF00349318) to explore how three different feeding regimes affect the size of sea urchins over time. The initial size of the sea urchins at the beginning of the experiment probably affects how big they grow as they are fed. 
 
@@ -100,7 +100,7 @@ ggplot(urchins,
 
 We can see that urchins that were larger in volume at the start of the experiment tended to have wider sutures at the end, but the slopes of the lines look different so this effect may depend on the feeding regime condition.
 
-# Build and fit a model {#build-model}
+## Build and fit a model {#build-model}
 
 A standard analysis of covariance ([ANCOVA](https://en.wikipedia.org/wiki/Analysis_of_covariance)) model makes sense for this dataset because we have both a continuous predictor and a categorical predictor. Since the slopes appear to be different for at least two of the feeding regimes, let's build a model that allows for two-way interactions. Specifying an R formula with our variables in this way: 
 
@@ -180,7 +180,7 @@ tidy(lm_fit)
 #> 6 initial_volume:food_regimeHigh  0.000525  0.000702     0.748 0.457
 ```
 
-# Use a model to predict {#predict-model}
+## Use a model to predict {#predict-model}
 
 This fitted object `lm_fit` has the `lm` model output built-in, which you can access with `lm_fit$fit`, but there are some benefits to using the fitted parsnip model object when it comes to predicting.
 
@@ -249,7 +249,7 @@ ggplot(plot_data, aes(x = food_regime)) +
 
 <img src="figs/lm-all-pred-1.svg" width="672" />
 
-# Model with a different engine {#new-engine}
+## Model with a different engine {#new-engine}
 
 Every one on your team is happy with that plot _except_ that one person who just read their first book on [Bayesian analysis](https://bayesian.org/what-is-bayesian-analysis/). They are interested in knowing if the results would be different if the model were estimated using a Bayesian approach. In such an analysis, a [_prior distribution_](https://towardsdatascience.com/introduction-to-bayesian-linear-regression-e66e60791ea7) needs to be declared for each model parameter that represents the possible values of the parameters (before being exposed to the observed data). After some discussion, the group agrees that the priors should be bell-shaped but, since no one has any idea what the range of values should be, to take a conservative approach and make the priors _wide_ using a Cauchy distribution (which is the same as a t-distribution with a single degree of freedom).
 
@@ -440,7 +440,7 @@ ggplot(bayes_plot_data, aes(x = food_regime)) +
 This isn't very different from the non-Bayesian results (except in interpretation). 
 
 
-# Why does it work that way? {#why}
+## Why does it work that way? {#why}
 
 The extra step of defining the model using a function like `linear_reg()` might seem superfluous since a call to `lm()` is much more succinct. However, the problem with standard modeling functions is that they don't separate what you want to do from the execution. For example, the process of executing a formula has to happen repeatedly across model calls even when the formula does not change; we can't recycle those computations. 
 
@@ -481,7 +481,7 @@ ggplot(urchins,
 ```
 
 
-# Session information {#session-info}
+## Session information {#session-info}
 
 
 ```
