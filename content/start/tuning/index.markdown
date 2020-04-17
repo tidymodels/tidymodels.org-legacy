@@ -369,7 +369,7 @@ Finally, let's return to our test data and estimate the model performance we exp
 
 
 ```r
-final_tree %>%
+final_wf %>%
   last_fit(cell_split) %>%
   collect_metrics
 #> # A tibble: 2 x 3
