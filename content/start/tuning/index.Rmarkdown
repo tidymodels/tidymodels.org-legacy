@@ -74,7 +74,7 @@ We use the training data for tuning the model.
 
 ## Tuning hyperparameters {#tuning}
 
-Let’s start with the parsnip package, using a [`decision_tree()`](https://tidymodels.github.io/parsnip/reference/decision_tree.html) model with the [rpart](https://cran.r-project.org/web/packages/rpart/index.html) engine. To tune the decision tree hyperparameters `cost_complexity` and `tree_depth`, we create a model specification that identifies which hyperparameters we intent to tune. 
+Let’s start with the parsnip package, using a [`decision_tree()`](https://tidymodels.github.io/parsnip/reference/decision_tree.html) model with the [rpart](https://cran.r-project.org/web/packages/rpart/index.html) engine. To tune the decision tree hyperparameters `cost_complexity` and `tree_depth`, we create a model specification that identifies which hyperparameters we plan to tune. 
 
 ```{r tune-spec}
 tune_spec <- 
