@@ -1,7 +1,7 @@
 ---
 title: "Evaluate your model with resampling"
 weight: 3
-tags: [rsample, parsnip, tune, yardstick]
+tags: [rsample, parsnip, tune, workflows, yardstick]
 categories: [resampling]
 description: | 
   Measure model performance by generating different versions of the training data through resampling.
