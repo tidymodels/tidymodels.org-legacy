@@ -28,7 +28,7 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 
 ## Introduction {#intro}
 
-So far, we have [built a model](/start/models/) and [preprocessed data with a recipe](/start/recipes/). We also introduced [workflows](/start/recipes/#fit-workflow) as a way to bundle a [parsnip model](https://tidymodels.github.io/parsnip/) and [recipe](https://tidymodels.github.io/recipes/) together. Once we have a workflow trained, we need a way to measure how well that workflow predicts new data. This tutorial explains how to characterize model performance based on **resampling** statistics. 
+So far, we have [built a model](/start/models/) and [preprocessed data with a recipe](/start/recipes/). We also introduced [workflows](/start/recipes/#fit-workflow) as a way to bundle a [parsnip model](https://tidymodels.github.io/parsnip/) and [recipe](https://tidymodels.github.io/recipes/) together. Once we have a model trained, we need a way to measure how well that model predicts new data. This tutorial explains how to characterize model performance based on **resampling** statistics. 
 
 `r req_pkgs(pkgs)`
 
