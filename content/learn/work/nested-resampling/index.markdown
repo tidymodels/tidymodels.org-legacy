@@ -15,7 +15,7 @@ description: |
 
 ## Introduction
 
-This article requires that you have the following packages installed: furrr, kernlab, mlbench, scales, and tidymodels.
+To use the code in this article, you will need to install the following packages: furrr, kernlab, mlbench, scales, and tidymodels.
 
 In this article, we discuss an alternative method for evaluating and tuning models, called [nested resampling](https://scholar.google.com/scholar?hl=en&as_sdt=0%2C7&q=%22nested+resampling%22+inner+outer&btnG=). While it is more computationally taxing and challenging to implement than other resampling methods, it has the potential to produce better estimates of model performance. 
 
@@ -263,7 +263,7 @@ results <-
 
 summary(results$RMSE)
 #>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-#>    1.57    2.09    2.68    2.69    3.25    4.35
+#>    1.57    2.09    2.68    2.69    3.25    4.25
 ```
 
 The estimated RMSE for the model tuning process is 2.69. 
@@ -326,37 +326,37 @@ The nested procedure produces a closer estimate to the approximate truth but the
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.1 (2019-07-05)
-#>  os       macOS Catalina 10.15.3      
+#>  version  R version 3.6.2 (2019-12-12)
+#>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/Los_Angeles         
-#>  date     2020-04-16                  
+#>  tz       America/Denver              
+#>  date     2020-04-17                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
 #>  broom      * 0.5.5   2020-02-29 [1] CRAN (R 3.6.0)
-#>  dials      * 0.0.4   2019-12-02 [1] CRAN (R 3.6.0)
+#>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 3.6.2)
 #>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
 #>  furrr      * 0.1.0   2018-05-16 [1] CRAN (R 3.6.0)
 #>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
 #>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
 #>  kernlab    * 0.9-29  2019-11-12 [1] CRAN (R 3.6.0)
 #>  mlbench    * 2.1-1   2012-07-10 [1] CRAN (R 3.6.0)
-#>  parsnip    * 0.0.5   2020-01-07 [1] CRAN (R 3.6.0)
+#>  parsnip    * 0.1.0   2020-04-09 [1] CRAN (R 3.6.2)
 #>  purrr      * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
 #>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
 #>  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
 #>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
 #>  scales     * 1.1.0   2019-11-18 [1] CRAN (R 3.6.0)
-#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.0)
+#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.2)
 #>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
 #>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
 #>  workflows  * 0.1.1   2020-03-17 [1] CRAN (R 3.6.0)
-#>  yardstick  * 0.0.5   2020-01-23 [1] CRAN (R 3.6.0)
+#>  yardstick  * 0.0.6   2020-03-17 [1] CRAN (R 3.6.0)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
 ```
