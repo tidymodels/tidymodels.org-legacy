@@ -381,6 +381,20 @@ final_wf %>%
 
 The performance metrics from the test set indicate that we did not overfit during our tuning procedure.
 
+We leave it to the reader to explore whether you can tune a different decision tree hyperparameter. You can explore the [reference docs](/find/parsnip/#models), or use the `args()` function to see which parsnip object arguments are available:
+
+
+```r
+args(decision_tree)
+#> function (mode = "unknown", cost_complexity = NULL, tree_depth = NULL, 
+#>     min_n = NULL) 
+#> NULL
+```
+
+You could tune the other hyperparameter we didn't use here, `min_n`, which sets the minimum `n` to split at any node. This is another early stopping method for decision trees that can help prevent overfitting. Use this [searchable table](/find/parsnip/#model-args) to find the original argument for `min_n` in the rpart package ([hint](https://stat.ethz.ch/R-manual/R-devel/library/rpart/html/rpart.control.html)). See whether you can tune a different combination of hyperparameters and/or values to improve a tree's ability predict cell segmentation quality.
+
+
+
 ## Session information
 
 
