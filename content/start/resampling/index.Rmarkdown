@@ -283,7 +283,9 @@ From these resampling statistics, the final estimate of performance for this ran
 
 These resampling statistics are an effective method for measuring model performance _without_ predicting the training set directly as a whole. 
 
-To generate these results, the first step is to create a resampling object using rsample. There are several resampling methods implemented in rsample; cross-validation folds can be created using `vfold_cv()`: 
+## Fit a model with resampling
+
+To generate these results, the first step is to create a resampling object using rsample. There are [several resampling methods](https://tidymodels.github.io/rsample/reference/index.html#section-resampling-methods) implemented in rsample; cross-validation folds can be created using `vfold_cv()`: 
 
 ```{r folds}
 set.seed(345)
@@ -293,7 +295,13 @@ folds
 
 The list column for `splits` contains the information on which rows belong in the analysis and assessment sets. There are functions that can be used to extract the individual resampled data called `analysis()` and `assessment()`. 
 
-However, the tune package contains high-level functions that can do the required computations to resample a model for the purpose of measuring performance. You have several options for building an object for resampling; you can resample a model specification preprocessed with a formula or [recipe](/start/recipes/), or you can resample a [`workflow()`](https://tidymodels.github.io/workflows/) that bundles together a model specification and formula/recipe. For this example, let's use a `workflow()` that bundles together the random forest model and a formula. Whatever of these options you use, the syntax to resample is very similar to `fit()`: 
+However, the tune package contains high-level functions that can do the required computations to resample a model for the purpose of measuring performance. You have several options for building an object for resampling:
+
++ Resample a model specification preprocessed with a formula or [recipe](/start/recipes/), or 
+
++ Resample a [`workflow()`](https://tidymodels.github.io/workflows/) that bundles together a model specification and formula/recipe. 
+
+For this example, let's use a `workflow()` that bundles together the random forest model and a formula, since we are not using a recipe. Whichever of these options you use, the syntax to `fit_resamples()` is very similar to `fit()`: 
 
 ```{r rs, eval = FALSE}
 rf_wf <- 
@@ -302,7 +310,9 @@ rf_wf <-
   add_formula(class ~ .)
 
 set.seed(456)
-rf_fit_rs <- fit_resamples(rf_wf, folds)
+rf_fit_rs <- 
+  rf_wf %>% 
+  fit_resamples(folds)
 ```
 
 ```{r rs-show}
@@ -317,9 +327,8 @@ collect_metrics(rf_fit_rs)
 
 Think about these values we now have for accuracy and AUC. These performance metrics are now more realistic (i.e. lower) than our ill-advised first attempt at computing performance metrics in the section above. If we wanted to try different model types for this data set, we could more confidently compare performance metrics computed using resampling to choose between models. Also, remember that at the end of our project, we return to our test set to estimate final model performance. We have looked at this once already before we started using resampling, but let's remind ourselves of the results:
 
-```{r testing-final}
-accuracy(rf_testing_pred, truth = class, .pred_class)
-roc_auc(rf_testing_pred,  truth = class, .pred_PS)
+```{r ref.label='rf-test-perf'}
+
 ```
 
 The performance metrics from the test set are much closer to the performance metrics computed using resampling than our first ("bad idea") attempt. Resampling allows us to simulate how well our model will perform on new data, and the test set acts as the final, unbiased check for our model's performance.
