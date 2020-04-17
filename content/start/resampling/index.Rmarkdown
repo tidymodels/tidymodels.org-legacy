@@ -167,11 +167,11 @@ During a modeling project, we might create a variety of different models. To cho
  
  * overall classification accuracy.
  
-The ROC curve uses the class probability estimates to give us a sense of performance across the entire set of potential probability cutoffs. Overall accuracy uses the hard class predictions to measure performance (assuming a simple 50% probability cutoff to categorize a cell as poorly segmented). 
+The ROC curve uses the class probability estimates to give us a sense of performance across the entire set of potential probability cutoffs. Overall accuracy uses the hard class predictions to measure performance. The hard class predictions tell us whether our model predicted `PS` or `WS` for each cell. But, behind those predictions, the model is actually estimating a probability. A simple 50% probability cutoff is used to categorize a cell as poorly segmented.
 
-The yardstick package has functions for computing both of these measures called `roc_auc()` and `accuracy()`. 
+The [yardstick package](https://tidymodels.github.io/yardstick/) has functions for computing both of these measures called `roc_auc()` and `accuracy()`. 
 
-At first glance, it might seem like a good idea to use the training set data to compute these statistics^[Spoiler alert: it is a very bad idea to do this.]. To do this, we call the `predict()` method to get both types of predictions (i.e. probabilities and hard class predictions).
+At first glance, it might seem like a good idea to use the training set data to compute these statistics. What could go wrong? Let's see what happens if we try this. To evaluate performance based on the training set, we call the `predict()` method to get both types of predictions (i.e. probabilities and hard class predictions).
 
 ```{r rf-train-pred}
 rf_training_pred <- 
@@ -185,8 +185,10 @@ rf_training_pred <-
 Using the yardstick functions, this model has spectacular results, so spectacular that you might be starting to get suspicious: 
 
 ```{r rf-train-perf}
-roc_auc(rf_training_pred,  truth = class, .pred_PS)
-accuracy(rf_training_pred, truth = class, .pred_class)
+rf_training_pred %>%                # training set predictions
+  roc_auc(truth = class, .pred_PS)
+rf_training_pred %>%                # training set predictions
+  accuracy(truth = class, .pred_class)
 ```
 
 Now that we have this model with exceptional performance, we proceed to the test set. Unfortunately, we discover that, although our results aren't bad, they are certainly worse than what we initially thought based on predicting the training set: 
@@ -196,16 +198,20 @@ rf_testing_pred <-
   predict(rf_fit, cell_test) %>% 
   bind_cols(predict(rf_fit, cell_test, type = "prob")) %>% 
   bind_cols(cell_test %>% select(class))
-
-roc_auc(rf_testing_pred,  truth = class, .pred_PS)
-accuracy(rf_testing_pred, truth = class, .pred_class)
 ```
 
-**What happened here?**
+```{r rf-test-perf}
+rf_testing_pred %>%                   # test set predictions
+  roc_auc(truth = class, .pred_PS)
+rf_testing_pred %>%                   # test set predictions
+  accuracy(truth = class, .pred_class)
+```
+
+### What happened here?
 
 There are several reasons why training set statistics like the ones shown in this section can be unrealistically optimistic: 
 
- * Models like random forests, neural networks, and other black-box methods can essentially memorize the training set. Re-predicting that same set should always result in nearly perfect results^[Notice that this means our degree of optimism in training set statistics is model dependent.]. 
+ * Models like random forests, neural networks, and other black-box methods can essentially memorize the training set. Re-predicting that same set should always result in nearly perfect results.
 
 * The training set does not have the capacity to be a good arbiter of performance. It is not an independent piece of information; predicting the training set can only reflect what the model already knows. 
 
