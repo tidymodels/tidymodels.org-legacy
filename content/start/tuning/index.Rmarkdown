@@ -40,27 +40,32 @@ library(vip)         # for variable importance plots
 library(rpart)       # for decision trees
 ```
 
-## Predicting image segmentation, but better
+## The cell image data, revisited {#data}
 
-In our [article on resampling](/start/resampling/), we introduced a data set of images of cells that were labeled by experts as well-segmented (`WS`) or poorly segmented (`PS`). We trained a random forest model to predict which images are segmented well vs. poorly, so that a biologist could filter out poorly segmented cell images in their analysis. We used resampling to estimate the performance of our model on this data.
+In our previous [*Evaluate your model with resampling*](/start/resampling/) article, we introduced a data set of images of cells that were labeled by experts as well-segmented (`WS`) or poorly segmented (`PS`). We trained a [random forest model](/start/resampling/#modeling) to predict which images are segmented well vs. poorly, so that a biologist could filter out poorly segmented cell images in their analysis. We used [resampling](/start/resampling/#resampling) to estimate the performance of our model on this data.
 
-```{r cell-import}
+```{r cell-import, R.options = list(tibble.print_min = 5, tibble.max_extra_cols = 5)}
 data(cells, package = "modeldata")
 cells
 ```
 
-Random forest models typically perform well with defaults, but the accuracy of some other kinds of models, such as boosted tree models or decision tree models, can be sensitive to the values of hyperparameters. In this article we will train a **decision tree** model. There are several hyperparameters for decision tree models that can be tuned for better performance. Let's explore:
+## Predicting image segmentation, but better {#why-tune}
+
+Random forest models are a tree-based ensemble method, and typically perform well with default hyperparameters. However, the accuracy of some other tree-based models, such as [boosted tree models](https://en.wikipedia.org/wiki/Gradient_boosting#Gradient_tree_boosting) or [decision tree models](https://en.wikipedia.org/wiki/Decision_tree), can be sensitive to the values of hyperparameters. In this article, we will train a **decision tree** model. There are several hyperparameters for decision tree models that can be tuned for better performance. Let's explore:
 
 - the complexity parameter (which we call `cost_complexity` in tidymodels) for the tree, and
 - the maximum `tree_depth`.
 
-Before we start the tuning process, we split our data into training and testing sets, just like when we trained the model with one default set of hyperparameters. We can use `strata = class` if we want our training and testing sets to be created using stratified sampling so that both have the same proportion of both kinds of segmentation.
+Tuning these hyperparameters often improves model performance because decision tree models are prone to [overfitting](http://www.feat.engineering/important-concepts.html#overfitting). This happens because single tree models tend to fit the training data _too well_ &mdash; so well, in fact, that they overlearn patterns and trends present in the training data that do not actually help when faced with new data to predict. 
+
+We will use hyperparameters to help our decision tree avoid overfitting. Tuning the value of `cost_complexity` helps by [pruning](https://bradleyboehmke.github.io/HOML/DT.html#pruning) back our tree. It adds a cost, or penalty, to error rates of more complex trees; a cost closer to zero is more likely to result in an overfit tree, but a larger cost can result in the opposite problem- underfitting. Tuning `tree_depth`, on the other hand, helps by [stopping our tree from growing](https://bradleyboehmke.github.io/HOML/DT.html#early-stopping) after it reaches a certain depth. We want to tune these hyperparameters to find out what those two values should be to help our model predict image segmentation better. 
+
+Before we start the tuning process, we split our data into training and testing sets, just like when we trained the model with one default set of hyperparameters. As [before](/start/resampling/), we can use `strata = class` if we want our training and testing sets to be created using stratified sampling so that both have the same proportion of both kinds of segmentation.
 
 ```{r cell-split}
-library(tidymodels) 
-
 set.seed(123)
-cell_split <- initial_split(cells %>% select(-case), strata = class)
+cell_split <- initial_split(cells %>% select(-case), 
+                            strata = class)
 cell_train <- training(cell_split)
 cell_test  <- testing(cell_split)
 ```
