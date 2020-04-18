@@ -23,7 +23,7 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 
 ## Introduction {#intro}
 
-Each of the four previous [_Get Started_](/start/) articles have been focused on a single task related to modeling. Along the way, we also introduced core packages in the tidymodels ecosystem and some of the key functions you'll need to start working with models. In this final case study, we use all the previous articles as a foundation to build a predictive model from beginning to end. 
+Each of the four previous [_Get Started_](/start/) articles has focused on a single task related to modeling. Along the way, we also introduced core packages in the tidymodels ecosystem and some of the key functions you'll need to start working with models. In this final case study, we will use all of the previous articles as a foundation to build a predictive model from beginning to end. 
 
 `r req_pkgs(pkgs)`
 
@@ -42,7 +42,7 @@ library(ranger)      # for random forest model
 
 ## The Hotel Bookings Data {#data}
 
-Let’s use hotel bookings data from [Antonio, Almeida, and Nunes (2019)](https://doi.org/10.1016/j.dib.2018.11.126) to predict which hotel stays included children and/or babies, based on the other characteristics of the stays such as which hotel the guests stay at, how much they pay, etc. This was also a [`#TidyTuesday`](https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-02-11) dataset with a [data dictionary](https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-02-11#data-dictionary) you may want to look over. We'll use a slightly [different version of the dataset](https://gist.github.com/topepo/05a74916c343e57a71c51d6bc32a21ce) for this case study. 
+Let’s use hotel bookings data from [Antonio, Almeida, and Nunes (2019)](https://doi.org/10.1016/j.dib.2018.11.126) to predict which hotel stays included children and/or babies, based on the other characteristics of the stays such as which hotel the guests stay at, how much they pay, etc. This was also a [`#TidyTuesday`](https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-02-11) dataset with a [data dictionary](https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-02-11#data-dictionary) you may want to look over to learn more about the variables. We'll use a slightly [edited version of the dataset](https://gist.github.com/topepo/05a74916c343e57a71c51d6bc32a21ce) for this case study. 
 
 To start, let's read our hotel data into R, which we'll do by providing [`readr::read_csv()`](https://readr.tidyverse.org/reference/read_delim.html) with a url where our CSV data is located ("<https://tidymodels.org/start/case-study/hotels.csv>"):
 
@@ -58,7 +58,7 @@ dim(hotels)
 ```
 
 
-In the original paper, the [authors](https://doi.org/10.1016/j.dib.2018.11.126) note that the distribution of many of these variables (such as number of adults/children, room type, meals bought, country of origin of the guests, and so forth) is different for hotel bookings that were canceled vs. not canceled. This makes sense because that information is gathered when guests check in for their stay, so canceled bookings are likely to be more variable with more missing data than non-canceled bookings. Given this, it is unlikely that there are systematic differences between guests who cancel their bookings and those who do not in this dataset. To build our models, we have already filtered the data to include only the bookings that _did not cancel_. 
+In the original paper, the [authors](https://doi.org/10.1016/j.dib.2018.11.126) caution that the distribution of many of these variables (such as number of adults/children, room type, meals bought, country of origin of the guests, and so forth) is different for hotel bookings that were canceled versus not canceled. This makes sense because much of that information is gathered when guests check in for their stay, so canceled bookings are likely to be more variable and have more missing data than non-canceled bookings. Given this, it is unlikely that there are systematic differences between guests who cancel their bookings and those who do not in this dataset. To build our models, we have already filtered the data to include only the bookings that _did not cancel_. 
 
 ```{r glimpse-hotels}
 glimpse(hotels)
@@ -96,13 +96,13 @@ hotel_test  %>%
   mutate(prop = n/sum(n))
 ```
 
-In our earlier articles, we've been using 10-fold cross-validation as the primary resampling method with [`rsample::vfold_cv()`](https://tidymodels.github.io/rsample/reference/vfold_cv.html). This has created 10 different resamples of the training set (which we further split into _analysis_ and _assessment_ sets), producing 10 different performance metrics that we then aggregated.
+In our articles so far, we've relied on 10-fold cross-validation as the primary resampling method using [`rsample::vfold_cv()`](https://tidymodels.github.io/rsample/reference/vfold_cv.html). This has created 10 different resamples of the training set (which we further split into _analysis_ and _assessment_ sets), producing 10 different performance metrics that we then aggregated.
 
-For this case study, rather than using multiple iterations of resampling, let's create a single resample called a _validation set_. In tidymodels, a validation set is treated as a single iteration of resampling. This will be a split from the `r format(nrow(hotel_other), big.mark = ",")` reservations that were not used for testing which we called `hotel_other`. This split creates two new datasets: 
+For this case study, rather than using multiple iterations of resampling, let's create a single resample called a _validation set_. In tidymodels, a validation set is treated as a single iteration of resampling. This will be a split from the `r format(nrow(hotel_other), big.mark = ",")` reservations that were not used for testing, which we called `hotel_other`. This split creates two new datasets: 
 
-+ the set held out for the purpose of measuring performance is called the _validation set_, and 
++ the set held out for the purpose of measuring performance, called the _validation set_, and 
 
-+ the remaining data used to fit the model is called the _training set_. 
++ the remaining data used to fit the model, called the _training set_. 
 
 ```{r validation-fig, echo = FALSE, fig.align='center', out.width="50%"}
 knitr::include_graphics("img/validation-split.svg")
@@ -118,10 +118,11 @@ val_set <- validation_split(hotel_other,
 val_set
 ```
 
+Note that this function, like `initial_split()` has the same `strata` argument to use stratified sampling to create the resample. This means that we'll have roughly the same proportions of bookings with and without children in our new validation and training sets, as compared to the original `hotel_other` proportions.
 
-## Our first model: penalized logistic regression {#first-model}
+## A first model: penalized logistic regression {#first-model}
 
-Since our outcome variable `children` is categorical, a logistic regression model would be a good first model to start. Let's use a model to can perform feature selection during training. The [glmnet](https://cran.r-project.org/web/packages/glmnet/index.html) R package fits a generalized linear model via penalized maximum likelihood. This method of estimating the logistic regression slope parameters uses a _penalty_ on the process so that less relevant predictors are driven towards a value of zero. One of the glmnet penalization methods, called the [lasso method](https://en.wikipedia.org/wiki/Lasso_(statistics)), can set the predictor slopes to absolute zero if a large enough penalty is used. 
+Since our outcome variable `children` is categorical, a logistic regression would be a good first model to start. Let's use a model to can perform feature selection during training. The [glmnet](https://cran.r-project.org/web/packages/glmnet/index.html) R package fits a generalized linear model via penalized maximum likelihood. This method of estimating the logistic regression slope parameters uses a _penalty_ on the process so that less relevant predictors are driven towards a value of zero. One of the glmnet penalization methods, called the [lasso method](https://en.wikipedia.org/wiki/Lasso_(statistics)), can set the predictor slopes to absolute zero if a large enough penalty is used. 
 
 ### Build the model
 
@@ -182,7 +183,7 @@ lr_workflow <-
 Before we fit this model, we need to set up a grid of `penalty` values to tune. In our [*Tune model parameters*](/start/tuning/) article, we used [`dials::grid_regular()`](start/tuning/#tune-grid) to create the grid. We can also set the grid up manually using [`base::expand.grid()`](https://rdrr.io/r/base/expand.grid.html) to create a data frame with 30 candidate values:
 
 ```{r logistic-grid}
-lr_reg_grid <- expand_grid(penalty = 10^seq(-4, -1, length.out = 30))
+lr_reg_grid <- expand.grid(penalty = 10^seq(-4, -1, length.out = 30))
 
 # show the 5 lowest and highest values
 head(lr_reg_grid)
@@ -204,7 +205,7 @@ lr_res <-
             metrics = roc_only)
 ```
 
-The resulting validation set metrics are computed and plotted against the amount of penalization: 
+It might be easier to visualize the validation set metrics by plotting the area under the ROC curve against the range of penalty values: 
 
 ```{r logistic-results, fig.height = 4.25, fig.width = 6}
 lr_plot <- 
@@ -227,14 +228,16 @@ Our model performance seems to plateau at the smaller penalty values, so going b
 top_models <-
   lr_res %>% 
   show_best("roc_auc", n = 15) %>% 
-  arrange(penalty) %>% 
-  # Adding a candidate model ID variable
-  mutate(cand_model = row_number())
-
+  arrange(penalty) 
 top_models
 ```
 
 ```{r top-cand-mods, include = FALSE}
+# Adding a candidate model ID variable
+top_models <- 
+  top_models %>% 
+  mutate(cand_model = row_number())
+
 top_pen <- 
   lr_res %>% 
   select_best("roc_auc") %>% 
@@ -253,7 +256,7 @@ select_pen <-
   pull(penalty)
 ```
 
-We know that every candidate model (`cand_model`) in this tibble includes more predictor variables than the model in the row below it. If we used `select_best()`, it would return candidate model `r top_cand` with a penalty value of `r format(top_pen, digits = 4)`, shown with the dotted line below. 
+We know that every candidate model in this tibble includes more predictor variables than the model in the row below it. If we used `select_best()`, it would return candidate model `r top_cand` with a penalty value of `r format(top_pen, digits = 3)`, shown with the dotted line below. 
 
 ```{r lr-plot-lines, echo=FALSE, fig.height = 4.25, fig.width = 6}
 lr_plot  +
@@ -261,12 +264,14 @@ lr_plot  +
   geom_vline(color = "#CA225E", xintercept = select_pen) 
 ```
 
-But, we may want to choose a penalty value further along the x-axis, closer to where we see the decline in model performance as the best. For example, candidate model `r select_cand` with a penalty value of `r format(select_pen, digits = 4)` has effectively the same performance as the numerically best model, but might eliminate more predictors. This penatly value is marked by the solid line above.
+But, we may want to choose a penalty value further along the x-axis, closer to where we start to see the decline in model performance. For example, candidate model `r select_cand` with a penalty value of `r format(select_pen, digits = 3)` has effectively the same performance as the numerically best model, but might eliminate more predictors. This penalty value is marked by the solid line above.
 
 Let's select this value and visualize the validation set ROC curve:
 ```{r logistic-best}
 lr_best <- 
-  top_models %>% 
+  lr_res %>% 
+  collect_metrics() %>% 
+  arrange(penalty) %>% 
   slice(12)
 lr_best
 ```
@@ -284,7 +289,7 @@ autoplot(lr_auc)
 
 The level of performance generated by this logistic regression model is good, but not groundbreaking. Perhaps the linear nature of the prediction equation is too limiting for this data set. As a next step, we might consider a highly non-linear model generated using a tree-based ensemble method. 
 
-## Tree-based ensembles
+## A second model: tree-based ensemble {#second-model}
 
 One effective and low-maintenance modeling technique is a _random forest_ (also used in the [resampling article](/start/resampling/)). This model can be used with less preprocessing than the logistic regression; conversion to dummy variables and variable normalization are not required. As before, the date predictor is engineered so that the random forest model does not need to work hard to tease these potential patterns from the data.  
 
