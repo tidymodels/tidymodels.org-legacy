@@ -57,7 +57,7 @@ dim(hotels)
 ```
 
 
-In the original paper, the [authors](https://doi.org/10.1016/j.dib.2018.11.126) note that the distribution of many of these variables (such as number of adults/children, room type, meals bought, country of origin of the guests, and so forth) is different for hotel bookings that were canceled vs. not canceled. This makes sense because that information is gathered when guests check in for their stay, so canceled bookings are likely to be more variable with more missing data than non-canceled bookings. Given this, it is unlikely that there are systematic differences between guests who cancel their bookings and those who do not in this dataset. To build our models, we have already filtered the data to include only the bookings that _did not cancel_. We will build a model to predict which actual hotel stays include children and/or babies, and which do not.
+In the original paper, the [authors](https://doi.org/10.1016/j.dib.2018.11.126) note that the distribution of many of these variables (such as number of adults/children, room type, meals bought, country of origin of the guests, and so forth) is different for hotel bookings that were canceled vs. not canceled. This makes sense because that information is gathered when guests check in for their stay, so canceled bookings are likely to be more variable with more missing data than non-canceled bookings. Given this, it is unlikely that there are systematic differences between guests who cancel their bookings and those who do not in this dataset. To build our models, we have already filtered the data to include only the bookings that _did not cancel_. We will build a model to predict which actual hotel stays included children and/or babies, and which did not.
 
 ## Data Spending
 
