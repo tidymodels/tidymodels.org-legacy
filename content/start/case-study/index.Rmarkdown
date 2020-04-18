@@ -33,10 +33,6 @@ library(tidymodels)
 # Helper packages
 library(readr)       # for importing data
 library(vip)         # for variable importance plots
-
-# Modeling packages
-library(glmnet)      # for penalized logistic regression model
-library(ranger)      # for random forest model
 ```
 
 

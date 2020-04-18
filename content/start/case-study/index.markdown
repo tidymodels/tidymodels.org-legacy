@@ -25,10 +25,6 @@ library(tidymodels)
 # Helper packages
 library(readr)       # for importing data
 library(vip)         # for variable importance plots
-
-# Modeling packages
-library(glmnet)      # for penalized logistic regression model
-library(ranger)      # for random forest model
 ```
 
 
@@ -52,7 +48,7 @@ dim(hotels)
 ```
 
 
-In the original paper, the [authors](https://doi.org/10.1016/j.dib.2018.11.126) caution that the distribution of many of these variables (such as number of adults/children, room type, meals bought, country of origin of the guests, and so forth) is different for hotel bookings that were canceled versus not canceled. This makes sense because much of that information is gathered when guests check in for their stay, so canceled bookings are likely to be more variable and have more missing data than non-canceled bookings. Given this, it is unlikely that there are systematic differences between guests who cancel their bookings and those who do not in this dataset. To build our models, we have already filtered the data to include only the bookings that _did not cancel_. 
+In the original paper, the [authors](https://doi.org/10.1016/j.dib.2018.11.126) caution that the distribution of many variables (such as number of adults/children, room type, meals bought, country of origin of the guests, and so forth) is different for hotel bookings that were canceled versus not canceled. This makes sense because much of that information is gathered when guests check in for their stay, so canceled bookings are likely to be more variable and have more missing data than non-canceled bookings. Given this, it is unlikely that there are systematic differences between guests who cancel their bookings and those who do not in this dataset. To build our models, we have already filtered the data to include only the bookings that _did not cancel_. 
 
 
 ```r
@@ -163,11 +159,11 @@ Note that this function, like `initial_split()` has the same `strata` argument t
 
 ## A first model: penalized logistic regression {#first-model}
 
-Since our outcome variable `children` is categorical, a logistic regression would be a good first model to start. Let's use a model to can perform feature selection during training. The [glmnet](https://cran.r-project.org/web/packages/glmnet/index.html) R package fits a generalized linear model via penalized maximum likelihood. This method of estimating the logistic regression slope parameters uses a _penalty_ on the process so that less relevant predictors are driven towards a value of zero. One of the glmnet penalization methods, called the [lasso method](https://en.wikipedia.org/wiki/Lasso_(statistics)), can set the predictor slopes to absolute zero if a large enough penalty is used. 
+Since our outcome variable `children` is categorical, a logistic regression would be a good first model to start. Let's use a model that can perform feature selection during training. The [glmnet](https://cran.r-project.org/web/packages/glmnet/index.html) R package fits a generalized linear model via penalized maximum likelihood. This method of estimating the logistic regression slope parameters uses a _penalty_ on the process so that less relevant predictors are driven towards a value of zero. One of the glmnet penalization methods, called the [lasso method](https://en.wikipedia.org/wiki/Lasso_(statistics)), can set the predictor slopes to absolute zero if a large enough penalty is used. 
 
 ### Build the model
 
-To specify a penalized logistic regression model that uses a feature selection penalty, let's use the parsnip package with the glmnet engine:  
+To specify a penalized logistic regression model that uses a feature selection penalty, let's use the parsnip package with the [glmnet engine](/find/parsnip/):  
 
 
 ```r
@@ -187,6 +183,8 @@ Let's create a [recipe](/start/recipes/) to define the preprocessing steps we ne
 + `step_holiday()` generates a set of indicator variables for specific holidays. Although we don't know where these two hotels are located, we do know that the countries for origin for most bookings are based in Europe.
 
 + `step_rm()` removes variables; here we'll use it to remove the original date variable since we no longer want it in the model.
+
++ `step_dummy()` converts characters or factors (i.e., nominal variables) into one or more numeric binary model terms for the levels of the original data.
 
 + `step_zv()` removes indicator variables that only contain a single unique value (e.g. all zeros). This is important because, for penalized models, the predictors should be centered and scaled.
 
@@ -224,29 +222,32 @@ lr_workflow <-
 
 ### Create the grid for tuning
 
-Before we fit this model, we need to set up a grid of `penalty` values to tune. In our [*Tune model parameters*](/start/tuning/) article, we used [`dials::grid_regular()`](start/tuning/#tune-grid) to create the grid. We can also set the grid up manually using [`base::expand.grid()`](https://rdrr.io/r/base/expand.grid.html) to create a data frame with 30 candidate values:
+Before we fit this model, we need to set up a grid of `penalty` values to tune. In our [*Tune model parameters*](/start/tuning/) article, we used [`dials::grid_regular()`](start/tuning/#tune-grid) to create an expanded grid based on a combination of two hyperparameters. Since we have only one hyperparameter to tune here, we can set the grid up manually using a one-column tibble with 30 candidate values:
 
 
 ```r
-lr_reg_grid <- expand.grid(penalty = 10^seq(-4, -1, length.out = 30))
+lr_reg_grid <- tibble(penalty = 10^seq(-4, -1, length.out = 30))
 
-# show the 5 lowest and highest values
-head(lr_reg_grid)
-#>        penalty
-#> 1 0.0001000000
-#> 2 0.0001268961
-#> 3 0.0001610262
-#> 4 0.0002043360
-#> 5 0.0002592944
-#> 6 0.0003290345
-tail(lr_reg_grid)
-#>       penalty
-#> 25 0.03039195
-#> 26 0.03856620
-#> 27 0.04893901
-#> 28 0.06210169
-#> 29 0.07880463
-#> 30 0.10000000
+lr_reg_grid %>% top_n(-5) # lowest penalty values
+#> Selecting by penalty
+#> # A tibble: 5 x 1
+#>    penalty
+#>      <dbl>
+#> 1 0.0001  
+#> 2 0.000127
+#> 3 0.000161
+#> 4 0.000204
+#> 5 0.000259
+lr_reg_grid %>% top_n(5)  # highest penalty values
+#> Selecting by penalty
+#> # A tibble: 5 x 1
+#>   penalty
+#>     <dbl>
+#> 1  0.0386
+#> 2  0.0489
+#> 3  0.0621
+#> 4  0.0788
+#> 5  0.1
 ```
 
 ### Train and tune the model
