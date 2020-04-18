@@ -25,11 +25,11 @@ In our [*Build a Model*](/start/models/) article, we learned how to specify and 
  
 and so on. If you are familiar with R's formula interface, a lot of this might sound familiar and like what a formula already does. Recipes can be used to do many of the same things, but they have a much wider range of possibilities. This article shows how to use recipes for modeling. 
 
-This article requires that you have the following packages installed: nycflights13, skimr, and tidymodels.
+To use code in this article,  you will need to install the following packages: nycflights13, skimr, and tidymodels.
 
 
 ```r
-library(tidymodels) 
+library(tidymodels)      # for the recipes package, along with the rest of tidymodels
 
 # Helper packages
 library(nycflights13)    # for flight data
@@ -439,11 +439,11 @@ flights_wflow <-
   add_model(lr_mod) %>% 
   add_recipe(flights_rec)
 flights_wflow
-#> ══ Workflow ═════════════════════════════════════════════════════════
+#> ══ Workflow ═══════════════════════════════════════════════════════════════════════════════════════════
 #> Preprocessor: Recipe
 #> Model: logistic_reg()
 #> 
-#> ── Preprocessor ─────────────────────────────────────────────────────
+#> ── Preprocessor ───────────────────────────────────────────────────────────────────────────────────────
 #> 5 Recipe Steps
 #> 
 #> ● step_date()
@@ -452,7 +452,7 @@ flights_wflow
 #> ● step_dummy()
 #> ● step_zv()
 #> 
-#> ── Model ────────────────────────────────────────────────────────────
+#> ── Model ──────────────────────────────────────────────────────────────────────────────────────────────
 #> Logistic Regression Model Specification (classification)
 #> 
 #> Computational engine: glm
@@ -462,7 +462,9 @@ Now, there is a single function that can be used to prepare the recipe and train
 
 
 ```r
-flights_fit <- fit(flights_wflow, data = train_data)
+flights_fit <- 
+  flights_wflow %>% 
+  fit(data = train_data)
 ```
  
 This object has the finalized recipe and fitted model objects inside. You may want to extract the model or recipe objects from the workflow. To do this, you can use the helper functions `pull_workflow_fit()` and `pull_workflow_recipe()`. For example, here we pull the fitted model object then use the `broom::tidy()` function to get a tidy tibble of model coefficients: 
@@ -578,7 +580,7 @@ Not too bad! We leave it to the reader to test out this workflow [*without*](htt
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Los_Angeles         
-#>  date     2020-04-16                  
+#>  date     2020-04-17                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package      * version date       lib source        

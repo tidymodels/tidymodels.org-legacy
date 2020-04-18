@@ -30,7 +30,7 @@ How do you create a statistical model using tidymodels? In this article, we will
 `r req_pkgs(pkgs)`
 
 ```{r eval=FALSE}
-library(tidymodels) 
+library(tidymodels)  # for the parsnip package, along with the rest of tidymodels
 
 # Helper packages
 library(readr)       # for importing data

@@ -15,7 +15,7 @@ description: |
 
 ## Introduction {#intro}
 
-So far, we have [built a model](/start/models/) and [preprocessed data with a recipe](/start/recipes/). We also introduced [workflows](/start/recipes/#fit-workflow) as a way to bundle a [parsnip model](https://tidymodels.github.io/parsnip/) and [recipe](https://tidymodels.github.io/recipes/) together. Once we have a workflow trained, we need a way to measure how well that workflow predicts new data. This tutorial explains how to characterize model performance based on **resampling** statistics. 
+So far, we have [built a model](/start/models/) and [preprocessed data with a recipe](/start/recipes/). We also introduced [workflows](/start/recipes/#fit-workflow) as a way to bundle a [parsnip model](https://tidymodels.github.io/parsnip/) and [recipe](https://tidymodels.github.io/recipes/) together. Once we have a model trained, we need a way to measure how well that model predicts new data. This tutorial explains how to characterize model performance based on **resampling** statistics. 
 
 To use code in this article,  you will need to install the following packages: modeldata, ranger, and tidymodels.
 
@@ -188,7 +188,7 @@ rf_fit <-
 rf_fit
 #> parsnip model object
 #> 
-#> Fit time:  2.7s 
+#> Fit time:  3s 
 #> Ranger result
 #> 
 #> Call:
@@ -220,7 +220,7 @@ The ROC curve uses the class probability estimates to give us a sense of perform
 
 The [yardstick package](https://tidymodels.github.io/yardstick/) has functions for computing both of these measures called `roc_auc()` and `accuracy()`. 
 
-At first glance, it might seem like a good idea to use the training set data to compute these statistics. What could go wrong? Let's see what happens if we try this. To evaluate performance based on the training set, we call the `predict()` method to get both types of predictions (i.e. probabilities and hard class predictions).
+At first glance, it might seem like a good idea to use the training set data to compute these statistics. (This is actually a very bad idea.) Let's see what happens if we try this. To evaluate performance based on the training set, we call the `predict()` method to get both types of predictions (i.e. probabilities and hard class predictions).
 
 
 ```r

@@ -17,11 +17,11 @@ description: |
 
 How do you create a statistical model using tidymodels? In this article, we will walk you through the steps. We start with data for modeling, learn how to specify and train models with different engines using the [parsnip package](https://tidymodels.github.io/parsnip/), and understand why these functions are designed this way.
 
-This article requires that you have the following packages installed: readr, rstanarm, and tidymodels.
+To use code in this article,  you will need to install the following packages: readr, rstanarm, and tidymodels.
 
 
 ```r
-library(tidymodels) 
+library(tidymodels)  # for the parsnip package, along with the rest of tidymodels
 
 # Helper packages
 library(readr)       # for importing data
@@ -150,7 +150,7 @@ lm_fit <-
 lm_fit
 #> parsnip model object
 #> 
-#> Fit time:  2ms 
+#> Fit time:  4ms 
 #> 
 #> Call:
 #> stats::lm(formula = formula, data = data)
@@ -276,8 +276,8 @@ bayes_fit <-
 #> 
 #> SAMPLING FOR MODEL 'continuous' NOW (CHAIN 1).
 #> Chain 1: 
-#> Chain 1: Gradient evaluation took 7.8e-05 seconds
-#> Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.78 seconds.
+#> Chain 1: Gradient evaluation took 7.9e-05 seconds
+#> Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.79 seconds.
 #> Chain 1: Adjust your expectations accordingly!
 #> Chain 1: 
 #> Chain 1: 
@@ -294,15 +294,15 @@ bayes_fit <-
 #> Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #> Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 #> Chain 1: 
-#> Chain 1:  Elapsed Time: 0.255939 seconds (Warm-up)
-#> Chain 1:                0.197625 seconds (Sampling)
-#> Chain 1:                0.453564 seconds (Total)
+#> Chain 1:  Elapsed Time: 0.266641 seconds (Warm-up)
+#> Chain 1:                0.196645 seconds (Sampling)
+#> Chain 1:                0.463286 seconds (Total)
 #> Chain 1: 
 #> 
 #> SAMPLING FOR MODEL 'continuous' NOW (CHAIN 2).
 #> Chain 2: 
-#> Chain 2: Gradient evaluation took 1.2e-05 seconds
-#> Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.12 seconds.
+#> Chain 2: Gradient evaluation took 1.1e-05 seconds
+#> Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.11 seconds.
 #> Chain 2: Adjust your expectations accordingly!
 #> Chain 2: 
 #> Chain 2: 
@@ -319,15 +319,15 @@ bayes_fit <-
 #> Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #> Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 #> Chain 2: 
-#> Chain 2:  Elapsed Time: 0.234718 seconds (Warm-up)
-#> Chain 2:                0.153443 seconds (Sampling)
-#> Chain 2:                0.388161 seconds (Total)
+#> Chain 2:  Elapsed Time: 0.242849 seconds (Warm-up)
+#> Chain 2:                0.166112 seconds (Sampling)
+#> Chain 2:                0.408961 seconds (Total)
 #> Chain 2: 
 #> 
 #> SAMPLING FOR MODEL 'continuous' NOW (CHAIN 3).
 #> Chain 3: 
-#> Chain 3: Gradient evaluation took 1.4e-05 seconds
-#> Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.14 seconds.
+#> Chain 3: Gradient evaluation took 1.5e-05 seconds
+#> Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.15 seconds.
 #> Chain 3: Adjust your expectations accordingly!
 #> Chain 3: 
 #> Chain 3: 
@@ -344,15 +344,15 @@ bayes_fit <-
 #> Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #> Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
 #> Chain 3: 
-#> Chain 3:  Elapsed Time: 0.213665 seconds (Warm-up)
-#> Chain 3:                0.18064 seconds (Sampling)
-#> Chain 3:                0.394305 seconds (Total)
+#> Chain 3:  Elapsed Time: 0.227884 seconds (Warm-up)
+#> Chain 3:                0.187116 seconds (Sampling)
+#> Chain 3:                0.415 seconds (Total)
 #> Chain 3: 
 #> 
 #> SAMPLING FOR MODEL 'continuous' NOW (CHAIN 4).
 #> Chain 4: 
-#> Chain 4: Gradient evaluation took 1.1e-05 seconds
-#> Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.11 seconds.
+#> Chain 4: Gradient evaluation took 1.4e-05 seconds
+#> Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.14 seconds.
 #> Chain 4: Adjust your expectations accordingly!
 #> Chain 4: 
 #> Chain 4: 
@@ -369,9 +369,9 @@ bayes_fit <-
 #> Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 #> Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 #> Chain 4: 
-#> Chain 4:  Elapsed Time: 0.229782 seconds (Warm-up)
-#> Chain 4:                0.163734 seconds (Sampling)
-#> Chain 4:                0.393516 seconds (Total)
+#> Chain 4:  Elapsed Time: 0.243204 seconds (Warm-up)
+#> Chain 4:                0.168426 seconds (Sampling)
+#> Chain 4:                0.41163 seconds (Total)
 #> Chain 4:
 
 print(bayes_fit, digits = 5)
@@ -495,7 +495,7 @@ ggplot(urchins,
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Los_Angeles         
-#>  date     2020-04-16                  
+#>  date     2020-04-17                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
