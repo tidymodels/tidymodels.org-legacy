@@ -57,12 +57,23 @@ dim(hotels)
 ```
 
 
-In the original paper, the [authors](https://doi.org/10.1016/j.dib.2018.11.126) note that the distribution of many of these variables (such as number of adults/children, room type, meals bought, country of origin of the guests, and so forth) is different for hotel bookings that were canceled vs. not canceled. This makes sense because that information is gathered when guests check in for their stay, so canceled bookings are likely to be more variable with more missing data than non-canceled bookings. Given this, it is unlikely that there are systematic differences between guests who cancel their bookings and those who do not in this dataset. To build our models, we have already filtered the data to include only the bookings that _did not cancel_. We will build a model to predict which actual hotel stays included children and/or babies, and which did not.
+In the original paper, the [authors](https://doi.org/10.1016/j.dib.2018.11.126) note that the distribution of many of these variables (such as number of adults/children, room type, meals bought, country of origin of the guests, and so forth) is different for hotel bookings that were canceled vs. not canceled. This makes sense because that information is gathered when guests check in for their stay, so canceled bookings are likely to be more variable with more missing data than non-canceled bookings. Given this, it is unlikely that there are systematic differences between guests who cancel their bookings and those who do not in this dataset. To build our models, we have already filtered the data to include only the bookings that _did not cancel_. 
+
+```{r glimpse-hotels}
+glimpse(hotels)
+```
+
+We will build a model to predict which actual hotel stays included children and/or babies, and which did not. Our outcome variable `children` is a factor variable with two levels:
+
+```{r count-children}
+hotels %>% 
+  count(children) %>% 
+  mutate(prop = n/sum(n))
+```
+
+We can see that children were only in `r round(mean(hotels$children == "children") * 100, 1)`% of the reservations. This type of severe class imbalance can often wreak havoc on an analysis. While there are several methods for combating this issue using [recipes](/find/recipes/) (search for steps to `upsample` or `downsample`) or other more specialized packages like [themis](https://tidymodels.github.io/themis/), the analyses shown below analyze the data as-is. 
 
 ## Data Spending
-
-
-An important consideration for these data isthat children were only in `r round(mean(hotels$children == "children") * 100, 1)`% of the reservations. This type of severe class imbalance can often wreak havoc on an analysis. While there are several methods for combating this issue, the analyses shown below analyze the data as-is. 
 
 For a data splitting strategy, 25% of the reservations were allocated to the test set using a stratified random sample:  
 
