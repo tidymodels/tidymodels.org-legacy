@@ -38,7 +38,7 @@ and so on. If you are familiar with R's formula interface, a lot of this might s
 `r req_pkgs(pkgs)`
 
 ```{r eval=FALSE}
-library(tidymodels) 
+library(tidymodels)      # for the recipes package, along with the rest of tidymodels
 
 # Helper packages
 library(nycflights13)    # for flight data
@@ -307,7 +307,9 @@ flights_wflow
 Now, there is a single function that can be used to prepare the recipe and train the model from the resulting predictors: 
 
 ```{r fit}
-flights_fit <- fit(flights_wflow, data = train_data)
+flights_fit <- 
+  flights_wflow %>% 
+  fit(data = train_data)
 ```
  
 This object has the finalized recipe and fitted model objects inside. You may want to extract the model or recipe objects from the workflow. To do this, you can use the helper functions `pull_workflow_fit()` and `pull_workflow_recipe()`. For example, here we pull the fitted model object then use the `broom::tidy()` function to get a tidy tibble of model coefficients: 
@@ -382,8 +384,10 @@ flights_wflow_raw <-
   add_model(lr_mod) %>% 
   add_formula(arr_delay ~ .)
 
-flights_fit_raw <- fit(flights_wflow_raw, 
-                       data = flights_cens_train)
+flights_fit_raw <- 
+  flights_wflow_raw %>% 
+  fit(data = flights_cens_train)
+
 flights_preds_raw <- 
   predict(flights_fit_raw, 
           flights_cens_test, 
