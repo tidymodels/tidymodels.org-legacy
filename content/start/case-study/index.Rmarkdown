@@ -73,28 +73,50 @@ hotels %>%
 
 We can see that children were only in `r round(mean(hotels$children == "children") * 100, 1)`% of the reservations. This type of severe class imbalance can often wreak havoc on an analysis. While there are several methods for combating this issue using [recipes](/find/recipes/) (search for steps to `upsample` or `downsample`) or other more specialized packages like [themis](https://tidymodels.github.io/themis/), the analyses shown below analyze the data as-is. 
 
-## Data Spending
+## Data Splitting {#data-split}
 
-For a data splitting strategy, 25% of the reservations were allocated to the test set using a stratified random sample:  
+For a data splitting strategy, let's reserve 25% of the bookings to the test set. As in our [*Evaluate your model with resampling*](/start/resampling/#data-split) article, we know our outcome variable `children` is pretty imbalanced so we'll use a stratified random sample:  
 
 ```{r tr-te-split}
 set.seed(123)
-splits <- initial_split(hotels, strata = children)
+splits      <- initial_split(hotels, strata = children)
 
 hotel_other <- training(splits)
 hotel_test  <- testing(splits)
-nrow(hotel_test)
+
+# training set proportions by children
+hotel_other %>% 
+  count(children) %>% 
+  mutate(prop = n/sum(n))
+
+# test set proportions by children
+hotel_test  %>% 
+  count(children) %>% 
+  mutate(prop = n/sum(n))
 ```
 
-Rather than using multiple iterations of resampling, a single _validation set_ will be split apart from the `r format(nrow(hotel_other), big.mark = ",")` reservations that were not used for testing. In tidymodels, a validation set is treated as a single iteration of resampling. For this reason, the `validation_split()` function was used to allocate 20% of these to validation and `r format(nrow(hotel_other) * .8, big.mark = ",")` reservations to the training set:  
+In our earlier articles, we've been using 10-fold cross-validation as the primary resampling method with [`rsample::vfold_cv()`](https://tidymodels.github.io/rsample/reference/vfold_cv.html). This has created 10 different resamples of the training set (which we further split into _analysis_ and _assessment_ sets), producing 10 different performance metrics that we then aggregated.
+
+For this case study, rather than using multiple iterations of resampling, let's create a single resample called a _validation set_. In tidymodels, a validation set is treated as a single iteration of resampling. This will be a split from the `r format(nrow(hotel_other), big.mark = ",")` reservations that were not used for testing which we called `hotel_other`. This split creates two new datasets: 
+
++ the set held out for the purpose of measuring performance is called the _validation set_, and 
+
++ the remaining data used to fit the model is called the _training set_. 
+
+```{r validation-fig, echo = FALSE, fig.align='center', out.width="50%"}
+knitr::include_graphics("img/validation-split.svg")
+```
+
+We'll use the `validation_split()` function to allocate 20% of the `hotel_other` bookings to the _validation set_ and `r format(nrow(hotel_other) * .8, big.mark = ",")` bookings to the _training set_. This means that our model performance metrics will be computed on a single set of `r format(nrow(hotel_other) * .2, big.mark = ",")` reservations. This is fairly large, so the amount of data should provide enough precision to be a reliable indicator for how well each model predicts the outcome with a single iteration of resampling.
 
 ```{r validation-set}
 set.seed(234)
-val_set <- validation_split(hotel_other, strata = children, prop = 0.80)
+val_set <- validation_split(hotel_other, 
+                            strata = children, 
+                            prop = 0.80)
 val_set
 ```
 
-The same functions from the tune package will be used as in previous articles but, in this case, the performance metrics will be computed on a single set of `r format(nrow(hotel_other) * .2, big.mark = ",")` reservations. This amount of data should provide enough precision to be a reliable indicator for how well each model predicts the outcome.  
 
 ## A first model: logistic regression
 
