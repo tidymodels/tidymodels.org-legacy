@@ -1,7 +1,7 @@
 ---
 title: "A predictive modeling case study"
 weight: 5
-tags: [parsnip, recipes, rsample, tune]
+tags: [parsnip, recipes, rsample, workflows, tune]
 categories: [model fitting, tuning]
 description: | 
   Develop, from beginning to end, a predictive model using best practices.
@@ -19,11 +19,27 @@ pkgs <- c("tidymodels", "readr", "glmnet", "ranger", "vip")
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
+
+## Introduction {#intro}
+
+Each of the four previous [_Get Started_](/start/) articles have been focused on a single task related to modeling. Along the way, we also introduced core packages in the tidymodels ecosystem and some of the key functions you'll need to start working with models. In this final case study, we use all the previous articles as a foundation to build a predictive model from beginning to end. 
+
 `r req_pkgs(pkgs)`
 
-## Introduction
+```{r eval=FALSE}
+library(tidymodels)  
 
-The previous _Getting Started_ articles have been focused on single tasks related to modeling. This example is a broader case study of building a predictive model from beginning to end. It uses all of the previous topics.  
+# Helper packages
+library(readr)       # for importing data
+library(vip)         # for variable importance plots
+
+# Modeling packages
+library(glmnet)      # for penalized logistic regression model
+library(ranger)      # for random forest model
+```
+
+
+## The Hotel Bookings Data {#data}
 
 Our modeling goal here is to use a data set of hotel stays and predict which hotel stays include children (vs. do not include children or babies), based on the other characteristics of the stays such as which hotel the guests stay at, how much they pay, etc. The [paper that this data comes from](https://www.sciencedirect.com/science/article/pii/S2352340918315191) points out that the distribution of many of these variables (such as number of adults/children, room type, meals bought, country of origin of the guests, and so forth) is different for canceled vs. not canceled hotel bookings. This is mostly because more information is gathered when guests check in; the biggest contributor to these differences is not that people who cancel are different from people who do not.
 
