@@ -13,6 +13,7 @@ source(here::here("content/start/common.R"))
 
 ```{r load, include = FALSE, message = FALSE, warning = FALSE}
 library(readr)
+library(tidyr)
 library(vip)
 library(tidymodels)
 pkgs <- c("tidymodels", "readr", "glmnet", "ranger", "vip")
@@ -118,11 +119,13 @@ val_set
 ```
 
 
-## A first model: logistic regression
+## Our first model: penalized logistic regression {#first-model}
 
-It makes sense to start with a simple model. Since the outcome is categorical, a logistic regression model would be a good first step. Specifically, let's use a glmnet model to potentially perform feature selection during model training. This method of estimating the logistic regression slope parameters uses a _penalty_ on the process so that less relevant predictors are driven towards a value of zero. One of the glmnet penalization methods, called the lasso method, can set the predictor slopes to absolute zero if a large enough penalty is used. 
+Since our outcome variable `children` is categorical, a logistic regression model would be a good first model to start. Let's use a model to can perform feature selection during training. The [glmnet](https://cran.r-project.org/web/packages/glmnet/index.html) R package fits a generalized linear model via penalized maximum likelihood. This method of estimating the logistic regression slope parameters uses a _penalty_ on the process so that less relevant predictors are driven towards a value of zero. One of the glmnet penalization methods, called the [lasso method](https://en.wikipedia.org/wiki/Lasso_(statistics)), can set the predictor slopes to absolute zero if a large enough penalty is used. 
 
-To specify a penalized logistic regression model that uses a feature selection penalty:  
+### Build the model
+
+To specify a penalized logistic regression model that uses a feature selection penalty, let's use the parsnip package with the glmnet engine:  
 
 ```{r logistic-model}
 lr_mod <- 
@@ -130,11 +133,23 @@ lr_mod <-
   set_engine("glmnet")
 ```
 
-Setting `mixture` to a value of one means that the glmnet model will focus on potentially removing irrelevant predictors. 
+We'll tag the `penalty` argument with `tune()` as a placeholder for now. This is a model hyperparameter that we will [tune](/start/tuning/) to find the best value for improving our predictions. Setting `mixture` to a value of one means that the glmnet model will focus on potentially removing irrelevant predictors. 
 
-To prepare the data for the model, the categorical predictors (e.g., `distribution_channel`, `hotel`, ...) should be converted to dummy variables. Additionally, it might make sense to create a set of date-based predictors that reflect important components related to the arrival date. First, `step_date()` creates predictors for the year, month, and day of the week. Secondly, `step_holiday()` generates a set of indicator variables for specific holidays. The addition of `step_zv()` means that no indicator variables that only contains a single unique value (e.g. all zeros) will be added to the model. This is important because, for penalized models, the the predictors should be centered and scaled. 
+### Create the recipe 
 
-The recipe for these steps is: 
+Let's create a [recipe](/start/recipes/) to define the preprocessing steps we need to prepare our hotel bookings data for this model. All categorical predictors (e.g., `distribution_channel`, `hotel`, ...) should be converted to dummy variables. Additionally, it might make sense to create a set of date-based predictors that reflect important components related to the arrival date. We have already introduced a [number of useful recipe steps](/start/recipes/#features) for creating features from dates:
+
++ `step_date()` creates predictors for the year, month, and day of the week.
+
++ `step_holiday()` generates a set of indicator variables for specific holidays. Although we don't know where these two hotels are located, we do know that the countries for origin for most bookings are based in Europe.
+
++ `step_rm()` removes variables; here we'll use it to remove the original date variable since we no longer want it in the model.
+
++ `step_zv()` removes indicator variables that only contain a single unique value (e.g. all zeros). This is important because, for penalized models, the predictors should be centered and scaled.
+
++ `step_normalize()` centers and scales numeric variables.
+
+Putting all these steps together into a recipe for a penalized logistic regression model, we have: 
 
 ```{r logistic-features}
 holidays <- c("AllSouls", "AshWednesday", "ChristmasEve", "Easter", 
@@ -150,7 +165,10 @@ lr_recipe <-
   step_normalize(all_predictors())
 ```
 
-The model and recipe can be bundled into a single `workflow()` object to make management of the R objects easier:
+
+### Create the workflow
+
+As we introduced in [*Preprocess your data with recipes*](/start/recipes/#fit-workflow), let's bundle the model and recipe into a single `workflow()` object to make management of the R objects easier:
 
 ```{r logistic-workflow}
 lr_workflow <- 
@@ -159,50 +177,100 @@ lr_workflow <-
   add_recipe(lr_recipe)
 ```
 
-Finally a grid of penalty values are created and the model is tuned. The validation set predictions are saved (via the call to `control_grid()` below) so that diagnostic information can be available after the model fit. Also, the area under the ROC curve is used to quantify how well the model performs across a continuum of event thresholds (recall that the event rate is very low for these data). 
+### Create the grid for tuning
 
+Before we fit this model, we need to set up a grid of `penalty` values to tune. In our [*Tune model parameters*](/start/tuning/) article, we used [`dials::grid_regular()`](start/tuning/#tune-grid) to create the grid. We can also set the grid up manually using [`base::expand.grid()`](https://rdrr.io/r/base/expand.grid.html) to create a data frame with 30 candidate values:
+
+```{r logistic-grid}
+lr_reg_grid <- expand_grid(penalty = 10^seq(-4, -1, length.out = 30))
+
+# show the 5 lowest and highest values
+head(lr_reg_grid)
+tail(lr_reg_grid)
+```
+
+### Train and tune the model
+
+Let's use `tune::tune_grid()` to train these 30 penalized logistic regression models. We'll also save the validation set predictions (via the call to `control_grid()`) so that diagnostic information can be available after the model fit. The area under the ROC curve will be used to quantify how well the model performs across a continuum of event thresholds (recall that the event rate is very low for these data). 
 
 ```{r logistic-fit, cache = TRUE}
-lr_reg_grid <- expand.grid(penalty = 10^seq(-4, -1, length.out = 30))
-
-tune_ctrl <- control_grid(save_pred = TRUE)
 roc_only <- metric_set(roc_auc)
 
 lr_res <- 
   lr_workflow %>% 
   tune_grid(val_set,
             grid = lr_reg_grid,
-            control = tune_ctrl,
+            control = control_grid(save_pred = TRUE),
             metrics = roc_only)
 ```
 
 The resulting validation set metrics are computed and plotted against the amount of penalization: 
 
-```{r logistic-results, fig.height = 4.25, , fig.width = 6}
-lr_res %>% 
+```{r logistic-results, fig.height = 4.25, fig.width = 6}
+lr_plot <- 
+  lr_res %>% 
   collect_metrics() %>% 
   ggplot(aes(x = penalty, y = mean)) + 
   geom_point() + 
   geom_line() + 
   ylab("Area under the ROC Curve") +
-  scale_x_log10()
+  scale_x_log10(labels = scales::label_number())
+
+lr_plot 
 ```
 
-Performance is generally better when very little penalization is used; this suggests that the majority of the predictors are important to the model. Note the steep drop in the area under the ROC curve that occurs when the amount of penalization is high; this happens because a large enough penalty will remove _all_ predictors from the model. 
+This plots shows us that model performance is generally better at the smaller penalty values. This suggests that the majority of the predictors are important to the model. We also see a steep drop in the area under the ROC curve towards the highest penalty values. This happens because a large enough penalty will remove _all_ predictors from the model, and not surprisingly predictive accuracy plummets with no predictors in the model (recall that an AUC = .5 means that the model does no better than chance at predicting the correct class).
 
+Our model performance seems to plateau at the smaller penalty values, so going by the `roc_auc` metric alone could lead us to multiple options for the "best" value: 
 
-Since there is a plateau of performance for small penalties, a value closer to the decline in performance is chosen as being best for this model: 
+```{r}
+top_models <-
+  lr_res %>% 
+  show_best("roc_auc", n = 15) %>% 
+  arrange(penalty) %>% 
+  # Adding a candidate model ID variable
+  mutate(cand_model = row_number())
 
+top_models
+```
+
+```{r top-cand-mods, include = FALSE}
+top_pen <- 
+  lr_res %>% 
+  select_best("roc_auc") %>% 
+  pull()
+
+top_cand <- 
+  top_models %>% 
+  filter(penalty == top_pen) %>% 
+  pull(cand_model)
+
+select_cand <- 12
+
+select_pen <-
+  top_models %>% 
+  filter(cand_model == select_cand) %>% 
+  pull(penalty)
+```
+
+We know that every candidate model (`cand_model`) in this tibble includes more predictor variables than the model in the row below it. If we used `select_best()`, it would return candidate model `r top_cand` with a penalty value of `r format(top_pen, digits = 4)`, shown with the dotted line below. 
+
+```{r lr-plot-lines, echo=FALSE, fig.height = 4.25, fig.width = 6}
+lr_plot  +
+  geom_vline(color = "#CA225E", lty = 3, xintercept = top_pen) +
+  geom_vline(color = "#CA225E", xintercept = select_pen) 
+```
+
+But, we may want to choose a penalty value further along the x-axis, closer to where we see the decline in model performance as the best. For example, candidate model `r select_cand` with a penalty value of `r format(select_pen, digits = 4)` has effectively the same performance as the numerically best model, but might eliminate more predictors. This penatly value is marked by the solid line above.
+
+Let's select this value and visualize the validation set ROC curve:
 ```{r logistic-best}
 lr_best <- 
-  lr_res %>% 
-  collect_metrics() %>% 
-  arrange(desc(mean)) %>% 
-  slice(8)
+  top_models %>% 
+  slice(12)
 lr_best
 ```
 
-This value has effectively the same performance as the numerically best, but might eliminate more predictors. For this specific penalty value, the validation set ROC curve is:
 
 ```{r logistic-roc-curve}
 lr_auc <- 
@@ -214,9 +282,7 @@ lr_auc <-
 autoplot(lr_auc)
 ```
 
-The level of performance generated by this logistic regression model is good but not groundbreaking. Perhaps the linear nature of the prediction equation is too limiting for this data set. 
-
-As a next step, we might consider a highly non-linear model generated using tree-based methods. 
+The level of performance generated by this logistic regression model is good, but not groundbreaking. Perhaps the linear nature of the prediction equation is too limiting for this data set. As a next step, we might consider a highly non-linear model generated using a tree-based ensemble method. 
 
 ## Tree-based ensembles
 
