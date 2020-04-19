@@ -155,7 +155,7 @@ val_set
 #> 1 <split [30K/7.5K]> validation
 ```
 
-Note that this function, like `initial_split()` has the same `strata` argument to use stratified sampling to create the resample. This means that we'll have roughly the same proportions of hotel stays with and without children in our new validation and training sets, as compared to the original `hotel_other` proportions.
+This function, like `initial_split()`, has the same `strata` argument, which uses stratified sampling to create the resample. This means that we'll have roughly the same proportions of hotel stays with and without children in our new validation and training sets, as compared to the original `hotel_other` proportions.
 
 ## A first model: penalized logistic regression {#first-model}
 
