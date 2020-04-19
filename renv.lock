@@ -1717,20 +1717,6 @@
       "Repository": "CRAN",
       "Hash": "8f047210d7d68ea4860a3c0d8cced272"
     },
-    "showtext": {
-      "Package": "showtext",
-      "Version": "0.7",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "9e6c011d6ea4b93fb1633555bdfe8228"
-    },
-    "showtextdb": {
-      "Package": "showtextdb",
-      "Version": "2.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "8e0df803ddce30dddcec4c4c09af8676"
-    },
     "sitmo": {
       "Package": "sitmo",
       "Version": "2.0.1",
