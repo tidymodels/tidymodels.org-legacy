@@ -96,7 +96,7 @@ hotels %>%
 
 We can see that children were only in 8.1% of the reservations. This type of severe class imbalance can often wreak havoc on an analysis. While there are several methods for combating this issue using [recipes](/find/recipes/) (search for steps to `upsample` or `downsample`) or other more specialized packages like [themis](https://tidymodels.github.io/themis/), the analyses shown below analyze the data as-is. 
 
-## Data Splitting {#data-split}
+## Data Splitting & Resampling {#data-split}
 
 For a data splitting strategy, let's reserve 25% of the stays to the test set. As in our [*Evaluate your model with resampling*](/start/resampling/#data-split) article, we know our outcome variable `children` is pretty imbalanced so we'll use a stratified random sample:  
 
