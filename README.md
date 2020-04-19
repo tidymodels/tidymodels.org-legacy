@@ -1,4 +1,4 @@
-<a alt = "Netlify Deployments" href="https://app.netlify.com/sites/tidymodels-org/deploys"><img src="https://api.netlify.com/api/v1/badges/22cbd49d-9d4d-462f-9d28-a797fa14a11d/deploy-status" height = 20 /></a>
+<a alt = "Netlify Deployments" href="https://app.netlify.com/sites/tidymodels-org/deploys"><img src="https://api.netlify.com/api/v1/badges/1979930f-1fd5-42cd-a097-c582d16c24d9/deploy-status" height = 20 /></a>
 <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" height = 20 /></a>
 
 # tidymodels.org
