@@ -134,13 +134,15 @@ We'll tag the `penalty` argument with `tune()` as a placeholder for now. This is
 
 ### Create the recipe 
 
-Let's create a [recipe](/start/recipes/) to define the preprocessing steps we need to prepare our hotel stays data for this model. All categorical predictors (e.g., `distribution_channel`, `hotel`, ...) should be converted to dummy variables. Additionally, it might make sense to create a set of date-based predictors that reflect important components related to the arrival date. We have already introduced a [number of useful recipe steps](/start/recipes/#features) for creating features from dates:
+Let's create a [recipe](/start/recipes/) to define the preprocessing steps we need to prepare our hotel stays data for this model. It might make sense to create a set of date-based predictors that reflect important components related to the arrival date. We have already introduced a [number of useful recipe steps](/start/recipes/#features) for creating features from dates:
 
 + `step_date()` creates predictors for the year, month, and day of the week.
 
 + `step_holiday()` generates a set of indicator variables for specific holidays. Although we don't know where these two hotels are located, we do know that the countries for origin for most stays are based in Europe.
 
 + `step_rm()` removes variables; here we'll use it to remove the original date variable since we no longer want it in the model.
+
+Additionally, all categorical predictors (e.g., `distribution_channel`, `hotel`, ...) should be converted to dummy variables, and all numeric predictors need to be centered and scaled.
 
 + `step_dummy()` converts characters or factors (i.e., nominal variables) into one or more numeric binary model terms for the levels of the original data.
 
