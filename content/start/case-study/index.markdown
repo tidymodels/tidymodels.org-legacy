@@ -631,7 +631,7 @@ Here are some more ideas for where to go next:
 
 + Study up on statistics and modeling with our comprehensive [books](/books/).
 
-+ Dig deeper into the [package documentation sites](/packages/) to find functions that meet your modeling needs. Use the [searchable tables](/find/) to guide your search.
++ Dig deeper into the [package documentation sites](/packages/) to find functions that meet your modeling needs. Use the [searchable tables](/find/) to explore what is possible.
 
 + Listen out for the latest about tidymodels packages at the [tidyverse blog](https://www.tidyverse.org/tags/tidymodels/).
 
