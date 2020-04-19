@@ -37,7 +37,7 @@ This blogdown site uses renv to create a project-specific library of packages. T
    Error in loadNamespace(name) : there is no package called ‘rmarkdown’
    ```
 1. Run `renv::restore()`. This will print out "The following package(s) will be
-   installed" followed by a long list of packages. Respond *"yes"*. renv will
+   installed" followed by a long list of packages. Respond **"yes"**. renv will
    build the project-specific library containing packages at the correct
    versions.
 1. Restart R.
@@ -93,3 +93,21 @@ The source of the website is a collection of `.md`, `.Rmarkdown`, and `.Rmd` fil
 * `content/books/`: these files make up the books page, linked from resource stickies. To add a new book, create a new folder with a new `.markdown` file inside named `index.md`. An image file of the cover should be added in the same folder, named `cover.*`.
 
 * `content/find/`: these files make up the find page, linked from the top navbar and resource stickies. Each of these pages is an `.Rmd` file. If you edit a page, please run `blogdown::serve_site()` locally to render the `.html` file, and be sure to commit the rendered file to the repo. Also please make sure if you edit a file in this section that nothing is added to the `static/` folder- all accompanying files should be in the article page bundle.
+
+## Troubleshooting
+
+If blogdown attempts to re-render posts (potentially on a massive scale), you need to make all the derived files look more recently modified than their respective source files. This affects (`.Rmarkdown`, `.markdown`) and (`.Rmd`, `.html`) file pairs. Do something like this:
+
+```R
+library(fs)
+
+md <- dir_ls("content", recurse = TRUE, glob = "*.markdown")
+file_touch(md)
+
+html <- dir_ls("content", recurse = TRUE, glob = "*.html")
+file_touch(html)
+```
+
+For other problems, consider that you need to update blogdown or to run `blogdown::update_hugo()` (perhaps in an R session launched with `sudo`).
+
+Also, if you accidentally or intentionally knit or preview the content using another method than `blogdown::serve_site()` (e.g. click the **Preview** button in RStudio for `.[R]md`), make sure you don't commit an `.html` file from an **`.md`** file.
