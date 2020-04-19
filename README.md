@@ -41,3 +41,23 @@ This blogdown site uses renv to create a project-specific library of packages. T
 1. Restart R.
 1. You should now be able to render the site in all the usual ways for blogdown,
    such as `blogdown::serve_site()` or *Addins > Serve Site*.
+
+## Structure
+
+The source of the website is a collection of `.md` and `.Rmd` files stored in
+[`content/`](content/), which are rendered for the site with 
+[blogdown](https://bookdown.org/yihui/blogdown). 
+
+* `content/packages/index.md`: this is a top-level page on the site rendered from a single `.md` file. If you only edit this page, you do not have to use `blogdown::serve_site()` locally to render.
+  
+* `content/start/`: these files make up a 5-part tutorial series to help users get started with tidymodels. Each article is an `.Rmarkdown` file as a page bundle, meaning that each article is in its own folder along with accompanying images, data, and rendered figures. If you edit a tutorial, please run `blogdown::serve_site()` locally to render the `.markdown` file, and be sure to commit the rendered file to the repo. No `*.Rmd` or `*.html` files should be committed in this directory. If you generate an `*.html` file locally during development, delete it once it's no longer useful to you. Keep it out of this repo. Also please make sure if you edit a file in this section that nothing is added to the `static/` folder- all accompanying files should be in the article page bundle.
+    
+* `content/learn/`: these files make up the articles presented in the learn section. This section is nested, meaning that inside this section, there are actually 4 subsections: `models`, `statistics`, `work`, `develop`. Each article is an `.Rmarkdown` file. If you edit or add an article, please run `blogdown::serve_site()` locally to render the `.markdown` file, and be sure to commit the rendered file to the repo. When you do that, any new articles added will show up on the main `learn/` listing page automatically. By default, a maximum of 5 articles per subsection will show up in this list; use weights in the individual article YAML files to decide which 5 and their order. All articles with weights > 5 will show up when you click *“See all”* for that subsection. No `*.Rmd` or `*.html` files should be committed to this directory. If you generate an `*.html` file locally during development, delete it once it's no longer useful to you. Keep it out of this repo. Also please make sure if you edit a file in this section that nothing is added to the `static/` folder- all accompanying files should be in the article page bundle.
+
+* `content/help/index.md`: this is a top-level page on the site rendered from a single `.md` file. If you only edit this page, you do not have to use `blogdown::serve_site()` locally to render.
+
+* `content/contribute/index.md`: this is a top-level page on the site rendered from a single `.md` file. If you only edit this page, you do not have to use `blogdown::serve_site()` locally to render.
+
+* `content/books/`: these files make up the books page, linked from resource stickies. To add a new book, create a new folder with a new `.markdown` file inside named `index.md`. An image file of the cover should be added in the same folder, named `cover.*`.
+
+* `content/find/`: these files make up the find page, linked from the top navbar and resource stickies. Each of these pages is an `.Rmd` file. If you edit a page, please run `blogdown::serve_site()` locally to render the `.html` file, and be sure to commit the rendered file to the repo. Also please make sure if you edit a file in this section that nothing is added to the `static/` folder- all accompanying files should be in the article page bundle.
