@@ -54,7 +54,7 @@ dim(hotels)
 ```
 
 
-In the original paper, the [authors](https://doi.org/10.1016/j.dib.2018.11.126) caution that the distribution of many variables (such as number of adults/children, room type, meals bought, country of origin of the guests, and so forth) is different for hotel bookings that were canceled versus not canceled. This makes sense because much of that information is gathered when guests check in for their stay, so canceled bookings are likely to be more variable and have more missing data than non-canceled bookings. Given this, it is unlikely that there are systematic differences between guests who cancel their bookings and those who do not in this dataset. To build our models, we have already filtered the data to include only the bookings that _did not cancel_. 
+In the original paper, the [authors](https://doi.org/10.1016/j.dib.2018.11.126) caution that the distribution of many variables (such as number of adults/children, room type, meals bought, country of origin of the guests, and so forth) is different for hotel stays that were canceled versus not canceled. This makes sense because much of that information is gathered when guests check in for their stay, so canceled bookings are likely to be more variable and have more missing data than non-canceled bookings. Given this, it is unlikely that there are systematic differences between guests who cancel their bookings and those who do not in this dataset. To build our models, we have already filtered the data to include only the bookings that did not cancel, so we'll be analyzing _hotel stays_ only.
 
 ```{r glimpse-hotels}
 glimpse(hotels)
@@ -72,7 +72,7 @@ We can see that children were only in `r round(mean(hotels$children == "children
 
 ## Data Splitting {#data-split}
 
-For a data splitting strategy, let's reserve 25% of the bookings to the test set. As in our [*Evaluate your model with resampling*](/start/resampling/#data-split) article, we know our outcome variable `children` is pretty imbalanced so we'll use a stratified random sample:  
+For a data splitting strategy, let's reserve 25% of the stays to the test set. As in our [*Evaluate your model with resampling*](/start/resampling/#data-split) article, we know our outcome variable `children` is pretty imbalanced so we'll use a stratified random sample:  
 
 ```{r tr-te-split}
 set.seed(123)
@@ -94,7 +94,7 @@ hotel_test  %>%
 
 In our articles so far, we've relied on 10-fold cross-validation as the primary resampling method using [`rsample::vfold_cv()`](https://tidymodels.github.io/rsample/reference/vfold_cv.html). This has created 10 different resamples of the training set (which we further split into _analysis_ and _assessment_ sets), producing 10 different performance metrics that we then aggregated.
 
-For this case study, rather than using multiple iterations of resampling, let's create a single resample called a _validation set_. In tidymodels, a validation set is treated as a single iteration of resampling. This will be a split from the `r format(nrow(hotel_other), big.mark = ",")` reservations that were not used for testing, which we called `hotel_other`. This split creates two new datasets: 
+For this case study, rather than using multiple iterations of resampling, let's create a single resample called a _validation set_. In tidymodels, a validation set is treated as a single iteration of resampling. This will be a split from the `r format(nrow(hotel_other), big.mark = ",")` stays that were not used for testing, which we called `hotel_other`. This split creates two new datasets: 
 
 + the set held out for the purpose of measuring performance, called the _validation set_, and 
 
@@ -104,7 +104,7 @@ For this case study, rather than using multiple iterations of resampling, let's 
 knitr::include_graphics("img/validation-split.svg")
 ```
 
-We'll use the `validation_split()` function to allocate 20% of the `hotel_other` bookings to the _validation set_ and `r format(nrow(hotel_other) * .8, big.mark = ",")` bookings to the _training set_. This means that our model performance metrics will be computed on a single set of `r format(nrow(hotel_other) * .2, big.mark = ",")` reservations. This is fairly large, so the amount of data should provide enough precision to be a reliable indicator for how well each model predicts the outcome with a single iteration of resampling.
+We'll use the `validation_split()` function to allocate 20% of the `hotel_other` stays to the _validation set_ and `r format(nrow(hotel_other) * .8, big.mark = ",")` stays to the _training set_. This means that our model performance metrics will be computed on a single set of `r format(nrow(hotel_other) * .2, big.mark = ",")` hotel stays. This is fairly large, so the amount of data should provide enough precision to be a reliable indicator for how well each model predicts the outcome with a single iteration of resampling.
 
 ```{r validation-set}
 set.seed(234)
@@ -114,7 +114,7 @@ val_set <- validation_split(hotel_other,
 val_set
 ```
 
-Note that this function, like `initial_split()` has the same `strata` argument to use stratified sampling to create the resample. This means that we'll have roughly the same proportions of bookings with and without children in our new validation and training sets, as compared to the original `hotel_other` proportions.
+Note that this function, like `initial_split()` has the same `strata` argument to use stratified sampling to create the resample. This means that we'll have roughly the same proportions of hotel stays with and without children in our new validation and training sets, as compared to the original `hotel_other` proportions.
 
 ## A first model: penalized logistic regression {#first-model}
 
@@ -134,11 +134,11 @@ We'll tag the `penalty` argument with `tune()` as a placeholder for now. This is
 
 ### Create the recipe 
 
-Let's create a [recipe](/start/recipes/) to define the preprocessing steps we need to prepare our hotel bookings data for this model. All categorical predictors (e.g., `distribution_channel`, `hotel`, ...) should be converted to dummy variables. Additionally, it might make sense to create a set of date-based predictors that reflect important components related to the arrival date. We have already introduced a [number of useful recipe steps](/start/recipes/#features) for creating features from dates:
+Let's create a [recipe](/start/recipes/) to define the preprocessing steps we need to prepare our hotel stays data for this model. All categorical predictors (e.g., `distribution_channel`, `hotel`, ...) should be converted to dummy variables. Additionally, it might make sense to create a set of date-based predictors that reflect important components related to the arrival date. We have already introduced a [number of useful recipe steps](/start/recipes/#features) for creating features from dates:
 
 + `step_date()` creates predictors for the year, month, and day of the week.
 
-+ `step_holiday()` generates a set of indicator variables for specific holidays. Although we don't know where these two hotels are located, we do know that the countries for origin for most bookings are based in Europe.
++ `step_holiday()` generates a set of indicator variables for specific holidays. Although we don't know where these two hotels are located, we do know that the countries for origin for most stays are based in Europe.
 
 + `step_rm()` removes variables; here we'll use it to remove the original date variable since we no longer want it in the model.
 
@@ -189,7 +189,7 @@ lr_reg_grid %>% top_n(5)  # highest penalty values
 
 ### Train and tune the model
 
-Let's use `tune::tune_grid()` to train these 30 penalized logistic regression models. We'll also save the validation set predictions (via the call to `control_grid()`) so that diagnostic information can be available after the model fit. The area under the ROC curve will be used to quantify how well the model performs across a continuum of event thresholds (recall that the event rate is very low for these data). 
+Let's use `tune::tune_grid()` to train these 30 penalized logistic regression models. We'll also save the validation set predictions (via the call to `control_grid()`) so that diagnostic information can be available after the model fit. The area under the ROC curve will be used to quantify how well the model performs across a continuum of event thresholds (recall that the event rate&mdash;the proportion of stays including children&mdash; is very low for these data). 
 
 ```{r logistic-fit, cache = TRUE}
 roc_only <- metric_set(roc_auc)
@@ -217,9 +217,9 @@ lr_plot <-
 lr_plot 
 ```
 
-This plots shows us that model performance is generally better at the smaller penalty values. This suggests that the majority of the predictors are important to the model. We also see a steep drop in the area under the ROC curve towards the highest penalty values. This happens because a large enough penalty will remove _all_ predictors from the model, and not surprisingly predictive accuracy plummets with no predictors in the model (recall that an AUC = .5 means that the model does no better than chance at predicting the correct class).
+This plots shows us that model performance is generally better at the smaller penalty values. This suggests that the majority of the predictors are important to the model. We also see a steep drop in the area under the ROC curve towards the highest penalty values. This happens because a large enough penalty will remove _all_ predictors from the model, and not surprisingly predictive accuracy plummets with no predictors in the model (recall that an ROC AUC value of 0.50 means that the model does no better than chance at predicting the correct class).
 
-Our model performance seems to plateau at the smaller penalty values, so going by the `roc_auc` metric alone could lead us to multiple options for the "best" value: 
+Our model performance seems to plateau at the smaller penalty values, so going by the `roc_auc` metric alone could lead us to multiple options for the "best" value for this hyperparameter: 
 
 ```{r}
 top_models <-
@@ -258,7 +258,7 @@ select_roc <-
   pull(mean)
 ```
 
-We know that every candidate model in this tibble includes more predictor variables than the model in the row below it. If we used `select_best()`, it would return candidate model `r top_cand` with a penalty value of `r format(top_pen, digits = 3)`, shown with the dotted line below. 
+Every candidate model in this tibble likely includes more predictor variables than the model in the row below it. If we used `select_best()`, it would return candidate model `r top_cand` with a penalty value of `r format(top_pen, digits = 3)`, shown with the dotted line below. 
 
 ```{r lr-plot-lines, echo=FALSE, fig.height = 4.25, fig.width = 6}
 lr_plot  +
@@ -266,7 +266,7 @@ lr_plot  +
   geom_vline(color = "#CA225E", xintercept = select_pen) 
 ```
 
-But, we may want to choose a penalty value further along the x-axis, closer to where we start to see the decline in model performance. For example, candidate model `r select_cand` with a penalty value of `r format(select_pen, digits = 3)` has effectively the same performance as the numerically best model, but might eliminate more predictors. This penalty value is marked by the solid line above.
+But, we may want to choose a penalty value further along the x-axis, closer to where we start to see the decline in model performance. For example, candidate model `r select_cand` with a penalty value of `r format(select_pen, digits = 3)` has effectively the same performance as the numerically best model, but might eliminate more predictors. This penalty value is marked by the solid line above. In general, less irrelevant predictors is better. so if performance is the same, we'd prefer to choose a higher penalty value. 
 
 Let's select this value and visualize the validation set ROC curve:
 ```{r logistic-best}
@@ -293,11 +293,11 @@ The level of performance generated by this logistic regression model is good, bu
 
 ## A second model: tree-based ensemble {#second-model}
 
-An effective and low-maintenance modeling technique is a _random forest_. This model was also used in our [*Evaluate your model with resampling*](/start/resampling/) article. Compared to logistic regression, a random forest model is much more flexible. A random forest is an _ensemble model_ typically made up of thousands of decision trees, where each individual tree sees a slightly different version of the training data and learns a sequence of splitting rules to predict new data. Each tree is non-linear, and aggregating across trees makes random forests also non-linear but more robust and stable compared to individual trees. Tree-based models like random forests require very little preprocessing and can effectively handle many types of predictors (sparse, skewed, continuous, categorical, etc.).
+An effective and low-maintenance modeling technique is a _random forest_. This model was also used in our [*Evaluate your model with resampling*](/start/resampling/) article. Compared to logistic regression, a random forest model is more flexible. A random forest is an _ensemble model_ typically made up of thousands of decision trees, where each individual tree sees a slightly different version of the training data and learns a sequence of splitting rules to predict new data. Each tree is non-linear, and aggregating across trees makes random forests also non-linear but more robust and stable compared to individual trees. Tree-based models like random forests require very little preprocessing and can effectively handle many types of predictors (sparse, skewed, continuous, categorical, etc.).
 
 ### Build the model and improve training time
 
-Although the default hyperparameters for random forests tend to give reasonable results, these models can be computationally expensive to train and to tune. The computations required for model tuning can usually be easily parallelized to improve training time. The tune package can do [parallel processing](https://tidymodels.github.io/tune/articles/extras/optimizations.html#parallel-processing) for you, and allows users to use multiple cores or separate machines to fit models. 
+Although the default hyperparameters for random forests tend to give reasonable results, we'll plan to tune two hyperparameters that we think could improve performance. Unfortunately, random forest models can be computationally expensive to train and to tune. The computations required for model tuning can usually be easily parallelized to improve training time. The tune package can do [parallel processing](https://tidymodels.github.io/tune/articles/extras/optimizations.html#parallel-processing) for you, and allows users to use multiple cores or separate machines to fit models. 
 
 But, here we are using a single validation set, so parallelization isn't an option using the tune package. For this specific case study, a good alternative is provided by the engine itself. The ranger package offers a built-in way to compute individual random forest models in parallel. To do this, we need to know the the number of cores we have to work with. We can use the parallel package to query the number of cores on your own computer to understand how much parallelization you can do: 
 
@@ -315,7 +315,7 @@ rf_mod <-
   set_mode("classification")
 ```
 
-This works well in our modeling context, but it bears repeating: if you use any other resampling method, let tune do the parallel processing for you &mdash; we typically do not recommend relying on the modeling engine (like we did here) to do this.
+This works well in this modeling context, but it bears repeating: if you use any other resampling method, let tune do the parallel processing for you &mdash; we typically do not recommend relying on the modeling engine (like we did here) to do this.
 
 In this model, we tagged the `mtry` and `min_n` arguments with `tune()` as a placeholder. These are our two hyperparameters that we will [tune](/start/tuning/).  
 
@@ -368,16 +368,16 @@ rf_res <-
 
 The message printed above *"Creating pre-processing data to finalize unknown parameter: mtry"* is related to the size of the data set. Since `mtry` depends on the number of predictors in the data set, `tune_grid()` determines the upper bound for `mtry` once it receives the data. 
 
-Here are our top 5 random forest models out of the 25 candidates:
+Here are our top 5 random forest models, out of the 25 candidates:
 
 ```{r}
 rf_res %>% 
   show_best(metric = "roc_auc")
 ```
 
-Right away, we see that these values for area under the ROC look way more promising than our top model using penalized logistic regression, which yielded an ROC AUC of `r format(select_roc, digits = 3)`.
+Right away, we see that these values for area under the ROC look more promising than our top model using penalized logistic regression, which yielded an ROC AUC of `r format(select_roc, digits = 3)`.
 
-Plotting the results of the tuning process highlights that both `mtry` (number of predictors at each node) and `min_n` (minimum number of data points required to keep splitting) should be fairly small to optimize performance. However, the range of the y-axis indicates that the model is very robust to the choice of these parameter values &mdash; all but one of the ROC AUC values were greater than 0.90.
+Plotting the results of the tuning process highlights that both `mtry` (number of predictors at each node) and `min_n` (minimum number of data points required to keep splitting) should be fairly small to optimize performance. However, the range of the y-axis indicates that the model is very robust to the choice of these parameter values &mdash; all but one of the ROC AUC values are greater than 0.90.
 
 ```{r rf-results, fig.height = 4}
 autoplot(rf_res)
@@ -392,14 +392,14 @@ rf_best <-
 rf_best
 ```
 
-To calculate the data needed to plot the ROC curve, we use `collect_predictions()`. This is only possible after tuning with `control_grid(save_pred = TRUE)`. In the output, you can see the two columns that hold our class probabilities for predicting bookings including and not including children.
+To calculate the data needed to plot the ROC curve, we use `collect_predictions()`. This is only possible after tuning with `control_grid(save_pred = TRUE)`. In the output, you can see the two columns that hold our class probabilities for predicting hotel stays including and not including children.
 
 ```{r R.options = list(tibble.print_min = 5)}
 rf_res %>% 
   collect_predictions()
 ```
 
-To filter the predictions for only our best random forest model, we can use the `parameters` argument and pass it our tibble with the best hyperparameter values for tuning, which we called `rf_best`:
+To filter the predictions for only our best random forest model, we can use the `parameters` argument and pass it our tibble with the best hyperparameter values from tuning, which we called `rf_best`:
 
 ```{r rf-roc}
 rf_auc <- 
@@ -426,7 +426,7 @@ The random forest is uniformly better across event probability thresholds.
 
 Our goal was to predict which hotel stays included children and/or babies. The random forest model clearly performed better than the penalized logistic regression model, and would be our best bet for predicting hotel stays with and without children. After selecting our best model and hyperparameter values, our last step is to fit the final model on all the rows of data not originally held out for testing (both the training and the validation sets combined), and then evaluate the model performance one last time with the held-out test set. 
 
-We'll start by building our parsnip model object again from scratch. We take our best hyperparameter values from our random forect model. When we set the engine, we add a new argument: `importance = 'impurity'`. This will provide _variable importance_ scores for this last model, which gives some insight into which predictors drive model performance.
+We'll start by building our parsnip model object again from scratch. We take our best hyperparameter values from our random forest model. When we set the engine, we add a new argument: `importance = 'impurity'`. This will provide _variable importance_ scores for this last model, which gives some insight into which predictors drive model performance.
 
 ```{r last-rf, cache = TRUE}
 # the last model
@@ -478,7 +478,7 @@ last_rf_fit %>%
   autoplot()
 ```
 
-Based on these results, the validation set and test set performance statistics are very close. 
+Based on these results, the validation set and test set performance statistics are very close, so we would have pretty high confidence that our random forest model with the selected hyperparameters would perform well when predicting new data.
 
 ## Where to next? {#next}
 
