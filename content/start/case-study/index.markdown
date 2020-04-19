@@ -48,7 +48,7 @@ dim(hotels)
 ```
 
 
-In the original paper, the [authors](https://doi.org/10.1016/j.dib.2018.11.126) caution that the distribution of many variables (such as number of adults/children, room type, meals bought, country of origin of the guests, and so forth) is different for hotel stays that were canceled versus not canceled. This makes sense because much of that information is gathered when guests check in for their stay, so canceled bookings are likely to be more variable and have more missing data than non-canceled bookings. Given this, it is unlikely that there are systematic differences between guests who cancel their bookings and those who do not in this dataset. To build our models, we have already filtered the data to include only the bookings that did not cancel, so we'll be analyzing _hotel stays_ only.
+In the original paper, the [authors](https://doi.org/10.1016/j.dib.2018.11.126) caution that the distribution of many variables (such as number of adults/children, room type, meals bought, country of origin of the guests, and so forth) is different for hotel stays that were canceled versus not canceled. This makes sense because much of that information is gathered when guests check in for their stay, so canceled bookings are likely to be more variable and have more missing data than non-canceled bookings. Given this confound, it is unlikely that we can reliably detect meaningful differences between guests who cancel their bookings and those who do not with this dataset. To build our models, we have already filtered the data to include only the bookings that did not cancel, so we'll be analyzing _hotel stays_ only.
 
 
 ```r
