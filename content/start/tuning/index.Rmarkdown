@@ -88,7 +88,7 @@ tune_spec <-
 tune_spec
 ```
 
-Think of `tune()` here as a placeholder. After the tuning process, we will select a single numeric value for each of these hyperparameters. But for now, we specify our parsnip model object with these `tune()` tags.
+Think of `tune()` here as a placeholder. After the tuning process, we will select a single numeric value for each of these hyperparameters. For now, we specify our parsnip model object and identify the hyperparameters we will `tune()`.
 
 We can't train this specification on a single data set (such as the entire training set) and learn what the hyperparameter values should be, but we _can_ train many models using resampled data and see which models turn out best. We can create a regular grid of values to try using some convenience functions for each hyperparameter:
 
