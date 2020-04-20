@@ -37,9 +37,6 @@ library(tidymodels) # for the rsample package, along with the rest of tidymodels
 
 # Helper packages
 library(modeldata)  # for the cells data
-
-# Modeling packages
-library(ranger)     # for the random forest model and engine
 ```
 
 
