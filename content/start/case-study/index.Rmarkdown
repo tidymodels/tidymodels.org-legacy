@@ -118,7 +118,7 @@ This function, like `initial_split()`, has the same `strata` argument, which use
 
 ## A first model: penalized logistic regression {#first-model}
 
-Since our outcome variable `children` is categorical, a logistic regression would be a good first model to start. Let's use a model that can perform feature selection during training. The [glmnet](https://cran.r-project.org/web/packages/glmnet/index.html) R package fits a generalized linear model via penalized maximum likelihood. This method of estimating the logistic regression slope parameters uses a _penalty_ on the process so that less relevant predictors are driven towards a value of zero. One of the glmnet penalization methods, called the [lasso method](https://en.wikipedia.org/wiki/Lasso_(statistics)), can set the predictor slopes to absolute zero if a large enough penalty is used. 
+Since our outcome variable `children` is categorical, logistic regression would be a good first model to start. Let's use a model that can perform feature selection during training. The [glmnet](https://cran.r-project.org/web/packages/glmnet/index.html) R package fits a generalized linear model via penalized maximum likelihood. This method of estimating the logistic regression slope parameters uses a _penalty_ on the process so that less relevant predictors are driven towards a value of zero. One of the glmnet penalization methods, called the [lasso method](https://en.wikipedia.org/wiki/Lasso_(statistics)), can actually set the predictor slopes to zero if a large enough penalty is used. 
 
 ### Build the model
 
