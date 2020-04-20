@@ -48,7 +48,7 @@ dim(hotels)
 ```
 
 
-In the original paper, the [authors](https://doi.org/10.1016/j.dib.2018.11.126) caution that the distribution of many variables (such as number of adults/children, room type, meals bought, country of origin of the guests, and so forth) is different for hotel stays that were canceled versus not canceled. This makes sense because much of that information is gathered when guests check in for their stay, so canceled bookings are likely to be more variable and have more missing data than non-canceled bookings. Given this confound, it is unlikely that we can reliably detect meaningful differences between guests who cancel their bookings and those who do not with this dataset. To build our models, we have already filtered the data to include only the bookings that did not cancel, so we'll be analyzing _hotel stays_ only.
+In the original paper, the [authors](https://doi.org/10.1016/j.dib.2018.11.126) caution that the distribution of many variables (such as number of adults/children, room type, meals bought, country of origin of the guests, and so forth) is different for hotel stays that were canceled versus not canceled. This makes sense because much of that information is gathered (or gathered again more accurately) when guests check in for their stay, so canceled bookings are likely to have more missing data than non-canceled bookings, and/or to have different characteristics when data is not missing. Given this, it is unlikely that we can reliably detect meaningful differences between guests who cancel their bookings and those who do not with this dataset. To build our models here, we have already filtered the data to include only the bookings that did not cancel, so we'll be analyzing _hotel stays_ only.
 
 
 ```r
@@ -94,7 +94,7 @@ hotels %>%
 #> 2 none     45962 0.919
 ```
 
-We can see that children were only in 8.1% of the reservations. This type of severe class imbalance can often wreak havoc on an analysis. While there are several methods for combating this issue using [recipes](/find/recipes/) (search for steps to `upsample` or `downsample`) or other more specialized packages like [themis](https://tidymodels.github.io/themis/), the analyses shown below analyze the data as-is. 
+We can see that children were only in 8.1% of the reservations. This type of class imbalance can often wreak havoc on an analysis. While there are several methods for combating this issue using [recipes](/find/recipes/) (search for steps to `upsample` or `downsample`) or other more specialized packages like [themis](https://tidymodels.github.io/themis/), the analyses shown below analyze the data as-is. 
 
 ## Data Splitting & Resampling {#data-split}
 
@@ -159,7 +159,7 @@ This function, like `initial_split()`, has the same `strata` argument, which use
 
 ## A first model: penalized logistic regression {#first-model}
 
-Since our outcome variable `children` is categorical, a logistic regression would be a good first model to start. Let's use a model that can perform feature selection during training. The [glmnet](https://cran.r-project.org/web/packages/glmnet/index.html) R package fits a generalized linear model via penalized maximum likelihood. This method of estimating the logistic regression slope parameters uses a _penalty_ on the process so that less relevant predictors are driven towards a value of zero. One of the glmnet penalization methods, called the [lasso method](https://en.wikipedia.org/wiki/Lasso_(statistics)), can set the predictor slopes to absolute zero if a large enough penalty is used. 
+Since our outcome variable `children` is categorical, logistic regression would be a good first model to start. Let's use a model that can perform feature selection during training. The [glmnet](https://cran.r-project.org/web/packages/glmnet/index.html) R package fits a generalized linear model via penalized maximum likelihood. This method of estimating the logistic regression slope parameters uses a _penalty_ on the process so that less relevant predictors are driven towards a value of zero. One of the glmnet penalization methods, called the [lasso method](https://en.wikipedia.org/wiki/Lasso_(statistics)), can actually set the predictor slopes to zero if a large enough penalty is used. 
 
 ### Build the model
 
@@ -172,7 +172,7 @@ lr_mod <-
   set_engine("glmnet")
 ```
 
-We'll tag the `penalty` argument with `tune()` as a placeholder for now. This is a model hyperparameter that we will [tune](/start/tuning/) to find the best value for improving our predictions. Setting `mixture` to a value of one means that the glmnet model will focus on potentially removing irrelevant predictors. 
+We'll set the `penalty` argument to `tune()` as a placeholder for now. This is a model hyperparameter that we will [tune](/start/tuning/) to find the best value for making predictions with our data. Setting `mixture` to a value of one means that the glmnet model will potentially remove irrelevant predictors and choose a simpler model. 
 
 ### Create the recipe 
 
@@ -373,7 +373,7 @@ cores
 #> [1] 12
 ```
 
-So, we have 12 to work with. We can tell this to the ranger engine when we set up our parnsip `rand_forest()` model. To enable parallel processing, we can pass engine-specific arguments like `num.threads` to ranger when we set the engine: 
+We have 12 cores to work with. We can pass this information to the ranger engine when we set up our parsnip `rand_forest()` model. To enable parallel processing, we can pass engine-specific arguments like `num.threads` to ranger when we set the engine: 
 
 
 ```r
@@ -385,7 +385,7 @@ rf_mod <-
 
 This works well in this modeling context, but it bears repeating: if you use any other resampling method, let tune do the parallel processing for you &mdash; we typically do not recommend relying on the modeling engine (like we did here) to do this.
 
-In this model, we tagged the `mtry` and `min_n` arguments with `tune()` as a placeholder. These are our two hyperparameters that we will [tune](/start/tuning/).  
+In this model, we used `tune()` as a placeholder for the `mtry` and `min_n` argument values, because these are our two hyperparameters that we will [tune](/start/tuning/).  
 
 ### Create the recipe and workflow
 
@@ -412,7 +412,7 @@ rf_workflow <-
 
 ### Train and tune the model
 
-When we set up our parsnip model, we tagged two hyperparameters for tuning:
+When we set up our parsnip model, we chose two hyperparameters for tuning:
 
 
 ```r
@@ -444,7 +444,7 @@ rf_mod %>%
 #> See `?dials::finalize` or `?dials::update.parameters` for more information.
 ```
 
-The `mtry` hyperparameter sets the number of predictor variables that each node in the decision tree "sees" and can learn about, so it can range from 1 to the total number of features present (when `mtry` = all possible features, the model is the same as bagging decision trees). The `min_n` hyperparameter sets the minimum `n` to split at any node.
+The `mtry` hyperparameter sets the number of predictor variables that each node in the decision tree "sees" and can learn about, so it can range from 1 to the total number of features present; when `mtry` = all possible features, the model is the same as bagging decision trees. The `min_n` hyperparameter sets the minimum `n` to split at any node.
 
 We will use a space-filling design to tune, with 25 candidate models: 
 
@@ -537,10 +537,10 @@ Now, we can compare the validation set ROC curves for our top penalized logistic
 ```r
 bind_rows(rf_auc, lr_auc) %>% 
   ggplot(aes(x = 1 - specificity, y = sensitivity, col = model)) + 
-  geom_path() +
+  geom_path(lwd = 1.5, alpha = 0.8) +
   geom_abline(lty = 3) + 
   coord_equal() + 
-  scale_color_viridis_d(option = "A", begin = .1, end = .6)
+  scale_color_viridis_d(option = "A", end = .6)
 ```
 
 <img src="figs/rf-lr-roc-curve-1.svg" width="672" />
@@ -551,14 +551,14 @@ The random forest is uniformly better across event probability thresholds.
 
 Our goal was to predict which hotel stays included children and/or babies. The random forest model clearly performed better than the penalized logistic regression model, and would be our best bet for predicting hotel stays with and without children. After selecting our best model and hyperparameter values, our last step is to fit the final model on all the rows of data not originally held out for testing (both the training and the validation sets combined), and then evaluate the model performance one last time with the held-out test set. 
 
-We'll start by building our parsnip model object again from scratch. We take our best hyperparameter values from our random forest model. When we set the engine, we add a new argument: `importance = 'impurity'`. This will provide _variable importance_ scores for this last model, which gives some insight into which predictors drive model performance.
+We'll start by building our parsnip model object again from scratch. We take our best hyperparameter values from our random forest model. When we set the engine, we add a new argument: `importance = "impurity"`. This will provide _variable importance_ scores for this last model, which gives some insight into which predictors drive model performance.
 
 
 ```r
 # the last model
 last_rf_mod <- 
   rand_forest(mtry = 8, min_n = 7, trees = 1000) %>% 
-  set_engine("ranger", num.threads = cores, importance = 'impurity') %>% 
+  set_engine("ranger", num.threads = cores, importance = "impurity") %>% 
   set_mode("classification")
 
 # the last workflow
@@ -633,7 +633,7 @@ Here are some more ideas for where to go next:
 
 + Dig deeper into the [package documentation sites](/packages/) to find functions that meet your modeling needs. Use the [searchable tables](/find/) to explore what is possible.
 
-+ Listen out for the latest about tidymodels packages at the [tidyverse blog](https://www.tidyverse.org/tags/tidymodels/).
++ Keep up with the latest about tidymodels packages at the [tidyverse blog](https://www.tidyverse.org/tags/tidymodels/).
 
 + Find ways to ask for [help](/help/) and [contribute to tidymodels](/contribute) to help others.
 
@@ -678,5 +678,3 @@ Here are some more ideas for where to go next:
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
 ```
-
-
