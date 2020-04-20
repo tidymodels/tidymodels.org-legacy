@@ -53,8 +53,8 @@ In the original paper, the [authors](https://doi.org/10.1016/j.dib.2018.11.126) 
 
 ```r
 glimpse(hotels)
-#> Observations: 50,000
-#> Variables: 23
+#> Rows: 50,000
+#> Columns: 23
 #> $ hotel                          <fct> City_Hotel, City_Hotel, Resort_Hotel, …
 #> $ lead_time                      <dbl> 217, 2, 95, 143, 136, 67, 47, 56, 80, …
 #> $ stays_in_weekend_nights        <dbl> 1, 0, 2, 2, 1, 2, 0, 0, 0, 2, 1, 0, 1,…
@@ -517,7 +517,7 @@ rf_res %>%
 #> 3 validation       0.000286      1.00     31    12     7 none    
 #> 4 validation       0.000168      1.00     32    12     7 none    
 #> 5 validation       0.00075       0.999    36    12     7 none    
-#> # … with 1.875e+05 more rows
+#> # … with 187,470 more rows
 ```
 
 To filter the predictions for only our best random forest model, we can use the `parameters` argument and pass it our tibble with the best hyperparameter values from tuning, which we called `rf_best`:
@@ -540,7 +540,7 @@ bind_rows(rf_auc, lr_auc) %>%
   geom_path(lwd = 1.5, alpha = 0.8) +
   geom_abline(lty = 3) + 
   coord_equal() + 
-  scale_color_viridis_d(option = "A", end = .6)
+  scale_color_viridis_d(option = "plasma", end = .6)
 ```
 
 <img src="figs/rf-lr-roc-curve-1.svg" width="672" />
@@ -609,7 +609,7 @@ last_rf_fit %>%
 
 The most important predictors in whether a hotel stay had children or not were the daily cost for the room, the type of room reserved, the type of room that was ultimately assigned, and the time between the creation of the reservation and the arrival date. 
 
-Let's generate our last ROC curve to visualize:
+Let's generate our last ROC curve to visualize. Since the event we are predicting is the first level in the `children` factor ("children"), we provide `roc_curve` with the [relevant class probability](https://tidymodels.github.io/yardstick/reference/roc_curve.html#relevant-level) `.pred_children`:
 
 
 ```r
@@ -653,28 +653,32 @@ Here are some more ideas for where to go next:
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Los_Angeles         
-#>  date     2020-04-19                  
+#>  date     2020-04-20                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version date       lib source        
-#>  broom      * 0.5.5   2020-02-29 [1] CRAN (R 3.6.0)
-#>  dials      * 0.0.4   2019-12-02 [1] CRAN (R 3.6.0)
-#>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
-#>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
-#>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
-#>  parsnip    * 0.0.5   2020-01-07 [1] CRAN (R 3.6.0)
-#>  purrr      * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
-#>  ranger       0.11.2  2019-03-07 [1] CRAN (R 3.6.0)
-#>  readr      * 1.3.1   2018-12-21 [1] CRAN (R 3.6.0)
-#>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
-#>  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
-#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
-#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.0)
-#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
-#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
-#>  vip        * 0.2.2   2020-04-06 [1] CRAN (R 3.6.2)
-#>  workflows  * 0.1.1   2020-03-17 [1] CRAN (R 3.6.0)
-#>  yardstick  * 0.0.5   2020-01-23 [1] CRAN (R 3.6.0)
+#>  ! package    * version date       lib source        
+#>  P broom      * 0.5.5   2020-02-29 [?] CRAN (R 3.6.0)
+#>  P dials      * 0.0.6   2020-04-03 [?] CRAN (R 3.6.2)
+#>  P dplyr      * 0.8.5   2020-03-07 [?] CRAN (R 3.6.0)
+#>  P ggplot2    * 3.3.0   2020-03-05 [?] CRAN (R 3.6.0)
+#>  P infer      * 0.5.1   2019-11-19 [?] CRAN (R 3.6.0)
+#>  P parsnip    * 0.1.0   2020-04-09 [?] CRAN (R 3.6.2)
+#>  P purrr      * 0.3.4   2020-04-17 [?] CRAN (R 3.6.2)
+#>    ranger       0.11.2  2019-03-07 [3] CRAN (R 3.6.0)
+#>  P readr      * 1.3.1   2018-12-21 [?] CRAN (R 3.6.0)
+#>  P recipes    * 0.1.10  2020-03-18 [?] CRAN (R 3.6.0)
+#>  P rlang        0.4.5   2020-03-01 [?] CRAN (R 3.6.0)
+#>  P rsample    * 0.0.6   2020-03-31 [?] CRAN (R 3.6.2)
+#>  P tibble     * 3.0.1   2020-04-20 [?] CRAN (R 3.6.1)
+#>  P tidymodels * 0.1.0   2020-02-16 [?] CRAN (R 3.6.0)
+#>  P tune       * 0.1.0   2020-04-02 [?] CRAN (R 3.6.2)
+#>  P vip        * 0.2.2   2020-04-06 [?] CRAN (R 3.6.2)
+#>  P workflows  * 0.1.1   2020-03-17 [?] CRAN (R 3.6.0)
+#>  P yardstick  * 0.0.6   2020-03-17 [?] CRAN (R 3.6.0)
 #> 
-#> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
+#> [1] /Users/alison/rsites/tidymodels.org/renv/library/R-3.6/x86_64-apple-darwin15.6.0
+#> [2] /private/var/folders/x2/6szrwxnx4yndx0tt3ztrmdnc0000gn/T/Rtmp8YlJUP/renv-system-library
+#> [3] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
+#> 
+#>  P ── Loaded and on-disk path mismatch.
 ```
