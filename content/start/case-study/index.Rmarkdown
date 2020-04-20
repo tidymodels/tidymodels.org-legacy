@@ -308,7 +308,7 @@ cores <- parallel::detectCores()
 cores
 ```
 
-So, we have `r cores` to work with. We can tell this to the ranger engine when we set up our parnsip `rand_forest()` model. To enable parallel processing, we can pass engine-specific arguments like `num.threads` to ranger when we set the engine: 
+We have `r cores` cores to work with. We can pass this information to the ranger engine when we set up our parsnip `rand_forest()` model. To enable parallel processing, we can pass engine-specific arguments like `num.threads` to ranger when we set the engine: 
 
 ```{r rf-model}
 rf_mod <- 
@@ -503,5 +503,4 @@ Here are some more ideas for where to go next:
 ```{r si, echo = FALSE}
 small_session(pkgs)
 ```
-
 
