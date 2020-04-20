@@ -130,7 +130,7 @@ lr_mod <-
   set_engine("glmnet")
 ```
 
-We'll tag the `penalty` argument with `tune()` as a placeholder for now. This is a model hyperparameter that we will [tune](/start/tuning/) to find the best value for improving our predictions. Setting `mixture` to a value of one means that the glmnet model will focus on potentially removing irrelevant predictors. 
+We'll set the `penalty` argument to `tune()` as a placeholder for now. This is a model hyperparameter that we will [tune](/start/tuning/) to find the best value for making predictions with our data. Setting `mixture` to a value of one means that the glmnet model will potentially remove irrelevant predictors and choose a simpler model. 
 
 ### Create the recipe 
 
