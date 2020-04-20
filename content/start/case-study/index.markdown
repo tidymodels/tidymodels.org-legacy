@@ -40,7 +40,7 @@ library(tidymodels)
 library(readr)
 
 hotels <- 
-  read_csv('https://bit.ly/hotel_booking_data') %>%
+  read_csv('https://tidymodels.org/start/case-study/hotels.csv') %>%
   mutate_if(is.character, as.factor) 
 
 dim(hotels)
