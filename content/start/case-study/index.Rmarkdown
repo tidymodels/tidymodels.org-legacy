@@ -471,7 +471,7 @@ last_rf_fit %>%
 
 The most important predictors in whether a hotel stay had children or not were the daily cost for the room, the type of room reserved, the type of room that was ultimately assigned, and the time between the creation of the reservation and the arrival date. 
 
-Let's generate our last ROC curve to visualize. Since the event we are predicting is the first level in the `children` factor ("children"), we provide `roc_curve` with the [relevant class probability](https://tidymodels.github.io/yardstick/reference/roc_curve.html#relevant-level) `.pred_children`:
+Let's generate our last ROC curve to visualize. Since the event we are predicting is the first level in the `children` factor ("children"), we provide `roc_curve()` with the [relevant class probability](https://tidymodels.github.io/yardstick/reference/roc_curve.html#relevant-level) `.pred_children`:
 
 ```{r test-set-roc-curve}
 last_rf_fit %>% 
