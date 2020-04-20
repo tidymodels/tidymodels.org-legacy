@@ -25,9 +25,6 @@ library(tidymodels)  # for the tune package, along with the rest of tidymodels
 # Helper packages
 library(modeldata)   # for the cells data
 library(vip)         # for variable importance plots
-
-# Modeling packages
-library(rpart)       # for decision trees
 ```
 
 ## The cell image data, revisited {#data}
@@ -58,9 +55,9 @@ Random forest models are a tree-based ensemble method, and typically perform wel
 - the complexity parameter (which we call `cost_complexity` in tidymodels) for the tree, and
 - the maximum `tree_depth`.
 
-Tuning these hyperparameters often improves model performance because decision tree models are prone to [overfitting](http://www.feat.engineering/important-concepts.html#overfitting). This happens because single tree models tend to fit the training data _too well_ &mdash; so well, in fact, that they overlearn patterns and trends present in the training data that do not actually help when faced with new data to predict. 
+Tuning these hyperparameters can improve model performance because decision tree models are prone to [overfitting](http://www.feat.engineering/important-concepts.html#overfitting). This happens because single tree models tend to fit the training data _too well_ &mdash; so well, in fact, that they over-learn patterns present in the training data that that end up being detrimental when predicting new data. 
 
-We will use hyperparameters to help our decision tree avoid overfitting. Tuning the value of `cost_complexity` helps by [pruning](https://bradleyboehmke.github.io/HOML/DT.html#pruning) back our tree. It adds a cost, or penalty, to error rates of more complex trees; a cost closer to zero is more likely to result in an overfit tree, but a larger cost can result in the opposite problem- underfitting. Tuning `tree_depth`, on the other hand, helps by [stopping our tree from growing](https://bradleyboehmke.github.io/HOML/DT.html#early-stopping) after it reaches a certain depth. We want to tune these hyperparameters to find out what those two values should be to help our model predict image segmentation better. 
+We will tune the model hyperparameters to avoid overfitting. Tuning the value of `cost_complexity` helps by [pruning](https://bradleyboehmke.github.io/HOML/DT.html#pruning) back our tree. It adds a cost, or penalty, to error rates of more complex trees; a cost closer to zero is more likely to result in an overfit tree, but a larger cost can result in the opposite problem, underfitting. Tuning `tree_depth`, on the other hand, helps by [stopping our tree from growing](https://bradleyboehmke.github.io/HOML/DT.html#early-stopping) after it reaches a certain depth. We want to tune these hyperparameters to find what those two values should be for our model to do the best job predicting image segmentation. 
 
 Before we start the tuning process, we split our data into training and testing sets, just like when we trained the model with one default set of hyperparameters. As [before](/start/resampling/), we can use `strata = class` if we want our training and testing sets to be created using stratified sampling so that both have the same proportion of both kinds of segmentation.
 
@@ -99,7 +96,7 @@ tune_spec
 #> Computational engine: rpart
 ```
 
-Think of `tune()` here as a placeholder. After the tuning process, we will select a single numeric value for each of these hyperparameters. But for now, we specify our parsnip model object with these `tune()` tags.
+Think of `tune()` here as a placeholder. After the tuning process, we will select a single numeric value for each of these hyperparameters. For now, we specify our parsnip model object and identify the hyperparameters we will `tune()`.
 
 We can't train this specification on a single data set (such as the entire training set) and learn what the hyperparameter values should be, but we _can_ train many models using resampled data and see which models turn out best. We can create a regular grid of values to try using some convenience functions for each hyperparameter:
 
@@ -156,7 +153,7 @@ set.seed(234)
 cell_folds <- vfold_cv(cell_train)
 ```
 
-Tuning in tidymodels will require a resampled object created with the [rsample](https://tidymodels.github.io/rsample/) package.
+Tuning in tidymodels requires a resampled object created with the [rsample](https://tidymodels.github.io/rsample/) package.
 
 ## Model tuning with a grid {#tune-grid}
 
@@ -222,7 +219,7 @@ tree_res %>%
 #> # … with 40 more rows
 ```
 
-But we might get more out of plotting these results:
+We might get more out of plotting these results:
 
 
 ```r
@@ -238,7 +235,7 @@ tree_res %>%
 
 <img src="figs/best-tree-1.svg" width="768" />
 
-We can see that our "stubbiest" tree, with a depth of 1, is the worst model according to both metrics and across all candidate values of `cost_complexity`. Our deepest tree tested, with a depth of 15, did better. But, the best tree seems to be between these values with a tree depth of 4. The [`show_best()`](https://tidymodels.github.io/tune/reference/show_best.html) function shows us the top 5 candidate models by default:
+We can see that our "stubbiest" tree, with a depth of 1, is the worst model according to both metrics and across all candidate values of `cost_complexity`. Our deepest tree, with a depth of 15, did better. However, the best tree seems to be between these values with a tree depth of 4. The [`show_best()`](https://tidymodels.github.io/tune/reference/show_best.html) function shows us the top 5 candidate models by default:
 
 
 ```r
@@ -282,14 +279,14 @@ final_wf <-
   finalize_workflow(best_tree)
 
 final_wf
-#> ══ Workflow ═══════════════════════════════════════════════════════
+#> ══ Workflow ═════════════════════════════════════════════════════════
 #> Preprocessor: Formula
 #> Model: decision_tree()
 #> 
-#> ── Preprocessor ───────────────────────────────────────────────────
+#> ── Preprocessor ─────────────────────────────────────────────────────
 #> class ~ .
 #> 
-#> ── Model ──────────────────────────────────────────────────────────
+#> ── Model ────────────────────────────────────────────────────────────
 #> Decision Tree Model Specification (classification)
 #> 
 #> Main Arguments:
@@ -312,14 +309,14 @@ final_tree <-
   fit(data = cell_train) 
 
 final_tree
-#> ══ Workflow [trained] ═════════════════════════════════════════════
+#> ══ Workflow [trained] ═══════════════════════════════════════════════
 #> Preprocessor: Formula
 #> Model: decision_tree()
 #> 
-#> ── Preprocessor ───────────────────────────────────────────────────
+#> ── Preprocessor ─────────────────────────────────────────────────────
 #> class ~ .
 #> 
-#> ── Model ──────────────────────────────────────────────────────────
+#> ── Model ────────────────────────────────────────────────────────────
 #> n= 1515 
 #> 
 #> node), split, n, loss, yval, (yprob)
@@ -365,7 +362,7 @@ These are the automated image analysis measurements that are the most important 
 
 ### The last fit
 
-Finally, let's return to our test data and estimate the model performance we expect to see on new data. We can use the function [`last_fit()`](https://tidymodels.github.io/tune/reference/last_fit.html) with our finalized model; this function _fits_ the finalized model on the full training data set and _evaluates_ the finalized model on the testing data.
+Finally, let's return to our test data and estimate the model performance we expect to see with new data. We can use the function [`last_fit()`](https://tidymodels.github.io/tune/reference/last_fit.html) with our finalized model; this function _fits_ the finalized model on the full training data set and _evaluates_ the finalized model on the testing data.
 
 
 ```r
@@ -409,28 +406,31 @@ You could tune the other hyperparameter we didn't use here, `min_n`, which sets 
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Los_Angeles         
-#>  date     2020-04-17                  
+#>  date     2020-04-19                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version date       lib source        
-#>  broom      * 0.5.5   2020-02-29 [1] CRAN (R 3.6.0)
-#>  dials      * 0.0.4   2019-12-02 [1] CRAN (R 3.6.0)
-#>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
-#>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
-#>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
-#>  modeldata  * 0.0.1   2019-12-06 [1] CRAN (R 3.6.0)
-#>  parsnip    * 0.0.5   2020-01-07 [1] CRAN (R 3.6.0)
-#>  purrr      * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
-#>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
-#>  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
-#>  rpart      * 4.1-15  2019-04-12 [1] CRAN (R 3.6.1)
-#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
-#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.0)
-#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
-#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
-#>  vip        * 0.2.2   2020-04-06 [1] CRAN (R 3.6.2)
-#>  workflows  * 0.1.1   2020-03-17 [1] CRAN (R 3.6.0)
-#>  yardstick  * 0.0.5   2020-01-23 [1] CRAN (R 3.6.0)
+#>  ! package    * version date       lib source        
+#>    broom      * 0.5.5   2020-02-29 [2] CRAN (R 3.6.0)
+#>    dials      * 0.0.4   2019-12-02 [2] CRAN (R 3.6.0)
+#>    dplyr      * 0.8.5   2020-03-07 [2] CRAN (R 3.6.0)
+#>    ggplot2    * 3.3.0   2020-03-05 [2] CRAN (R 3.6.0)
+#>    infer      * 0.5.1   2019-11-19 [2] CRAN (R 3.6.0)
+#>    modeldata  * 0.0.1   2019-12-06 [2] CRAN (R 3.6.0)
+#>    parsnip    * 0.0.5   2020-01-07 [2] CRAN (R 3.6.0)
+#>    purrr      * 0.3.3   2019-10-18 [2] CRAN (R 3.6.0)
+#>    recipes    * 0.1.10  2020-03-18 [2] CRAN (R 3.6.0)
+#>    rlang        0.4.5   2020-03-01 [2] CRAN (R 3.6.0)
+#>  P rpart      * 4.1-15  2019-04-12 [2] CRAN (R 3.6.1)
+#>    rsample    * 0.0.6   2020-03-31 [2] CRAN (R 3.6.2)
+#>    tibble     * 2.1.3   2019-06-06 [2] CRAN (R 3.6.0)
+#>    tidymodels * 0.1.0   2020-02-16 [2] CRAN (R 3.6.0)
+#>    tune       * 0.1.0   2020-04-02 [2] CRAN (R 3.6.2)
+#>    vip        * 0.2.2   2020-04-06 [2] CRAN (R 3.6.2)
+#>    workflows  * 0.1.1   2020-03-17 [2] CRAN (R 3.6.0)
+#>    yardstick  * 0.0.5   2020-01-23 [2] CRAN (R 3.6.0)
 #> 
-#> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
+#> [1] /private/var/folders/x2/6szrwxnx4yndx0tt3ztrmdnc0000gn/T/Rtmp8GeRaj/renv-system-library
+#> [2] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
+#> 
+#>  P ── Loaded and on-disk path mismatch.
 ```
