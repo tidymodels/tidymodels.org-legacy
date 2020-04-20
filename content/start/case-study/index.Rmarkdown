@@ -68,7 +68,7 @@ hotels %>%
   mutate(prop = n/sum(n))
 ```
 
-We can see that children were only in `r round(mean(hotels$children == "children") * 100, 1)`% of the reservations. This type of severe class imbalance can often wreak havoc on an analysis. While there are several methods for combating this issue using [recipes](/find/recipes/) (search for steps to `upsample` or `downsample`) or other more specialized packages like [themis](https://tidymodels.github.io/themis/), the analyses shown below analyze the data as-is. 
+We can see that children were only in `r round(mean(hotels$children == "children") * 100, 1)`% of the reservations. This type of class imbalance can often wreak havoc on an analysis. While there are several methods for combating this issue using [recipes](/find/recipes/) (search for steps to `upsample` or `downsample`) or other more specialized packages like [themis](https://tidymodels.github.io/themis/), the analyses shown below analyze the data as-is. 
 
 ## Data Splitting & Resampling {#data-split}
 
