@@ -184,7 +184,7 @@ tree_res
 #> #  10-fold cross-validation 
 #> # A tibble: 10 x 4
 #>    splits             id     .metrics          .notes          
-#>  * <list>             <chr>  <list>            <list>          
+#>    <list>             <chr>  <list>            <list>          
 #>  1 <split [1.4K/152]> Fold01 <tibble [50 × 5]> <tibble [0 × 1]>
 #>  2 <split [1.4K/152]> Fold02 <tibble [50 × 5]> <tibble [0 × 1]>
 #>  3 <split [1.4K/152]> Fold03 <tibble [50 × 5]> <tibble [0 × 1]>
@@ -230,8 +230,8 @@ tree_res %>%
   geom_line(size = 1.5, alpha = 0.6) +
   geom_point(size = 2) +
   facet_wrap(~ .metric, scales = "free", nrow = 2) +
-  scale_x_log10() +
-  scale_color_viridis_d(option = "magma", end = .8)
+  scale_x_log10(labels = scales::label_number()) +
+  scale_color_viridis_d(option = "plasma", begin = .9, end = 0)
 ```
 
 <img src="figs/best-tree-1.svg" width="768" />
@@ -280,14 +280,14 @@ final_wf <-
   finalize_workflow(best_tree)
 
 final_wf
-#> ══ Workflow ═══════════════════════════════════════════════════════════════════════════
+#> ══ Workflow ═════════════════════════════════════════════════════════
 #> Preprocessor: Formula
 #> Model: decision_tree()
 #> 
-#> ── Preprocessor ───────────────────────────────────────────────────────────────────────
+#> ── Preprocessor ─────────────────────────────────────────────────────
 #> class ~ .
 #> 
-#> ── Model ──────────────────────────────────────────────────────────────────────────────
+#> ── Model ────────────────────────────────────────────────────────────
 #> Decision Tree Model Specification (classification)
 #> 
 #> Main Arguments:
@@ -310,14 +310,14 @@ final_tree <-
   fit(data = cell_train) 
 
 final_tree
-#> ══ Workflow [trained] ═════════════════════════════════════════════════════════════════
+#> ══ Workflow [trained] ═══════════════════════════════════════════════
 #> Preprocessor: Formula
 #> Model: decision_tree()
 #> 
-#> ── Preprocessor ───────────────────────────────────────────────────────────────────────
+#> ── Preprocessor ─────────────────────────────────────────────────────
 #> class ~ .
 #> 
-#> ── Model ──────────────────────────────────────────────────────────────────────────────
+#> ── Model ────────────────────────────────────────────────────────────
 #> n= 1515 
 #> 
 #> node), split, n, loss, yval, (yprob)
@@ -407,7 +407,7 @@ You could tune the other hyperparameter we didn't use here, `min_n`, which sets 
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Los_Angeles         
-#>  date     2020-04-19                  
+#>  date     2020-04-20                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
@@ -423,7 +423,7 @@ You could tune the other hyperparameter we didn't use here, `min_n`, which sets 
 #>  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
 #>  rpart      * 4.1-15  2019-04-12 [1] CRAN (R 3.6.1)
 #>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
-#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.0)
+#>  tibble     * 3.0.0   2020-03-30 [1] CRAN (R 3.6.2)
 #>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
 #>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
 #>  vip        * 0.2.2   2020-04-06 [1] CRAN (R 3.6.2)

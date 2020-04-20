@@ -162,11 +162,11 @@ tree_res %>%
   geom_line(size = 1.5, alpha = 0.6) +
   geom_point(size = 2) +
   facet_wrap(~ .metric, scales = "free", nrow = 2) +
-  scale_x_log10() +
-  scale_color_viridis_d(option = "magma", end = .8)
+  scale_x_log10(labels = scales::label_number()) +
+  scale_color_viridis_d(option = "plasma", begin = .9, end = 0)
 ```
 
-We can see that our "stubbiest" tree, with a depth of 1, is the worst model according to both metrics and across all candidate values of `cost_complexity`. Our deepest tree, with a depth of 15, did better. However, the best tree seems to be between these values with a tree depth of 4. The [`show_best()`](https://tidymodels.github.io/tune/reference/show_best.html) function shows us the top 5 candidate models by default:
+We can see that our "stubbiest" tree, with a depth of `r min(tree_grid$tree_depth)`, is the worst model according to both metrics and across all candidate values of `cost_complexity`. Our deepest tree, with a depth of `r max(tree_grid$tree_depth)`, did better. However, the best tree seems to be between these values with a tree depth of 4. The [`show_best()`](https://tidymodels.github.io/tune/reference/show_best.html) function shows us the top 5 candidate models by default:
 
 ```{r show-best-tree, dependson="tree-res"}
 tree_res %>%
