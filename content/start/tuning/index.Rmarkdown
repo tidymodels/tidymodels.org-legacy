@@ -53,7 +53,7 @@ Random forest models are a tree-based ensemble method, and typically perform wel
 - the complexity parameter (which we call `cost_complexity` in tidymodels) for the tree, and
 - the maximum `tree_depth`.
 
-Tuning these hyperparameters can improve model performance because decision tree models are prone to [overfitting](http://www.feat.engineering/important-concepts.html#overfitting). This happens because single tree models tend to fit the training data _too well_ &mdash; so well, in fact, that they over-learn patterns present in the training data that that end up being detrimental when predicting new data. 
+Tuning these hyperparameters can improve model performance because decision tree models are prone to [overfitting](http://www.feat.engineering/important-concepts.html#overfitting). This happens because single tree models tend to fit the training data _too well_ &mdash; so well, in fact, that they over-learn patterns present in the training data that end up being detrimental when predicting new data. 
 
 We will tune the model hyperparameters to avoid overfitting. Tuning the value of `cost_complexity` helps by [pruning](https://bradleyboehmke.github.io/HOML/DT.html#pruning) back our tree. It adds a cost, or penalty, to error rates of more complex trees; a cost closer to zero is more likely to result in an overfit tree, but a larger cost can result in the opposite problem, underfitting. Tuning `tree_depth`, on the other hand, helps by [stopping our tree from growing](https://bradleyboehmke.github.io/HOML/DT.html#early-stopping) after it reaches a certain depth. We want to tune these hyperparameters to find what those two values should be for our model to do the best job predicting image segmentation. 
 
