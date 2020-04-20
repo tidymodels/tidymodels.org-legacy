@@ -100,7 +100,7 @@
     },
     "KernSmooth": {
       "Package": "KernSmooth",
-      "Version": "2.23-15",
+      "Version": "2.23-16",
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "081f417f4d6d55b7e8981433e8404a22"
@@ -163,7 +163,7 @@
     },
     "RSpectra": {
       "Package": "RSpectra",
-      "Version": "0.15-0",
+      "Version": "0.16-0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "e8323098a3a6c7d9c0b633c6174efb48"
@@ -364,7 +364,7 @@
     },
     "classInt": {
       "Package": "classInt",
-      "Version": "0.4-1",
+      "Version": "0.4-3",
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "2342ebb93918f8987e0073295d15cd80"
@@ -640,7 +640,7 @@
     },
     "forecast": {
       "Package": "forecast",
-      "Version": "8.9",
+      "Version": "8.12",
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "394b1c2918eaea1efea82e12ecf85a88"
@@ -654,7 +654,7 @@
     },
     "fracdiff": {
       "Package": "fracdiff",
-      "Version": "1.4-2",
+      "Version": "1.5-1",
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "d187fd5cef6f5b0e8a448cf8ecdc0046"
@@ -885,7 +885,7 @@
     },
     "igraph": {
       "Package": "igraph",
-      "Version": "1.2.4.2",
+      "Version": "1.2.5",
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "fffa635f747cd07ffc56bc13a23701e4"
@@ -1207,14 +1207,14 @@
     },
     "mvtnorm": {
       "Package": "mvtnorm",
-      "Version": "1.0-12",
+      "Version": "1.1-0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "e5cf1b1d61a72646afbab28a20e9bd54"
     },
     "nlme": {
       "Package": "nlme",
-      "Version": "3.1-140",
+      "Version": "3.1-147",
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "79d4c59449e799385e98e222e5f8f950"
