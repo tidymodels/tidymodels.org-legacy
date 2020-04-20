@@ -155,7 +155,7 @@ tree_res %>%
   collect_metrics()
 ```
 
-But we might get more out of plotting these results:
+We might get more out of plotting these results:
 
 ```{r best-tree, dependson="tree-res", fig.width=8, fig.height=7}
 tree_res %>%
