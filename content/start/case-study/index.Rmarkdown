@@ -434,7 +434,7 @@ We'll start by building our parsnip model object again from scratch. We take our
 # the last model
 last_rf_mod <- 
   rand_forest(mtry = 8, min_n = 7, trees = 1000) %>% 
-  set_engine("ranger", num.threads = cores, importance = 'impurity') %>% 
+  set_engine("ranger", num.threads = cores, importance = "impurity") %>% 
   set_mode("classification")
 
 # the last workflow
@@ -503,4 +503,3 @@ Here are some more ideas for where to go next:
 ```{r si, echo = FALSE}
 small_session(pkgs)
 ```
-
