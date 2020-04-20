@@ -119,7 +119,7 @@ set.seed(234)
 cell_folds <- vfold_cv(cell_train)
 ```
 
-Tuning in tidymodels will require a resampled object created with the [rsample](https://tidymodels.github.io/rsample/) package.
+Tuning in tidymodels requires a resampled object created with the [rsample](https://tidymodels.github.io/rsample/) package.
 
 ## Model tuning with a grid {#tune-grid}
 
