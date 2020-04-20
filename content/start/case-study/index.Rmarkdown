@@ -428,7 +428,7 @@ The random forest is uniformly better across event probability thresholds.
 
 Our goal was to predict which hotel stays included children and/or babies. The random forest model clearly performed better than the penalized logistic regression model, and would be our best bet for predicting hotel stays with and without children. After selecting our best model and hyperparameter values, our last step is to fit the final model on all the rows of data not originally held out for testing (both the training and the validation sets combined), and then evaluate the model performance one last time with the held-out test set. 
 
-We'll start by building our parsnip model object again from scratch. We take our best hyperparameter values from our random forest model. When we set the engine, we add a new argument: `importance = 'impurity'`. This will provide _variable importance_ scores for this last model, which gives some insight into which predictors drive model performance.
+We'll start by building our parsnip model object again from scratch. We take our best hyperparameter values from our random forest model. When we set the engine, we add a new argument: `importance = "impurity"`. This will provide _variable importance_ scores for this last model, which gives some insight into which predictors drive model performance.
 
 ```{r last-rf, cache = TRUE}
 # the last model
