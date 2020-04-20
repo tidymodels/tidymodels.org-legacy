@@ -354,7 +354,7 @@ rf_mod %>%
   parameters()  
 ```
 
-The `mtry` hyperparameter sets the number of predictor variables that each node in the decision tree "sees" and can learn about, so it can range from 1 to the total number of features present (when `mtry` = all possible features, the model is the same as bagging decision trees). The `min_n` hyperparameter sets the minimum `n` to split at any node.
+The `mtry` hyperparameter sets the number of predictor variables that each node in the decision tree "sees" and can learn about, so it can range from 1 to the total number of features present; when `mtry` = all possible features, the model is the same as bagging decision trees. The `min_n` hyperparameter sets the minimum `n` to split at any node.
 
 We will use a space-filling design to tune, with 25 candidate models: 
 
