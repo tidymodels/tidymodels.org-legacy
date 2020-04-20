@@ -344,7 +344,7 @@ rf_workflow <-
 
 ### Train and tune the model
 
-When we set up our parsnip model, we tagged two hyperparameters for tuning:
+When we set up our parsnip model, we chose two hyperparameters for tuning:
 
 ```{r message=FALSE}
 rf_mod
