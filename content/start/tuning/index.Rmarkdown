@@ -229,7 +229,7 @@ These are the automated image analysis measurements that are the most important 
 
 ### The last fit
 
-Finally, let's return to our test data and estimate the model performance we expect to see on new data. We can use the function [`last_fit()`](https://tidymodels.github.io/tune/reference/last_fit.html) with our finalized model; this function _fits_ the finalized model on the full training data set and _evaluates_ the finalized model on the testing data.
+Finally, let's return to our test data and estimate the model performance we expect to see with new data. We can use the function [`last_fit()`](https://tidymodels.github.io/tune/reference/last_fit.html) with our finalized model; this function _fits_ the finalized model on the full training data set and _evaluates_ the finalized model on the testing data.
 
 ```{r last-fit, dependson=c("final_mod", "cell-split")}
 final_wf %>%
