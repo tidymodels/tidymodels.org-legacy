@@ -94,13 +94,13 @@ Learn more about the tidymodels metapackage itself at <https://tidymodels.github
 
 The tidymodels framework also includes many other packages designed for specialized data analysis and modeling tasks. They are not loaded automatically with `library(tidymodels)`, so you'll need to load each one with its own call to `library()`. These packages include: 
 
-### Perform statistical analysis
+### [Perform statistical analysis](/learn/statistics/)
 
 * [infer](https://infer.netlify.com/) is a high-level API for tidyverse-friendly statistical inference.
 
 * The [corrr](https://tidymodels.github.io/corrr/) package has tidy interfaces for working with correlation matrices.
 
-### Create robust models
+### [Create robust models](/learn/models/)
 
 * parsnip also has additional packages that contain more model definitions. [discrim](https://tidymodels.github.io/discrim/) contains definitions for discriminant analysis models and [rules](https://tidymodels.github.io/rules/) does the same for rule-based classification and regression models. 
 
@@ -108,7 +108,7 @@ The tidymodels framework also includes many other packages designed for speciali
 
 * [tidypredict](https://tidymodels.github.io/tidypredict/) and [modeldb](https://tidymodels.github.io/modeldb/) can convert prediction equations to different languages (e.g. SQL) and fit some models in-database. 
 
-### Tune, compare, and work with your models
+### [Tune, compare, and work with your models](/learn/work/)
 
 * [probably](https://tidymodels.github.io/probably/) has tools for post-processing class probability estimates.
 
@@ -118,6 +118,6 @@ The tidymodels framework also includes many other packages designed for speciali
 
 * To know whether the data that you are predicting are _extrapolations_ from the training set, [applicable](https://tidymodels.github.io/applicable/) can produce metrics the measure extrapolation. 
 
-### Develop custom modeling tools
+### [Develop custom modeling tools](/learn/develop/)
 
 * [hardhat](https://tidymodels.github.io/hardhat/) is a _developer-focused_ package that helps beginners create high-quality R packages for modeling. 
