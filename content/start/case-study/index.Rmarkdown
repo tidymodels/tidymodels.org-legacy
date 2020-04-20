@@ -319,7 +319,7 @@ rf_mod <-
 
 This works well in this modeling context, but it bears repeating: if you use any other resampling method, let tune do the parallel processing for you &mdash; we typically do not recommend relying on the modeling engine (like we did here) to do this.
 
-In this model, we tagged the `mtry` and `min_n` arguments with `tune()` as a placeholder. These are our two hyperparameters that we will [tune](/start/tuning/).  
+In this model, we used `tune()` as a placeholder for the `mtry` and `min_n` argument values, because these are our two hyperparameters that we will [tune](/start/tuning/).  
 
 ### Create the recipe and workflow
 
