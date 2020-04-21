@@ -35,6 +35,10 @@ library(readr)       # for importing data
 library(vip)         # for variable importance plots
 ```
 
+```{r echo=FALSE}
+knitr::include_graphics("img/hotel.jpg")
+```
+
 
 ## The Hotel Bookings Data {#data}
 
