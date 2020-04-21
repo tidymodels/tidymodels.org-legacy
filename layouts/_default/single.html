@@ -14,10 +14,12 @@
       </div>
 
       <div class="column25">
+        {{ if ge (len .TableOfContents) 50 }}
         <div class="section hideOnMobile">
           <div class="sectionTitle">Contents</div>
           {{ .TableOfContents }}
         </div>
+        {{ end }}
         <div class="section">
           <div class="sectionTitle">Resources</div>
           {{ partial "resources_sticky.html" .}}

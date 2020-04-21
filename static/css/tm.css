@@ -713,8 +713,12 @@ sup {
   .start {
 	flex-direction: column-reverse;
 }
-}
 
+/* dont show anchor link on small screens */
+  h2 a.hanchor {
+    visibility: hidden;
+  }
+}
 
 @media screen and (max-width: 700px) {
   .flex-container.learn-list {
@@ -733,4 +737,18 @@ sup {
   background-image: url('../images/giraffe.jpg');
   background-size: contain;
   background-repeat: no-repeat;
+}
+
+.hanchor { 
+  font-size: 100%; 
+  /*visibility: hidden; */
+  color: #1a162d50;
+  opacity: 0.6;
+}
+
+h2:hover a { 
+  color: #1a162d99;
+  /*visibility: visible;*/
+  text-decoration: none;
+  opacity: 0.9;
 }
