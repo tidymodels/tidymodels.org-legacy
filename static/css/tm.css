@@ -739,11 +739,12 @@ sup {
   font-size: 100%; 
   /*visibility: hidden; */
   color: #1a162d50;
+  opacity: 0.6;
 }
 
 h2:hover a { 
   color: #1a162d99;
   /*visibility: visible;*/
   text-decoration: none;
-  opacity: 1;
+  opacity: 0.9;
 }
