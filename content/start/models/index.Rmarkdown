@@ -34,9 +34,6 @@ library(tidymodels)  # for the parsnip package, along with the rest of tidymodel
 
 # Helper packages
 library(readr)       # for importing data
-
-# Modeling packages
-library(rstanarm)    # for Bayesian analysis
 ```
 
 
