@@ -75,7 +75,8 @@ ggplot(urchins,
            group = food_regime, 
            col = food_regime)) + 
   geom_point() + 
-  geom_smooth(method = lm, se = FALSE)
+  geom_smooth(method = lm, se = FALSE) +
+  scale_color_viridis_d(option = "plasma", end = .7)
 ```
 
 We can see that urchins that were larger in volume at the start of the experiment tended to have wider sutures at the end, but the slopes of the lines look different so this effect may depend on the feeding regime condition.

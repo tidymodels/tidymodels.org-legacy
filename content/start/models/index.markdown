@@ -89,7 +89,8 @@ ggplot(urchins,
            group = food_regime, 
            col = food_regime)) + 
   geom_point() + 
-  geom_smooth(method = lm, se = FALSE)
+  geom_smooth(method = lm, se = FALSE) +
+  scale_color_viridis_d(option = "plasma", end = .7)
 #> `geom_smooth()` using formula 'y ~ x'
 ```
 
