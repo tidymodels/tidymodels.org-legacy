@@ -43,8 +43,8 @@ title: Tidymodels packages
   <div class="package">
     <img class="package-image" src="/images/recipes.png" alt=""></img>
     <div class="package-info">
-      <h3><a href="https://tidymodels.github.io/rsample/"> recipes </a></h3>
-      <p>recipes is a tidy interface to data pre-processing tools for feature engineering. <a href="https://tidymodels.github.io/rsample/" aria-hidden="true">Go to package ...</a></p>
+      <h3><a href="https://tidymodels.github.io/recipes/"> recipes </a></h3>
+      <p>recipes is a tidy interface to data pre-processing tools for feature engineering. <a href="https://tidymodels.github.io/recipes/" aria-hidden="true">Go to package ...</a></p>
     </div>
   </div>
   <div class="package">
@@ -102,7 +102,7 @@ The tidymodels framework also includes many other packages designed for speciali
 
 ### [Create robust models](/learn/models/)
 
-* parsnip also has additional packages that contain more model definitions. [discrim](https://tidymodels.github.io/discrim/) contains definitions for discriminant analysis models and [rules](https://tidymodels.github.io/rules/) does the same for rule-based classification and regression models. 
+* parsnip also has additional packages that contain more model definitions. [discrim](https://tidymodels.github.io/discrim/) contains definitions for discriminant analysis models and [rules](https://github.com/tidymodels/rules/) does the same for rule-based classification and regression models. 
 
 * There are several add-on packages for creating recipes. [embed](https://tidymodels.github.io/embed/) contains steps to create embeddings or projections of predictors. [textrecipes](https://tidymodels.github.io/textrecipes/) has extra steps for text processing, and [themis](https://tidymodels.github.io/themis/) can help alleviate class imbalance using sampling methods. 
 
