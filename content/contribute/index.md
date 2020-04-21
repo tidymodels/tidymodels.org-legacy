@@ -34,7 +34,7 @@ If you've found a bug, first create a minimal [reprex](https://www.tidyverse.org
 
 The tidymodels team often focuses on one package at a time to reduce context switching and be more efficient. We may not address each issue right away, but we will use the reprex you create to understand your problem when it is time to focus on that package.
 
-## Contribute documention
+## Contribute documentation
 
 Documentation is a high priority for tidymodels, and pull requests to correct or improve documentation are welcome. The most important thing to know is that tidymodels packages use [roxygen2](https://roxygen2.r-lib.org/); this means that documentation is found in the R code close to the source of each function. There are some special tags, but most tidymodels packages now use markdown in the documentation. This makes it particularly easy to get started!
 
