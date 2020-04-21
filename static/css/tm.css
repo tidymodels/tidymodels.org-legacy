@@ -734,3 +734,15 @@ sup {
   background-size: contain;
   background-repeat: no-repeat;
 }
+
+.hanchor { 
+  font-size: 100%; 
+  /*visibility: hidden; */
+  color: #1a162d50;
+}
+
+h2:hover a { 
+  color: #1a162d99;
+  /*visibility: visible;*/
+  text-decoration: none;
+}
