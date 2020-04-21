@@ -745,4 +745,5 @@ h2:hover a {
   color: #1a162d99;
   /*visibility: visible;*/
   text-decoration: none;
+  opacity: 1;
 }
