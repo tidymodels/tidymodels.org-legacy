@@ -713,8 +713,12 @@ sup {
   .start {
 	flex-direction: column-reverse;
 }
-}
 
+/* dont show anchor link on small screens */
+  h2 a.hanchor {
+    visibility: hidden;
+  }
+}
 
 @media screen and (max-width: 700px) {
   .flex-container.learn-list {
