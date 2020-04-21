@@ -14,7 +14,10 @@ description: |
 
 ## Introduction {#intro}
 
-Each of the four previous [_Get Started_](/start/) articles has focused on a single task related to modeling. Along the way, we also introduced core packages in the tidymodels ecosystem and some of the key functions you'll need to start working with models. In this final case study, we will use all of the previous articles as a foundation to build a predictive model from beginning to end. 
+Each of the four previous [_Get Started_](/start/) articles has focused on a single task related to modeling. Along the way, we also introduced core packages in the tidymodels ecosystem and some of the key functions you'll need to start working with models. In this final case study, we will use all of the previous articles as a foundation to build a predictive model from beginning to end with data on hotel stays. 
+
+<img src="img/hotel.jpg" width="90%" />
+
 
 To use code in this article,  you will need to install the following packages: glmnet, ranger, readr, tidymodels, and vip.
 
@@ -26,7 +29,6 @@ library(tidymodels)
 library(readr)       # for importing data
 library(vip)         # for variable importance plots
 ```
-
 
 ## The Hotel Bookings Data {#data}
 
