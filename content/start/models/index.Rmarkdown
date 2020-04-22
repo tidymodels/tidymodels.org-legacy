@@ -86,7 +86,7 @@ We can see that urchins that were larger in volume at the start of the experimen
 A standard analysis of covariance ([ANCOVA](https://en.wikipedia.org/wiki/Analysis_of_covariance)) model makes sense for this dataset because we have both a continuous predictor and a categorical predictor. Since the slopes appear to be different for at least two of the feeding regimes, let's build a model that allows for two-way interactions. Specifying an R formula with our variables in this way: 
 
 ```{r two-way-int, eval = FALSE}
-width ~ (initial_volume + food_regime)^2
+width ~ initial_volume * food_regime
 ```
 
 allows our regression model depending on initial volume to have separate slopes and intercepts for each food regime. 
@@ -118,7 +118,7 @@ From here, the model can be estimated or trained using the [`fit()`](https://tid
 ```{r lm-fit}
 lm_fit <- 
   lm_mod %>% 
-  fit(width ~ (initial_volume + food_regime)^2, data = urchins)
+  fit(width ~ initial_volume * food_regime, data = urchins)
 lm_fit
 ```
 
@@ -198,7 +198,7 @@ bayes_mod <-
 # train the model
 bayes_fit <- 
   bayes_mod %>% 
-  fit(width ~ (initial_volume + food_regime)^2, data = urchins)
+  fit(width ~ initial_volume * food_regime, data = urchins)
 
 print(bayes_fit, digits = 5)
 ```
@@ -247,7 +247,7 @@ whereas the modeling code uses the pipe to pass around the _model object_:
 
 ```{r tidy-model, eval = FALSE}
 bayes_mod %>% 
-  fit(width ~ (initial_volume + food_regime)^2, data = urchins)
+  fit(width ~ initial_volume * food_regime, data = urchins)
 ```
 
 This may seem jarring if you have used dplyr a lot, but it is extremely similar to how ggplot2 operates:
