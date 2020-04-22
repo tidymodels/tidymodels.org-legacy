@@ -272,7 +272,7 @@ lr_plot  +
   geom_vline(color = "#CA225E", xintercept = select_pen) 
 ```
 
-But, we may want to choose a penalty value further along the x-axis, closer to where we start to see the decline in model performance. For example, candidate model `r select_cand` with a penalty value of `r format(select_pen, digits = 3)` has effectively the same performance as the numerically best model, but might eliminate more predictors. This penalty value is marked by the solid line above. In general, less irrelevant predictors is better. so if performance is the same, we'd prefer to choose a higher penalty value. 
+However, we may want to choose a penalty value further along the x-axis, closer to where we start to see the decline in model performance. For example, candidate model `r select_cand` with a penalty value of `r format(select_pen, digits = 3)` has effectively the same performance as the numerically best model, but might eliminate more predictors. This penalty value is marked by the solid line above. In general, fewer irrelevant predictors is better. If performance is about the same, we'd prefer to choose a higher penalty value. 
 
 Let's select this value and visualize the validation set ROC curve:
 ```{r logistic-best}

@@ -104,7 +104,7 @@ A standard analysis of covariance ([ANCOVA](https://en.wikipedia.org/wiki/Analys
 
 
 ```r
-width ~ (initial_volume + food_regime)^2
+width ~ initial_volume * food_regime
 ```
 
 allows our regression model depending on initial volume to have separate slopes and intercepts for each food regime. 
@@ -144,7 +144,7 @@ From here, the model can be estimated or trained using the [`fit()`](https://tid
 ```r
 lm_fit <- 
   lm_mod %>% 
-  fit(width ~ (initial_volume + food_regime)^2, data = urchins)
+  fit(width ~ initial_volume * food_regime, data = urchins)
 lm_fit
 #> parsnip model object
 #> 
@@ -270,7 +270,7 @@ bayes_mod <-
 # train the model
 bayes_fit <- 
   bayes_mod %>% 
-  fit(width ~ (initial_volume + food_regime)^2, data = urchins)
+  fit(width ~ initial_volume * food_regime, data = urchins)
 
 print(bayes_fit, digits = 5)
 #> parsnip model object
@@ -278,7 +278,7 @@ print(bayes_fit, digits = 5)
 #> Fit time:  1.7s 
 #> stan_glm
 #>  family:       gaussian [identity]
-#>  formula:      width ~ (initial_volume + food_regime)^2
+#>  formula:      width ~ initial_volume * food_regime
 #>  observations: 72
 #>  predictors:   6
 #> ------
@@ -364,7 +364,7 @@ whereas the modeling code uses the pipe to pass around the _model object_:
 
 ```r
 bayes_mod %>% 
-  fit(width ~ (initial_volume + food_regime)^2, data = urchins)
+  fit(width ~ initial_volume * food_regime, data = urchins)
 ```
 
 This may seem jarring if you have used dplyr a lot, but it is extremely similar to how ggplot2 operates:
@@ -393,7 +393,7 @@ ggplot(urchins,
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-04-20                  
+#>  date     2020-04-21                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        

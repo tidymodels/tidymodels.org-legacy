@@ -325,7 +325,7 @@ Every candidate model in this tibble likely includes more predictor variables th
 
 <img src="figs/lr-plot-lines-1.svg" width="576" />
 
-But, we may want to choose a penalty value further along the x-axis, closer to where we start to see the decline in model performance. For example, candidate model 12 with a penalty value of 0.00137 has effectively the same performance as the numerically best model, but might eliminate more predictors. This penalty value is marked by the solid line above. In general, less irrelevant predictors is better. so if performance is the same, we'd prefer to choose a higher penalty value. 
+However, we may want to choose a penalty value further along the x-axis, closer to where we start to see the decline in model performance. For example, candidate model 12 with a penalty value of 0.00137 has effectively the same performance as the numerically best model, but might eliminate more predictors. This penalty value is marked by the solid line above. In general, fewer irrelevant predictors is better. If performance is about the same, we'd prefer to choose a higher penalty value. 
 
 Let's select this value and visualize the validation set ROC curve:
 
@@ -655,7 +655,7 @@ Here are some more ideas for where to go next:
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-04-20                  
+#>  date     2020-04-21                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        

@@ -30,7 +30,7 @@ library(modeldata)  # for the cells data
 
 ## The cell image data {#data}
 
-Let's use data from [Hill, LaPan, Li and Haney (2007)](http://www.biomedcentral.com/1471-2105/8/340), available in the [modeldata package](https://cran.r-project.org/web/packages/modeldata/index.html), to predict cell image segmentation quality with resampling. To start, we load this data into R:
+Let's use data from [Hill, LaPan, Li, and Haney (2007)](http://www.biomedcentral.com/1471-2105/8/340), available in the [modeldata package](https://cran.r-project.org/web/packages/modeldata/index.html), to predict cell image segmentation quality with resampling. To start, we load this data into R:
 
 
 ```r
@@ -185,7 +185,7 @@ rf_fit <-
 rf_fit
 #> parsnip model object
 #> 
-#> Fit time:  2.3s 
+#> Fit time:  2.4s 
 #> Ranger result
 #> 
 #> Call:
@@ -495,7 +495,7 @@ The performance metrics from the test set are much closer to the performance met
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-04-20                  
+#>  date     2020-04-21                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        

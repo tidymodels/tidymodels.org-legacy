@@ -280,14 +280,14 @@ final_wf <-
   finalize_workflow(best_tree)
 
 final_wf
-#> ══ Workflow ═════════════════════════════════════════════════════════════
+#> ══ Workflow ════════════════════════════════════════════════════════════════════════════
 #> Preprocessor: Formula
 #> Model: decision_tree()
 #> 
-#> ── Preprocessor ─────────────────────────────────────────────────────────
+#> ── Preprocessor ────────────────────────────────────────────────────────────────────────
 #> class ~ .
 #> 
-#> ── Model ────────────────────────────────────────────────────────────────
+#> ── Model ───────────────────────────────────────────────────────────────────────────────
 #> Decision Tree Model Specification (classification)
 #> 
 #> Main Arguments:
@@ -310,14 +310,14 @@ final_tree <-
   fit(data = cell_train) 
 
 final_tree
-#> ══ Workflow [trained] ═══════════════════════════════════════════════════
+#> ══ Workflow [trained] ══════════════════════════════════════════════════════════════════
 #> Preprocessor: Formula
 #> Model: decision_tree()
 #> 
-#> ── Preprocessor ─────────────────────────────────────────────────────────
+#> ── Preprocessor ────────────────────────────────────────────────────────────────────────
 #> class ~ .
 #> 
-#> ── Model ────────────────────────────────────────────────────────────────
+#> ── Model ───────────────────────────────────────────────────────────────────────────────
 #> n= 1515 
 #> 
 #> node), split, n, loss, yval, (yprob)
@@ -399,7 +399,7 @@ args(decision_tree)
 #> NULL
 ```
 
-You could tune the other hyperparameter we didn't use here, `min_n`, which sets the minimum `n` to split at any node. This is another early stopping method for decision trees that can help prevent overfitting. Use this [searchable table](/find/parsnip/#model-args) to find the original argument for `min_n` in the rpart package ([hint](https://stat.ethz.ch/R-manual/R-devel/library/rpart/html/rpart.control.html)). See whether you can tune a different combination of hyperparameters and/or values to improve a tree's ability predict cell segmentation quality.
+You could tune the other hyperparameter we didn't use here, `min_n`, which sets the minimum `n` to split at any node. This is another early stopping method for decision trees that can help prevent overfitting. Use this [searchable table](/find/parsnip/#model-args) to find the original argument for `min_n` in the rpart package ([hint](https://stat.ethz.ch/R-manual/R-devel/library/rpart/html/rpart.control.html)). See whether you can tune a different combination of hyperparameters and/or values to improve a tree's ability to predict cell segmentation quality.
 
 
 
@@ -417,7 +417,7 @@ You could tune the other hyperparameter we didn't use here, `min_n`, which sets 
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-04-20                  
+#>  date     2020-04-21                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
