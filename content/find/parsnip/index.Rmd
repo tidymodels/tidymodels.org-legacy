@@ -22,11 +22,14 @@ library(DT)
 library(tibble)
 pkgs <- 
   tibble(
-    pkg = c("parsnip", "discrim"), 
+    pkg = c("parsnip", "discrim", "poissonreg", "plsmod", "baguette"), 
     base_url = "https://tidymodels.github.io/"
   )
 library(discrim)
 library(parsnip)
+library(poissonreg)
+library(plsmod)
+library(baguette)
 ```
 
 
