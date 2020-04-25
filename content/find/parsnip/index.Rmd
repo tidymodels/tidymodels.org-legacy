@@ -66,14 +66,18 @@ pkg_urls <-
 
 
 ```{r table-display, echo = FALSE, results = "asis"}
-DT::datatable(
-  pkg_urls,
-  rownames = FALSE,
-  class = 'cell-border stripe',
-  escape = FALSE,
-  filter = "top",
-  options = list(pageLength = 5)
-)
+pkg_urls %>% 
+  mutate(
+    package = as.factor(package),
+    mode = as.factor(mode)
+  ) %>% 
+  DT::datatable(
+    rownames = FALSE,
+    class = 'cell-border stripe',
+    escape = FALSE,
+    filter = "top",
+    options = list(pageLength = 5)
+  )
 ```
 
 <br>
