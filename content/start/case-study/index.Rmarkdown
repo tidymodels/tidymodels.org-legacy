@@ -198,14 +198,12 @@ lr_reg_grid %>% top_n(5)  # highest penalty values
 Let's use `tune::tune_grid()` to train these 30 penalized logistic regression models. We'll also save the validation set predictions (via the call to `control_grid()`) so that diagnostic information can be available after the model fit. The area under the ROC curve will be used to quantify how well the model performs across a continuum of event thresholds (recall that the event rate&mdash;the proportion of stays including children&mdash; is very low for these data). 
 
 ```{r logistic-fit, cache = TRUE}
-roc_only <- metric_set(roc_auc)
-
 lr_res <- 
   lr_workflow %>% 
   tune_grid(val_set,
             grid = lr_reg_grid,
             control = control_grid(save_pred = TRUE),
-            metrics = roc_only)
+            metrics = metric_set(roc_auc))
 ```
 
 It might be easier to visualize the validation set metrics by plotting the area under the ROC curve against the range of penalty values: 
@@ -369,7 +367,7 @@ rf_res <-
   tune_grid(val_set,
             grid = 25,
             control = control_grid(save_pred = TRUE),
-            metrics = roc_only)
+            metrics = metric_set(roc_auc))
 ```
 
 The message printed above *"Creating pre-processing data to finalize unknown parameter: mtry"* is related to the size of the data set. Since `mtry` depends on the number of predictors in the data set, `tune_grid()` determines the upper bound for `mtry` once it receives the data. 
