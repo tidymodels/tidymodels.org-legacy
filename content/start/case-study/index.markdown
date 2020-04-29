@@ -260,14 +260,12 @@ Let's use `tune::tune_grid()` to train these 30 penalized logistic regression mo
 
 
 ```r
-roc_only <- metric_set(roc_auc)
-
 lr_res <- 
   lr_workflow %>% 
   tune_grid(val_set,
             grid = lr_reg_grid,
             control = control_grid(save_pred = TRUE),
-            metrics = roc_only)
+            metrics = metric_set(roc_auc))
 ```
 
 It might be easier to visualize the validation set metrics by plotting the area under the ROC curve against the range of penalty values: 
@@ -458,7 +456,7 @@ rf_res <-
   tune_grid(val_set,
             grid = 25,
             control = control_grid(save_pred = TRUE),
-            metrics = roc_only)
+            metrics = metric_set(roc_auc))
 #> i Creating pre-processing data to finalize unknown parameter: mtry
 ```
 
@@ -655,7 +653,7 @@ Here are some more ideas for where to go next:
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-04-21                  
+#>  date     2020-04-29                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
@@ -663,6 +661,7 @@ Here are some more ideas for where to go next:
 #>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 3.6.2)
 #>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
 #>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
+#>  glmnet       3.0-2   2019-12-11 [1] CRAN (R 3.6.0)
 #>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
 #>  parsnip    * 0.1.0   2020-04-09 [1] CRAN (R 3.6.2)
 #>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 3.6.2)
