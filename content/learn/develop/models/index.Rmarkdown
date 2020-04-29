@@ -420,7 +420,8 @@ mda_spec <-
 
 set.seed(452)
 cv <- vfold_cv(example_train)
-mda_tune_res <- tune_grid(Class ~ ., mda_spec, cv, grid = 4)
+mda_tune_res <- mda_spec %>%
+  tune_grid(Class ~ ., cv, grid = 4)
 show_best(mda_tune_res, metric = "roc_auc")
 ```
 

@@ -432,7 +432,7 @@ linear_reg() %>%
   fit(mpg ~ ., data = mtcars)
 #> parsnip model object
 #> 
-#> Fit time:  4ms 
+#> Fit time:  5ms 
 #> Call:
 #> rlm(formula = formula, data = data)
 #> Converged in 8 iterations
@@ -551,12 +551,8 @@ mda_spec <-
 
 set.seed(452)
 cv <- vfold_cv(example_train)
-mda_tune_res <- tune_grid(Class ~ ., mda_spec, cv, grid = 4)
-#> Warning: `tune_grid.formula()` is deprecated as of lifecycle 0.1.0.
-#> The first argument to `tune_grid()` should be either a model or a workflow. In the future, you can use:
-#> tune_grid(mda_spec, Class ~ ., resamples = cv, grid = 4)
-#> This warning is displayed once every 8 hours.
-#> Call `lifecycle::last_warnings()` to see where this warning was generated.
+mda_tune_res <- mda_spec %>%
+  tune_grid(Class ~ ., cv, grid = 4)
 show_best(mda_tune_res, metric = "roc_auc")
 #> # A tibble: 4 x 6
 #>   sub_classes .metric .estimator  mean     n std_err
@@ -685,7 +681,7 @@ If you have a suggestion, please add a [GitHub issue](https://github.com/tidymod
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-04-17                  
+#>  date     2020-04-29                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
@@ -696,7 +692,7 @@ If you have a suggestion, please add a [GitHub issue](https://github.com/tidymod
 #>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
 #>  mda        * 0.4-10  2017-11-02 [1] CRAN (R 3.6.0)
 #>  parsnip    * 0.1.0   2020-04-09 [1] CRAN (R 3.6.2)
-#>  purrr      * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
+#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 3.6.2)
 #>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
 #>  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
 #>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
