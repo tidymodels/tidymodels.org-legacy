@@ -10,7 +10,8 @@ body, button, input, textarea {
   font-family: 'Lato', sans-serif;
   font-size: 17px;
   font-weight: normal;
-  -webkit-font-smoothing: antialiased; }
+  -webkit-font-smoothing: antialiased; 
+}
 
 
 .listItem .itemDetails .itemMeta .itemDate, .listItem .itemDetails .itemMeta .itemInfo {
@@ -958,5 +959,24 @@ h2:hover a {
 
 .fade {
   transition: opacity 0.15s linear;
+}
+
+/*------- Div tip Shortcodes --------*/
+
+div.note {
+  padding: 1em;
+  margin: 1em 0;
+  padding-left: 100px;
+  background-size: 70px;
+  background-repeat: no-repeat;
+  background-position: 15px center;
+  min-height: 120px;
+  color: #1f5386;
+  background-color: #eab0c41a;
+  border-top: 7pt solid #a19ea936;
+}
+
+div.note {
+  background-image: url("../images/robot.png");
 }
 
