@@ -752,3 +752,32 @@ h2:hover a {
   text-decoration: none;
   opacity: 0.9;
 }
+
+/* Copy to Clipboard */
+
+.copy {
+  width: inherit;
+  background-color: #e2e2e2 ;
+  border: none;
+  border-radius: 2px;
+  float: right;
+  font-size: 60%;
+  padding: 4px 4px 4px 4px;
+}
+
+/* pkgdown clipboard */
+
+.hasCopyButton {
+  position: relative;
+}
+
+.btn-copy-ex {
+  position: absolute;
+  right: 0;
+  top: 0;
+  visibility: hidden;
+}
+
+.hasCopyButton:hover button.btn-copy-ex {
+  visibility: visible;
+}
