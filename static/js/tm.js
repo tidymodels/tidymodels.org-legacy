@@ -1,5 +1,5 @@
 /* Clipboard --------------------------*/
-/* This copy-paste button (with tooltips) requires ClipboardJS, JQuery, & Bootstrap, linked in head_includes.html */
+/* This copy-paste button (with tooltips) requires ClipboardJS, JQuery, & Bootstrap JS, linked in head_includes.html */
 
 $(document).ready(function() {
   
