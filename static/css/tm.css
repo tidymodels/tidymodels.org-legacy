@@ -971,9 +971,13 @@ div.note {
   background-repeat: no-repeat;
   background-position: 15px center;
   min-height: 120px;
-  color: #1f5386;
+  color: #1a162dcc;
   background-color: #eab0c41a;
   border-top: 7pt solid #a19ea936;
+  max-width: 80%;
+  line-height: 1.75em;
+  font-size: 0.85em;
+  letter-spacing: 1pt;
 }
 
 div.note {
