@@ -15,5 +15,3 @@ To get the most out of tidymodels, we recommend that you start by learning some 
 * [Learn the tidyverse](https://www.tidyverse.org/learn/), from the tidyverse team.
 
 * [Statistical Inference via Data Science: A ModernDive into R and the Tidyverse](/books/moderndive/).
-
-{{% note %}} Here is an example of a div tip that I created using a Hugo shortcode!{{% /note %}}
