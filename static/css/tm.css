@@ -968,13 +968,6 @@ h2:hover a {
   transition: opacity 0.15s linear;
 }
 
-/* Code Chunk Overflow */
-
-pre code {
-  display: block;
-  overflow-x: scroll;
-}
-
 /*------- Div tip Shortcodes --------*/
 
 div.note {
