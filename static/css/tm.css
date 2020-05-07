@@ -962,9 +962,3 @@ h2:hover a {
 .fade {
   transition: opacity 0.15s linear;
 }
-
-
-/*---fix code scrolling-- */
-pre {
-  white-space: pre-wrap;
-}
