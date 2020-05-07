@@ -911,8 +911,6 @@ h2:hover a {
     border-style: solid;
 }
 
-/**/
-
 .tooltip.left {
     padding: 0 5px;
     margin-left: -3px;
@@ -960,8 +958,6 @@ h2:hover a {
     -ms-user-select: none;
     user-select: none;
 }
-
-/* --- */
 
 .fade {
   transition: opacity 0.15s linear;
