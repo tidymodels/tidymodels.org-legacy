@@ -968,9 +968,7 @@ h2:hover a {
 }
 
 
-/* Code Chunk Overflow */
-
-pre code {
-  display: block;
-  overflow-x: scroll;
+/*---fix code scrolling-- */
+pre {
+  white-space: pre-wrap;
 }
