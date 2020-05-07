@@ -912,8 +912,6 @@ h2:hover a {
     border-style: solid;
 }
 
-/**/
-
 .tooltip.left {
     padding: 0 5px;
     margin-left: -3px;
@@ -962,8 +960,6 @@ h2:hover a {
     user-select: none;
 }
 
-/* --- */
-
 .fade {
   transition: opacity 0.15s linear;
 }
@@ -990,5 +986,3 @@ div.note {
 div.note {
   background-image: url("../images/robot.png");
 }
-
-
