@@ -893,7 +893,7 @@ h2:hover a {
   padding: 0.25rem 0.5rem;
   color: #fff;
   text-align: center;
-  background-color: #000;
+  background-color: #1a162d;
   border-radius: 0.25rem;
 }
 
@@ -902,7 +902,7 @@ h2:hover a {
     right: 0;
     margin-top: -5px;
     border-width: 5px 0 5px 5px;
-    border-left-color: #000;
+    border-left-color: #1a162d;
 }
 .tooltip-arrow {
     position: absolute;
@@ -930,9 +930,16 @@ h2:hover a {
 
 .btn-primary {
     color: #fff;
-    background-color: #337ab7;
-    border-color: #2e6da4;
+    background-color: #1a162db5 ;
+    border-color: #1a162d;
 }
+
+.btn-primary:hover {
+    color: #fcfcfc;
+    background-color: #1a162d;
+    border-color: #1a162d;
+}
+
 .btn {
     display: inline-block;
     margin-bottom: 0;
@@ -961,6 +968,13 @@ h2:hover a {
   transition: opacity 0.15s linear;
 }
 
+/* Code Chunk Overflow */
+
+pre code {
+  display: block;
+  overflow-x: scroll;
+}
+
 /*------- Div tip Shortcodes --------*/
 
 div.note {
@@ -983,4 +997,5 @@ div.note {
 div.note {
   background-image: url("../images/robot.png");
 }
+
 
