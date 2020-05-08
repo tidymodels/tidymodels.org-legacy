@@ -986,3 +986,9 @@ div.note {
 div.note {
   background-image: url("../images/robot.png");
 }
+
+
+/*---fix code scrolling-- */
+pre {
+  white-space: pre-wrap;
+}
