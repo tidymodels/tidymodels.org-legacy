@@ -966,7 +966,9 @@ h2:hover a {
 
 /*------- Div tip Shortcodes --------*/
 
-div.note {
+div.note, 
+div.rstudio-tip, 
+div.warning {
   padding: 1em;
   margin: 1em 0;
   padding-left: 100px;
@@ -983,8 +985,23 @@ div.note {
   letter-spacing: 1pt;
 }
 
+div.note code, 
+div.rstudio-tip code, 
+div.warning code {
+  background-color: #cb9faf52 !important;
+  font-size: 1em;
+}
+
 div.note {
   background-image: url("../images/robot.png");
+}
+
+div.rstudio-tip {
+  background-image: url("../images/rstudio.png");
+}
+
+div.warning {
+  background-image: url("../images/error.png");
 }
 
 
