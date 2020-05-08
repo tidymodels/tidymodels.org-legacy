@@ -16,10 +16,3 @@ To get the most out of tidymodels, we recommend that you start by learning some 
 
 * [Statistical Inference via Data Science: A ModernDive into R and the Tidyverse](/books/moderndive/).
 
-{{% note %}} practice a `note` shortcode {{%/ note %}}
-
-
-{{% warning %}} practice a `warning` shortcode {{%/ warning %}}
-
-
-{{% rstudio-tip %}} practice an `rstudio tip` shortcode {{%/ rstudio-tip %}}
