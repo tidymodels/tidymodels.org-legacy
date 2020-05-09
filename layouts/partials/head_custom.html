@@ -1,6 +1,15 @@
+{{ $clipboard_site :=  $.Site.Params.copy_clipboard }}
+{{ $page := . }}
+
+<!--only show copy to clipboard button if section-level variable is true-->
+{{ with $page.FirstSection }}
+  {{ if or (.Params.Copy_clipboard) ($clipboard_site) }}
 
 <!--Bootstrap-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
 
 <!--Clipboard JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
+
+  {{ end }}
+{{ end }}

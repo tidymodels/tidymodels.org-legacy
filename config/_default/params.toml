@@ -1,6 +1,10 @@
 # Description for social sharing and search engines.
 description = "A collection of R packages for modeling and machine learning using tidyverse principles."
 
+# Enable copy-to-clipboard for all code?
+# Can also enable by content section in _index.md file
+copy_clipboard = false
+
 # Default image for social sharing and search engines. Place image in `static/images/` folder and specify image name here.
 sharing_image = "feature_summary_large_image.jpg"
 twitter_image = "feature_summary_large_image.jpg"
