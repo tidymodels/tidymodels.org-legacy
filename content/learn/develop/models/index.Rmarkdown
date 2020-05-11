@@ -356,6 +356,8 @@ For an example package that uses parsnip definitions, take a look at the [discri
 
 ## Your model, tuning parameters, and you
 
+{{% warning %}} To use parallel processing for tuning, any new model and/or engine must be in a package and registered when loaded. {{%/ warning %}}
+
 The tune package can be used to find reasonable values of model arguments via tuning. There are some S3 methods that are useful to define for your model. `discrim_mixture()` has one main tuning parameter: `sub_classes`. To work with tune it is _helpful_ (but not required) to use an S3 method called `tunable()` to define which arguments should be tuned and how values of those arguments should be generated. 
 
 `tunable()` takes the model specification as its argument and returns a tibble with columns: 
@@ -424,6 +426,7 @@ mda_tune_res <- mda_spec %>%
   tune_grid(Class ~ ., cv, grid = 4)
 show_best(mda_tune_res, metric = "roc_auc")
 ```
+
 
 
 ## Pro-tips, what-ifs, exceptions, FAQ, and minutiae

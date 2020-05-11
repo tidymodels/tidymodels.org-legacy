@@ -432,7 +432,7 @@ linear_reg() %>%
   fit(mpg ~ ., data = mtcars)
 #> parsnip model object
 #> 
-#> Fit time:  5ms 
+#> Fit time:  4ms 
 #> Call:
 #> rlm(formula = formula, data = data)
 #> Converged in 8 iterations
@@ -480,6 +480,8 @@ For an example package that uses parsnip definitions, take a look at the [discri
 
 
 ## Your model, tuning parameters, and you
+
+{{% warning %}} To use parallel processing for tuning, any new model and/or engine must be in a package and registered when loaded. {{%/ warning %}}
 
 The tune package can be used to find reasonable values of model arguments via tuning. There are some S3 methods that are useful to define for your model. `discrim_mixture()` has one main tuning parameter: `sub_classes`. To work with tune it is _helpful_ (but not required) to use an S3 method called `tunable()` to define which arguments should be tuned and how values of those arguments should be generated. 
 
@@ -562,6 +564,7 @@ show_best(mda_tune_res, metric = "roc_auc")
 #> 3           6 roc_auc binary     0.879    10  0.0146
 #> 4           8 roc_auc binary     0.878    10  0.0141
 ```
+
 
 
 ## Pro-tips, what-ifs, exceptions, FAQ, and minutiae
@@ -681,22 +684,22 @@ If you have a suggestion, please add a [GitHub issue](https://github.com/tidymod
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-04-29                  
+#>  date     2020-05-11                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
-#>  broom      * 0.5.5   2020-02-29 [1] CRAN (R 3.6.0)
+#>  broom      * 0.5.6   2020-04-20 [1] CRAN (R 3.6.2)
 #>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 3.6.2)
 #>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
 #>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
 #>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
-#>  mda        * 0.4-10  2017-11-02 [1] CRAN (R 3.6.0)
-#>  parsnip    * 0.1.0   2020-04-09 [1] CRAN (R 3.6.2)
+#>  mda        * 0.5     2020-05-04 [1] CRAN (R 3.6.2)
+#>  parsnip    * 0.1.1   2020-05-06 [1] CRAN (R 3.6.2)
 #>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 3.6.2)
-#>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
-#>  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
+#>  recipes    * 0.1.12  2020-05-01 [1] CRAN (R 3.6.2)
+#>  rlang        0.4.6   2020-05-02 [1] CRAN (R 3.6.2)
 #>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
-#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.2)
+#>  tibble     * 3.0.1   2020-04-20 [1] CRAN (R 3.6.2)
 #>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
 #>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
 #>  workflows  * 0.1.1   2020-03-17 [1] CRAN (R 3.6.0)
