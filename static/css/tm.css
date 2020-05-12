@@ -1011,11 +1011,9 @@ div.help {
     background-size: 50px;
     background-repeat: no-repeat;
     background-position: center 1em;
-    /* min-height: 120px; */
     color: #808080;
     background-color: #1a162d08;
-    /* border-top: 7pt solid #a19ea936; */
-    max-width: 100%;
+    max-width: 74%;
     line-height: 1.3em;
     font-size: 0.75em;
     letter-spacing: 1pt;
