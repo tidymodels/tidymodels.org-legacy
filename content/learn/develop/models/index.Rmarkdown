@@ -353,7 +353,6 @@ This function is then executed when your package is loaded:
 
 For an example package that uses parsnip definitions, take a look at the [discrim](https://github.com/tidymodels/discrim) package.
 
-
 ## Your model, tuning parameters, and you
 
 {{% warning %}} To use parallel processing for tuning, any new model and/or engine must be in a package and registered when loaded. {{%/ warning %}}

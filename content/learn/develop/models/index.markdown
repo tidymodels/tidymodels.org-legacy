@@ -343,7 +343,7 @@ mda_fit <- mda_spec %>%
 mda_fit
 #> parsnip model object
 #> 
-#> Fit time:  21ms 
+#> Fit time:  19ms 
 #> Call:
 #> mda::mda(formula = formula, data = data, subclasses = ~2)
 #> 
@@ -477,7 +477,6 @@ This function is then executed when your package is loaded:
 ```
 
 For an example package that uses parsnip definitions, take a look at the [discrim](https://github.com/tidymodels/discrim) package.
-
 
 ## Your model, tuning parameters, and you
 
@@ -676,7 +675,7 @@ If you have a suggestion, please add a [GitHub issue](https://github.com/tidymod
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.2 (2019-12-12)
+#>  version  R version 3.6.1 (2019-07-05)
 #>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
@@ -702,8 +701,8 @@ If you have a suggestion, please add a [GitHub issue](https://github.com/tidymod
 #>  tibble     * 3.0.1   2020-04-20 [1] CRAN (R 3.6.2)
 #>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
 #>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
-#>  workflows  * 0.1.1   2020-03-17 [1] CRAN (R 3.6.0)
-#>  yardstick  * 0.0.6   2020-03-17 [1] CRAN (R 3.6.0)
+#>  workflows  * 0.1.0   2019-12-30 [1] CRAN (R 3.6.1)
+#>  yardstick  * 0.0.5   2020-01-23 [1] CRAN (R 3.6.0)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
 ```

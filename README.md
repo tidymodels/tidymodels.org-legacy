@@ -17,7 +17,7 @@ This repo (and resulting website) is licensed as [CC BY-SA](LICENSE.md).
 
 ### R packages
 
-This blogdown site uses renv to create a project-specific library of packages. The [renv package](https://rstudio.github.io/renv/index.html) uses a [snapshot and restore](https://environments.rstudio.com/snapshot.html) strategy to create **r**eproducible **env**vironments for R projects. A project that uses renv has its own project-specific library that is separate from your personal library of packages. This helps contributors ensure we're all using the same version of packages and that the public site is also being built from these versions.
+When updating the site, the goal is to use the most recent CRAN versions of the modeling/data analysis packages. 
 
 1. Get a local copy of the website source.
    * Users of devtools/usethis can do:
@@ -30,17 +30,19 @@ This blogdown site uses renv to create a project-specific library of packages. T
      [Setup advice](https://usethis.r-lib.org/articles/articles/usethis-setup.html).
    * Otherwise, use your favorite method to fork and clone or download the
      repo as a ZIP file and unpack.
-1. Start R in your new `tidymodels.org/` directory. Expect to see some renv startup
-   along these lines:
+   
+1. Start R in your new `tidymodels.org/` directory. 
+   
+1. To install the required packages, run the code within
+   
    ```
-   * Project '~/rsites/tidymodels.org' loaded. [renv 0.9.3]
-   Error in loadNamespace(name) : there is no package called ‘rmarkdown’
+   static/code/installs.R
    ```
-1. Run `renv::restore()`. This will print out "The following package(s) will be
-   installed" followed by a long list of packages. Respond **"yes"**. renv will
-   build the project-specific library containing packages at the correct
-   versions.
+   
+   This file will also install the `keras` python libraries and enironments. 
+   
 1. Restart R.
+
 1. You should now be able to render the site in all the usual ways for blogdown,
    such as `blogdown::serve_site()` or *Addins > Serve Site*.
 
@@ -74,14 +76,12 @@ automatically update whenever you modify one of the input files. For `.Rmarkdown
 
 ## Structure
 
-The source of the website is a collection of `.md`, `.Rmarkdown`, and `.Rmd` files stored in
-[`content/`](content/), which are rendered for the site with 
-[blogdown](https://bookdown.org/yihui/blogdown). 
+The source of the website is a collection of `.md`, `.Rmarkdown`, and `.Rmd` files stored in [`content/`](content/), which are rendered for the site with [blogdown](https://bookdown.org/yihui/blogdown). 
 
 * [`content/packages/index.md`](content/packages/): this is a top-level page on the site rendered from a single `.md` file. If you only edit this page, you do not have to use `blogdown::serve_site()` locally to render.
   
 * [`content/start/`](content/start/): these files make up a 5-part tutorial series to help users get started with tidymodels. Each article is an `.Rmarkdown` file as a page bundle, meaning that each article is in its own folder along with accompanying images, data, and rendered figures. If you edit a tutorial, please run `blogdown::serve_site()` locally to render the `.markdown` file, and be sure to commit the rendered file to the repo. No `*.Rmd` or `*.html` files should be committed in this directory. If you generate an `*.html` file locally during development, delete it once it's no longer useful to you. Keep it out of this repo. Also please make sure if you edit a file in this section that nothing is added to the `static/` folder- all accompanying files should be in the article page bundle.
-    
+  
 * [`content/learn/`](content/learn/): these files make up the articles presented in the learn section. This section is nested, meaning that inside this section, there are actually 4 subsections: `models`, `statistics`, `work`, `develop`. Each article is an `.Rmarkdown` file. If you edit or add an article, please run `blogdown::serve_site()` locally to render the `.markdown` file, and be sure to commit the rendered file to the repo. 
 
     When you do that, any new articles added will show up on the main `learn/` listing page automatically. By default, a maximum of 5 articles per subsection will show up in this list; use weights in the individual article YAML files to decide which 5 and their order. All articles with weights > 5 will show up when you click *“See all”* for that subsection. No `*.Rmd` or `*.html` files should be committed to this directory. If you generate an `*.html` file locally during development, delete it once it's no longer useful to you. Keep it out of this repo. Also please make sure if you edit a file in this section that nothing is added to the `static/` folder- all accompanying files should be in the article page bundle.
