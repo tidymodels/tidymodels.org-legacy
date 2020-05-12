@@ -1,17 +1,14 @@
-pkgs <- c("AmesHousing", "caret", "devtools", "discrim", "doMC", "DT", 
-          "embed", "forecast", "fs", "furrr", "ggiraph", "glmnet", "glue", 
-          "keras", "kernlab", "klaR", "mlbench", "modeldata", "pls", "randomForest", 
-          "ranger", "rlang", "scales", "stringr", "survivial", "sweep", 
-          "textfeatures", "textrecipes", "themis", "tidymodels", "tidyposterior", 
-          "timetk", "zoo")
+pkg_list <- read.dcf("DESCRIPTION")[,"Imports"]
+pkg_list <- gsub("\n", "", pkg_list, fixed = TRUE)
+pkg_list <- strsplit(pkg_list, ",")[[1]]
 
-install.packages(pkgs, repos = "https://cran.rstudio.com")
+install.packages(pkg_list, repos = "https://cran.rstudio.com")
 
 library(devtools)
 
-install_github("therneau/survival")
-install_github("tidymodels/tidymodels")
+install_github("rstudio/DT")
 
 library(keras)
+
 install_keras(method = "virtualenv")
 
