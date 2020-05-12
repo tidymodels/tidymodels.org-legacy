@@ -343,7 +343,7 @@ mda_fit <- mda_spec %>%
 mda_fit
 #> parsnip model object
 #> 
-#> Fit time:  21ms 
+#> Fit time:  29ms 
 #> Call:
 #> mda::mda(formula = formula, data = data, subclasses = ~2)
 #> 
@@ -432,7 +432,7 @@ linear_reg() %>%
   fit(mpg ~ ., data = mtcars)
 #> parsnip model object
 #> 
-#> Fit time:  4ms 
+#> Fit time:  5ms 
 #> Call:
 #> rlm(formula = formula, data = data)
 #> Converged in 8 iterations
@@ -478,10 +478,9 @@ This function is then executed when your package is loaded:
 
 For an example package that uses parsnip definitions, take a look at the [discrim](https://github.com/tidymodels/discrim) package.
 
+{{% warning %}} To use a new model and/or engine in the broader tidymodels infrastructure, we recommend your model definition declarations (e.g. `set_new_model()` and similar) reside in a package. If these definitions are in a script only, the new model may not work with the tune package, for example for parallel processing. {{%/ warning %}}
 
 ## Your model, tuning parameters, and you
-
-{{% warning %}} To use parallel processing for tuning, any new model and/or engine must be in a package and registered when loaded. {{%/ warning %}}
 
 The tune package can be used to find reasonable values of model arguments via tuning. There are some S3 methods that are useful to define for your model. `discrim_mixture()` has one main tuning parameter: `sub_classes`. To work with tune it is _helpful_ (but not required) to use an S3 method called `tunable()` to define which arguments should be tuned and how values of those arguments should be generated. 
 
