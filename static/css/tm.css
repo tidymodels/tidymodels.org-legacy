@@ -985,13 +985,6 @@ div.warning {
   letter-spacing: 1pt;
 }
 
-div.note code, 
-div.rstudio-tip code, 
-div.warning code {
-  background-color: #cb9faf52 !important;
-  font-size: 1em;
-}
-
 div.note {
   background-image: url("../images/robot.png");
 }
@@ -1004,6 +997,32 @@ div.warning {
   background-image: url("../images/error.png");
 }
 
+div.note code, 
+div.rstudio-tip code, 
+div.warning code {
+  background-color: #cb9faf52 !important;
+  font-size: 1em;
+}
+
+
+div.help {
+    padding: 1em;
+    margin: 0 auto;
+    padding-top: 78px;
+    background-size: 55px;
+    background-repeat: no-repeat;
+    background-position: center 1em;
+    /* min-height: 120px; */
+    color: #ca225e;
+    background-color: #eab0c417;
+    /* border-top: 7pt solid #a19ea936; */
+    /* max-width: 100%; */
+    line-height: 1.3em;
+    font-size: 0.75em;
+    letter-spacing: 1pt;
+    background-image: url(../images/help.png);
+    text-align: center;
+}
 
 /*---fix code scrolling-- */
 pre {
