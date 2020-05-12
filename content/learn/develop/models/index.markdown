@@ -343,7 +343,7 @@ mda_fit <- mda_spec %>%
 mda_fit
 #> parsnip model object
 #> 
-#> Fit time:  29ms 
+#> Fit time:  21ms 
 #> Call:
 #> mda::mda(formula = formula, data = data, subclasses = ~2)
 #> 
@@ -432,7 +432,7 @@ linear_reg() %>%
   fit(mpg ~ ., data = mtcars)
 #> parsnip model object
 #> 
-#> Fit time:  5ms 
+#> Fit time:  4ms 
 #> Call:
 #> rlm(formula = formula, data = data)
 #> Converged in 8 iterations
