@@ -343,7 +343,7 @@ mda_fit <- mda_spec %>%
 mda_fit
 #> parsnip model object
 #> 
-#> Fit time:  18ms 
+#> Fit time:  19ms 
 #> Call:
 #> mda::mda(formula = formula, data = data, subclasses = ~2)
 #> 
@@ -477,9 +477,6 @@ This function is then executed when your package is loaded:
 ```
 
 For an example package that uses parsnip definitions, take a look at the [discrim](https://github.com/tidymodels/discrim) package.
-
-**Important note** in order to use a new model or engine in the broader `tidymodels` infrastructure, we recommend the model definition declarations (e.g. `set_new_model()` and similar) in a new package. If left in a simple R script, the new method may not work with the tune package (see [this issue](https://github.com/tidymodels/tune/issues/205#issuecomment-626414994)).
-
 
 ## Your model, tuning parameters, and you
 
