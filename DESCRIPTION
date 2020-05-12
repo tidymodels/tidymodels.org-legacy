@@ -19,11 +19,12 @@ Depends:
     R (>= 2.10)
 Imports:
     AmesHousing,
+    blogdown,
     devtools,
-    dials (>= 0.0.6),
+    dials,
     discrim,
     doParallel,
-    DT (>= 0.13.2),
+    DT,
     embed,
     forecast,
     fs,
@@ -59,7 +60,7 @@ Imports:
     tidymodels,
     tidyposterior,
     timetk,
-    tune (>= 0.1.0),
+    tune,
     vip,
     zoo
 Encoding: UTF-8
