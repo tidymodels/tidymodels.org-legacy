@@ -1004,19 +1004,18 @@ div.warning code {
   font-size: 1em;
 }
 
-
 div.help {
     padding: 1em;
     margin: 0 auto;
-    padding-top: 78px;
-    background-size: 55px;
+    padding-top: 72px;
+    background-size: 50px;
     background-repeat: no-repeat;
     background-position: center 1em;
     /* min-height: 120px; */
-    color: #ca225e;
-    background-color: #eab0c417;
+    color: #808080;
+    background-color: #1a162d08;
     /* border-top: 7pt solid #a19ea936; */
-    /* max-width: 100%; */
+    max-width: 100%;
     line-height: 1.3em;
     font-size: 0.75em;
     letter-spacing: 1pt;
