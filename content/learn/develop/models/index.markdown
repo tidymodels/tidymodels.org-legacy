@@ -343,7 +343,7 @@ mda_fit <- mda_spec %>%
 mda_fit
 #> parsnip model object
 #> 
-#> Fit time:  19ms 
+#> Fit time:  21ms 
 #> Call:
 #> mda::mda(formula = formula, data = data, subclasses = ~2)
 #> 
@@ -432,7 +432,7 @@ linear_reg() %>%
   fit(mpg ~ ., data = mtcars)
 #> parsnip model object
 #> 
-#> Fit time:  3ms 
+#> Fit time:  4ms 
 #> Call:
 #> rlm(formula = formula, data = data)
 #> Converged in 8 iterations
@@ -477,6 +477,8 @@ This function is then executed when your package is loaded:
 ```
 
 For an example package that uses parsnip definitions, take a look at the [discrim](https://github.com/tidymodels/discrim) package.
+
+{{% warning %}} To use a new model and/or engine in the broader tidymodels infrastructure, we recommend your model definition declarations (e.g. `set_new_model()` and similar) reside in a package. If these definitions are in a script only, the new model may not work with the tune package, for example for parallel processing. {{%/ warning %}}
 
 ## Your model, tuning parameters, and you
 
@@ -561,6 +563,7 @@ show_best(mda_tune_res, metric = "roc_auc")
 #> 3           6 roc_auc binary     0.879    10  0.0146
 #> 4           8 roc_auc binary     0.878    10  0.0141
 ```
+
 
 
 ## Pro-tips, what-ifs, exceptions, FAQ, and minutiae
@@ -672,34 +675,34 @@ If you have a suggestion, please add a [GitHub issue](https://github.com/tidymod
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.1 (2019-07-05)
+#>  version  R version 3.6.2 (2019-12-12)
 #>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/New_York            
+#>  tz       America/Denver              
 #>  date     2020-05-11                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
-#>  broom      * 0.5.4   2020-01-27 [1] CRAN (R 3.6.0)
+#>  broom      * 0.5.6   2020-04-20 [1] CRAN (R 3.6.2)
 #>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 3.6.2)
 #>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
 #>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
 #>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
 #>  mda        * 0.5     2020-05-04 [1] CRAN (R 3.6.2)
 #>  parsnip    * 0.1.1   2020-05-06 [1] CRAN (R 3.6.2)
-#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 3.6.1)
+#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 3.6.2)
 #>  recipes    * 0.1.12  2020-05-01 [1] CRAN (R 3.6.2)
 #>  rlang        0.4.6   2020-05-02 [1] CRAN (R 3.6.2)
 #>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
-#>  tibble     * 3.0.1   2020-04-20 [1] CRAN (R 3.6.1)
+#>  tibble     * 3.0.1   2020-04-20 [1] CRAN (R 3.6.2)
 #>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
 #>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
-#>  workflows  * 0.1.0   2019-12-30 [1] CRAN (R 3.6.1)
-#>  yardstick  * 0.0.5   2020-01-23 [1] CRAN (R 3.6.0)
+#>  workflows  * 0.1.1   2020-03-17 [1] CRAN (R 3.6.0)
+#>  yardstick  * 0.0.6   2020-03-17 [1] CRAN (R 3.6.0)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
 ```
