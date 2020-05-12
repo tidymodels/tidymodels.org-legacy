@@ -1023,8 +1023,8 @@ div.help {
 
 div.help:hover,
 a.help-link:hover {
-  background-color: #1a162d10;
-  text-decoration: none !important;
+  background-color: #fcfcfc;
+  text-decoration: none;
   transition: color 0.3s;
 }
 
