@@ -12,6 +12,7 @@ custom_js = ["tm.js"]
 
 # Define base hex url for index page (where the stickers link out to)
 hex_base_url = "tidymodels.github.io/"
+hex_ext = "svg"
     
 # Define "news" as both articles and events
 mainSections = ["articles", "events"]
