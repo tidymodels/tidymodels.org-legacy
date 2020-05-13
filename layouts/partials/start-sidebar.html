@@ -17,4 +17,10 @@
     </div>
     {{ end }}
   </div>
+  
+  <!-- Adds Help nudge, but only to single pages --> 
+  {{ if .IsPage }}
+    {{ partial "help.html" . }}
+  {{ end }}
+
 </div>
