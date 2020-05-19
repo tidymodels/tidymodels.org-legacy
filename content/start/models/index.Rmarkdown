@@ -228,6 +228,9 @@ ggplot(bayes_plot_data, aes(x = food_regime)) +
 
 This isn't very different from the non-Bayesian results (except in interpretation). 
 
+{{% note %}} can work with many model types, engines and arguments. Check out to see what is available. {{/% note %}}
+
+
 
 ## Why does it work that way? {#why}
 
