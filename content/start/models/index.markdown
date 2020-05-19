@@ -337,7 +337,7 @@ ggplot(bayes_plot_data, aes(x = food_regime)) +
 
 This isn't very different from the non-Bayesian results (except in interpretation). 
 
-{{% note %}} The [parsnip](https://parsnip.tidymodels.org/) package can work with many model types, engines and arguments. Check out [tidymodels.org/find/parsnip](https://www.tidymodels.org/find/parsnip/) to see what is available. {{%/ note %}}
+{{% note %}} The [parsnip](https://parsnip.tidymodels.org/) package can work with many model types, engines, and arguments. Check out [tidymodels.org/find/parsnip](/find/parsnip/) to see what is available. {{%/ note %}}
 
 ## Why does it work that way? {#why}
 
@@ -418,4 +418,3 @@ ggplot(urchins,
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
 ```
-
