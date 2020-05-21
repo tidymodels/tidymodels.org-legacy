@@ -15,8 +15,7 @@ source(here::here("content/learn/common.R"))
 ```{r load, include = FALSE, message = FALSE, warning = FALSE}
 library(tidymodels)
 library(generics)
-
-pkgs <- c("tidymodels", "generics")
+pkgs <- c("tidymodels", "tidyverse", "generics", "usethis")
 ```
 
 ## Introduction
