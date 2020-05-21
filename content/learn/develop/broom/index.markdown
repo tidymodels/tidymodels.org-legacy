@@ -8,20 +8,13 @@ description: |
   Write tidy(), glance(), and augment() methods for new model objects.
 ---
 
-```{r setup, include = FALSE, message = FALSE, warning = FALSE}
-source(here::here("content/learn/common.R"))
-```
 
-```{r load, include = FALSE, message = FALSE, warning = FALSE}
-library(tidymodels)
-library(generics)
 
-pkgs <- c("tidymodels", "generics")
-```
+
 
 ## Introduction
 
-`r req_pkgs(pkgs)`
+To use the code in this article, you will need to install the following packages: generics and tidymodels.
 
 The broom package provides tools to summarize key information about models in tidy `tibble()`s. The package provides three verbs, or "tidiers," to help make model objects easier to work with:
 
@@ -45,13 +38,15 @@ The first step is to re-export the generic functions for `tidy()`, `glance()`, a
 
 First you'll need to add the [modelgenerics](https://github.com/tidymodels/modelgenerics) package to `Imports`. We recommend using the [usethis](https://github.com/r-lib/usethis) package for this:
 
-```{r, eval = FALSE}
+
+```r
 usethis::use_package("generics", "Imports")
 ```
 
 Next, you'll need to re-export the appropriate tidying methods. If you plan to implement a `glance()` method, for example, you can re-export the `glance()` generic by adding the following somewhere inside the `/R` folder of your package:
 
-```{r, eval = FALSE}
+
+```r
 #' @importFrom generics glance
 #' @export
 generics::glance
@@ -67,12 +62,17 @@ You'll now need to implement specific tidying methods for each of the tidiers yo
 
 In this article, we'll use the base R dataset `trees`, giving the tree girth (in inches), height (in feet), and volume (in cubic feet), to fit an example linear model using the base R `lm()` function. 
 
-```{r}
+
+```r
 # load in the trees dataset
 data(trees)
 
 # take a look!
 str(trees)
+#> 'data.frame':	31 obs. of  3 variables:
+#>  $ Girth : num  8.3 8.6 8.8 10.5 10.7 10.8 11 11 11.1 11.2 ...
+#>  $ Height: num  70 65 63 72 81 83 66 75 80 75 ...
+#>  $ Volume: num  10.3 10.3 10.2 16.4 18.8 19.7 15.6 18.2 22.6 19.9 ...
 
 # fit the timber volume as a function of girth and height
 trees_model <- lm(Volume ~ Girth + Height, data = trees)
@@ -80,11 +80,31 @@ trees_model <- lm(Volume ~ Girth + Height, data = trees)
 
 Let's take a look at the `summary()` of our `trees_model` fit.
 
-```{r}
+
+```r
 summary(trees_model)
+#> 
+#> Call:
+#> lm(formula = Volume ~ Girth + Height, data = trees)
+#> 
+#> Residuals:
+#>    Min     1Q Median     3Q    Max 
+#> -6.406 -2.649 -0.288  2.200  8.485 
+#> 
+#> Coefficients:
+#>             Estimate Std. Error t value Pr(>|t|)    
+#> (Intercept)  -57.988      8.638   -6.71  2.7e-07 ***
+#> Girth          4.708      0.264   17.82  < 2e-16 ***
+#> Height         0.339      0.130    2.61    0.014 *  
+#> ---
+#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#> 
+#> Residual standard error: 3.88 on 28 degrees of freedom
+#> Multiple R-squared:  0.948,	Adjusted R-squared:  0.944 
+#> F-statistic:  255 on 2 and 28 DF,  p-value: <2e-16
 ```
 
-This output gives some summary statistics on the residuals (which would be described more fully in an `augment()` output), model coefficients (which, in this case, make up the `tidy()` output, and some model-level summarizations such as RSE, $R^2$, etc. (which make up the `glance()` output.)
+This output gives some summary statistics on the residuals (which would be described more fully in an `augment()` output), model coefficients (which, in this case, make up the `tidy()` output, and some model-level summarizations such as RSE, `\(R^2\)`, etc. (which make up the `glance()` output.)
 
 ### Implementing the `tidy()` Tidier
 
@@ -92,22 +112,35 @@ The `tidy(x, ...)` method will return a tibble where each row contains informati
 
 Returning to the example of our linear model on timber volume, we'd like to extract information on the model components. In this example, the components are the regression coefficients. After taking a look at the model object and its `summary()`, you might notice that you can extract the regression coefficients as follows:
 
-```{r}
+
+```r
 summary(trees_model)$coefficients
+#>             Estimate Std. Error t value Pr(>|t|)
+#> (Intercept)  -57.988      8.638   -6.71 2.75e-07
+#> Girth          4.708      0.264   17.82 8.22e-17
+#> Height         0.339      0.130    2.61 1.45e-02
 ```
 
 This object contains the model coefficients as a table, where the information giving which coefficient is being described in each row is given in the row names. Converting to a tibble where the row names are contained in a column, you might write:
 
-```{r}
+
+```r
 trees_model_tidy <- summary(trees_model)$coefficients %>% 
   as_tibble(rownames = "term")
 
 trees_model_tidy
+#> # A tibble: 3 x 5
+#>   term        Estimate `Std. Error` `t value` `Pr(>|t|)`
+#>   <chr>          <dbl>        <dbl>     <dbl>      <dbl>
+#> 1 (Intercept)  -58.0          8.64      -6.71   2.75e- 7
+#> 2 Girth          4.71         0.264     17.8    8.22e-17
+#> 3 Height         0.339        0.130      2.61   1.45e- 2
 ```
 
 broom standardizes common column names used to described coefficients. In this case, the column names are:
 
-```{r}
+
+```r
 colnames(trees_model_tidy) <- c("term", "estimate", "std.error", "statistic", "p.value")
 ```
 
@@ -115,13 +148,19 @@ A glossary giving the currently acceptable column names outputted by `tidy()` me
 
 Finally, it is common for `tidy()` methods to include an option to calculate confidence/credible interval for each component based on the model, when possible. In this case, the `confint()` function can be used to calculate confidence intervals from a model object resulting from `lm()`:
 
-```{r}
+
+```r
 confint(trees_model)
+#>                2.5 %  97.5 %
+#> (Intercept) -75.6823 -40.293
+#> Girth         4.1668   5.249
+#> Height        0.0726   0.606
 ```
 
 With these considerations in mind, a reasonable `tidy()` method for `lm()` might look something like:
 
-```{r, eval = FALSE}
+
+```r
 tidy.lm <- function(x, conf.int = FALSE, conf.level = 0.95, ...) {
   
   result <- summary(x)$coefficients %>%
@@ -146,7 +185,8 @@ Some things to keep in mind while writing your `tidy()` method:
 
 * Sometimes a model will have several different types of components. For example, in mixed models, there is different information associated with fixed effects and random effects, since this information doesn't have the same interpretation, it doesn't make sense to summarize the fixed and random effects in the same table. In cases like this you should add an argument that allows the user to specify which type of information they want. For example, you might implement an interface along the lines of:
 
-```{r eval = FALSE}
+
+```r
 model <- mixed_model(...)
 tidy(model, effects = "fixed")
 tidy(model, effects = "random")
@@ -162,29 +202,39 @@ tidy(model, effects = "random")
 
 `glance()` returns a one-row tibble providing model-level summarizations (e.g. goodness of fitness measures and related statistics). This is useful to check for model misspecification and to compare many models. Again, the `x` input is a model object, and the `...` is an optional argument to supply additional information to any calls inside your method. New `glance()` methods can also take additional arguments and _must_ include the `x` and `...` arguments. (For a glossary of currently acceptable additional arguments, see [this dataframe](https://github.com/alexpghayes/modeltests/blob/master/data/argument_glossary.rda).)
 
-Returning to the `trees_model` example, we could pull out the $R^2$ value with the following code:
+Returning to the `trees_model` example, we could pull out the `\(R^2\)` value with the following code:
 
-```{r}
+
+```r
 summary(trees_model)$r.squared
+#> [1] 0.948
 ```
 
-Similarly, for the adjusted $R^2$:
+Similarly, for the adjusted `\(R^2\)`:
 
-```{r}
+
+```r
 summary(trees_model)$adj.r.squared
+#> [1] 0.944
 ```
 
 Unfortunately, for many model objects, the extraction of model-level information is largely a manual process. You will likely need to build a `tibble()` element-by-element by subsetting the `summary()` object repeatedly. The `with()` function, however, can help make this process a bit less tedious by evaluating expressions inside of the `summary(trees_model)` environment. To grab those those same two model elements from above using `with()`:
 
-```{r}
+
+```r
 with(summary(trees_model),
      tibble::tibble(r.squared = r.squared,
                     adj.r.squared = adj.r.squared))
+#> # A tibble: 1 x 2
+#>   r.squared adj.r.squared
+#>       <dbl>         <dbl>
+#> 1     0.948         0.944
 ```
 
 A reasonable `glance()` method for `lm()`, then, might look something like:
 
-```{r, eval = FALSE}
+
+```r
 glance.lm <- function(x, ...) {
   with(
     summary(x),
@@ -226,30 +276,71 @@ If a `data` argument is not specified, `augment` should try to reconstruct the o
 
 With this is mind, we can look back to our `trees_model` example. For one, the `model` element inside of the `trees_model` object will allow us to recover the original data:
 
-```{r, rows.print=5}
+
+```r
 trees_model$model
+#>    Volume Girth Height
+#> 1    10.3   8.3     70
+#> 2    10.3   8.6     65
+#> 3    10.2   8.8     63
+#> 4    16.4  10.5     72
+#> 5    18.8  10.7     81
+#> 6    19.7  10.8     83
+#> 7    15.6  11.0     66
+#> 8    18.2  11.0     75
+#> 9    22.6  11.1     80
+#> 10   19.9  11.2     75
+#> 11   24.2  11.3     79
+#> 12   21.0  11.4     76
+#> 13   21.4  11.4     76
+#> 14   21.3  11.7     69
+#> 15   19.1  12.0     75
+#> 16   22.2  12.9     74
+#> 17   33.8  12.9     85
+#> 18   27.4  13.3     86
+#> 19   25.7  13.7     71
+#> 20   24.9  13.8     64
+#> 21   34.5  14.0     78
+#> 22   31.7  14.2     80
+#> 23   36.3  14.5     74
+#> 24   38.3  16.0     72
+#> 25   42.6  16.3     77
+#> 26   55.4  17.3     81
+#> 27   55.7  17.5     82
+#> 28   58.3  17.9     80
+#> 29   51.5  18.0     80
+#> 30   51.0  18.0     80
+#> 31   77.0  20.6     87
 ```
 
 
 Similarly, the fitted values and residuals can be accessed with the following code:
 
-```{r}
+
+```r
 head(trees_model$fitted.values)
+#>     1     2     3     4     5     6 
+#>  4.84  4.55  4.82 15.87 19.87 21.02
 head(trees_model$residuals)
+#>      1      2      3      4      5      6 
+#>  5.462  5.746  5.383  0.526 -1.069 -1.318
 ```
 
 As with `glance()` methods, it's fine (and encouraged!) to include common metrics associated with observations if they are not computationally intensive to compute. A common metric associated with linear models, for example, is the standard error of fitted values:
 
-```{r}
+
+```r
 se.fit <- predict(trees_model, newdata = trees, se.fit = TRUE)$se.fit %>%
   unname()
 
 head(se.fit)
+#> [1] 1.321 1.489 1.633 0.944 1.348 1.532
 ```
 
 Thus, a reasonable `augment()` method for `lm` might look something like this:
 
-```{r}
+
+```r
 augment.lm <- function(x, data = x$model, newdata = NULL, ...) {
   if (is.null(newdata)) {
     dplyr::bind_cols(tibble::as_tibble(data),
@@ -277,9 +368,10 @@ Please note that the recommended interface and functionality for `augment()` met
 
 ## Document the new tidiers
 
-The only remaining step is to integrate the new tidiers into the parent package! To do so, just drop the tidiers into a `.R` file inside of the $/R$ folder and document them using roxygen2. If you're unfamiliar with the process of documenting objects, you can read more about it [here](http://r-pkgs.had.co.nz/man.html). Here's an example of how our `tidy.lm()` method might be documented:
+The only remaining step is to integrate the new tidiers into the parent package! To do so, just drop the tidiers into a `.R` file inside of the `\(/R\)` folder and document them using roxygen2. If you're unfamiliar with the process of documenting objects, you can read more about it [here](http://r-pkgs.had.co.nz/man.html). Here's an example of how our `tidy.lm()` method might be documented:
 
-```{r, eval = FALSE}
+
+```r
 #' Tidy a(n) lm object
 #'
 #' @param x A `lm` object.
@@ -311,6 +403,39 @@ Once you've documented each of your new tidiers and ran `devtools::document()`, 
 
 ## Session information
 
-```{r si, echo = FALSE}
-small_session(pkgs)
+
+```
+#> ─ Session info ───────────────────────────────────────────────────────────────
+#>  setting  value                       
+#>  version  R version 3.6.3 (2020-02-29)
+#>  os       macOS Catalina 10.15.4      
+#>  system   x86_64, darwin15.6.0        
+#>  ui       X11                         
+#>  language (EN)                        
+#>  collate  en_US.UTF-8                 
+#>  ctype    en_US.UTF-8                 
+#>  tz       America/Los_Angeles         
+#>  date     2020-05-21                  
+#> 
+#> ─ Packages ───────────────────────────────────────────────────────────────────
+#>  package    * version    date       lib source                            
+#>  broom      * 0.5.5      2020-02-29 [1] CRAN (R 3.6.1)                    
+#>  dials      * 0.0.4      2019-12-02 [1] CRAN (R 3.6.1)                    
+#>  dplyr      * 0.8.5      2020-03-07 [1] CRAN (R 3.6.0)                    
+#>  generics   * 0.0.2      2018-11-29 [1] CRAN (R 3.6.0)                    
+#>  ggplot2    * 3.3.0.9000 2020-04-28 [1] Github (tidyverse/ggplot2@296eecb)
+#>  infer      * 0.5.1.9000 2020-05-11 [1] local                             
+#>  parsnip    * 0.0.5      2020-01-07 [1] CRAN (R 3.6.1)                    
+#>  purrr      * 0.3.4      2020-04-17 [1] CRAN (R 3.6.1)                    
+#>  recipes    * 0.1.10     2020-03-18 [1] CRAN (R 3.6.1)                    
+#>  rlang        0.4.5.9000 2020-04-17 [1] Github (r-lib/rlang@a90b04b)      
+#>  rsample    * 0.0.5      2019-07-12 [1] CRAN (R 3.6.1)                    
+#>  tibble     * 3.0.1      2020-04-20 [1] CRAN (R 3.6.2)                    
+#>  tidymodels * 0.1.0      2020-02-16 [1] CRAN (R 3.6.1)                    
+#>  tune       * 0.0.1      2020-02-11 [1] CRAN (R 3.6.1)                    
+#>  workflows  * 0.1.1      2020-03-17 [1] CRAN (R 3.6.1)                    
+#>  yardstick  * 0.0.6      2020-03-17 [1] CRAN (R 3.6.1)                    
+#> 
+#> [1] /Users/simonpcouch/Library/R/3.6/library
+#> [2] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
 ```
