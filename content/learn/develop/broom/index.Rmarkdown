@@ -14,7 +14,9 @@ source(here::here("content/learn/common.R"))
 
 ```{r load, include = FALSE, message = FALSE, warning = FALSE}
 library(tidymodels)
+library(tidyverse)
 library(generics)
+library(kableExtra)
 pkgs <- c("tidymodels", "tidyverse", "generics", "usethis")
 ```
 
@@ -40,9 +42,9 @@ In this article, we'll walk through each of the above steps in detail, giving ex
 
 ## Re-export the Tidier Generics
 
-The first step is to re-export the generic functions for `tidy()`, `glance()`, and/or `augment()`. You could do so from `broom` itself, but we've provided an alternative, much lighter dependency called `modelgenerics`.
+The first step is to re-export the generic functions for `tidy()`, `glance()`, and/or `augment()`. You could do so from `broom` itself, but we've provided an alternative, much lighter dependency called `generics`.
 
-First you'll need to add the [modelgenerics](https://github.com/tidymodels/modelgenerics) package to `Imports`. We recommend using the [usethis](https://github.com/r-lib/usethis) package for this:
+First you'll need to add the [generics](https://github.com/tidymodels/generics) package to `Imports`. We recommend using the [usethis](https://github.com/r-lib/usethis) package for this:
 
 ```{r, eval = FALSE}
 usethis::use_package("generics", "Imports")
@@ -87,7 +89,7 @@ This output gives some summary statistics on the residuals (which would be descr
 
 ### Implementing the `tidy()` Tidier
 
-The `tidy(x, ...)` method will return a tibble where each row contains information about a component of the model. The `x` input is a model object, and the `...` is an optional argument to supply additional information to any calls inside your method. New `tidy()` methods can take additional arguments, but _must_ include the `x` and `...` arguments to be compatible with the generic function. (For a glossary of currently acceptable additional arguments, see [this dataframe](https://github.com/alexpghayes/modeltests/blob/master/data/argument_glossary.rda).)  Examples of model components include regression coefficients (for regression models), clusters (for classification/clustering models), etc. These methods are useful for inspecting model details and creating custom model visualizations.
+The `tidy(x, ...)` method will return a tibble where each row contains information about a component of the model. The `x` input is a model object, and the `...` is an optional argument to supply additional information to any calls inside your method. New `tidy()` methods can take additional arguments, but _must_ include the `x` and `...` arguments to be compatible with the generic function. (For a glossary of currently acceptable additional arguments, see [the end of this article](#glossary).)  Examples of model components include regression coefficients (for regression models), clusters (for classification/clustering models), etc. These methods are useful for inspecting model details and creating custom model visualizations.
 
 Returning to the example of our linear model on timber volume, we'd like to extract information on the model components. In this example, the components are the regression coefficients. After taking a look at the model object and its `summary()`, you might notice that you can extract the regression coefficients as follows:
 
@@ -110,7 +112,7 @@ broom standardizes common column names used to described coefficients. In this c
 colnames(trees_model_tidy) <- c("term", "estimate", "std.error", "statistic", "p.value")
 ```
 
-A glossary giving the currently acceptable column names outputted by `tidy()` methods can be found [here](https://github.com/alexpghayes/modeltests/blob/master/data/column_glossary.rda). As a rule of thumb, column names resulting from `tidy()` methods should be all lowercase and contain only alphanumerics or periods (though there are plenty of exceptions).
+A glossary giving the currently acceptable column names outputted by `tidy()` methods can be found [at the end of this article](#glossary)). As a rule of thumb, column names resulting from `tidy()` methods should be all lowercase and contain only alphanumerics or periods (though there are plenty of exceptions).
 
 Finally, it is common for `tidy()` methods to include an option to calculate confidence/credible interval for each component based on the model, when possible. In this case, the `confint()` function can be used to calculate confidence intervals from a model object resulting from `lm()`:
 
@@ -159,7 +161,7 @@ tidy(model, effects = "random")
 
 ### Implementing the `glance()` Tidier
 
-`glance()` returns a one-row tibble providing model-level summarizations (e.g. goodness of fitness measures and related statistics). This is useful to check for model misspecification and to compare many models. Again, the `x` input is a model object, and the `...` is an optional argument to supply additional information to any calls inside your method. New `glance()` methods can also take additional arguments and _must_ include the `x` and `...` arguments. (For a glossary of currently acceptable additional arguments, see [this dataframe](https://github.com/alexpghayes/modeltests/blob/master/data/argument_glossary.rda).)
+`glance()` returns a one-row tibble providing model-level summarizations (e.g. goodness of fitness measures and related statistics). This is useful to check for model misspecification and to compare many models. Again, the `x` input is a model object, and the `...` is an optional argument to supply additional information to any calls inside your method. New `glance()` methods can also take additional arguments and _must_ include the `x` and `...` arguments. (For a glossary of currently acceptable additional arguments, see [the end of this article](#glossary).)
 
 Returning to the `trees_model` example, we could pull out the $R^2$ value with the following code:
 
@@ -219,7 +221,7 @@ Some things to keep in mind while writing `glance()` methods:
 
 ### Implementing the `augment()` Tidier
 
-`augment()` methods add columns to a dataset containing information such as fitted values, residuals or cluster assignments. All columns added to a dataset have a `.` prefix to prevent existing columns from being overwritten. (Currently acceptable column names are given [here](https://github.com/alexpghayes/modeltests/blob/master/data/column_glossary.rda).) The `x` and `...` arguments share their meaning with the two functions described above. `augment` methods also optionally accept a `data` argument that is a `data.frame` (or `tibble`) to add observation-level information to, returning a `tibble` object with the same number of rows as `data`. Many `augment()` methods also accept a `newdata()` argument, following the same conventions as the `data()` argument, except with the underlying assumption that the model has not "seen" the data yet. As a result, `newdata()` arguments need not contain the response columns in `data()`. Only one of `data()` or `newdata()` should be supplied. A full glossary of acceptable arguments to `augment()` methods can be found [here](https://github.com/alexpghayes/modeltests/blob/master/data/argument_glossary.rda).
+`augment()` methods add columns to a dataset containing information such as fitted values, residuals or cluster assignments. All columns added to a dataset have a `.` prefix to prevent existing columns from being overwritten. (Currently acceptable column names are given in [the glossary](#glossary).) The `x` and `...` arguments share their meaning with the two functions described above. `augment` methods also optionally accept a `data` argument that is a `data.frame` (or `tibble`) to add observation-level information to, returning a `tibble` object with the same number of rows as `data`. Many `augment()` methods also accept a `newdata()` argument, following the same conventions as the `data()` argument, except with the underlying assumption that the model has not "seen" the data yet. As a result, `newdata()` arguments need not contain the response columns in `data()`. Only one of `data()` or `newdata()` should be supplied. A full glossary of acceptable arguments to `augment()` methods can be found at [the end of this article](#glossary).
 
 If a `data` argument is not specified, `augment` should try to reconstruct the original data as much as possible from the model object. This may not always be possible, and often it will not be possible to recover columns not used by the model.
 
@@ -271,6 +273,7 @@ Some other things to keep in mind while writing `augment()` methods:
 * Data given to the `data` argument must have both the original predictors and the original response. Data given to the `newdata` argument only needs to have the original predictors. This is important because there may be important information associated with training data that is not associated with test data. This means that the `original_data` object in `augment(model, data = original_data)` should provide `.fitted` and `.resid` columns (in most cases), whereas `test_data` in `augment(model, data = test_data)` only needs a `.fitted` column, even if the response is present in `test_data`.
 * If the `data` or `newdata` is specified as a `data.frame` with rownames, `augment` should return them in a column called `.rownames`.
 * For observations where no fitted values or summaries are available (where there's missing data, for example), return `NA`.
+* *`augment()` should always return as many rows as were in `data` or `newdata`*, depending on which is supplied
 
 Please note that the recommended interface and functionality for `augment()` methods may change soon.
 
@@ -289,6 +292,8 @@ The only remaining step is to integrate the new tidiers into the parent package!
 #'   and less than 1. Defaults to 0.95, which corresponds to a 
 #'   95 percent confidence interval.
 #' @param ... Unused, included for generic consistency only.
+#' @return A tidy [tibble::tibble()] summarizing component-level
+#'   information about the model
 #'
 #' @examples
 #' # load the trees dataset
@@ -307,6 +312,49 @@ tidy.lm <- function(x, conf.int = FALSE, conf.level = 0.95, ...) {
 ```
 
 Once you've documented each of your new tidiers and ran `devtools::document()`, you're done! Congrats on implementing your own broom tidiers for a new model object!
+
+## Glossaries: Argument and Column Names {#glossary}
+
+```{r, include = FALSE}
+# grab the argument glossary: make a temporary file, write the
+# data to it, load it, and then delete it
+args_url <- "https://github.com/alexpghayes/modeltests/blob/master/data/argument_glossary.rda?raw=true"
+args_file <- tempfile()
+args_get <- httr::GET(args_url)
+httr::stop_for_status(args_get)
+writeBin(httr::content(args_get, type = "raw"), args_file)
+load(args_file)
+unlink(args_file)
+
+# do the same thing for the columns
+cols_url <- "https://github.com/alexpghayes/modeltests/blob/master/data/column_glossary.rda?raw=true"
+cols_file <- tempfile()
+cols_get <- httr::GET(cols_url)
+httr::stop_for_status(cols_get)
+writeBin(httr::content(cols_get, type = "raw"), cols_file)
+load(cols_file)
+unlink(cols_file)
+```
+
+Tidier methods have a standardized set of acceptable argument and output column names. The currently acceptable argument names by tidier method are:
+
+```{r, echo = FALSE}
+argument_glossary %>%
+  select(Method = method, Argument = argument) %>%
+  knitr::kable() %>%
+  kable_styling(full_width = FALSE)
+```
+
+The currently acceptable column names by tidier method are:
+
+```{r, echo = FALSE}
+column_glossary %>%
+  select(Method = method, Column = column) %>%
+  knitr::kable() %>%
+  kable_styling(full_width = FALSE)
+```
+
+Please file an issue at [alexpghayes/modeltests](https://github.com/alexpghayes/modeltests) to request new arguments/columns to be added to the glossaries.
 
 ## Session information
 
