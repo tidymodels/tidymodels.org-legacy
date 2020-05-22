@@ -995,12 +995,17 @@ div.rstudio-tip {
 
 div.warning {
   background-image: url("../images/error.png");
+  background-color: #d7611a1a !important;
 }
 
 div.note code, 
-div.rstudio-tip code, 
-div.warning code {
+div.rstudio-tip code {
   background-color: #cb9faf52 !important;
+  font-size: 1em;
+}
+
+div.warning code {
+  background-color: #ead3c3bd !important;
   font-size: 1em;
 }
 
