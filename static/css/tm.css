@@ -979,7 +979,7 @@ div.warning {
   color: #1a162dcc;
   background-color: #eab0c41a;
   border-top: 7pt solid #a19ea936;
-  max-width: 80%;
+  max-width: 100%;
   line-height: 1.75em;
   font-size: 0.85em;
   letter-spacing: 1pt;
