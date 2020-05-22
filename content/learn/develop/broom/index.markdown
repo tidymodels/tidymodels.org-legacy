@@ -54,7 +54,7 @@ generics::glance
 
 Oftentimes it doesn't make sense to define one or more of these methods for a particular model. In this case, just implement the methods that do make sense.
 
-Note: please do not define `tidy()`, `glance()` or `augment()` generics in your package. This will result in namespace conflicts whenever your package is used along other packages that also export tidying methods.
+{{% warning %}} Please do not define `tidy()`, `glance()` or `augment()` generics in your package. This will result in namespace conflicts whenever your package is used along other packages that also export tidying methods. {{%/ warning %}}
 
 ## Implement Tidying Methods
 
@@ -146,7 +146,7 @@ colnames(trees_model_tidy) <- c("term", "estimate", "std.error", "statistic", "p
 
 A glossary giving the currently acceptable column names outputted by `tidy()` methods can be found [at the end of this article](#glossary)). As a rule of thumb, column names resulting from `tidy()` methods should be all lowercase and contain only alphanumerics or periods (though there are plenty of exceptions).
 
-Finally, it is common for `tidy()` methods to include an option to calculate confidence/credible interval for each component based on the model, when possible. In this case, the `confint()` function can be used to calculate confidence intervals from a model object resulting from `lm()`:
+Finally, it is common for `tidy()` methods to include an option to calculate confidence/credible intervals for each component based on the model, when possible. In this example, the `confint()` function can be used to calculate confidence intervals from a model object resulting from `lm()`:
 
 
 ```r
@@ -178,6 +178,8 @@ tidy.lm <- function(x, conf.int = FALSE, conf.level = 0.95, ...) {
   result
 }
 ```
+
+{{% note %}}  If you're interested, the actual `tidy.lm()` source can be found [here](https://github.com/tidymodels/broom/blob/master/R/stats-lm-tidiers.R)! It's not too different from the version above except for some argument checking and additional columns. {{%/ note %}}
 
 With this method exported, then, if a user called `tidy(fit)`, where `fit` was an output from `lm()`, the `tidy()` generic would "redirect" the call to the `tidy.lm()` function above.
 
@@ -261,7 +263,7 @@ glance.lm <- function(x, ...) {
 }
 ```
 
-In fact, this is the actual definition of `glance.lm()` provided by broom!
+{{% note %}} This is the actual definition of `glance.lm()` provided by broom! {{%/ note %}}
 
 Some things to keep in mind while writing `glance()` methods:
 * Output should not include the name of the modeling function or any arguments given to the modelling function.
@@ -312,7 +314,6 @@ trees_model$model
 #> 30   51.0  18.0     80
 #> 31   77.0  20.6     87
 ```
-
 
 Similarly, the fitted values and residuals can be accessed with the following code:
 
@@ -365,7 +366,7 @@ Some other things to keep in mind while writing `augment()` methods:
 * For observations where no fitted values or summaries are available (where there's missing data, for example), return `NA`.
 * *`augment()` should always return as many rows as were in `data` or `newdata`*, depending on which is supplied
 
-Please note that the recommended interface and functionality for `augment()` methods may change soon.
+{{% note %}} The recommended interface and functionality for `augment()` methods may change soon. {{%/ note %}}
 
 ## Document the new tidiers
 
