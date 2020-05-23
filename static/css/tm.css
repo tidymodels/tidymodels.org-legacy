@@ -977,7 +977,7 @@ div.warning {
   background-position: 15px 1.5em;
   min-height: 120px;
   color: #1a162dcc;
-  background-color: #eab0c41a;
+  background-color: #91CBD738;
   border-top: 7pt solid #a19ea936;
   max-width: 100%;
   line-height: 1.75em;
@@ -995,17 +995,17 @@ div.rstudio-tip {
 
 div.warning {
   background-image: url("../images/error.png");
-  background-color: #d7611a1a !important;
+  background-color: #eab0c41a !important;
 }
 
 div.note code, 
 div.rstudio-tip code {
-  background-color: #cb9faf52 !important;
+  background-color: #91CBD765 !important;
   font-size: 1em;
 }
 
 div.warning code {
-  background-color: #ead3c3bd !important;
+  background-color: #cb9faf52 !important;
   font-size: 1em;
 }
 
