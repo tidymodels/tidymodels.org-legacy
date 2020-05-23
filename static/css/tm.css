@@ -189,35 +189,9 @@ h4 {
     color: #ca225ec9;
   }
 
-/*Getting Started TOC divider -- styling may change */
-
-/*
-#TOC{
-    padding: 2em;
-    position: relative;
-}
-#TOC:after,
-#TOC:before {
-    border: 1pt solid #ca225e3d; 
-    bottom: 0;    
-    content: '';
-    position: absolute;
-    top: 0;
-    width: 5%;
-}
-#TOC:after {
-    border-left: none;
-    right: 0;
-}
-#TOC:before {
-    border-right: none;
-    left: 0;
-}
-
-*/
-
 
 /*Sidebar TOC links for Learn and Packages pages */
+
 #TableOfContents a, 
 .articleCategory a {
   font-family: 'Lato', sans-serif;
@@ -231,8 +205,14 @@ h4 {
 .articleCategory a:hover {
   color: #1a162dde;
   text-decoration: none;
-
 }
+
+
+#TableOfContents ul li {
+  padding-left: 0.5em; /* Wraps li when headers are too long */
+  text-indent: -0.5em;
+}
+
 
 /*-- Getting Started Page Left Sidebar -- */
 
