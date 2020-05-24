@@ -189,35 +189,9 @@ h4 {
     color: #ca225ec9;
   }
 
-/*Getting Started TOC divider -- styling may change */
-
-/*
-#TOC{
-    padding: 2em;
-    position: relative;
-}
-#TOC:after,
-#TOC:before {
-    border: 1pt solid #ca225e3d; 
-    bottom: 0;    
-    content: '';
-    position: absolute;
-    top: 0;
-    width: 5%;
-}
-#TOC:after {
-    border-left: none;
-    right: 0;
-}
-#TOC:before {
-    border-right: none;
-    left: 0;
-}
-
-*/
-
 
 /*Sidebar TOC links for Learn and Packages pages */
+
 #TableOfContents a, 
 .articleCategory a {
   font-family: 'Lato', sans-serif;
@@ -231,8 +205,18 @@ h4 {
 .articleCategory a:hover {
   color: #1a162dde;
   text-decoration: none;
-
 }
+
+
+#TableOfContents ul li {
+  padding-left: 0.5em; /* Wraps li when headers are too long */
+  text-indent: -0.5em;
+  
+  /* Make spacing BETWEEN list items greater than wrapped lines WITHIN list items */
+  padding-bottom: 1.2em;
+  line-height: 1.2rem;
+}
+
 
 /*-- Getting Started Page Left Sidebar -- */
 
@@ -974,12 +958,12 @@ div.warning {
   padding-left: 100px;
   background-size: 70px;
   background-repeat: no-repeat;
-  background-position: 15px center;
+  background-position: 15px 1.5em;
   min-height: 120px;
   color: #1a162dcc;
-  background-color: #eab0c41a;
+  background-color: #91CBD738;
   border-top: 7pt solid #a19ea936;
-  max-width: 80%;
+  max-width: 100%;
   line-height: 1.75em;
   font-size: 0.85em;
   letter-spacing: 1pt;
@@ -995,10 +979,15 @@ div.rstudio-tip {
 
 div.warning {
   background-image: url("../images/error.png");
+  background-color: #eab0c41a !important;
 }
 
 div.note code, 
-div.rstudio-tip code, 
+div.rstudio-tip code {
+  background-color: #91CBD765 !important;
+  font-size: 1em;
+}
+
 div.warning code {
   background-color: #cb9faf52 !important;
   font-size: 1em;
