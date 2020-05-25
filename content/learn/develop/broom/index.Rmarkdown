@@ -223,9 +223,9 @@ Some things to keep in mind while writing `glance()` methods:
 
 ### Implementing the `augment()` Tidier
 
-`augment()` methods add columns to a dataset containing information such as fitted values, residuals or cluster assignments. All columns added to a dataset have a `.` prefix to prevent existing columns from being overwritten. (Currently acceptable column names are given in [the glossary](#glossary).) The `x` and `...` arguments share their meaning with the two functions described above. `augment` methods also optionally accept a data argument that is a `data.frame` (or `tibble`) to add observation-level information to, returning a `tibble` object with the same number of rows as data. Many `augment()` methods also accept a `newdata()` argument, following the same conventions as the `data()` argument, except with the underlying assumption that the model has not "seen" the data yet. As a result, `newdata()` arguments need not contain the response columns in `data()`. Only one of `data()` or `newdata()` should be supplied. A full glossary of acceptable arguments to `augment()` methods can be found at [the end of this article](#glossary).
+`augment()` methods add columns to a dataset containing information such as fitted values, residuals or cluster assignments. All columns added to a dataset have a `.` prefix to prevent existing columns from being overwritten. (Currently acceptable column names are given in [the glossary](#glossary).) The `x` and `...` arguments share their meaning with the two functions described above. `augment` methods also optionally accept a `data` argument that is a `data.frame` (or `tibble`) to add observation-level information to, returning a `tibble` object with the same number of rows as `data`. Many `augment()` methods also accept a `newdata` argument, following the same conventions as the `data` argument, except with the underlying assumption that the model has not "seen" the data yet. As a result, `newdata` arguments need not contain the response columns in `data`. Only one of `data` or `newdata` should be supplied. A full glossary of acceptable arguments to `augment()` methods can be found at [the end of this article](#glossary).
 
-If a data argument is not specified, `augment()` should try to reconstruct the original data as much as possible from the model object. This may not always be possible, and often it will not be possible to recover columns not used by the model.
+If a `data` argument is not specified, `augment()` should try to reconstruct the original data as much as possible from the model object. This may not always be possible, and often it will not be possible to recover columns not used by the model.
 
 With this is mind, we can look back to our `trees_model` example. For one, the `model` element inside of the `trees_model` object will allow us to recover the original data:
 
@@ -270,11 +270,11 @@ augment.lm <- function(x, data = x$model, newdata = NULL, ...) {
 ```
 
 Some other things to keep in mind while writing `augment()` methods:
-* The newdata argument should default to `NULL`. Users should only ever specify one of data or newdata. Providing both data and newdata should result in an error. The newdata argument should accept both `data.frame`s and `tibble`s.
-* Data given to the data argument must have both the original predictors and the original response. Data given to the newdata argument only needs to have the original predictors. This is important because there may be important information associated with training data that is not associated with test data. This means that the `original_data` object in `augment(model, data = original_data)` should provide `.fitted` and `.resid` columns (in most cases), whereas `test_data` in `augment(model, data = test_data)` only needs a `.fitted` column, even if the response is present in `test_data`.
-* If the data or newdata is specified as a `data.frame` with rownames, `augment` should return them in a column called `.rownames`.
+* The `newdata` argument should default to `NULL`. Users should only ever specify one of `data` or `newdata`. Providing both `data` and `newdata` should result in an error. The `newdata` argument should accept both `data.frame`s and `tibble`s.
+* Data given to the `data` argument must have both the original predictors and the original response. Data given to the `newdata` argument only needs to have the original predictors. This is important because there may be important information associated with training data that is not associated with test data. This means that the `original_data` object in `augment(model, data = original_data)` should provide `.fitted` and `.resid` columns (in most cases), whereas `test_data` in `augment(model, data = test_data)` only needs a `.fitted` column, even if the response is present in `test_data`.
+* If the `data` or `newdata` is specified as a `data.frame` with rownames, `augment` should return them in a column called `.rownames`.
 * For observations where no fitted values or summaries are available (where there's missing data, for example), return `NA`.
-* *The `augment()` method should always return as many rows as were in data or newdata*, depending on which is supplied
+* *The `augment()` method should always return as many rows as were in `data` or `newdata`*, depending on which is supplied
 
 {{% note %}} The recommended interface and functionality for `augment()` methods may change soon. {{%/ note %}}
 
