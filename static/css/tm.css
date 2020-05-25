@@ -373,10 +373,14 @@ table thead tr th:last-child {
     padding: 15px 13px;
 }
 
-.selectize-dropdown {
-    font-size: 0.75em;
-    text-transform: none;
+
+.selectize-dropdown, 
+.selectize-input.items.not-full.has-options.has-items {
+    font-size: 0.8rem !important;
+    text-transform: none !important;
 }
+
+
 
 /* MISC */
 /* This is to specifically target the package tag links within GEtting Started.*/
