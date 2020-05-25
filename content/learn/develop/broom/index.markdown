@@ -22,9 +22,9 @@ The broom package provides tools to summarize key information about models in ti
 * `glance()` reports information about the entire model
 * `augment()` adds information about observations to a dataset
 
-Each of the three verbs above are _generic_, in that they do not actually define a procedure to tidy a given model object, but instead redirect to the relevant _method_ implemented to tidy a specific type of model object. The package provides tidier methods for model objects from over 100 modeling packages and nearly all of the model objects in the stats package that comes with base R. However, for maintainability purposes, the broom package authors now ask that requests for new tidier methods be first directed to the parent package (i.e. the package that supplies the model object) rather than to broom. Tidiers will generally only be integrated into broom in the case that the requester has already asked the maintainers of the model-owning package to implement tidiers in the parent package.
+Each of the three verbs above are _generic_, in that they do not define a procedure to tidy a given model object, but instead redirect to the relevant _method_ implemented to tidy a specific type of model object. The broom package provides tidier methods for model objects from over 100 modeling packages along with nearly all of the model objects in the stats package that comes with base R. However, for maintainability purposes, the broom package authors now ask that requests for new tidier methods be first directed to the parent package (i.e. the package that supplies the model object) rather than to broom. Tidiers will generally only be integrated into broom in the case that the requester has already asked the maintainers of the model-owning package to implement tidiers in the parent package.
 
-As a result, we'd like to make implementing external tidier methods as painless as possible. The general process for doing so is as follows:
+We'd like to make implementing external tidier methods as painless as possible. The general process for doing so is:
 
 * re-export the tidier generics
 * implement tidying methods
@@ -32,7 +32,7 @@ As a result, we'd like to make implementing external tidier methods as painless 
 
 In this article, we'll walk through each of the above steps in detail, giving examples and pointing out helpful functions when possible.
 
-## Re-export the Tidier Generics
+## Re-export the tidier generics
 
 The first step is to re-export the generic functions for `tidy()`, `glance()`, and/or `augment()`. You could do so from `broom` itself, but we've provided an alternative, much lighter dependency called `generics`.
 
@@ -52,11 +52,11 @@ Next, you'll need to re-export the appropriate tidying methods. If you plan to i
 generics::glance
 ```
 
-Oftentimes it doesn't make sense to define one or more of these methods for a particular model. In this case, just implement the methods that do make sense.
+Oftentimes it doesn't make sense to define one or more of these methods for a particular model. In this case, only implement the methods that do make sense.
 
-{{% warning %}} Please do not define `tidy()`, `glance()` or `augment()` generics in your package. This will result in namespace conflicts whenever your package is used along other packages that also export tidying methods. {{%/ warning %}}
+{{% warning %}} Please do not define `tidy()`, `glance()`, or `augment()` generics in your package. This will result in namespace conflicts whenever your package is used along other packages that also export tidying methods. {{%/ warning %}}
 
-## Implement Tidying Methods
+## Implement tidying methods
 
 You'll now need to implement specific tidying methods for each of the tidiers you've re-exported in the above step. For each of `tidy()`, `glance()`, and `augment()`, we'll walk through the big picture, an example, and helpful resources.
 
@@ -104,11 +104,11 @@ summary(trees_model)
 #> F-statistic:  255 on 2 and 28 DF,  p-value: <2e-16
 ```
 
-This output gives some summary statistics on the residuals (which would be described more fully in an `augment()` output), model coefficients (which, in this case, make up the `tidy()` output, and some model-level summarizations such as RSE, `\(R^2\)`, etc. (which make up the `glance()` output.)
+This output gives some summary statistics on the residuals (which would be described more fully in an `augment()` output), model coefficients (which, in this case, make up the `tidy()` output), and some model-level summarizations such as RSE, `\(R^2\)`, etc. (which make up the `glance()` output.)
 
 ### Implementing the `tidy()` Tidier
 
-The `tidy(x, ...)` method will return a tibble where each row contains information about a component of the model. The `x` input is a model object, and the `...` is an optional argument to supply additional information to any calls inside your method. New `tidy()` methods can take additional arguments, but _must_ include the `x` and `...` arguments to be compatible with the generic function. (For a glossary of currently acceptable additional arguments, see [the end of this article](#glossary).)  Examples of model components include regression coefficients (for regression models), clusters (for classification/clustering models), etc. These methods are useful for inspecting model details and creating custom model visualizations.
+The `tidy(x, ...)` method will return a tibble where each row contains information about a component of the model. The `x` input is a model object, and the dots (`...`) are an optional argument to supply additional information to any calls inside your method. New `tidy()` methods can take additional arguments, but _must_ include the `x` and `...` arguments to be compatible with the generic function. (For a glossary of currently acceptable additional arguments, see [the end of this article](#glossary).)  Examples of model components include regression coefficients (for regression models), clusters (for classification/clustering models), etc. These `tidy()` methods are useful for inspecting model details and creating custom model visualizations.
 
 Returning to the example of our linear model on timber volume, we'd like to extract information on the model components. In this example, the components are the regression coefficients. After taking a look at the model object and its `summary()`, you might notice that you can extract the regression coefficients as follows:
 
@@ -137,14 +137,14 @@ trees_model_tidy
 #> 3 Height         0.339        0.130      2.61   1.45e- 2
 ```
 
-broom standardizes common column names used to described coefficients. In this case, the column names are:
+The broom package standardizes common column names used to describe coefficients. In this case, the column names are:
 
 
 ```r
 colnames(trees_model_tidy) <- c("term", "estimate", "std.error", "statistic", "p.value")
 ```
 
-A glossary giving the currently acceptable column names outputted by `tidy()` methods can be found [at the end of this article](#glossary)). As a rule of thumb, column names resulting from `tidy()` methods should be all lowercase and contain only alphanumerics or periods (though there are plenty of exceptions).
+A glossary giving the currently acceptable column names outputted by `tidy()` methods can be found [at the end of this article](#glossary). As a rule of thumb, column names resulting from `tidy()` methods should be all lowercase and contain only alphanumerics or periods (though there are plenty of exceptions).
 
 Finally, it is common for `tidy()` methods to include an option to calculate confidence/credible intervals for each component based on the model, when possible. In this example, the `confint()` function can be used to calculate confidence intervals from a model object resulting from `lm()`:
 
@@ -181,11 +181,11 @@ tidy.lm <- function(x, conf.int = FALSE, conf.level = 0.95, ...) {
 
 {{% note %}}  If you're interested, the actual `tidy.lm()` source can be found [here](https://github.com/tidymodels/broom/blob/master/R/stats-lm-tidiers.R)! It's not too different from the version above except for some argument checking and additional columns. {{%/ note %}}
 
-With this method exported, then, if a user called `tidy(fit)`, where `fit` was an output from `lm()`, the `tidy()` generic would "redirect" the call to the `tidy.lm()` function above.
+With this method exported, then, if a user calls `tidy(fit)`, where `fit` is an output from `lm()`, the `tidy()` generic would "redirect" the call to the `tidy.lm()` function above.
 
 Some things to keep in mind while writing your `tidy()` method:
 
-* Sometimes a model will have several different types of components. For example, in mixed models, there is different information associated with fixed effects and random effects, since this information doesn't have the same interpretation, it doesn't make sense to summarize the fixed and random effects in the same table. In cases like this you should add an argument that allows the user to specify which type of information they want. For example, you might implement an interface along the lines of:
+* Sometimes a model will have several different types of components. For example, in mixed models, there is different information associated with fixed effects and random effects. Since this information doesn't have the same interpretation, it doesn't make sense to summarize the fixed and random effects in the same table. In cases like this you should add an argument that allows the user to specify which type of information they want. For example, you might implement an interface along the lines of:
 
 
 ```r
@@ -266,15 +266,15 @@ glance.lm <- function(x, ...) {
 {{% note %}} This is the actual definition of `glance.lm()` provided by broom! {{%/ note %}}
 
 Some things to keep in mind while writing `glance()` methods:
-* Output should not include the name of the modeling function or any arguments given to the modelling function.
+* Output should not include the name of the modeling function or any arguments given to the modeling function.
 * In some cases, you may wish to provide model-level diagnostics not returned by the original object. For example, the above `glance.lm()` calculates `AIC` and `BIC` from the model fit. If these are easy to compute, feel free to add them. However, tidier methods are generally not an appropriate place to implement complex or time consuming calculations.
-* `glance` should always return the same columns in the same order when given an object of a given model class. If a summary metric (such as `AIC`) is not defined in certain circumstances, use `NA`.
+* The `glance` method should always return the same columns in the same order when given an object of a given model class. If a summary metric (such as `AIC`) is not defined in certain circumstances, use `NA`.
 
 ### Implementing the `augment()` Tidier
 
-`augment()` methods add columns to a dataset containing information such as fitted values, residuals or cluster assignments. All columns added to a dataset have a `.` prefix to prevent existing columns from being overwritten. (Currently acceptable column names are given in [the glossary](#glossary).) The `x` and `...` arguments share their meaning with the two functions described above. `augment` methods also optionally accept a `data` argument that is a `data.frame` (or `tibble`) to add observation-level information to, returning a `tibble` object with the same number of rows as `data`. Many `augment()` methods also accept a `newdata()` argument, following the same conventions as the `data()` argument, except with the underlying assumption that the model has not "seen" the data yet. As a result, `newdata()` arguments need not contain the response columns in `data()`. Only one of `data()` or `newdata()` should be supplied. A full glossary of acceptable arguments to `augment()` methods can be found at [the end of this article](#glossary).
+`augment()` methods add columns to a dataset containing information such as fitted values, residuals or cluster assignments. All columns added to a dataset have a `.` prefix to prevent existing columns from being overwritten. (Currently acceptable column names are given in [the glossary](#glossary).) The `x` and `...` arguments share their meaning with the two functions described above. `augment` methods also optionally accept a data argument that is a `data.frame` (or `tibble`) to add observation-level information to, returning a `tibble` object with the same number of rows as data. Many `augment()` methods also accept a `newdata()` argument, following the same conventions as the `data()` argument, except with the underlying assumption that the model has not "seen" the data yet. As a result, `newdata()` arguments need not contain the response columns in `data()`. Only one of `data()` or `newdata()` should be supplied. A full glossary of acceptable arguments to `augment()` methods can be found at [the end of this article](#glossary).
 
-If a `data` argument is not specified, `augment` should try to reconstruct the original data as much as possible from the model object. This may not always be possible, and often it will not be possible to recover columns not used by the model.
+If a data argument is not specified, `augment()` should try to reconstruct the original data as much as possible from the model object. This may not always be possible, and often it will not be possible to recover columns not used by the model.
 
 With this is mind, we can look back to our `trees_model` example. For one, the `model` element inside of the `trees_model` object will allow us to recover the original data:
 
@@ -360,17 +360,17 @@ augment.lm <- function(x, data = x$model, newdata = NULL, ...) {
 ```
 
 Some other things to keep in mind while writing `augment()` methods:
-* The `newdata` argument should default to `NULL`. Users should only ever specify one of `data` or `newdata`. Providing both `data` and `newdata` should result in an error. `newdata` should accept both `data.frame`s and `tibble`s.
-* Data given to the `data` argument must have both the original predictors and the original response. Data given to the `newdata` argument only needs to have the original predictors. This is important because there may be important information associated with training data that is not associated with test data. This means that the `original_data` object in `augment(model, data = original_data)` should provide `.fitted` and `.resid` columns (in most cases), whereas `test_data` in `augment(model, data = test_data)` only needs a `.fitted` column, even if the response is present in `test_data`.
-* If the `data` or `newdata` is specified as a `data.frame` with rownames, `augment` should return them in a column called `.rownames`.
+* The newdata argument should default to `NULL`. Users should only ever specify one of data or newdata. Providing both data and newdata should result in an error. The newdata argument should accept both `data.frame`s and `tibble`s.
+* Data given to the data argument must have both the original predictors and the original response. Data given to the newdata argument only needs to have the original predictors. This is important because there may be important information associated with training data that is not associated with test data. This means that the `original_data` object in `augment(model, data = original_data)` should provide `.fitted` and `.resid` columns (in most cases), whereas `test_data` in `augment(model, data = test_data)` only needs a `.fitted` column, even if the response is present in `test_data`.
+* If the data or newdata is specified as a `data.frame` with rownames, `augment` should return them in a column called `.rownames`.
 * For observations where no fitted values or summaries are available (where there's missing data, for example), return `NA`.
-* *`augment()` should always return as many rows as were in `data` or `newdata`*, depending on which is supplied
+* *The `augment()` method should always return as many rows as were in data or newdata*, depending on which is supplied
 
 {{% note %}} The recommended interface and functionality for `augment()` methods may change soon. {{%/ note %}}
 
 ## Document the new tidiers
 
-The only remaining step is to integrate the new tidiers into the parent package! To do so, just drop the tidiers into a `.R` file inside of the `\(/R\)` folder and document them using roxygen2. If you're unfamiliar with the process of documenting objects, you can read more about it [here](http://r-pkgs.had.co.nz/man.html). Here's an example of how our `tidy.lm()` method might be documented:
+The only remaining step is to integrate the new tidiers into the parent package! To do so, just drop the tidiers into a `.R` file inside of the `/R` folder and document them using roxygen2. If you're unfamiliar with the process of documenting objects, you can read more about it [here](http://r-pkgs.had.co.nz/man.html). Here's an example of how our `tidy.lm()` method might be documented:
 
 
 ```r
@@ -403,7 +403,7 @@ tidy.lm <- function(x, conf.int = FALSE, conf.level = 0.95, ...) {
   # ... the rest of the function definition goes here!
 ```
 
-Once you've documented each of your new tidiers and ran `devtools::document()`, you're done! Congrats on implementing your own broom tidiers for a new model object!
+Once you've documented each of your new tidiers and executed `devtools::document()`, you're done! Congrats on implementing your own broom tidiers for a new model object!
 
 ## Glossaries: Argument and Column Names {#glossary}
 
@@ -1707,27 +1707,27 @@ Please file an issue at [alexpghayes/modeltests](https://github.com/alexpghayes/
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Los_Angeles         
-#>  date     2020-05-22                  
+#>  date     2020-05-25                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version date       lib source        
-#>  broom      * 0.5.6   2020-04-20 [1] CRAN (R 3.6.2)
-#>  dials      * 0.0.4   2019-12-02 [1] CRAN (R 3.6.1)
-#>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
-#>  generics   * 0.0.2   2018-11-29 [1] CRAN (R 3.6.0)
-#>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
-#>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
-#>  parsnip    * 0.0.5   2020-01-07 [1] CRAN (R 3.6.1)
-#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 3.6.1)
-#>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.1)
-#>  rlang        0.4.6   2020-05-02 [1] CRAN (R 3.6.2)
-#>  rsample    * 0.0.5   2019-07-12 [1] CRAN (R 3.6.1)
-#>  tibble     * 3.0.1   2020-04-20 [1] CRAN (R 3.6.2)
-#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
-#>  tidyverse  * 1.3.0   2019-11-21 [1] CRAN (R 3.6.0)
-#>  tune       * 0.0.1   2020-02-11 [1] CRAN (R 3.6.1)
-#>  workflows  * 0.1.1   2020-03-17 [1] CRAN (R 3.6.1)
-#>  yardstick  * 0.0.6   2020-03-17 [1] CRAN (R 3.6.1)
+#>  package    * version     date       lib source                           
+#>  broom      * 0.7.0.9000  2020-05-25 [1] Github (tidymodels/broom@8fc5e57)
+#>  dials      * 0.0.4       2019-12-02 [1] CRAN (R 3.6.1)                   
+#>  dplyr      * 0.8.99.9003 2020-05-25 [1] Github (tidyverse/dplyr@735e6a2) 
+#>  generics   * 0.0.2       2018-11-29 [1] CRAN (R 3.6.0)                   
+#>  ggplot2    * 3.3.0       2020-03-05 [1] CRAN (R 3.6.0)                   
+#>  infer      * 0.5.1       2019-11-19 [1] CRAN (R 3.6.0)                   
+#>  parsnip    * 0.0.5       2020-01-07 [1] CRAN (R 3.6.1)                   
+#>  purrr      * 0.3.4       2020-04-17 [1] CRAN (R 3.6.1)                   
+#>  recipes    * 0.1.12      2020-05-01 [1] CRAN (R 3.6.2)                   
+#>  rlang        0.4.6       2020-05-02 [1] CRAN (R 3.6.2)                   
+#>  rsample    * 0.0.6       2020-03-31 [1] CRAN (R 3.6.2)                   
+#>  tibble     * 3.0.1       2020-04-20 [1] CRAN (R 3.6.2)                   
+#>  tidymodels * 0.1.0       2020-02-16 [1] CRAN (R 3.6.0)                   
+#>  tidyverse  * 1.3.0       2019-11-21 [1] CRAN (R 3.6.0)                   
+#>  tune       * 0.0.1       2020-02-11 [1] CRAN (R 3.6.1)                   
+#>  workflows  * 0.1.1       2020-03-17 [1] CRAN (R 3.6.1)                   
+#>  yardstick  * 0.0.6       2020-03-17 [1] CRAN (R 3.6.1)                   
 #> 
 #> [1] /Users/simonpcouch/Library/R/3.6/library
 #> [2] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
