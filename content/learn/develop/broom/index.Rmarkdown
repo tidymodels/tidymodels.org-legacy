@@ -1,5 +1,5 @@
 ---
-title: "Create your own broom tidiers"
+title: "Create your own broom tidier methods"
 tags: [broom]
 categories: []
 type: learn-subsection
@@ -30,13 +30,13 @@ The broom package provides tools to summarize key information about models in ti
 * `glance()` reports information about the entire model
 * `augment()` adds information about observations to a dataset
 
-Each of the three verbs above are _generic_, in that they do not define a procedure to tidy a given model object, but instead redirect to the relevant _method_ implemented to tidy a specific type of model object. The broom package provides tidier methods for model objects from over 100 modeling packages along with nearly all of the model objects in the stats package that comes with base R. However, for maintainability purposes, the broom package authors now ask that requests for new tidier methods be first directed to the parent package (i.e. the package that supplies the model object) rather than to broom. Tidiers will generally only be integrated into broom in the case that the requester has already asked the maintainers of the model-owning package to implement tidiers in the parent package.
+Each of the three verbs above are _generic_, in that they do not define a procedure to tidy a given model object, but instead redirect to the relevant _method_ implemented to tidy a specific type of model object. The broom package provides methods for model objects from over 100 modeling packages along with nearly all of the model objects in the stats package that comes with base R. However, for maintainability purposes, the broom package authors now ask that requests for new methods be first directed to the parent package (i.e. the package that supplies the model object) rather than to broom. New methods will generally only be integrated into broom in the case that the requester has already asked the maintainers of the model-owning package to implement tidier methods in the parent package.
 
 We'd like to make implementing external tidier methods as painless as possible. The general process for doing so is:
 
 * re-export the tidier generics
 * implement tidying methods
-* document the new tidiers
+* document the new methods
 
 In this article, we'll walk through each of the above steps in detail, giving examples and pointing out helpful functions when possible.
 
@@ -64,7 +64,7 @@ Oftentimes it doesn't make sense to define one or more of these methods for a pa
 
 ## Implement tidying methods
 
-You'll now need to implement specific tidying methods for each of the tidiers you've re-exported in the above step. For each of `tidy()`, `glance()`, and `augment()`, we'll walk through the big picture, an example, and helpful resources.
+You'll now need to implement specific tidying methods for each of the generics you've re-exported in the above step. For each of `tidy()`, `glance()`, and `augment()`, we'll walk through the big picture, an example, and helpful resources.
 
 In this article, we'll use the base R dataset `trees`, giving the tree girth (in inches), height (in feet), and volume (in cubic feet), to fit an example linear model using the base R `lm()` function. 
 
@@ -87,7 +87,7 @@ summary(trees_model)
 
 This output gives some summary statistics on the residuals (which would be described more fully in an `augment()` output), model coefficients (which, in this case, make up the `tidy()` output), and some model-level summarizations such as RSE, $R^2$, etc. (which make up the `glance()` output.)
 
-### Implementing the `tidy()` Tidier
+### Implementing the `tidy()` method
 
 The `tidy(x, ...)` method will return a tibble where each row contains information about a component of the model. The `x` input is a model object, and the dots (`...`) are an optional argument to supply additional information to any calls inside your method. New `tidy()` methods can take additional arguments, but _must_ include the `x` and `...` arguments to be compatible with the generic function. (For a glossary of currently acceptable additional arguments, see [the end of this article](#glossary).)  Examples of model components include regression coefficients (for regression models), clusters (for classification/clustering models), etc. These `tidy()` methods are useful for inspecting model details and creating custom model visualizations.
 
@@ -161,7 +161,7 @@ tidy(model, effects = "random")
   - `conf.level`: The confidence level to use for the interval when `conf.int = TRUE`. Typically defaults to `.95`.
   - `exponentiate`: A logical indicating whether or not model terms should be presented on an exponential scale (typical for logistic regression).
 
-### Implementing the `glance()` Tidier
+### Implementing the `glance()` method
 
 `glance()` returns a one-row tibble providing model-level summarizations (e.g. goodness of fitness measures and related statistics). This is useful to check for model misspecification and to compare many models. Again, the `x` input is a model object, and the `...` is an optional argument to supply additional information to any calls inside your method. New `glance()` methods can also take additional arguments and _must_ include the `x` and `...` arguments. (For a glossary of currently acceptable additional arguments, see [the end of this article](#glossary).)
 
@@ -221,7 +221,7 @@ Some things to keep in mind while writing `glance()` methods:
 * In some cases, you may wish to provide model-level diagnostics not returned by the original object. For example, the above `glance.lm()` calculates `AIC` and `BIC` from the model fit. If these are easy to compute, feel free to add them. However, tidier methods are generally not an appropriate place to implement complex or time consuming calculations.
 * The `glance` method should always return the same columns in the same order when given an object of a given model class. If a summary metric (such as `AIC`) is not defined in certain circumstances, use `NA`.
 
-### Implementing the `augment()` Tidier
+### Implementing the `augment()` method
 
 `augment()` methods add columns to a dataset containing information such as fitted values, residuals or cluster assignments. All columns added to a dataset have a `.` prefix to prevent existing columns from being overwritten. (Currently acceptable column names are given in [the glossary](#glossary).) The `x` and `...` arguments share their meaning with the two functions described above. `augment` methods also optionally accept a `data` argument that is a `data.frame` (or `tibble`) to add observation-level information to, returning a `tibble` object with the same number of rows as `data`. Many `augment()` methods also accept a `newdata` argument, following the same conventions as the `data` argument, except with the underlying assumption that the model has not "seen" the data yet. As a result, `newdata` arguments need not contain the response columns in `data`. Only one of `data` or `newdata` should be supplied. A full glossary of acceptable arguments to `augment()` methods can be found at [the end of this article](#glossary).
 
@@ -278,9 +278,9 @@ Some other things to keep in mind while writing `augment()` methods:
 
 {{% note %}} The recommended interface and functionality for `augment()` methods may change soon. {{%/ note %}}
 
-## Document the new tidiers
+## Document the new methods
 
-The only remaining step is to integrate the new tidiers into the parent package! To do so, just drop the tidiers into a `.R` file inside of the `/R` folder and document them using roxygen2. If you're unfamiliar with the process of documenting objects, you can read more about it [here](http://r-pkgs.had.co.nz/man.html). Here's an example of how our `tidy.lm()` method might be documented:
+The only remaining step is to integrate the new methods into the parent package! To do so, just drop the methods into a `.R` file inside of the `/R` folder and document them using roxygen2. If you're unfamiliar with the process of documenting objects, you can read more about it [here](http://r-pkgs.had.co.nz/man.html). Here's an example of how our `tidy.lm()` method might be documented:
 
 ```{r, eval = FALSE}
 #' Tidy a(n) lm object
@@ -312,7 +312,7 @@ tidy.lm <- function(x, conf.int = FALSE, conf.level = 0.95, ...) {
   # ... the rest of the function definition goes here!
 ```
 
-Once you've documented each of your new tidiers and executed `devtools::document()`, you're done! Congrats on implementing your own broom tidiers for a new model object!
+Once you've documented each of your new methods and executed `devtools::document()`, you're done! Congrats on implementing your own broom tidier methods for a new model object!
 
 ## Glossaries: Argument and Column Names {#glossary}
 
