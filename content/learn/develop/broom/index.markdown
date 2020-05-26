@@ -1710,24 +1710,24 @@ Please file an issue at [alexpghayes/modeltests](https://github.com/alexpghayes/
 #>  date     2020-05-26                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version     date       lib source                            
-#>  broom      * 0.5.6       2020-04-20 [1] CRAN (R 3.6.2)                    
-#>  dials      * 0.0.4       2019-12-02 [1] CRAN (R 3.6.1)                    
-#>  dplyr      * 0.8.99.9003 2020-05-25 [1] Github (tidyverse/dplyr@735e6a2)  
-#>  generics   * 0.0.2       2018-11-29 [1] CRAN (R 3.6.0)                    
-#>  ggplot2    * 3.3.0.9000  2020-05-25 [1] Github (tidyverse/ggplot2@2b03e47)
-#>  infer      * 0.5.1.9000  2020-05-25 [1] local                             
-#>  parsnip    * 0.0.5       2020-01-07 [1] CRAN (R 3.6.1)                    
-#>  purrr      * 0.3.4       2020-04-17 [1] CRAN (R 3.6.1)                    
-#>  recipes    * 0.1.12      2020-05-01 [1] CRAN (R 3.6.2)                    
-#>  rlang        0.4.6       2020-05-02 [1] CRAN (R 3.6.2)                    
-#>  rsample    * 0.0.6       2020-03-31 [1] CRAN (R 3.6.2)                    
-#>  tibble     * 3.0.1       2020-04-20 [1] CRAN (R 3.6.2)                    
-#>  tidymodels * 0.1.0       2020-02-16 [1] CRAN (R 3.6.0)                    
-#>  tidyverse  * 1.3.0       2019-11-21 [1] CRAN (R 3.6.0)                    
-#>  tune       * 0.0.1       2020-02-11 [1] CRAN (R 3.6.1)                    
-#>  workflows  * 0.1.1       2020-03-17 [1] CRAN (R 3.6.1)                    
-#>  yardstick  * 0.0.6       2020-03-17 [1] CRAN (R 3.6.1)                    
+#>  package    * version date       lib source        
+#>  broom      * 0.5.6   2020-04-20 [1] CRAN (R 3.6.2)
+#>  dials      * 0.0.4   2019-12-02 [1] CRAN (R 3.6.1)
+#>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
+#>  generics   * 0.0.2   2018-11-29 [1] CRAN (R 3.6.0)
+#>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
+#>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
+#>  parsnip    * 0.0.5   2020-01-07 [1] CRAN (R 3.6.1)
+#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 3.6.1)
+#>  recipes    * 0.1.12  2020-05-01 [1] CRAN (R 3.6.2)
+#>  rlang        0.4.6   2020-05-02 [1] CRAN (R 3.6.2)
+#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
+#>  tibble     * 3.0.1   2020-04-20 [1] CRAN (R 3.6.2)
+#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
+#>  tidyverse  * 1.3.0   2019-11-21 [1] CRAN (R 3.6.0)
+#>  tune       * 0.0.1   2020-02-11 [1] CRAN (R 3.6.1)
+#>  workflows  * 0.1.1   2020-03-17 [1] CRAN (R 3.6.1)
+#>  yardstick  * 0.0.6   2020-03-17 [1] CRAN (R 3.6.1)
 #> 
 #> [1] /Users/simonpcouch/Library/R/3.6/library
 #> [2] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
