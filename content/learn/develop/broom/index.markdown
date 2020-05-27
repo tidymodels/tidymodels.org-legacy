@@ -36,7 +36,7 @@ In this article, we'll walk through each of the above steps in detail, giving ex
 
 The first step is to re-export the generic functions for `tidy()`, `glance()`, and/or `augment()`. You could do so from `broom` itself, but we've provided an alternative, much lighter dependency called `generics`.
 
-First you'll need to add the [generics](https://github.com/tidymodels/generics) package to `Imports`. We recommend using the [usethis](https://github.com/r-lib/usethis) package for this:
+First you'll need to add the [generics](https://github.com/r-lib/generics) package to `Imports`. We recommend using the [usethis](https://github.com/r-lib/usethis) package for this:
 
 
 ```r
@@ -202,7 +202,7 @@ tidy(model, effects = "random")
 
 ### Implementing the `glance()` method
 
-`glance()` returns a one-row tibble providing model-level summarizations (e.g. goodness of fitness measures and related statistics). This is useful to check for model misspecification and to compare many models. Again, the `x` input is a model object, and the `...` is an optional argument to supply additional information to any calls inside your method. New `glance()` methods can also take additional arguments and _must_ include the `x` and `...` arguments. (For a glossary of currently acceptable additional arguments, see [the end of this article](#glossary).)
+`glance()` returns a one-row tibble providing model-level summarizations (e.g. goodness of fit measures and related statistics). This is useful to check for model misspecification and to compare many models. Again, the `x` input is a model object, and the `...` is an optional argument to supply additional information to any calls inside your method. New `glance()` methods can also take additional arguments and _must_ include the `x` and `...` arguments. (For a glossary of currently acceptable additional arguments, see [the end of this article](#glossary).)
 
 Returning to the `trees_model` example, we could pull out the `\(R^2\)` value with the following code:
 
@@ -405,7 +405,7 @@ tidy.lm <- function(x, conf.int = FALSE, conf.level = 0.95, ...) {
 
 Once you've documented each of your new methods and executed `devtools::document()`, you're done! Congrats on implementing your own broom tidier methods for a new model object!
 
-## Glossaries: Argument and Column Names {#glossary}
+## Glossaries: argument and column names {#glossary}
 
 
 
@@ -1691,7 +1691,7 @@ The currently acceptable column names by tidier method are:
 </tbody>
 </table>
 
-Please file an issue at [alexpghayes/modeltests](https://github.com/alexpghayes/modeltests) to request new arguments/columns to be added to the glossaries.
+The [alexpghayes/modeltests](https://github.com/alexpghayes/modeltests) package provides unit testing infrastructure to check your new tidier methods. Please file an issue there to request new arguments/columns to be added to the glossaries!
 
 ## Session information
 
@@ -1707,7 +1707,7 @@ Please file an issue at [alexpghayes/modeltests](https://github.com/alexpghayes/
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Los_Angeles         
-#>  date     2020-05-26                  
+#>  date     2020-05-27                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
