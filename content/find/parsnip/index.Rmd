@@ -70,7 +70,8 @@ pkg_urls %>%
   mutate(
     package = as.factor(package),
     mode = as.factor(mode)
-  ) %>% 
+  ) %>%
+  rename(`model type`=topic ) %>%
   DT::datatable(
     rownames = FALSE,
     class = 'cell-border stripe',
@@ -100,7 +101,8 @@ args <-
   mutate(model = str_replace(name, "_args", ""),
          args  = map(name, ~envir[[.x]])) %>% 
   unnest(args) %>% 
-  select(model:original)
+  select(model:original) %>%
+  rename(`model type`=model )
 
 DT::datatable(
   args, 
