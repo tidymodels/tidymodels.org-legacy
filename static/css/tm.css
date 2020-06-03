@@ -168,6 +168,16 @@ h4 {
   color: #1a162d90;
 }
 
+
+/* Style code that occurs in headers */
+
+h2 code,
+h3 code,
+h4 code {
+  text-transform: none !important;
+  font-size: 1em !important;
+}
+
 /*---------TOC----------*/
 
 /*TOC header font attributes*/
