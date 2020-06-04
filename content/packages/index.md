@@ -79,9 +79,9 @@ title: Tidymodels packages
   <div class="package">
     <img class="package-image" src="/images/dials.png" alt=""></img>
     <div class="package-info">
-      <h3><a href="https://dials.tidyverse.org/"> dials </a></h3>
+      <h3><a href="https://dials.tidymodels.org/"> dials </a></h3>
       <p>dials creates and manages tuning parameters and parameter grids. 
-      <a href="https://tidymodels.github.io/dials/" aria-hidden="true">Go to package ...</a></p>
+      <a href="https://dials.tidymodels.org/" aria-hidden="true">Go to package ...</a></p>
     </div>
   </div>  
 
