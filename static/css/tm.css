@@ -168,6 +168,16 @@ h4 {
   color: #1a162d90;
 }
 
+
+/* Style code that occurs in headers */
+
+h2 code,
+h3 code,
+h4 code {
+  text-transform: none !important;
+  font-size: 1em !important;
+}
+
 /*---------TOC----------*/
 
 /*TOC header font attributes*/
@@ -1030,3 +1040,29 @@ a.help-link:hover {
 pre {
   white-space: pre-wrap;
 }
+
+
+/* Test Drive Button */
+
+/* Style buttons */
+.test-drive-btn {
+  background-color: #eab0c46b;
+  border: solid 1pt #ca225e47;
+  color: #ca225e;
+  padding: 12px 16px;
+  font-size: 16px;
+  cursor: pointer;
+  margin: 1.5em auto;
+  display: block;
+  border-radius: 0;
+}
+
+/* Darker background on mouse-over */
+.test-drive-btn:hover {
+  background-color: #CA225E;
+  color: #fcfcfc;
+  border: 1pt solid;
+}
+
+
+
