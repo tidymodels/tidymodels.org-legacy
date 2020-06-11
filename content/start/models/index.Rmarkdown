@@ -15,8 +15,9 @@ source(here::here("content/start/common.R"))
 library(readr)
 library(rstanarm)
 library(tidymodels)
+library(broom.mixed)
 
-pkgs <- c("tidymodels", "readr", "rstanarm")
+pkgs <- c("tidymodels", "readr", "rstanarm", "broom.mixed")
 
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
@@ -34,6 +35,7 @@ library(tidymodels)  # for the parsnip package, along with the rest of tidymodel
 
 # Helper packages
 library(readr)       # for importing data
+library(broom.mixed) # for converting bayesian models to tidy tibbles
 ```
 
 
@@ -208,7 +210,7 @@ This kind of Bayesian analysis (like many models) involves randomly generated nu
 To update the parameter table, the `tidy()` method is once again used: 
 
 ```{r tidy-stan}
-tidy(bayes_fit, intervals = TRUE)
+tidy(bayes_fit, conf.int = TRUE)
 ```
 
 A goal of the tidymodels packages is that the **interfaces to common tasks are standardized** (as seen in the `tidy()` results above). The same is true for getting predictions; we can use the same code even though the underlying packages use very different syntax:
@@ -228,7 +230,7 @@ ggplot(bayes_plot_data, aes(x = food_regime)) +
 
 This isn't very different from the non-Bayesian results (except in interpretation). 
 
-{{% note %}} The [parsnip](https://parsnip.tidymodels.org/) package can work with many model types, engines and arguments. Check out [tidymodels.org/find/parsnip](https://www.tidymodels.org/find/parsnip/) to see what is available. {{%/ note %}}
+{{% note %}} The [parsnip](https://parsnip.tidymodels.org/) package can work with many model types, engines, and arguments. Check out [tidymodels.org/find/parsnip](https://www.tidymodels.org/find/parsnip/) to see what is available. {{%/ note %}}
 
 ## Why does it work that way? {#why}
 
