@@ -17,7 +17,7 @@ description: |
 
 How do you create a statistical model using tidymodels? In this article, we will walk you through the steps. We start with data for modeling, learn how to specify and train models with different engines using the [parsnip package](https://tidymodels.github.io/parsnip/), and understand why these functions are designed this way.
 
-To use code in this article,  you will need to install the following packages: readr, rstanarm, and tidymodels.
+To use code in this article,  you will need to install the following packages: broom.mixed, readr, rstanarm, and tidymodels.
 
 
 ```r
@@ -25,6 +25,7 @@ library(tidymodels)  # for the parsnip package, along with the rest of tidymodel
 
 # Helper packages
 library(readr)       # for importing data
+library(broom.mixed) # for converting bayesian models to tidy tibbles
 ```
 
 
@@ -275,7 +276,7 @@ bayes_fit <-
 print(bayes_fit, digits = 5)
 #> parsnip model object
 #> 
-#> Fit time:  1.5s 
+#> Fit time:  2.3s 
 #> stan_glm
 #>  family:       gaussian [identity]
 #>  formula:      width ~ initial_volume * food_regime
@@ -305,9 +306,9 @@ To update the parameter table, the `tidy()` method is once again used:
 
 
 ```r
-tidy(bayes_fit, intervals = TRUE)
+tidy(bayes_fit, conf.int = TRUE)
 #> # A tibble: 6 x 5
-#>   term                            estimate std.error     lower     upper
+#>   term                            estimate std.error  conf.low conf.high
 #>   <chr>                              <dbl>     <dbl>     <dbl>     <dbl>
 #> 1 (Intercept)                     0.0345    0.00883   0.0200    0.0490  
 #> 2 initial_volume                  0.00150   0.000369  0.000895  0.00212 
@@ -387,14 +388,14 @@ ggplot(urchins,
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
 #>  version  R version 4.0.0 (2020-04-24)
-#>  os       macOS Mojave 10.14.6        
-#>  system   x86_64, darwin17.0          
+#>  os       macOS Catalina 10.15.4      
+#>  system   x86_64, darwin15.6.0        
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/New_York            
-#>  date     2020-05-19                  
+#>  tz       America/Los_Angeles         
+#>  date     2020-06-11                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
