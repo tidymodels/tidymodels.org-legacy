@@ -169,22 +169,12 @@ autoplot(search_res, type = "performance")
 
 There are many parameter combinations have roughly equivalent results. 
 
-How did the parameters change over iterations? Since two of the parameters are usually treated on the log scale, we can use `mutate()` to transform them, and then construct a plot using ggplot2:  
+How did the parameters change over iterations? 
 
 
 ```{r bo-param-plot}
-library(tidyr)
-
-collect_metrics(search_res) %>%
-  select(-.metric,-.estimator,-mean,-n,-std_err) %>%
-  mutate(cost = log10(cost), 
-         rbf_sigma = log10(rbf_sigma)) %>%
-  pivot_longer(cols = c(-.iter),
-               names_to = "parameter",
-               values_to = "value") %>%
-  ggplot(aes(x = .iter, y = value)) +
-  geom_point() +
-  facet_wrap( ~ parameter, scales = "free_y")
+autoplot(search_res, type = "parameters") + 
+  labs(x = "Iterations", y = NULL)
 ```
 
 
