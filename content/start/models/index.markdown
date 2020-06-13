@@ -17,7 +17,7 @@ description: |
 
 How do you create a statistical model using tidymodels? In this article, we will walk you through the steps. We start with data for modeling, learn how to specify and train models with different engines using the [parsnip package](https://tidymodels.github.io/parsnip/), and understand why these functions are designed this way.
 
-To use code in this article,  you will need to install the following packages: readr, rstanarm, and tidymodels.
+To use code in this article,  you will need to install the following packages: broom.mixed, readr, rstanarm, and tidymodels.
 
 
 ```r
@@ -25,6 +25,7 @@ library(tidymodels)  # for the parsnip package, along with the rest of tidymodel
 
 # Helper packages
 library(readr)       # for importing data
+library(broom.mixed) # for converting bayesian models to tidy tibbles
 ```
 
 
@@ -148,7 +149,7 @@ lm_fit <-
 lm_fit
 #> parsnip model object
 #> 
-#> Fit time:  3ms 
+#> Fit time:  2ms 
 #> 
 #> Call:
 #> stats::lm(formula = formula, data = data)
@@ -305,9 +306,9 @@ To update the parameter table, the `tidy()` method is once again used:
 
 
 ```r
-tidy(bayes_fit, intervals = TRUE)
+tidy(bayes_fit, conf.int = TRUE)
 #> # A tibble: 6 x 5
-#>   term                            estimate std.error     lower     upper
+#>   term                            estimate std.error  conf.low conf.high
 #>   <chr>                              <dbl>     <dbl>     <dbl>     <dbl>
 #> 1 (Intercept)                     0.0345    0.00883   0.0200    0.0490  
 #> 2 initial_volume                  0.00150   0.000369  0.000895  0.00212 
@@ -352,6 +353,7 @@ If you are familiar with the tidyverse, you may have noticed that our modeling c
 urchins %>% 
   group_by(food_regime) %>% 
   summarize(med_vol = median(initial_volume))
+#> `summarise()` ungrouping output (override with `.groups` argument)
 #> # A tibble: 3 x 2
 #>   food_regime med_vol
 #>   <fct>         <dbl>
@@ -393,28 +395,29 @@ ggplot(urchins,
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/New_York            
-#>  date     2020-05-19                  
+#>  tz       America/Denver              
+#>  date     2020-06-11                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version date       lib source        
-#>  broom      * 0.5.6   2020-04-20 [1] CRAN (R 4.0.0)
-#>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 4.0.0)
-#>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 4.0.0)
-#>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 4.0.0)
-#>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 4.0.0)
-#>  parsnip    * 0.1.1   2020-05-06 [1] CRAN (R 4.0.0)
-#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
-#>  readr      * 1.3.1   2018-12-21 [1] CRAN (R 4.0.0)
-#>  recipes    * 0.1.12  2020-05-01 [1] CRAN (R 4.0.0)
-#>  rlang        0.4.6   2020-05-02 [1] CRAN (R 4.0.0)
-#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 4.0.0)
-#>  rstanarm   * 2.19.3  2020-02-11 [1] CRAN (R 4.0.0)
-#>  tibble     * 3.0.1   2020-04-20 [1] CRAN (R 4.0.0)
-#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 4.0.0)
-#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 4.0.0)
-#>  workflows  * 0.1.1   2020-03-17 [1] CRAN (R 4.0.0)
-#>  yardstick  * 0.0.6   2020-03-17 [1] CRAN (R 4.0.0)
+#>  package     * version date       lib source        
+#>  broom       * 0.5.6   2020-04-20 [1] CRAN (R 4.0.0)
+#>  broom.mixed * 0.2.6   2020-05-17 [1] CRAN (R 4.0.0)
+#>  dials       * 0.0.7   2020-06-10 [1] CRAN (R 4.0.0)
+#>  dplyr       * 1.0.0   2020-05-29 [1] CRAN (R 4.0.0)
+#>  ggplot2     * 3.3.1   2020-05-28 [1] CRAN (R 4.0.0)
+#>  infer       * 0.5.1   2019-11-19 [1] CRAN (R 4.0.0)
+#>  parsnip     * 0.1.1   2020-05-06 [1] CRAN (R 4.0.0)
+#>  purrr       * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
+#>  readr       * 1.3.1   2018-12-21 [1] CRAN (R 4.0.0)
+#>  recipes     * 0.1.12  2020-05-01 [1] CRAN (R 4.0.0)
+#>  rlang         0.4.6   2020-05-02 [1] CRAN (R 4.0.0)
+#>  rsample     * 0.0.7   2020-06-04 [1] CRAN (R 4.0.0)
+#>  rstanarm    * 2.19.3  2020-02-11 [1] CRAN (R 4.0.0)
+#>  tibble      * 3.0.1   2020-04-20 [1] CRAN (R 4.0.0)
+#>  tidymodels  * 0.1.0   2020-02-16 [1] CRAN (R 4.0.0)
+#>  tune        * 0.1.0   2020-04-02 [1] CRAN (R 4.0.0)
+#>  workflows   * 0.1.1   2020-03-17 [1] CRAN (R 4.0.0)
+#>  yardstick   * 0.0.6   2020-03-17 [1] CRAN (R 4.0.0)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
 ```
