@@ -189,7 +189,7 @@ rf_fit
 #> Ranger result
 #> 
 #> Call:
-#>  ranger::ranger(formula = formula, data = data, num.trees = ~1000,      num.threads = 1, verbose = FALSE, seed = sample.int(10^5,          1), probability = TRUE) 
+#>  ranger::ranger(formula = class ~ ., data = data, num.trees = ~1000,      num.threads = 1, verbose = FALSE, seed = sample.int(10^5,          1), probability = TRUE) 
 #> 
 #> Type:                             Probability estimation 
 #> Number of trees:                  1000 
@@ -392,7 +392,7 @@ folds
 #> #  10-fold cross-validation 
 #> # A tibble: 10 x 2
 #>    splits             id    
-#>    <named list>       <chr> 
+#>    <list>             <chr> 
 #>  1 <split [1.4K/152]> Fold01
 #>  2 <split [1.4K/152]> Fold02
 #>  3 <split [1.4K/152]> Fold03
@@ -431,10 +431,11 @@ rf_fit_rs <-
 
 ```r
 rf_fit_rs
-#> #  10-fold cross-validation 
+#> # Resampling results
+#> # 10-fold cross-validation 
 #> # A tibble: 10 x 4
 #>    splits             id     .metrics         .notes          
-#>  * <list>             <chr>  <list>           <list>          
+#>    <list>             <chr>  <list>           <list>          
 #>  1 <split [1.4K/152]> Fold01 <tibble [2 × 3]> <tibble [0 × 1]>
 #>  2 <split [1.4K/152]> Fold02 <tibble [2 × 3]> <tibble [0 × 1]>
 #>  3 <split [1.4K/152]> Fold03 <tibble [2 × 3]> <tibble [0 × 1]>
@@ -487,35 +488,35 @@ The performance metrics from the test set are much closer to the performance met
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.2 (2019-12-12)
+#>  version  R version 4.0.2 (2020-06-22)
 #>  os       macOS Mojave 10.14.6        
-#>  system   x86_64, darwin15.6.0        
+#>  system   x86_64, darwin17.0          
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-04-21                  
+#>  date     2020-07-16                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
-#>  broom      * 0.5.5   2020-02-29 [1] CRAN (R 3.6.0)
-#>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 3.6.2)
-#>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
-#>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
-#>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
-#>  modeldata  * 0.0.1   2019-12-06 [1] CRAN (R 3.6.0)
-#>  parsnip    * 0.1.0   2020-04-09 [1] CRAN (R 3.6.2)
-#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 3.6.2)
-#>  ranger     * 0.12.1  2020-01-10 [1] CRAN (R 3.6.0)
-#>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
-#>  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
-#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
-#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.2)
-#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
-#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
-#>  workflows  * 0.1.1   2020-03-17 [1] CRAN (R 3.6.0)
-#>  yardstick  * 0.0.6   2020-03-17 [1] CRAN (R 3.6.0)
+#>  broom      * 0.7.0   2020-07-09 [1] CRAN (R 4.0.0)
+#>  dials      * 0.0.8   2020-07-08 [1] CRAN (R 4.0.2)
+#>  dplyr      * 1.0.0   2020-05-29 [1] CRAN (R 4.0.0)
+#>  ggplot2    * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
+#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
+#>  modeldata  * 0.0.2   2020-06-22 [1] CRAN (R 4.0.0)
+#>  parsnip    * 0.1.2   2020-07-03 [1] CRAN (R 4.0.1)
+#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
+#>  ranger     * 0.12.1  2020-01-10 [1] CRAN (R 4.0.0)
+#>  recipes    * 0.1.13  2020-06-23 [1] CRAN (R 4.0.0)
+#>  rlang        0.4.7   2020-07-09 [1] CRAN (R 4.0.0)
+#>  rsample    * 0.0.7   2020-06-04 [1] CRAN (R 4.0.0)
+#>  tibble     * 3.0.3   2020-07-10 [1] CRAN (R 4.0.2)
+#>  tidymodels * 0.1.1   2020-07-14 [1] CRAN (R 4.0.0)
+#>  tune       * 0.1.1   2020-07-08 [1] CRAN (R 4.0.2)
+#>  workflows  * 0.1.2   2020-07-07 [1] CRAN (R 4.0.2)
+#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.0)
 #> 
-#> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
+#> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
 ```
