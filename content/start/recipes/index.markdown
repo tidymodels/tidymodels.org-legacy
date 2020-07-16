@@ -91,8 +91,8 @@ First, notice that the variable we created called `arr_delay` is a factor variab
 
 ```r
 glimpse(flight_data)
-#> Observations: 325,819
-#> Variables: 10
+#> Rows: 325,819
+#> Columns: 10
 #> $ dep_time  <int> 517, 533, 542, 544, 554, 554, 555, 557, 557, 558, 558, 558,…
 #> $ flight    <int> 1545, 1714, 1141, 725, 461, 1696, 507, 5708, 79, 301, 49, 7…
 #> $ origin    <fct> EWR, LGA, JFK, JFK, LGA, EWR, EWR, LGA, JFK, LGA, JFK, JFK,…
@@ -439,11 +439,11 @@ flights_wflow <-
   add_model(lr_mod) %>% 
   add_recipe(flights_rec)
 flights_wflow
-#> ══ Workflow ═════════════════════════════════════════════════════════════
+#> ══ Workflow ══════════════════════════════════════════════════════════
 #> Preprocessor: Recipe
 #> Model: logistic_reg()
 #> 
-#> ── Preprocessor ─────────────────────────────────────────────────────────
+#> ── Preprocessor ──────────────────────────────────────────────────────
 #> 5 Recipe Steps
 #> 
 #> ● step_date()
@@ -452,7 +452,7 @@ flights_wflow
 #> ● step_dummy()
 #> ● step_zv()
 #> 
-#> ── Model ────────────────────────────────────────────────────────────────
+#> ── Model ─────────────────────────────────────────────────────────────
 #> Logistic Regression Model Specification (classification)
 #> 
 #> Computational engine: glm
@@ -510,7 +510,7 @@ predict(flights_fit, test_data)
 #> 3 on_time    
 #> 4 on_time    
 #> 5 on_time    
-#> # … with 8.145e+04 more rows
+#> # … with 81,449 more rows
 ```
 
 Because our outcome variable here is a factor, the output from `predict()` returns the predicted class: `late` versus `on_time`. But, let's say we want the predicted class probabilities for each flight instead. To return those, we can specify `type = "prob"` when we use `predict()`. We'll also bind the output with some variables from the test data and save them together:
@@ -531,7 +531,7 @@ flights_pred
 #> 3     0.0481         0.952 on_time   2013-01-01 06:00:00    301
 #> 4     0.0325         0.967 on_time   2013-01-01 06:00:00     49
 #> 5     0.0711         0.929 on_time   2013-01-01 06:00:00   1187
-#> # … with 8.145e+04 more rows
+#> # … with 81,449 more rows
 ```
 
 Now that we have a tibble with our predicted class probabilities, how will we evaluate the performance of our workflow? We can see from these first few rows that our model predicted these 5 on time flights correctly because the values of `.pred_on_time` are *p* > .50. But we also know that we have 81,454 rows total to predict. We would like to calculate a metric that tells how well our model predicted late arrivals, compared to the true status of our outcome variable, `arr_delay`.
@@ -572,35 +572,35 @@ Not too bad! We leave it to the reader to test out this workflow [*without*](htt
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.2 (2019-12-12)
+#>  version  R version 4.0.2 (2020-06-22)
 #>  os       macOS Mojave 10.14.6        
-#>  system   x86_64, darwin15.6.0        
+#>  system   x86_64, darwin17.0          
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-04-20                  
+#>  date     2020-07-16                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package      * version date       lib source        
-#>  broom        * 0.5.5   2020-02-29 [1] CRAN (R 3.6.0)
-#>  dials        * 0.0.6   2020-04-03 [1] CRAN (R 3.6.2)
-#>  dplyr        * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
-#>  ggplot2      * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
-#>  infer        * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
-#>  nycflights13 * 1.0.1   2019-09-16 [1] CRAN (R 3.6.0)
-#>  parsnip      * 0.1.0   2020-04-09 [1] CRAN (R 3.6.2)
-#>  purrr        * 0.3.4   2020-04-17 [1] CRAN (R 3.6.2)
-#>  recipes      * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
-#>  rlang          0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
-#>  rsample      * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
-#>  skimr        * 2.1.1   2020-04-16 [1] CRAN (R 3.6.2)
-#>  tibble       * 2.1.3   2019-06-06 [1] CRAN (R 3.6.2)
-#>  tidymodels   * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
-#>  tune         * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
-#>  workflows    * 0.1.1   2020-03-17 [1] CRAN (R 3.6.0)
-#>  yardstick    * 0.0.6   2020-03-17 [1] CRAN (R 3.6.0)
+#>  broom        * 0.7.0   2020-07-09 [1] CRAN (R 4.0.0)
+#>  dials        * 0.0.8   2020-07-08 [1] CRAN (R 4.0.2)
+#>  dplyr        * 1.0.0   2020-05-29 [1] CRAN (R 4.0.0)
+#>  ggplot2      * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
+#>  infer        * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
+#>  nycflights13 * 1.0.1   2019-09-16 [1] CRAN (R 4.0.0)
+#>  parsnip      * 0.1.2   2020-07-03 [1] CRAN (R 4.0.1)
+#>  purrr        * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
+#>  recipes      * 0.1.13  2020-06-23 [1] CRAN (R 4.0.0)
+#>  rlang          0.4.7   2020-07-09 [1] CRAN (R 4.0.0)
+#>  rsample      * 0.0.7   2020-06-04 [1] CRAN (R 4.0.0)
+#>  skimr        * 2.1.2   2020-07-06 [1] CRAN (R 4.0.2)
+#>  tibble       * 3.0.3   2020-07-10 [1] CRAN (R 4.0.2)
+#>  tidymodels   * 0.1.1   2020-07-14 [1] CRAN (R 4.0.0)
+#>  tune         * 0.1.1   2020-07-08 [1] CRAN (R 4.0.2)
+#>  workflows    * 0.1.2   2020-07-07 [1] CRAN (R 4.0.2)
+#>  yardstick    * 0.0.7   2020-07-13 [1] CRAN (R 4.0.0)
 #> 
-#> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
+#> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
 ```

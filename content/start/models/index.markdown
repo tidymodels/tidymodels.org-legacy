@@ -149,10 +149,10 @@ lm_fit <-
 lm_fit
 #> parsnip model object
 #> 
-#> Fit time:  2ms 
+#> Fit time:  3ms 
 #> 
 #> Call:
-#> stats::lm(formula = formula, data = data)
+#> stats::lm(formula = width ~ initial_volume * food_regime, data = data)
 #> 
 #> Coefficients:
 #>                    (Intercept)                  initial_volume  
@@ -276,7 +276,7 @@ bayes_fit <-
 print(bayes_fit, digits = 5)
 #> parsnip model object
 #> 
-#> Fit time:  1.5s 
+#> Fit time:  1s 
 #> stan_glm
 #>  family:       gaussian [identity]
 #>  formula:      width ~ initial_volume * food_regime
@@ -388,7 +388,7 @@ ggplot(urchins,
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 4.0.0 (2020-04-24)
+#>  version  R version 4.0.2 (2020-06-22)
 #>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin17.0          
 #>  ui       X11                         
@@ -396,28 +396,28 @@ ggplot(urchins,
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-06-11                  
+#>  date     2020-07-16                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package     * version date       lib source        
-#>  broom       * 0.5.6   2020-04-20 [1] CRAN (R 4.0.0)
+#>  broom       * 0.7.0   2020-07-09 [1] CRAN (R 4.0.0)
 #>  broom.mixed * 0.2.6   2020-05-17 [1] CRAN (R 4.0.0)
-#>  dials       * 0.0.7   2020-06-10 [1] CRAN (R 4.0.0)
+#>  dials       * 0.0.8   2020-07-08 [1] CRAN (R 4.0.2)
 #>  dplyr       * 1.0.0   2020-05-29 [1] CRAN (R 4.0.0)
-#>  ggplot2     * 3.3.1   2020-05-28 [1] CRAN (R 4.0.0)
-#>  infer       * 0.5.1   2019-11-19 [1] CRAN (R 4.0.0)
-#>  parsnip     * 0.1.1   2020-05-06 [1] CRAN (R 4.0.0)
+#>  ggplot2     * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
+#>  infer       * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
+#>  parsnip     * 0.1.2   2020-07-03 [1] CRAN (R 4.0.1)
 #>  purrr       * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
 #>  readr       * 1.3.1   2018-12-21 [1] CRAN (R 4.0.0)
-#>  recipes     * 0.1.12  2020-05-01 [1] CRAN (R 4.0.0)
-#>  rlang         0.4.6   2020-05-02 [1] CRAN (R 4.0.0)
+#>  recipes     * 0.1.13  2020-06-23 [1] CRAN (R 4.0.0)
+#>  rlang         0.4.7   2020-07-09 [1] CRAN (R 4.0.0)
 #>  rsample     * 0.0.7   2020-06-04 [1] CRAN (R 4.0.0)
 #>  rstanarm    * 2.19.3  2020-02-11 [1] CRAN (R 4.0.0)
-#>  tibble      * 3.0.1   2020-04-20 [1] CRAN (R 4.0.0)
-#>  tidymodels  * 0.1.0   2020-02-16 [1] CRAN (R 4.0.0)
-#>  tune        * 0.1.0   2020-04-02 [1] CRAN (R 4.0.0)
-#>  workflows   * 0.1.1   2020-03-17 [1] CRAN (R 4.0.0)
-#>  yardstick   * 0.0.6   2020-03-17 [1] CRAN (R 4.0.0)
+#>  tibble      * 3.0.3   2020-07-10 [1] CRAN (R 4.0.2)
+#>  tidymodels  * 0.1.1   2020-07-14 [1] CRAN (R 4.0.0)
+#>  tune        * 0.1.1   2020-07-08 [1] CRAN (R 4.0.2)
+#>  workflows   * 0.1.2   2020-07-07 [1] CRAN (R 4.0.2)
+#>  yardstick   * 0.0.7   2020-07-13 [1] CRAN (R 4.0.0)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
 ```
