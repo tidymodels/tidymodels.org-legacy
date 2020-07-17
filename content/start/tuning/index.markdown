@@ -181,20 +181,21 @@ tree_res <-
     )
 
 tree_res
-#> #  10-fold cross-validation 
+#> # Tuning results
+#> # 10-fold cross-validation 
 #> # A tibble: 10 x 4
 #>    splits             id     .metrics          .notes          
-#>  * <list>             <chr>  <list>            <list>          
-#>  1 <split [1.4K/152]> Fold01 <tibble [50 × 5]> <tibble [0 × 1]>
-#>  2 <split [1.4K/152]> Fold02 <tibble [50 × 5]> <tibble [0 × 1]>
-#>  3 <split [1.4K/152]> Fold03 <tibble [50 × 5]> <tibble [0 × 1]>
-#>  4 <split [1.4K/152]> Fold04 <tibble [50 × 5]> <tibble [0 × 1]>
-#>  5 <split [1.4K/152]> Fold05 <tibble [50 × 5]> <tibble [0 × 1]>
-#>  6 <split [1.4K/151]> Fold06 <tibble [50 × 5]> <tibble [0 × 1]>
-#>  7 <split [1.4K/151]> Fold07 <tibble [50 × 5]> <tibble [0 × 1]>
-#>  8 <split [1.4K/151]> Fold08 <tibble [50 × 5]> <tibble [0 × 1]>
-#>  9 <split [1.4K/151]> Fold09 <tibble [50 × 5]> <tibble [0 × 1]>
-#> 10 <split [1.4K/151]> Fold10 <tibble [50 × 5]> <tibble [0 × 1]>
+#>    <list>             <chr>  <list>            <list>          
+#>  1 <split [1.4K/152]> Fold01 <tibble [50 × 6]> <tibble [0 × 1]>
+#>  2 <split [1.4K/152]> Fold02 <tibble [50 × 6]> <tibble [0 × 1]>
+#>  3 <split [1.4K/152]> Fold03 <tibble [50 × 6]> <tibble [0 × 1]>
+#>  4 <split [1.4K/152]> Fold04 <tibble [50 × 6]> <tibble [0 × 1]>
+#>  5 <split [1.4K/152]> Fold05 <tibble [50 × 6]> <tibble [0 × 1]>
+#>  6 <split [1.4K/151]> Fold06 <tibble [50 × 6]> <tibble [0 × 1]>
+#>  7 <split [1.4K/151]> Fold07 <tibble [50 × 6]> <tibble [0 × 1]>
+#>  8 <split [1.4K/151]> Fold08 <tibble [50 × 6]> <tibble [0 × 1]>
+#>  9 <split [1.4K/151]> Fold09 <tibble [50 × 6]> <tibble [0 × 1]>
+#> 10 <split [1.4K/151]> Fold10 <tibble [50 × 6]> <tibble [0 × 1]>
 ```
 
 Once we have our tuning results, we can both explore them through visualization and then select the best result. The function `collect_metrics()` gives us a tidy tibble with all the results. We had 25 candidate models and two metrics, `accuracy` and `roc_auc`, and we get a row for each `.metric` and model. 
@@ -203,19 +204,19 @@ Once we have our tuning results, we can both explore them through visualization 
 ```r
 tree_res %>% 
   collect_metrics()
-#> # A tibble: 50 x 7
-#>    cost_complexity tree_depth .metric  .estimator  mean     n std_err
-#>              <dbl>      <int> <chr>    <chr>      <dbl> <int>   <dbl>
-#>  1    0.0000000001          1 accuracy binary     0.734    10 0.00877
-#>  2    0.0000000001          1 roc_auc  binary     0.772    10 0.00617
-#>  3    0.0000000001          4 accuracy binary     0.804    10 0.00696
-#>  4    0.0000000001          4 roc_auc  binary     0.865    10 0.00965
-#>  5    0.0000000001          8 accuracy binary     0.792    10 0.0116 
-#>  6    0.0000000001          8 roc_auc  binary     0.859    10 0.0104 
-#>  7    0.0000000001         11 accuracy binary     0.787    10 0.0134 
-#>  8    0.0000000001         11 roc_auc  binary     0.854    10 0.0118 
-#>  9    0.0000000001         15 accuracy binary     0.783    10 0.0129 
-#> 10    0.0000000001         15 roc_auc  binary     0.856    10 0.0116 
+#> # A tibble: 50 x 8
+#>    cost_complexity tree_depth .metric  .estimator  mean     n std_err .config
+#>              <dbl>      <int> <chr>    <chr>      <dbl> <int>   <dbl> <chr>  
+#>  1    0.0000000001          1 accuracy binary     0.734    10 0.00877 Model01
+#>  2    0.0000000001          1 roc_auc  binary     0.772    10 0.00617 Model01
+#>  3    0.0000000178          1 accuracy binary     0.734    10 0.00877 Model02
+#>  4    0.0000000178          1 roc_auc  binary     0.772    10 0.00617 Model02
+#>  5    0.00000316            1 accuracy binary     0.734    10 0.00877 Model03
+#>  6    0.00000316            1 roc_auc  binary     0.772    10 0.00617 Model03
+#>  7    0.000562              1 accuracy binary     0.734    10 0.00877 Model04
+#>  8    0.000562              1 roc_auc  binary     0.772    10 0.00617 Model04
+#>  9    0.1                   1 accuracy binary     0.734    10 0.00877 Model05
+#> 10    0.1                   1 roc_auc  binary     0.772    10 0.00617 Model05
 #> # … with 40 more rows
 ```
 
@@ -242,14 +243,14 @@ We can see that our "stubbiest" tree, with a depth of 1, is the worst model acco
 ```r
 tree_res %>%
   show_best("roc_auc")
-#> # A tibble: 5 x 7
-#>   cost_complexity tree_depth .metric .estimator  mean     n std_err
-#>             <dbl>      <int> <chr>   <chr>      <dbl> <int>   <dbl>
-#> 1    0.0000000001          4 roc_auc binary     0.865    10 0.00965
-#> 2    0.0000000178          4 roc_auc binary     0.865    10 0.00965
-#> 3    0.00000316            4 roc_auc binary     0.865    10 0.00965
-#> 4    0.000562              4 roc_auc binary     0.865    10 0.00965
-#> 5    0.0000000001          8 roc_auc binary     0.859    10 0.0104
+#> # A tibble: 5 x 8
+#>   cost_complexity tree_depth .metric .estimator  mean     n std_err .config
+#>             <dbl>      <int> <chr>   <chr>      <dbl> <int>   <dbl> <chr>  
+#> 1    0.0000000001          4 roc_auc binary     0.865    10 0.00965 Model06
+#> 2    0.0000000178          4 roc_auc binary     0.865    10 0.00965 Model07
+#> 3    0.00000316            4 roc_auc binary     0.865    10 0.00965 Model08
+#> 4    0.000562              4 roc_auc binary     0.865    10 0.00965 Model09
+#> 5    0.0000000001          8 roc_auc binary     0.859    10 0.0104  Model11
 ```
 
 We can also use the [`select_best()`](https://tidymodels.github.io/tune/reference/show_best.html) function to pull out the single set of hyperparameter values for our best decision tree model:
@@ -260,10 +261,10 @@ best_tree <- tree_res %>%
   select_best("roc_auc")
 
 best_tree
-#> # A tibble: 1 x 2
-#>   cost_complexity tree_depth
-#>             <dbl>      <int>
-#> 1    0.0000000001          4
+#> # A tibble: 1 x 3
+#>   cost_complexity tree_depth .config
+#>             <dbl>      <int> <chr>  
+#> 1    0.0000000001          4 Model06
 ```
 
 These are the values for `tree_depth` and `cost_complexity` that maximize AUC in this data set of cell images. 
@@ -280,14 +281,14 @@ final_wf <-
   finalize_workflow(best_tree)
 
 final_wf
-#> ══ Workflow ════════════════════════════════════════════════════════
+#> ══ Workflow ══════════════════════════════════════════════════════════
 #> Preprocessor: Formula
 #> Model: decision_tree()
 #> 
-#> ── Preprocessor ────────────────────────────────────────────────────
+#> ── Preprocessor ──────────────────────────────────────────────────────
 #> class ~ .
 #> 
-#> ── Model ───────────────────────────────────────────────────────────
+#> ── Model ─────────────────────────────────────────────────────────────
 #> Decision Tree Model Specification (classification)
 #> 
 #> Main Arguments:
@@ -310,14 +311,14 @@ final_tree <-
   fit(data = cell_train) 
 
 final_tree
-#> ══ Workflow [trained] ══════════════════════════════════════════════
+#> ══ Workflow [trained] ════════════════════════════════════════════════
 #> Preprocessor: Formula
 #> Model: decision_tree()
 #> 
-#> ── Preprocessor ────────────────────────────────────────────────────
+#> ── Preprocessor ──────────────────────────────────────────────────────
 #> class ~ .
 #> 
-#> ── Model ───────────────────────────────────────────────────────────
+#> ── Model ─────────────────────────────────────────────────────────────
 #> n= 1515 
 #> 
 #> node), split, n, loss, yval, (yprob)
@@ -409,36 +410,36 @@ You could tune the other hyperparameter we didn't use here, `min_n`, which sets 
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.2 (2019-12-12)
+#>  version  R version 4.0.2 (2020-06-22)
 #>  os       macOS Mojave 10.14.6        
-#>  system   x86_64, darwin15.6.0        
+#>  system   x86_64, darwin17.0          
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-04-21                  
+#>  date     2020-07-16                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
-#>  broom      * 0.5.5   2020-02-29 [1] CRAN (R 3.6.0)
-#>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 3.6.2)
-#>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
-#>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
-#>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
-#>  modeldata  * 0.0.1   2019-12-06 [1] CRAN (R 3.6.0)
-#>  parsnip    * 0.1.0   2020-04-09 [1] CRAN (R 3.6.2)
-#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 3.6.2)
-#>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
-#>  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
-#>  rpart      * 4.1-15  2019-04-12 [1] CRAN (R 3.6.2)
-#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
-#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.2)
-#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
-#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
-#>  vip        * 0.2.2   2020-04-06 [1] CRAN (R 3.6.2)
-#>  workflows  * 0.1.1   2020-03-17 [1] CRAN (R 3.6.0)
-#>  yardstick  * 0.0.6   2020-03-17 [1] CRAN (R 3.6.0)
+#>  broom      * 0.7.0   2020-07-09 [1] CRAN (R 4.0.0)
+#>  dials      * 0.0.8   2020-07-08 [1] CRAN (R 4.0.2)
+#>  dplyr      * 1.0.0   2020-05-29 [1] CRAN (R 4.0.0)
+#>  ggplot2    * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
+#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
+#>  modeldata  * 0.0.2   2020-06-22 [1] CRAN (R 4.0.0)
+#>  parsnip    * 0.1.2   2020-07-03 [1] CRAN (R 4.0.1)
+#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
+#>  recipes    * 0.1.13  2020-06-23 [1] CRAN (R 4.0.0)
+#>  rlang        0.4.7   2020-07-09 [1] CRAN (R 4.0.0)
+#>  rpart      * 4.1-15  2019-04-12 [1] CRAN (R 4.0.2)
+#>  rsample    * 0.0.7   2020-06-04 [1] CRAN (R 4.0.0)
+#>  tibble     * 3.0.3   2020-07-10 [1] CRAN (R 4.0.2)
+#>  tidymodels * 0.1.1   2020-07-14 [1] CRAN (R 4.0.0)
+#>  tune       * 0.1.1   2020-07-08 [1] CRAN (R 4.0.2)
+#>  vip        * 0.2.2   2020-04-06 [1] CRAN (R 4.0.0)
+#>  workflows  * 0.1.2   2020-07-07 [1] CRAN (R 4.0.2)
+#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.0)
 #> 
-#> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
+#> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
 ```
