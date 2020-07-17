@@ -13,7 +13,6 @@ source(here::here("content/start/common.R"))
 
 ```{r load, include = FALSE, message = FALSE, warning = FALSE}
 library(readr)
-library(tidyr)
 library(vip)
 library(tidymodels)
 pkgs <- c("tidymodels", "readr", "glmnet", "ranger", "vip")
@@ -233,7 +232,7 @@ top_models <-
 top_models
 ```
 
-```{r top-cand-mods, include = FALSE}
+```{r top-cand-mods, echo = FALSE}
 # Adding a candidate model ID variable
 top_models <- 
   top_models %>% 
@@ -242,7 +241,7 @@ top_models <-
 top_pen <- 
   lr_res %>% 
   select_best("roc_auc") %>% 
-  pull()
+  pull(penalty)
 
 top_cand <- 
   top_models %>% 

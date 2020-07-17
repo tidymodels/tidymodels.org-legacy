@@ -55,8 +55,8 @@ In the original paper, the [authors](https://doi.org/10.1016/j.dib.2018.11.126) 
 
 ```r
 glimpse(hotels)
-#> Observations: 50,000
-#> Variables: 23
+#> Rows: 50,000
+#> Columns: 23
 #> $ hotel                          <fct> City_Hotel, City_Hotel, Resort_Hotel, …
 #> $ lead_time                      <dbl> 217, 2, 95, 143, 136, 67, 47, 56, 80, …
 #> $ stays_in_weekend_nights        <dbl> 1, 0, 2, 2, 1, 2, 0, 0, 0, 2, 1, 0, 1,…
@@ -153,7 +153,7 @@ val_set
 #> # Validation Set Split (0.8/0.2)  using stratification 
 #> # A tibble: 1 x 2
 #>   splits             id        
-#>   <named list>       <chr>     
+#>   <list>             <chr>     
 #> 1 <split [30K/7.5K]> validation
 ```
 
@@ -297,24 +297,24 @@ top_models <-
   show_best("roc_auc", n = 15) %>% 
   arrange(penalty) 
 top_models
-#> # A tibble: 15 x 6
-#>     penalty .metric .estimator  mean     n std_err
-#>       <dbl> <chr>   <chr>      <dbl> <int>   <dbl>
-#>  1 0.0001   roc_auc binary     0.880     1      NA
-#>  2 0.000127 roc_auc binary     0.881     1      NA
-#>  3 0.000161 roc_auc binary     0.881     1      NA
-#>  4 0.000204 roc_auc binary     0.881     1      NA
-#>  5 0.000259 roc_auc binary     0.881     1      NA
-#>  6 0.000329 roc_auc binary     0.881     1      NA
-#>  7 0.000418 roc_auc binary     0.881     1      NA
-#>  8 0.000530 roc_auc binary     0.881     1      NA
-#>  9 0.000672 roc_auc binary     0.881     1      NA
-#> 10 0.000853 roc_auc binary     0.881     1      NA
-#> 11 0.00108  roc_auc binary     0.881     1      NA
-#> 12 0.00137  roc_auc binary     0.881     1      NA
-#> 13 0.00174  roc_auc binary     0.881     1      NA
-#> 14 0.00221  roc_auc binary     0.880     1      NA
-#> 15 0.00281  roc_auc binary     0.879     1      NA
+#> # A tibble: 15 x 7
+#>     penalty .metric .estimator  mean     n std_err .config
+#>       <dbl> <chr>   <chr>      <dbl> <int>   <dbl> <chr>  
+#>  1 0.0001   roc_auc binary     0.880     1      NA Model01
+#>  2 0.000127 roc_auc binary     0.881     1      NA Model02
+#>  3 0.000161 roc_auc binary     0.881     1      NA Model03
+#>  4 0.000204 roc_auc binary     0.881     1      NA Model04
+#>  5 0.000259 roc_auc binary     0.881     1      NA Model05
+#>  6 0.000329 roc_auc binary     0.881     1      NA Model06
+#>  7 0.000418 roc_auc binary     0.881     1      NA Model07
+#>  8 0.000530 roc_auc binary     0.881     1      NA Model08
+#>  9 0.000672 roc_auc binary     0.881     1      NA Model09
+#> 10 0.000853 roc_auc binary     0.881     1      NA Model10
+#> 11 0.00108  roc_auc binary     0.881     1      NA Model11
+#> 12 0.00137  roc_auc binary     0.881     1      NA Model12
+#> 13 0.00174  roc_auc binary     0.881     1      NA Model13
+#> 14 0.00221  roc_auc binary     0.880     1      NA Model14
+#> 15 0.00281  roc_auc binary     0.879     1      NA Model15
 ```
 
 
@@ -334,10 +334,10 @@ lr_best <-
   arrange(penalty) %>% 
   slice(12)
 lr_best
-#> # A tibble: 1 x 6
-#>   penalty .metric .estimator  mean     n std_err
-#>     <dbl> <chr>   <chr>      <dbl> <int>   <dbl>
-#> 1 0.00137 roc_auc binary     0.881     1      NA
+#> # A tibble: 1 x 7
+#>   penalty .metric .estimator  mean     n std_err .config
+#>     <dbl> <chr>   <chr>      <dbl> <int>   <dbl> <chr>  
+#> 1 0.00137 roc_auc binary     0.881     1      NA Model12
 ```
 
 
@@ -468,14 +468,14 @@ Here are our top 5 random forest models, out of the 25 candidates:
 ```r
 rf_res %>% 
   show_best(metric = "roc_auc")
-#> # A tibble: 5 x 7
-#>    mtry min_n .metric .estimator  mean     n std_err
-#>   <int> <int> <chr>   <chr>      <dbl> <int>   <dbl>
-#> 1     8     7 roc_auc binary     0.933     1      NA
-#> 2     6    18 roc_auc binary     0.933     1      NA
-#> 3     9    12 roc_auc binary     0.932     1      NA
-#> 4     3     3 roc_auc binary     0.932     1      NA
-#> 5     5    35 roc_auc binary     0.932     1      NA
+#> # A tibble: 5 x 8
+#>    mtry min_n .metric .estimator  mean     n std_err .config
+#>   <int> <int> <chr>   <chr>      <dbl> <int>   <dbl> <chr>  
+#> 1     8     7 roc_auc binary     0.933     1      NA Model13
+#> 2     6    18 roc_auc binary     0.933     1      NA Model24
+#> 3     9    12 roc_auc binary     0.932     1      NA Model19
+#> 4     3     3 roc_auc binary     0.932     1      NA Model21
+#> 5     5    35 roc_auc binary     0.932     1      NA Model12
 ```
 
 Right away, we see that these values for area under the ROC look more promising than our top model using penalized logistic regression, which yielded an ROC AUC of 0.881.
@@ -497,10 +497,10 @@ rf_best <-
   rf_res %>% 
   select_best(metric = "roc_auc")
 rf_best
-#> # A tibble: 1 x 2
-#>    mtry min_n
-#>   <int> <int>
-#> 1     8     7
+#> # A tibble: 1 x 3
+#>    mtry min_n .config
+#>   <int> <int> <chr>  
+#> 1     8     7 Model13
 ```
 
 To calculate the data needed to plot the ROC curve, we use `collect_predictions()`. This is only possible after tuning with `control_grid(save_pred = TRUE)`. In the output, you can see the two columns that hold our class probabilities for predicting hotel stays including and not including children.
@@ -509,15 +509,15 @@ To calculate the data needed to plot the ROC curve, we use `collect_predictions(
 ```r
 rf_res %>% 
   collect_predictions()
-#> # A tibble: 187,475 x 7
-#>   id         .pred_children .pred_none  .row  mtry min_n children
-#>   <chr>               <dbl>      <dbl> <int> <int> <int> <fct>   
-#> 1 validation       0.00158       0.998    11    12     7 none    
-#> 2 validation       0.000167      1.00     13    12     7 none    
-#> 3 validation       0.000286      1.00     31    12     7 none    
-#> 4 validation       0.000168      1.00     32    12     7 none    
-#> 5 validation       0.00075       0.999    36    12     7 none    
-#> # … with 1.875e+05 more rows
+#> # A tibble: 187,475 x 8
+#>   id         .pred_children .pred_none  .row  mtry min_n children .config
+#>   <chr>               <dbl>      <dbl> <int> <int> <int> <fct>    <chr>  
+#> 1 validation       0.00158       0.998    11    12     7 none     Model01
+#> 2 validation       0.000167      1.00     13    12     7 none     Model01
+#> 3 validation       0.000286      1.00     31    12     7 none     Model01
+#> 4 validation       0.000168      1.00     32    12     7 none     Model01
+#> 5 validation       0.00075       0.999    36    12     7 none     Model01
+#> # … with 187,470 more rows
 ```
 
 To filter the predictions for only our best random forest model, we can use the `parameters` argument and pass it our tibble with the best hyperparameter values from tuning, which we called `rf_best`:
@@ -573,10 +573,11 @@ last_rf_fit <-
   last_fit(splits)
 
 last_rf_fit
+#> # Resampling results
 #> # Monte Carlo cross-validation (0.75/0.25) with 1 resamples  
 #> # A tibble: 1 x 6
 #>   splits         id          .metrics     .notes      .predictions     .workflow
-#> * <list>         <chr>       <list>       <list>      <list>           <list>   
+#>   <list>         <chr>       <list>       <list>      <list>           <list>   
 #> 1 <split [37.5K… train/test… <tibble [2 … <tibble [0… <tibble [12,500… <workflo…
 ```
 
@@ -645,37 +646,36 @@ Here are some more ideas for where to go next:
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.2 (2019-12-12)
+#>  version  R version 4.0.2 (2020-06-22)
 #>  os       macOS Mojave 10.14.6        
-#>  system   x86_64, darwin15.6.0        
+#>  system   x86_64, darwin17.0          
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-04-29                  
+#>  date     2020-07-16                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
-#>  broom      * 0.5.5   2020-02-29 [1] CRAN (R 3.6.0)
-#>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 3.6.2)
-#>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
-#>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
-#>  glmnet       3.0-2   2019-12-11 [1] CRAN (R 3.6.0)
-#>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
-#>  parsnip    * 0.1.0   2020-04-09 [1] CRAN (R 3.6.2)
-#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 3.6.2)
-#>  ranger       0.12.1  2020-01-10 [1] CRAN (R 3.6.0)
-#>  readr      * 1.3.1   2018-12-21 [1] CRAN (R 3.6.0)
-#>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
-#>  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
-#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
-#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.2)
-#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
-#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
-#>  vip        * 0.2.2   2020-04-06 [1] CRAN (R 3.6.2)
-#>  workflows  * 0.1.1   2020-03-17 [1] CRAN (R 3.6.0)
-#>  yardstick  * 0.0.6   2020-03-17 [1] CRAN (R 3.6.0)
+#>  broom      * 0.7.0   2020-07-09 [1] CRAN (R 4.0.0)
+#>  dials      * 0.0.8   2020-07-08 [1] CRAN (R 4.0.2)
+#>  dplyr      * 1.0.0   2020-05-29 [1] CRAN (R 4.0.0)
+#>  ggplot2    * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
+#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
+#>  parsnip    * 0.1.2   2020-07-03 [1] CRAN (R 4.0.1)
+#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
+#>  ranger       0.12.1  2020-01-10 [1] CRAN (R 4.0.0)
+#>  readr      * 1.3.1   2018-12-21 [1] CRAN (R 4.0.0)
+#>  recipes    * 0.1.13  2020-06-23 [1] CRAN (R 4.0.0)
+#>  rlang        0.4.7   2020-07-09 [1] CRAN (R 4.0.0)
+#>  rsample    * 0.0.7   2020-06-04 [1] CRAN (R 4.0.0)
+#>  tibble     * 3.0.3   2020-07-10 [1] CRAN (R 4.0.2)
+#>  tidymodels * 0.1.1   2020-07-14 [1] CRAN (R 4.0.0)
+#>  tune       * 0.1.1   2020-07-08 [1] CRAN (R 4.0.2)
+#>  vip        * 0.2.2   2020-04-06 [1] CRAN (R 4.0.0)
+#>  workflows  * 0.1.2   2020-07-07 [1] CRAN (R 4.0.2)
+#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.0)
 #> 
-#> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
+#> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
 ```
