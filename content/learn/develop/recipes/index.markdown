@@ -390,7 +390,7 @@ recipe(HHV ~ ., data = biomass_tr) %>%
 #> 
 #> Operations:
 #> 
-#> Percentile transformation on ends_with, gen
+#> Percentile transformation on ends_with("gen")
 
 # Results after `prep()`: 
 rec_obj
@@ -471,16 +471,16 @@ tidy(rec_obj, number = 1)
 #> # A tibble: 274 x 4
 #>    term     value percentile id              
 #>    <chr>    <dbl>      <dbl> <chr>           
-#>  1 hydrogen 0.03           0 percentile_K1rEf
-#>  2 hydrogen 0.934          1 percentile_K1rEf
-#>  3 hydrogen 1.60           2 percentile_K1rEf
-#>  4 hydrogen 2.07           3 percentile_K1rEf
-#>  5 hydrogen 2.45           4 percentile_K1rEf
-#>  6 hydrogen 2.74           5 percentile_K1rEf
-#>  7 hydrogen 3.15           6 percentile_K1rEf
-#>  8 hydrogen 3.49           7 percentile_K1rEf
-#>  9 hydrogen 3.71           8 percentile_K1rEf
-#> 10 hydrogen 3.99           9 percentile_K1rEf
+#>  1 hydrogen 0.03           0 percentile_cAjrt
+#>  2 hydrogen 0.934          1 percentile_cAjrt
+#>  3 hydrogen 1.60           2 percentile_cAjrt
+#>  4 hydrogen 2.07           3 percentile_cAjrt
+#>  5 hydrogen 2.45           4 percentile_cAjrt
+#>  6 hydrogen 2.74           5 percentile_cAjrt
+#>  7 hydrogen 3.15           6 percentile_cAjrt
+#>  8 hydrogen 3.49           7 percentile_cAjrt
+#>  9 hydrogen 3.71           8 percentile_cAjrt
+#> 10 hydrogen 3.99           9 percentile_cAjrt
 #> # … with 264 more rows
 ```
 
@@ -561,34 +561,34 @@ tunable.step_poly <- function (x, ...) {
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 4.0.0 (2020-04-24)
-#>  os       macOS Mojave 10.14.6        
+#>  version  R version 4.0.2 (2020-06-22)
+#>  os       macOS Catalina 10.15.6      
 #>  system   x86_64, darwin17.0          
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-06-04                  
+#>  date     2020-07-21                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
-#>  broom      * 0.5.6   2020-04-20 [1] CRAN (R 4.0.0)
-#>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 4.0.0)
+#>  broom      * 0.7.0   2020-07-09 [1] CRAN (R 4.0.0)
+#>  dials      * 0.0.8   2020-07-08 [1] CRAN (R 4.0.0)
 #>  dplyr      * 1.0.0   2020-05-29 [1] CRAN (R 4.0.0)
-#>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 4.0.0)
-#>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 4.0.0)
-#>  modeldata  * 0.0.1   2019-12-06 [1] CRAN (R 4.0.0)
-#>  parsnip    * 0.1.1   2020-05-06 [1] CRAN (R 4.0.0)
+#>  ggplot2    * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
+#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.2)
+#>  modeldata  * 0.0.2   2020-06-22 [1] CRAN (R 4.0.2)
+#>  parsnip    * 0.1.2   2020-07-03 [1] CRAN (R 4.0.1)
 #>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
-#>  recipes    * 0.1.12  2020-05-01 [1] CRAN (R 4.0.0)
-#>  rlang        0.4.6   2020-05-02 [1] CRAN (R 4.0.0)
-#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 4.0.0)
-#>  tibble     * 3.0.1   2020-04-20 [1] CRAN (R 4.0.0)
-#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 4.0.0)
-#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 4.0.0)
-#>  workflows  * 0.1.1   2020-03-17 [1] CRAN (R 4.0.0)
-#>  yardstick  * 0.0.6   2020-03-17 [1] CRAN (R 4.0.0)
+#>  recipes    * 0.1.13  2020-06-23 [1] CRAN (R 4.0.0)
+#>  rlang        0.4.7   2020-07-09 [1] CRAN (R 4.0.2)
+#>  rsample    * 0.0.7   2020-06-04 [1] CRAN (R 4.0.0)
+#>  tibble     * 3.0.3   2020-07-10 [1] CRAN (R 4.0.2)
+#>  tidymodels * 0.1.1   2020-07-14 [1] CRAN (R 4.0.2)
+#>  tune       * 0.1.1   2020-07-08 [1] CRAN (R 4.0.0)
+#>  workflows  * 0.1.2   2020-07-07 [1] CRAN (R 4.0.0)
+#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.2)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
 ```

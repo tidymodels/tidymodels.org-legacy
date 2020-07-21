@@ -149,7 +149,9 @@ mse(solubility_test, truth = solubility, estimate = prediction)
 
 # Error handling
 mse(solubility_test, truth = solubility, estimate = factor("xyz"))
-#> Error: `estimate` should be a numeric but a factor was supplied.
+#> Error: Problem with `summarise()` input `.estimate`.
+#> x `estimate` should be a numeric but a factor was supplied.
+#> ℹ Input `.estimate` is `metric_fn(truth = solubility, estimate = factor("xyz"), na_rm = na_rm)`.
 ```
 
 Let's test it out on a grouped data frame.
@@ -206,31 +208,33 @@ The vector implementation for classification metrics initially has the same setu
 
 
 ```r
-# So we can support the yardstick event_first option
-relevant_col <- function(xtab) {
-  if (getOption("yardstick.event_first")) {
-      colnames(xtab)[1]
-    } else {
-      colnames(xtab)[2]
-    }
+# Logic for `event_level`
+event_col <- function(xtab, event_level) {
+  if (identical(event_level, "first")) {
+    colnames(xtab)[[1]]
+  } else {
+    colnames(xtab)[[2]]
+  }
 }
 
-miss_rate_vec <- function(truth, estimate, estimator = NULL, na_rm = TRUE, ...) {
-  
+miss_rate_vec <- function(truth, 
+                          estimate, 
+                          estimator = NULL, 
+                          na_rm = TRUE, 
+                          event_level = "first",
+                          ...) {
   estimator <- finalize_estimator(truth, estimator)
   
   miss_rate_impl <- function(truth, estimate) {
-    
     # Create 
     xtab <- table(estimate, truth)
-    col <- relevant_col(xtab)
+    col <- event_col(xtab, event_level)
     col2 <- setdiff(colnames(xtab), col)
     
     tp <- xtab[col, col]
     fn <- xtab[col2, col]
     
     fn / (fn + tp)
-    
   }
   
   metric_vec_template(
@@ -242,7 +246,6 @@ miss_rate_vec <- function(truth, estimate, estimator = NULL, na_rm = TRUE, ...) 
     estimator = estimator,
     ...
   )
-  
 }
 ```
 
@@ -290,16 +293,19 @@ finalize_estimator_internal.miss_rate <- function(metric_dispatcher, x, estimato
   "binary"
 }
 
-miss_rate_vec <- function(truth, estimate, estimator = NULL, na_rm = TRUE, ...) {
-  
+miss_rate_vec <- function(truth, 
+                          estimate, 
+                          estimator = NULL, 
+                          na_rm = TRUE, 
+                          event_level = "first",
+                          ...) {
   # calls finalize_estimator_internal() internally
   estimator <- finalize_estimator(truth, estimator, metric_class = "miss_rate")
   
   miss_rate_impl <- function(truth, estimate) {
-    
     # Create 
     xtab <- table(estimate, truth)
-    col <- relevant_col(xtab)
+    col <- event_col(xtab, event_level)
     col2 <- setdiff(colnames(xtab), col)
     
     tp <- xtab[col, col]
@@ -318,7 +324,6 @@ miss_rate_vec <- function(truth, estimate, estimator = NULL, na_rm = TRUE, ...) 
     estimator = estimator,
     ...
   )
-  
 }
 
 # Error thrown by our custom handler
@@ -353,8 +358,12 @@ The main changes below are:
 
 
 ```r
-miss_rate_vec <- function(truth, estimate, estimator = NULL, na_rm = TRUE, ...) {
-  
+miss_rate_vec <- function(truth, 
+                          estimate, 
+                          estimator = NULL, 
+                          na_rm = TRUE, 
+                          event_level = "first",
+                          ...) {
   # calls finalize_estimator_internal() internally
   estimator <- finalize_estimator(truth, estimator, metric_class = "miss_rate")
   
@@ -363,7 +372,7 @@ miss_rate_vec <- function(truth, estimate, estimator = NULL, na_rm = TRUE, ...) 
     # Rather than implement the actual method here, we rely on
     # an *_estimator_impl() function that can handle binary
     # and multiclass cases
-    miss_rate_estimator_impl(xtab, estimator)
+    miss_rate_estimator_impl(xtab, estimator, event_level)
   }
   
   metric_vec_template(
@@ -375,13 +384,13 @@ miss_rate_vec <- function(truth, estimate, estimator = NULL, na_rm = TRUE, ...) 
     estimator = estimator,
     ...
   )
-  
 }
 
+
 # This function switches between binary and multiclass implementations
-miss_rate_estimator_impl <- function(data, estimator) {
-  if (estimator == "binary") {
-    miss_rate_binary(data)
+miss_rate_estimator_impl <- function(data, estimator, event_level) {
+  if(estimator == "binary") {
+    miss_rate_binary(data, event_level)
   } else {
     # Encapsulates the macro, macro weighted, and micro cases
     wt <- get_weights(data, estimator)
@@ -390,8 +399,9 @@ miss_rate_estimator_impl <- function(data, estimator) {
   }
 }
 
-miss_rate_binary <- function(data) {
-  col <- relevant_col(data)
+
+miss_rate_binary <- function(data, event_level) {
+  col <- event_col(data, event_level)
   col2 <- setdiff(colnames(data), col)
   
   tp <- data[col, col]
@@ -442,12 +452,17 @@ Luckily, the data frame implementation is as simple as the numeric case, we just
 
 
 ```r
-miss_rate <- function(data, truth, estimate, estimator = NULL, na_rm = TRUE, ...) {
+miss_rate <- function(data, ...) {
   UseMethod("miss_rate")
 }
-
-miss_rate.data.frame <- function(data, truth, estimate, estimator = NULL, na_rm = TRUE, ...) {
-  
+miss_rate <- new_class_metric(miss_rate, direction = "minimize")
+miss_rate.data.frame <- function(data, 
+                                 truth, 
+                                 estimate, 
+                                 estimator = NULL, 
+                                 na_rm = TRUE, 
+                                 event_level = "first",
+                                 ...) {
   metric_summarizer(
     metric_nm = "miss_rate",
     metric_fn = miss_rate_vec,
@@ -456,9 +471,9 @@ miss_rate.data.frame <- function(data, truth, estimate, estimator = NULL, na_rm 
     estimate = !! enquo(estimate), 
     estimator = estimator,
     na_rm = na_rm,
+    event_level = event_level,
     ...
   )
-  
 }
 ```
 
@@ -500,7 +515,9 @@ hpc_cv %>%
 
 # Error handling
 miss_rate(hpc_cv, obs, VF)
-#> Error: `estimate` should be a factor but a numeric was supplied.
+#> Error: Problem with `summarise()` input `.estimate`.
+#> x `estimate` should be a factor but a numeric was supplied.
+#> ℹ Input `.estimate` is `metric_fn(truth = obs, estimate = VF, na_rm = na_rm, event_level = "first")`.
 ```
 
 ## Using custom metrics
@@ -519,8 +536,9 @@ metric_set(mse, rmse)
 #> The combination of metric functions must be:
 #> - only numeric metrics
 #> - a mix of class metrics and class probability metrics
+#> 
 #> The following metric function types are being mixed:
-#> - other (mse)
+#> - other (mse <global>)
 #> - numeric (rmse)
 
 class(mse) <- c("numeric_metric", class(mse))
@@ -542,33 +560,33 @@ numeric_mets(solubility_test, solubility, prediction)
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.2 (2019-12-12)
-#>  os       macOS Mojave 10.14.6        
-#>  system   x86_64, darwin15.6.0        
+#>  version  R version 4.0.2 (2020-06-22)
+#>  os       macOS Catalina 10.15.6      
+#>  system   x86_64, darwin17.0          
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-04-17                  
+#>  date     2020-07-21                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
-#>  broom      * 0.5.5   2020-02-29 [1] CRAN (R 3.6.0)
-#>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 3.6.2)
-#>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
-#>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
-#>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
-#>  parsnip    * 0.1.0   2020-04-09 [1] CRAN (R 3.6.2)
-#>  purrr      * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
-#>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
-#>  rlang      * 0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
-#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
-#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.2)
-#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
-#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
-#>  workflows  * 0.1.1   2020-03-17 [1] CRAN (R 3.6.0)
-#>  yardstick  * 0.0.6   2020-03-17 [1] CRAN (R 3.6.0)
+#>  broom      * 0.7.0   2020-07-09 [1] CRAN (R 4.0.0)
+#>  dials      * 0.0.8   2020-07-08 [1] CRAN (R 4.0.0)
+#>  dplyr      * 1.0.0   2020-05-29 [1] CRAN (R 4.0.0)
+#>  ggplot2    * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
+#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.2)
+#>  parsnip    * 0.1.2   2020-07-03 [1] CRAN (R 4.0.1)
+#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
+#>  recipes    * 0.1.13  2020-06-23 [1] CRAN (R 4.0.0)
+#>  rlang      * 0.4.7   2020-07-09 [1] CRAN (R 4.0.2)
+#>  rsample    * 0.0.7   2020-06-04 [1] CRAN (R 4.0.0)
+#>  tibble     * 3.0.3   2020-07-10 [1] CRAN (R 4.0.2)
+#>  tidymodels * 0.1.1   2020-07-14 [1] CRAN (R 4.0.2)
+#>  tune       * 0.1.1   2020-07-08 [1] CRAN (R 4.0.0)
+#>  workflows  * 0.1.2   2020-07-07 [1] CRAN (R 4.0.0)
+#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.2)
 #> 
-#> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
+#> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
 ```
