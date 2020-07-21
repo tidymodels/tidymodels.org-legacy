@@ -7,7 +7,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   cache.path = "cache/"
 )
-options(width = 80, digits = 3)
+options(width = 80, digits = 3, cli.width = 70)
 
 
 req_pkgs <- function(x, what = "To use the code in this article,") {
