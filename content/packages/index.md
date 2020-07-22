@@ -102,7 +102,7 @@ The tidymodels framework also includes many other packages designed for speciali
 
 ### [Create robust models](/learn/models/)
 
-* parsnip also has additional packages that contain more model definitions. [discrim](https://tidymodels.github.io/discrim/) contains definitions for discriminant analysis models and [rules](https://github.com/tidymodels/rules/) does the same for rule-based classification and regression models. 
+* parsnip also has additional packages that contain more model definitions. [discrim](https://tidymodels.github.io/discrim/) contains definitions for discriminant analysis models, [poissonreg](https://poissonreg.tidymodels.org/) provides definitions for Poisson regression models, [plsmod](https://plsmod.tidymodels.org/) enables linear projection models, and [rules](https://github.com/tidymodels/rules/) does the same for rule-based classification and regression models. [baguette](https://baguette.tidymodels.org/) creates ensemble models via bagging. 
 
 * There are several add-on packages for creating recipes. [embed](https://tidymodels.github.io/embed/) contains steps to create embeddings or projections of predictors. [textrecipes](https://tidymodels.github.io/textrecipes/) has extra steps for text processing, and [themis](https://tidymodels.github.io/themis/) can help alleviate class imbalance using sampling methods. 
 
