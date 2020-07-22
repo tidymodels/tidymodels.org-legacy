@@ -16,6 +16,9 @@ description: |
 
 Some model parameters cannot be learned directly from a data set during model training; these kinds of parameters are called **hyperparameters**. Some examples of hyperparameters include the number of predictors that are sampled at splits in a tree-based model (we call this `mtry` in tidymodels) or the learning rate in a boosted tree model (we call this `learn_rate`). Instead of learning these kinds of hyperparameters during model training, we can _estimate_ the best values for these values by training many models on resampled data sets and exploring how well all these models perform. This process is called **tuning**.
 
+{{< test-drive url="https://rstudio.cloud/project/1479888" >}}
+
+
 To use code in this article,  you will need to install the following packages: modeldata, rpart, tidymodels, and vip.
 
 
@@ -411,35 +414,35 @@ You could tune the other hyperparameter we didn't use here, `min_n`, which sets 
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
 #>  version  R version 4.0.2 (2020-06-22)
-#>  os       macOS Catalina 10.15.6      
+#>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin17.0          
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-07-21                  
+#>  date     2020-07-22                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
 #>  broom      * 0.7.0   2020-07-09 [1] CRAN (R 4.0.0)
-#>  dials      * 0.0.8   2020-07-08 [1] CRAN (R 4.0.0)
+#>  dials      * 0.0.8   2020-07-08 [1] CRAN (R 4.0.2)
 #>  dplyr      * 1.0.0   2020-05-29 [1] CRAN (R 4.0.0)
 #>  ggplot2    * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
-#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.2)
-#>  modeldata  * 0.0.2   2020-06-22 [1] CRAN (R 4.0.2)
+#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
+#>  modeldata  * 0.0.2   2020-06-22 [1] CRAN (R 4.0.0)
 #>  parsnip    * 0.1.2   2020-07-03 [1] CRAN (R 4.0.1)
 #>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
 #>  recipes    * 0.1.13  2020-06-23 [1] CRAN (R 4.0.0)
-#>  rlang        0.4.7   2020-07-09 [1] CRAN (R 4.0.2)
+#>  rlang        0.4.7   2020-07-09 [1] CRAN (R 4.0.0)
 #>  rpart      * 4.1-15  2019-04-12 [1] CRAN (R 4.0.2)
 #>  rsample    * 0.0.7   2020-06-04 [1] CRAN (R 4.0.0)
 #>  tibble     * 3.0.3   2020-07-10 [1] CRAN (R 4.0.2)
-#>  tidymodels * 0.1.1   2020-07-14 [1] CRAN (R 4.0.2)
-#>  tune       * 0.1.1   2020-07-08 [1] CRAN (R 4.0.0)
+#>  tidymodels * 0.1.1   2020-07-14 [1] CRAN (R 4.0.0)
+#>  tune       * 0.1.1   2020-07-08 [1] CRAN (R 4.0.2)
 #>  vip        * 0.2.2   2020-04-06 [1] CRAN (R 4.0.0)
-#>  workflows  * 0.1.2   2020-07-07 [1] CRAN (R 4.0.0)
-#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.2)
+#>  workflows  * 0.1.2   2020-07-07 [1] CRAN (R 4.0.2)
+#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.0)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
 ```
