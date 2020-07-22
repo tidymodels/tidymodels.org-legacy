@@ -14,7 +14,6 @@ source(here::here("content/learn/common.R"))
 
 ```{r load, include=FALSE}
 library(tidymodels)
-library(AmesHousing)
 library(ranger)
 library(randomForest)
 library(glmnet)
@@ -22,7 +21,7 @@ library(glmnet)
 preds <- c("Longitude", "Latitude", "Lot_Area", "Neighborhood", "Year_Sold")
 pred_names <- paste0("`", preds, "`")
 
-pkgs <- c("tidymodels", "AmesHousing", "ranger", "randomForest", "glmnet")
+pkgs <- c("tidymodels", "ranger", "randomForest", "glmnet")
 
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
@@ -41,10 +40,9 @@ Second, let's fit a regularized linear regression model to demonstrate how to mo
 We'll use the Ames housing data set to demonstrate how to create regression models using parsnip. First, set up the data set and create a simple training/test set split:
 
 ```{r ames-split}
-library(AmesHousing)
-ames <- make_ames()
-
 library(tidymodels)
+
+data(ames)
 
 set.seed(4595)
 data_split <- initial_split(ames, strata = "Sale_Price", p = 0.75)

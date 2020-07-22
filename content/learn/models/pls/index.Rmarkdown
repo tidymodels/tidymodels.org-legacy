@@ -16,7 +16,7 @@ source(here::here("content/learn/common.R"))
 library(pls)
 library(tidymodels)
 library(sessioninfo)
-pkgs <- c("modeldata", "pls", "tidymodels", "tidyr")
+pkgs <- c("modeldata", "pls", "tidymodels")
 
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
@@ -100,7 +100,6 @@ The function `get_var_explained()` shown here will do all these computations and
 
 ```{r var-explained}
 library(pls)
-library(tidyr)
 
 get_var_explained <- function(recipe, ...) {
   

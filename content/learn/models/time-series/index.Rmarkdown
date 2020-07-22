@@ -18,7 +18,7 @@ library(forecast)
 library(tidymodels)
 library(sweep)
 library(zoo)
-pkgs <- c("tidymodels", "tidyr", "timetk", "forecast", "sweep", "zoo")
+pkgs <- c("tidymodels", "timetk", "forecast", "sweep", "zoo")
 
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
@@ -153,8 +153,6 @@ summary(roll_rs$extrapolation)
 What do these error estimates look like over time?
 
 ```{r plot}
-library(tidyr)
-
 roll_rs %>%
   select(interpolation, extrapolation, start_date) %>%
   pivot_longer(cols = matches("ation"), names_to = "error", values_to = "MAPE") %>%
