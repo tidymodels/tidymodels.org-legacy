@@ -17,9 +17,6 @@ description: |
 
 So far, we have [built a model](/start/models/) and [preprocessed data with a recipe](/start/recipes/). We also introduced [workflows](/start/recipes/#fit-workflow) as a way to bundle a [parsnip model](https://tidymodels.github.io/parsnip/) and [recipe](https://tidymodels.github.io/recipes/) together. Once we have a model trained, we need a way to measure how well that model predicts new data. This tutorial explains how to characterize model performance based on **resampling** statistics. 
 
-{{< test-drive url="https://rstudio.cloud/project/1479888" >}}
-
-
 To use code in this article,  you will need to install the following packages: modeldata, ranger, and tidymodels.
 
 
@@ -30,6 +27,7 @@ library(tidymodels) # for the rsample package, along with the rest of tidymodels
 library(modeldata)  # for the cells data
 ```
 
+{{< test-drive url="https://rstudio.cloud/project/1479888" >}}
 
 ## The cell image data {#data}
 

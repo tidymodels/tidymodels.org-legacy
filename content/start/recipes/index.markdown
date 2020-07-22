@@ -25,9 +25,6 @@ In our [*Build a Model*](/start/models/) article, we learned how to specify and 
  
 and so on. If you are familiar with R's formula interface, a lot of this might sound familiar and like what a formula already does. Recipes can be used to do many of the same things, but they have a much wider range of possibilities. This article shows how to use recipes for modeling. 
 
-{{< test-drive url="https://rstudio.cloud/project/1479888" >}}
-
-
 To use code in this article,  you will need to install the following packages: nycflights13, skimr, and tidymodels.
 
 
@@ -39,6 +36,7 @@ library(nycflights13)    # for flight data
 library(skimr)           # for variable summaries
 ```
 
+{{< test-drive url="https://rstudio.cloud/project/1479888" >}}
 
 ## The New York City flight data {#data}
 

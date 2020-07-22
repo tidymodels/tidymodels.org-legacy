@@ -39,6 +39,8 @@ library(readr)       # for importing data
 library(vip)         # for variable importance plots
 ```
 
+{{< test-drive url="https://rstudio.cloud/project/1479888" >}}
+
 ## The Hotel Bookings Data {#data}
 
 Let’s use hotel bookings data from [Antonio, Almeida, and Nunes (2019)](https://doi.org/10.1016/j.dib.2018.11.126) to predict which hotel stays included children and/or babies, based on the other characteristics of the stays such as which hotel the guests stay at, how much they pay, etc. This was also a [`#TidyTuesday`](https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-02-11) dataset with a [data dictionary](https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-02-11#data-dictionary) you may want to look over to learn more about the variables. We'll use a slightly [edited version of the dataset](https://gist.github.com/topepo/05a74916c343e57a71c51d6bc32a21ce) for this case study. 
@@ -55,8 +57,6 @@ hotels <-
 
 dim(hotels)
 ```
-
-{{< test-drive url="https://rstudio.cloud/project/1479888" >}}
 
 In the original paper, the [authors](https://doi.org/10.1016/j.dib.2018.11.126) caution that the distribution of many variables (such as number of adults/children, room type, meals bought, country of origin of the guests, and so forth) is different for hotel stays that were canceled versus not canceled. This makes sense because much of that information is gathered (or gathered again more accurately) when guests check in for their stay, so canceled bookings are likely to have more missing data than non-canceled bookings, and/or to have different characteristics when data is not missing. Given this, it is unlikely that we can reliably detect meaningful differences between guests who cancel their bookings and those who do not with this dataset. To build our models here, we have already filtered the data to include only the bookings that did not cancel, so we'll be analyzing _hotel stays_ only.
 

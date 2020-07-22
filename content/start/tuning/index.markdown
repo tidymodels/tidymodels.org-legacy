@@ -16,9 +16,6 @@ description: |
 
 Some model parameters cannot be learned directly from a data set during model training; these kinds of parameters are called **hyperparameters**. Some examples of hyperparameters include the number of predictors that are sampled at splits in a tree-based model (we call this `mtry` in tidymodels) or the learning rate in a boosted tree model (we call this `learn_rate`). Instead of learning these kinds of hyperparameters during model training, we can _estimate_ the best values for these values by training many models on resampled data sets and exploring how well all these models perform. This process is called **tuning**.
 
-{{< test-drive url="https://rstudio.cloud/project/1479888" >}}
-
-
 To use code in this article,  you will need to install the following packages: modeldata, rpart, tidymodels, and vip.
 
 
@@ -29,6 +26,8 @@ library(tidymodels)  # for the tune package, along with the rest of tidymodels
 library(modeldata)   # for the cells data
 library(vip)         # for variable importance plots
 ```
+
+{{< test-drive url="https://rstudio.cloud/project/1479888" >}}
 
 ## The cell image data, revisited {#data}
 
