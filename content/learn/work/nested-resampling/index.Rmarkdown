@@ -147,7 +147,8 @@ summarize_tune_results <- function(object) {
     # average RMSE which is the inner bootstrap estimate. 
     group_by(cost) %>%
     summarize(mean_RMSE = mean(RMSE, na.rm = TRUE),
-              n = length(RMSE))
+              n = length(RMSE),
+              .groups = "drop")
 }
 ```
 
