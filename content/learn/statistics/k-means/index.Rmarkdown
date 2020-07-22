@@ -14,14 +14,14 @@ source(here::here("content/learn/common.R"))
 
 ```{r load, include = FALSE}
 library(tidymodels)
-pkgs <- c("tidymodels", "tidyr")
+pkgs <- c("tidymodels")
 
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
 ## Introduction
 
-`r req_pkgs(pkgs)`
+This article only requires the tidymodels package.
 
 K-means clustering serves as a useful example of applying tidy data principles to statistical analysis, and especially the distinction between the three tidying functions: 
 
@@ -33,7 +33,6 @@ Let's start by generating some random two-dimensional data with three clusters. 
 
 ```{r}
 library(tidymodels)
-library(tidyr)
 
 set.seed(27)
 

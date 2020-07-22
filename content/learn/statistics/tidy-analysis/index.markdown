@@ -14,7 +14,7 @@ description: |
 
 ## Introduction
 
-To use the code in this article, you will need to install the following packages: tidymodels and tidyr.
+This article only requires the tidymodels package.
 
 While the tidymodels package [broom](https://broom.tidyverse.org/) is useful for summarizing the result of a single analysis in a consistent format, it is really designed for high-throughput applications, where you must combine results from multiple analyses. These could be subgroups of data, analyses using different models, bootstrap replicates, permutations, and so on. In particular, it plays well with the `nest()/unnest()` functions from [tidyr](https://tidyr.tidyverse.org/) and the `map()` function in [purrr](https://purrr.tidyverse.org/).
 
@@ -68,6 +68,7 @@ Suppose you want to test for correlations individually *within* each tree. You c
 Orange %>% 
   group_by(Tree) %>%
   summarize(correlation = cor(age, circumference))
+#> `summarise()` ungrouping output (override with `.groups` argument)
 #> # A tibble: 5 x 2
 #>   Tree  correlation
 #>   <ord>       <dbl>
@@ -114,8 +115,6 @@ Often, we want to perform multiple tests or fit multiple models, each on a diffe
 
 
 ```r
-library(tidyr)
-
 nested <- 
   Orange %>% 
   nest(data = c(age, circumference))
@@ -321,30 +320,30 @@ regressions %>%
 regressions %>% 
   select(glanced) %>% 
   unnest(glanced)
-#> # A tibble: 2 x 11
+#> # A tibble: 2 x 12
 #>   r.squared adj.r.squared sigma statistic p.value    df   logLik   AIC   BIC
-#>       <dbl>         <dbl> <dbl>     <dbl>   <dbl> <int>    <dbl> <dbl> <dbl>
-#> 1     0.833         0.778 0.291     15.0  7.59e-4     4 -5.80e-3  10.0  12.8
-#> 2     0.625         0.550 0.522      8.32 1.70e-3     4 -1.24e+1  34.7  39.4
-#> # … with 2 more variables: deviance <dbl>, df.residual <int>
+#>       <dbl>         <dbl> <dbl>     <dbl>   <dbl> <dbl>    <dbl> <dbl> <dbl>
+#> 1     0.833         0.778 0.291     15.0  7.59e-4     3 -5.80e-3  10.0  12.8
+#> 2     0.625         0.550 0.522      8.32 1.70e-3     3 -1.24e+1  34.7  39.4
+#> # … with 3 more variables: deviance <dbl>, df.residual <int>, nobs <int>
 
 regressions %>% 
   select(augmented) %>% 
   unnest(augmented)
-#> # A tibble: 32 x 11
-#>       wt   mpg  qsec  gear .fitted .se.fit  .resid  .hat .sigma .cooksd
-#>    <dbl> <dbl> <dbl> <dbl>   <dbl>   <dbl>   <dbl> <dbl>  <dbl>   <dbl>
-#>  1  2.62  21    16.5     4    2.73   0.209 -0.107  0.517  0.304 7.44e-2
-#>  2  2.88  21    17.0     4    2.75   0.152  0.126  0.273  0.304 2.43e-2
-#>  3  2.32  22.8  18.6     4    2.63   0.163 -0.310  0.312  0.279 1.88e-1
-#>  4  2.2   32.4  19.5     4    1.70   0.137  0.505  0.223  0.233 2.78e-1
-#>  5  1.62  30.4  18.5     4    1.86   0.151 -0.244  0.269  0.292 8.89e-2
-#>  6  1.84  33.9  19.9     4    1.56   0.156  0.274  0.286  0.286 1.25e-1
-#>  7  1.94  27.3  18.9     4    2.19   0.113 -0.253  0.151  0.293 3.94e-2
-#>  8  2.14  26    16.7     5    2.21   0.153 -0.0683 0.277  0.307 7.32e-3
-#>  9  1.51  30.4  16.9     5    1.77   0.191 -0.259  0.430  0.284 2.63e-1
-#> 10  3.17  15.8  14.5     5    3.15   0.157  0.0193 0.292  0.308 6.44e-4
-#> # … with 22 more rows, and 1 more variable: .std.resid <dbl>
+#> # A tibble: 32 x 10
+#>       wt   mpg  qsec  gear .fitted  .resid .std.resid  .hat .sigma  .cooksd
+#>    <dbl> <dbl> <dbl> <dbl>   <dbl>   <dbl>      <dbl> <dbl>  <dbl>    <dbl>
+#>  1  2.62  21    16.5     4    2.73 -0.107     -0.527  0.517  0.304 0.0744  
+#>  2  2.88  21    17.0     4    2.75  0.126      0.509  0.273  0.304 0.0243  
+#>  3  2.32  22.8  18.6     4    2.63 -0.310     -1.29   0.312  0.279 0.188   
+#>  4  2.2   32.4  19.5     4    1.70  0.505      1.97   0.223  0.233 0.278   
+#>  5  1.62  30.4  18.5     4    1.86 -0.244     -0.982  0.269  0.292 0.0889  
+#>  6  1.84  33.9  19.9     4    1.56  0.274      1.12   0.286  0.286 0.125   
+#>  7  1.94  27.3  18.9     4    2.19 -0.253     -0.942  0.151  0.293 0.0394  
+#>  8  2.14  26    16.7     5    2.21 -0.0683    -0.276  0.277  0.307 0.00732 
+#>  9  1.51  30.4  16.9     5    1.77 -0.259     -1.18   0.430  0.284 0.263   
+#> 10  3.17  15.8  14.5     5    3.15  0.0193     0.0789 0.292  0.308 0.000644
+#> # … with 22 more rows
 ```
 
 By combining the estimates and p-values across all groups into the same tidy data frame (instead of a list of output model objects), a new class of analyses and visualizations becomes straightforward. This includes:
@@ -362,35 +361,34 @@ In each of these cases, we can easily filter, facet, or distinguish based on the
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.2 (2019-12-12)
-#>  os       macOS Mojave 10.14.6        
-#>  system   x86_64, darwin15.6.0        
+#>  version  R version 4.0.2 (2020-06-22)
+#>  os       macOS Catalina 10.15.6      
+#>  system   x86_64, darwin17.0          
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-04-17                  
+#>  date     2020-07-21                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
-#>  broom      * 0.5.5   2020-02-29 [1] CRAN (R 3.6.0)
-#>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 3.6.2)
-#>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
-#>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
-#>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
-#>  parsnip    * 0.1.0   2020-04-09 [1] CRAN (R 3.6.2)
-#>  purrr      * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
-#>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
-#>  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
-#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
-#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.2)
-#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
-#>  tidyr      * 1.0.2   2020-01-24 [1] CRAN (R 3.6.0)
-#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
-#>  workflows  * 0.1.1   2020-03-17 [1] CRAN (R 3.6.0)
-#>  yardstick  * 0.0.6   2020-03-17 [1] CRAN (R 3.6.0)
+#>  broom      * 0.7.0   2020-07-09 [1] CRAN (R 4.0.0)
+#>  dials      * 0.0.8   2020-07-08 [1] CRAN (R 4.0.0)
+#>  dplyr      * 1.0.0   2020-05-29 [1] CRAN (R 4.0.0)
+#>  ggplot2    * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
+#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.2)
+#>  parsnip    * 0.1.2   2020-07-03 [1] CRAN (R 4.0.1)
+#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
+#>  recipes    * 0.1.13  2020-06-23 [1] CRAN (R 4.0.0)
+#>  rlang        0.4.7   2020-07-09 [1] CRAN (R 4.0.2)
+#>  rsample    * 0.0.7   2020-06-04 [1] CRAN (R 4.0.0)
+#>  tibble     * 3.0.3   2020-07-10 [1] CRAN (R 4.0.2)
+#>  tidymodels * 0.1.1   2020-07-14 [1] CRAN (R 4.0.2)
+#>  tune       * 0.1.1   2020-07-08 [1] CRAN (R 4.0.0)
+#>  workflows  * 0.1.2   2020-07-07 [1] CRAN (R 4.0.0)
+#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.2)
 #> 
-#> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
+#> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
 ```
 
