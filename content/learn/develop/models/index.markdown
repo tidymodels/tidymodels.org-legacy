@@ -343,7 +343,7 @@ mda_fit <- mda_spec %>%
 mda_fit
 #> parsnip model object
 #> 
-#> Fit time:  31ms 
+#> Fit time:  24ms 
 #> Call:
 #> mda::mda(formula = Class ~ ., data = data, subclasses = ~2)
 #> 
@@ -432,7 +432,7 @@ linear_reg() %>%
   fit(mpg ~ ., data = mtcars)
 #> parsnip model object
 #> 
-#> Fit time:  7ms 
+#> Fit time:  5ms 
 #> Call:
 #> rlm(formula = mpg ~ ., data = data)
 #> Converged in 8 iterations
@@ -576,7 +576,7 @@ Previously, when discussing the `pred` information:
 
 > For `pred`, the model requires an unnamed numeric vector output **(usually)**.
 
-There are some models (e.g. `glmnet`, `plsr`, `Cubust`, etc.) that can make predictions for different models from the same fitted model object. We want to facilitate that here so, for these cases, the current convention is to return a tibble with the prediction in a column called `values` and have extra columns for any parameters that define the different sub-models. 
+There are some models (e.g. `glmnet`, `plsr`, `Cubist`, etc.) that can make predictions for different models from the same fitted model object. We want to facilitate that here so, for these cases, the current convention is to return a tibble with the prediction in a column called `values` and have extra columns for any parameters that define the different sub-models. 
 
 For example, if I fit a linear regression model via `glmnet` and get four values of the regularization parameter (`lambda`):
 
@@ -589,6 +589,31 @@ linear_reg() %>%
 ```
 
 _However_, the API is still being developed. Currently, there is not an interface in the prediction functions to pass in the values of the parameters to make predictions with (`lambda`, in this case). 
+
+**What do I do about how my model handles factors or categorical data?**
+
+Some modeling functions in R create indicator/dummy variables from categorical data when you use a model formula (typically using `model.matrix()`), and some do not. Some examples of models that do _not_ create indicator variables include tree-based models, naive Bayes models, and multilevel or hierarchical models. The tidymodels ecosystem assumes a `model.matrix()`-like default encoding for categorical data used in a model formula, but you can change this encoding using `set_encoding()`. For example, you can set predictor encodings that say, "leave my data alone," and keep factors as is:
+
+
+```r
+set_encoding(
+  model = "decision_tree",
+  eng = "rpart",
+  mode = "regression",
+  options = list(
+    predictor_indicators = "none",
+    compute_intercept = FALSE,
+    remove_intercept = FALSE
+  )
+)
+```
+
+{{% note %}} There are three options for `predictor_indicators`: 
+- "none" (do not expand factor predictors)
+- "traditional" (apply the standard `model.matrix()` encoding)
+- "one_hot" (create the complete set including the baseline level for all factors)  {{%/ note %}}
+
+To learn more about encoding categorical predictors, check out [this blog post](https://www.tidyverse.org/blog/2020/07/parsnip-0-1-2/#predictor-encoding-consistency).
 
 **What is the `defaults` slot and why do I need it?**
 
@@ -676,34 +701,34 @@ If you have a suggestion, please add a [GitHub issue](https://github.com/tidymod
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
 #>  version  R version 4.0.2 (2020-06-22)
-#>  os       macOS Catalina 10.15.6      
+#>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin17.0          
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-07-21                  
+#>  date     2020-07-22                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
 #>  broom      * 0.7.0   2020-07-09 [1] CRAN (R 4.0.0)
-#>  dials      * 0.0.8   2020-07-08 [1] CRAN (R 4.0.0)
+#>  dials      * 0.0.8   2020-07-08 [1] CRAN (R 4.0.2)
 #>  dplyr      * 1.0.0   2020-05-29 [1] CRAN (R 4.0.0)
 #>  ggplot2    * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
-#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.2)
-#>  mda        * 0.5-2   2020-06-29 [1] CRAN (R 4.0.2)
-#>  modeldata  * 0.0.2   2020-06-22 [1] CRAN (R 4.0.2)
+#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
+#>  mda        * 0.5-2   2020-06-29 [1] CRAN (R 4.0.1)
+#>  modeldata  * 0.0.2   2020-06-22 [1] CRAN (R 4.0.0)
 #>  parsnip    * 0.1.2   2020-07-03 [1] CRAN (R 4.0.1)
 #>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
 #>  recipes    * 0.1.13  2020-06-23 [1] CRAN (R 4.0.0)
-#>  rlang        0.4.7   2020-07-09 [1] CRAN (R 4.0.2)
+#>  rlang        0.4.7   2020-07-09 [1] CRAN (R 4.0.0)
 #>  rsample    * 0.0.7   2020-06-04 [1] CRAN (R 4.0.0)
 #>  tibble     * 3.0.3   2020-07-10 [1] CRAN (R 4.0.2)
-#>  tidymodels * 0.1.1   2020-07-14 [1] CRAN (R 4.0.2)
-#>  tune       * 0.1.1   2020-07-08 [1] CRAN (R 4.0.0)
-#>  workflows  * 0.1.2   2020-07-07 [1] CRAN (R 4.0.0)
-#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.2)
+#>  tidymodels * 0.1.1   2020-07-14 [1] CRAN (R 4.0.0)
+#>  tune       * 0.1.1   2020-07-08 [1] CRAN (R 4.0.2)
+#>  workflows  * 0.1.2   2020-07-07 [1] CRAN (R 4.0.2)
+#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.0)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
 ```
