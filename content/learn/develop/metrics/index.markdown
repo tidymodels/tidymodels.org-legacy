@@ -122,6 +122,8 @@ mse <- function(data, ...) {
   UseMethod("mse")
 }
 
+mse <- new_numeric_metric(mse, direction = "minimize")
+
 mse.data.frame <- function(data, truth, estimate, na_rm = TRUE, ...) {
   
   metric_summarizer(
@@ -455,7 +457,9 @@ Luckily, the data frame implementation is as simple as the numeric case, we just
 miss_rate <- function(data, ...) {
   UseMethod("miss_rate")
 }
+
 miss_rate <- new_class_metric(miss_rate, direction = "minimize")
+
 miss_rate.data.frame <- function(data, 
                                  truth, 
                                  estimate, 
@@ -522,27 +526,10 @@ miss_rate(hpc_cv, obs, VF)
 
 ## Using custom metrics
 
-The `metric_set()` function validates that all metric functions are of the same metric type by checking the class of the function. If any metrics are not of the right class,`metric_set()` fails. This means that to use your function with `metric_set()`, you need to add the correct class.
-
-- Numeric metrics: `"numeric_metric"`
-- Class metrics: `"class_metric"`
-- Class probability metrics: `"prob_metric"`
+The `metric_set()` function validates that all metric functions are of the same metric type by checking the class of the function. If any metrics are not of the right class, `metric_set()` fails. By using `new_numeric_metric()` and `new_class_metric()` in the above custom metrics, they work out of the box without any additional adjustments.
 
 
 ```r
-# This errors because the class has not been set
-metric_set(mse, rmse)
-#> Error: 
-#> The combination of metric functions must be:
-#> - only numeric metrics
-#> - a mix of class metrics and class probability metrics
-#> 
-#> The following metric function types are being mixed:
-#> - other (mse <global>)
-#> - numeric (rmse)
-
-class(mse) <- c("numeric_metric", class(mse))
-
 numeric_mets <- metric_set(mse, rmse)
 
 numeric_mets(solubility_test, solubility, prediction)
@@ -561,32 +548,32 @@ numeric_mets(solubility_test, solubility, prediction)
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
 #>  version  R version 4.0.2 (2020-06-22)
-#>  os       macOS Catalina 10.15.6      
+#>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin17.0          
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-07-21                  
+#>  date     2020-07-22                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
 #>  broom      * 0.7.0   2020-07-09 [1] CRAN (R 4.0.0)
-#>  dials      * 0.0.8   2020-07-08 [1] CRAN (R 4.0.0)
+#>  dials      * 0.0.8   2020-07-08 [1] CRAN (R 4.0.2)
 #>  dplyr      * 1.0.0   2020-05-29 [1] CRAN (R 4.0.0)
 #>  ggplot2    * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
-#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.2)
+#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
 #>  parsnip    * 0.1.2   2020-07-03 [1] CRAN (R 4.0.1)
 #>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
 #>  recipes    * 0.1.13  2020-06-23 [1] CRAN (R 4.0.0)
-#>  rlang      * 0.4.7   2020-07-09 [1] CRAN (R 4.0.2)
+#>  rlang      * 0.4.7   2020-07-09 [1] CRAN (R 4.0.0)
 #>  rsample    * 0.0.7   2020-06-04 [1] CRAN (R 4.0.0)
 #>  tibble     * 3.0.3   2020-07-10 [1] CRAN (R 4.0.2)
-#>  tidymodels * 0.1.1   2020-07-14 [1] CRAN (R 4.0.2)
-#>  tune       * 0.1.1   2020-07-08 [1] CRAN (R 4.0.0)
-#>  workflows  * 0.1.2   2020-07-07 [1] CRAN (R 4.0.0)
-#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.2)
+#>  tidymodels * 0.1.1   2020-07-14 [1] CRAN (R 4.0.0)
+#>  tune       * 0.1.1   2020-07-08 [1] CRAN (R 4.0.2)
+#>  workflows  * 0.1.2   2020-07-07 [1] CRAN (R 4.0.2)
+#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.0)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
 ```

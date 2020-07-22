@@ -119,6 +119,8 @@ mse <- function(data, ...) {
   UseMethod("mse")
 }
 
+mse <- new_numeric_metric(mse, direction = "minimize")
+
 mse.data.frame <- function(data, truth, estimate, na_rm = TRUE, ...) {
   
   metric_summarizer(
@@ -415,7 +417,9 @@ Luckily, the data frame implementation is as simple as the numeric case, we just
 miss_rate <- function(data, ...) {
   UseMethod("miss_rate")
 }
+
 miss_rate <- new_class_metric(miss_rate, direction = "minimize")
+
 miss_rate.data.frame <- function(data, 
                                  truth, 
                                  estimate, 
@@ -457,18 +461,9 @@ miss_rate(hpc_cv, obs, VF)
 
 ## Using custom metrics
 
-The `metric_set()` function validates that all metric functions are of the same metric type by checking the class of the function. If any metrics are not of the right class,`metric_set()` fails. This means that to use your function with `metric_set()`, you need to add the correct class.
+The `metric_set()` function validates that all metric functions are of the same metric type by checking the class of the function. If any metrics are not of the right class, `metric_set()` fails. By using `new_numeric_metric()` and `new_class_metric()` in the above custom metrics, they work out of the box without any additional adjustments.
 
-- Numeric metrics: `"numeric_metric"`
-- Class metrics: `"class_metric"`
-- Class probability metrics: `"prob_metric"`
-
-```{r, error=TRUE}
-# This errors because the class has not been set
-metric_set(mse, rmse)
-
-class(mse) <- c("numeric_metric", class(mse))
-
+```{r}
 numeric_mets <- metric_set(mse, rmse)
 
 numeric_mets(solubility_test, solubility, prediction)
