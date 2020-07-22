@@ -411,35 +411,35 @@ You could tune the other hyperparameter we didn't use here, `min_n`, which sets 
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
 #>  version  R version 4.0.2 (2020-06-22)
-#>  os       macOS Mojave 10.14.6        
+#>  os       macOS Catalina 10.15.6      
 #>  system   x86_64, darwin17.0          
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-07-16                  
+#>  date     2020-07-21                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
 #>  broom      * 0.7.0   2020-07-09 [1] CRAN (R 4.0.0)
-#>  dials      * 0.0.8   2020-07-08 [1] CRAN (R 4.0.2)
+#>  dials      * 0.0.8   2020-07-08 [1] CRAN (R 4.0.0)
 #>  dplyr      * 1.0.0   2020-05-29 [1] CRAN (R 4.0.0)
 #>  ggplot2    * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
-#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
-#>  modeldata  * 0.0.2   2020-06-22 [1] CRAN (R 4.0.0)
+#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.2)
+#>  modeldata  * 0.0.2   2020-06-22 [1] CRAN (R 4.0.2)
 #>  parsnip    * 0.1.2   2020-07-03 [1] CRAN (R 4.0.1)
 #>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
 #>  recipes    * 0.1.13  2020-06-23 [1] CRAN (R 4.0.0)
-#>  rlang        0.4.7   2020-07-09 [1] CRAN (R 4.0.0)
+#>  rlang        0.4.7   2020-07-09 [1] CRAN (R 4.0.2)
 #>  rpart      * 4.1-15  2019-04-12 [1] CRAN (R 4.0.2)
 #>  rsample    * 0.0.7   2020-06-04 [1] CRAN (R 4.0.0)
 #>  tibble     * 3.0.3   2020-07-10 [1] CRAN (R 4.0.2)
-#>  tidymodels * 0.1.1   2020-07-14 [1] CRAN (R 4.0.0)
-#>  tune       * 0.1.1   2020-07-08 [1] CRAN (R 4.0.2)
+#>  tidymodels * 0.1.1   2020-07-14 [1] CRAN (R 4.0.2)
+#>  tune       * 0.1.1   2020-07-08 [1] CRAN (R 4.0.0)
 #>  vip        * 0.2.2   2020-04-06 [1] CRAN (R 4.0.0)
-#>  workflows  * 0.1.2   2020-07-07 [1] CRAN (R 4.0.2)
-#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.0)
+#>  workflows  * 0.1.2   2020-07-07 [1] CRAN (R 4.0.0)
+#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.2)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
 ```
