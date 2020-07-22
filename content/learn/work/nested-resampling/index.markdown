@@ -64,14 +64,12 @@ results <- nested_cv(train_dat,
                      outside = vfold_cv(repeats = 5), 
                      inside = bootstraps(times = 25))
 results
-#> [1] "nested_cv"  "vfold_cv"   "rset"       "tbl_df"     "tbl"       
-#> [6] "data.frame"
 #> # Nested resampling:
 #> #  outer: 10-fold cross-validation repeated 5 times
 #> #  inner: Bootstrap sampling
 #> # A tibble: 50 x 4
 #>    splits          id      id2    inner_resamples  
-#>    <named list>    <chr>   <chr>  <named list>     
+#>    <list>          <chr>   <chr>  <list>           
 #>  1 <split [90/10]> Repeat1 Fold01 <tibble [25 × 2]>
 #>  2 <split [90/10]> Repeat1 Fold02 <tibble [25 × 2]>
 #>  3 <split [90/10]> Repeat1 Fold03 <tibble [25 × 2]>
@@ -90,7 +88,7 @@ The splitting information for each resample is contained in the `split` objects.
 
 ```r
 results$splits[[2]]
-#> <Training/Validation/Total>
+#> <Analysis/Assess/Total>
 #> <90/10/100>
 ```
 
@@ -123,7 +121,7 @@ These are self-contained, meaning that the bootstrap sample is aware that it is 
 
 ```r
 results$inner_resamples[[5]]$splits[[1]]
-#> <Training/Validation/Total>
+#> <Analysis/Assess/Total>
 #> <90/31/90>
 ```
 
@@ -198,6 +196,56 @@ library(furrr)
 plan(multisession)
 
 tuning_results <- future_map(results$inner_resamples, summarize_tune_results) 
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
+#> `summarise()` ungrouping output (override with `.groups` argument)
 ```
 
 The object `tuning_results` is a list of data frames for each of the 50 outer resamples. 
@@ -263,7 +311,7 @@ results <-
 
 summary(results$RMSE)
 #>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-#>    1.57    2.09    2.68    2.69    3.25    4.25
+#>    1.57    2.09    2.67    2.69    3.25    4.35
 ```
 
 The estimated RMSE for the model tuning process is 2.69. 
@@ -326,37 +374,37 @@ The nested procedure produces a closer estimate to the approximate truth but the
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.2 (2019-12-12)
-#>  os       macOS Mojave 10.14.6        
-#>  system   x86_64, darwin15.6.0        
+#>  version  R version 4.0.2 (2020-06-22)
+#>  os       macOS Catalina 10.15.6      
+#>  system   x86_64, darwin17.0          
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-04-17                  
+#>  date     2020-07-21                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
-#>  broom      * 0.5.5   2020-02-29 [1] CRAN (R 3.6.0)
-#>  dials      * 0.0.6   2020-04-03 [1] CRAN (R 3.6.2)
-#>  dplyr      * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
-#>  furrr      * 0.1.0   2018-05-16 [1] CRAN (R 3.6.0)
-#>  ggplot2    * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
-#>  infer      * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
-#>  kernlab    * 0.9-29  2019-11-12 [1] CRAN (R 3.6.0)
-#>  mlbench    * 2.1-1   2012-07-10 [1] CRAN (R 3.6.0)
-#>  parsnip    * 0.1.0   2020-04-09 [1] CRAN (R 3.6.2)
-#>  purrr      * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
-#>  recipes    * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
-#>  rlang        0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
-#>  rsample    * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
-#>  scales     * 1.1.0   2019-11-18 [1] CRAN (R 3.6.0)
-#>  tibble     * 2.1.3   2019-06-06 [1] CRAN (R 3.6.2)
-#>  tidymodels * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
-#>  tune       * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
-#>  workflows  * 0.1.1   2020-03-17 [1] CRAN (R 3.6.0)
-#>  yardstick  * 0.0.6   2020-03-17 [1] CRAN (R 3.6.0)
+#>  broom      * 0.7.0   2020-07-09 [1] CRAN (R 4.0.0)
+#>  dials      * 0.0.8   2020-07-08 [1] CRAN (R 4.0.0)
+#>  dplyr      * 1.0.0   2020-05-29 [1] CRAN (R 4.0.0)
+#>  furrr      * 0.1.0   2018-05-16 [1] CRAN (R 4.0.0)
+#>  ggplot2    * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
+#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.2)
+#>  kernlab    * 0.9-29  2019-11-12 [1] CRAN (R 4.0.2)
+#>  mlbench    * 2.1-1   2012-07-10 [1] CRAN (R 4.0.2)
+#>  parsnip    * 0.1.2   2020-07-03 [1] CRAN (R 4.0.1)
+#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
+#>  recipes    * 0.1.13  2020-06-23 [1] CRAN (R 4.0.0)
+#>  rlang        0.4.7   2020-07-09 [1] CRAN (R 4.0.2)
+#>  rsample    * 0.0.7   2020-06-04 [1] CRAN (R 4.0.0)
+#>  scales     * 1.1.1   2020-05-11 [1] CRAN (R 4.0.0)
+#>  tibble     * 3.0.3   2020-07-10 [1] CRAN (R 4.0.2)
+#>  tidymodels * 0.1.1   2020-07-14 [1] CRAN (R 4.0.2)
+#>  tune       * 0.1.1   2020-07-08 [1] CRAN (R 4.0.0)
+#>  workflows  * 0.1.2   2020-07-07 [1] CRAN (R 4.0.0)
+#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.2)
 #> 
-#> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
+#> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
 ```

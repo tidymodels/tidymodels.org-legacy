@@ -63,10 +63,10 @@ glm(Class ~ ., data = Ionosphere, family = binomial)
 glm(Class ~ . - V2, data = Ionosphere, family = binomial)
 ```
 
-At a minimum, let's get rid of the most problematic variable:
+Let's remove these two problematic variables:
 
 ```{r ion-rm}
-Ionosphere <- Ionosphere %>% select(-V2)
+Ionosphere <- Ionosphere %>% select(-V1, -V2)
 ```
 
 ## Inputs for the search
@@ -85,17 +85,15 @@ In this article, tuning will be demonstrated in two ways, using:
 - a standard R formula, and 
 - a recipe.
 
-Let's create the recipe here:
+Let's create a simple recipe here:
 
 ```{r rec}
 iono_rec <-
   recipe(Class ~ ., data = Ionosphere)  %>%
-  # In case V1 is has a single value sampled
+  # remove any zero variance predictors
   step_zv(all_predictors()) %>% 
-  # convert it to a dummy variable
-  step_dummy(V1) %>%
-  # Scale it the same as the others
-  step_range(matches("V1_"))
+  # remove any linear combinations
+  step_lincomb(all_numeric())
 ```
 
 The only other required item for tuning is a resampling strategy as defined by an rsample object. Let's demonstrate using basic bootstrapping:
