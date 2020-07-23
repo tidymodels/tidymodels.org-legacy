@@ -18,9 +18,10 @@ library(tune)
 library(kernlab)
 library(rlang)
 library(doMC)
+library(themis)
 registerDoMC(cores = parallel::detectCores())
 
-pkgs <- c("modeldata", "kernlab", "tidymodels", "tidyr")
+pkgs <- c("modeldata", "kernlab", "tidymodels", "themis")
 
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
@@ -67,6 +68,8 @@ folds <- vfold_cv(cell_train, v = 10)
 Since the predictors are highly correlated, we can used a recipe to convert the original predictors to principal component scores. There is also slight class imbalance in these data; about `r floor(mean(cells$class == "PS") * 100)`% of the data are poorly segmented. To mitigate this, the data will be down-sampled at the end of the pre-processing so that the number of poorly and well segmented cells occur with equal frequency. We can use a recipe for all this pre-processing, but the number of principal components will need to be _tuned_ so that we have enough (but not too many) representations of the data. 
 
 ```{r recipe}
+library(themis)
+
 cell_pre_proc <-
   recipe(class ~ ., data = cell_train) %>%
   step_YeoJohnson(all_predictors()) %>%

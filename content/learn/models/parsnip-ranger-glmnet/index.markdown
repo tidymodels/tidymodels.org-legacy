@@ -15,7 +15,7 @@ description: |
 
 ## Introduction
 
-To use the code in this article, you will need to install the following packages: AmesHousing, glmnet, randomForest, ranger, and tidymodels.
+To use the code in this article, you will need to install the following packages: glmnet, randomForest, ranger, and tidymodels.
 
 We can create regression models with the tidymodels package [parsnip](https://tidymodels.github.io/parsnip/) to predict continuous or numeric quantities. Here, let's first fit a random forest model, which does _not_ require all numeric input (see discussion [here](https://bookdown.org/max/FES/categorical-trees.html)) and discuss how to use `fit()` and `fit_xy()`, as well as _data descriptors_. 
 
@@ -27,10 +27,9 @@ We'll use the Ames housing data set to demonstrate how to create regression mode
 
 
 ```r
-library(AmesHousing)
-ames <- make_ames()
-
 library(tidymodels)
+
+data(ames)
 
 set.seed(4595)
 data_split <- initial_split(ames, strata = "Sale_Price", p = 0.75)
@@ -77,11 +76,11 @@ rf_xy_fit <-
 rf_xy_fit
 #> parsnip model object
 #> 
-#> Fit time:  952ms 
+#> Fit time:  1.2s 
 #> Ranger result
 #> 
 #> Call:
-#>  ranger::ranger(formula = formula, data = data, num.threads = 1,      verbose = FALSE, seed = sample.int(10^5, 1)) 
+#>  ranger::ranger(formula = ..y ~ ., data = data, num.threads = 1,      verbose = FALSE, seed = sample.int(10^5, 1)) 
 #> 
 #> Type:                             Regression 
 #> Number of trees:                  500 
@@ -145,11 +144,11 @@ rand_forest(mode = "regression", mtry = 3, trees = 1000) %>%
   )
 #> parsnip model object
 #> 
-#> Fit time:  2.6s 
+#> Fit time:  3.4s 
 #> Ranger result
 #> 
 #> Call:
-#>  ranger::ranger(formula = formula, data = data, mtry = ~3, num.trees = ~1000,      num.threads = 1, verbose = FALSE, seed = sample.int(10^5,          1)) 
+#>  ranger::ranger(formula = log10(Sale_Price) ~ Longitude + Latitude +      Lot_Area + Neighborhood + Year_Sold, data = data, mtry = ~3,      num.trees = ~1000, num.threads = 1, verbose = FALSE, seed = sample.int(10^5,          1)) 
 #> 
 #> Type:                             Regression 
 #> Number of trees:                  1000 
@@ -176,7 +175,7 @@ rand_forest(mode = "regression", mtry = 3, trees = 1000) %>%
   )
 #> parsnip model object
 #> 
-#> Fit time:  2.1s 
+#> Fit time:  9.9s 
 #> 
 #> Call:
 #>  randomForest(x = as.data.frame(x), y = y, ntree = ~1000, mtry = ~3) 
@@ -184,8 +183,8 @@ rand_forest(mode = "regression", mtry = 3, trees = 1000) %>%
 #>                      Number of trees: 1000
 #> No. of variables tried at each split: 3
 #> 
-#>           Mean of squared residuals: 0.013
-#>                     % Var explained: 59.4
+#>           Mean of squared residuals: 0.00847
+#>                     % Var explained: 73.5
 ```
 
 Look at the formula code that was printed out; one function uses the argument name `ntree` and the other uses `num.trees`. The parsnip models don't require you to know the specific names of the main arguments. 
@@ -213,11 +212,11 @@ rand_forest(mode = "regression", mtry = .preds(), trees = 1000) %>%
   )
 #> parsnip model object
 #> 
-#> Fit time:  3.6s 
+#> Fit time:  4.7s 
 #> Ranger result
 #> 
 #> Call:
-#>  ranger::ranger(formula = formula, data = data, mtry = ~.preds(),      num.trees = ~1000, num.threads = 1, verbose = FALSE, seed = sample.int(10^5,          1)) 
+#>  ranger::ranger(formula = log10(Sale_Price) ~ Longitude + Latitude +      Lot_Area + Neighborhood + Year_Sold, data = data, mtry = ~.preds(),      num.trees = ~1000, num.threads = 1, verbose = FALSE, seed = sample.int(10^5,          1)) 
 #> 
 #> Type:                             Regression 
 #> Number of trees:                  1000 
@@ -227,7 +226,7 @@ rand_forest(mode = "regression", mtry = .preds(), trees = 1000) %>%
 #> Target node size:                 5 
 #> Variable importance mode:         none 
 #> Splitrule:                        variance 
-#> OOB prediction error (MSE):       0.00869 
+#> OOB prediction error (MSE):       0.00868 
 #> R squared (OOB):                  0.728
 ```
 
@@ -262,76 +261,76 @@ glmn_fit <-
 glmn_fit
 #> parsnip model object
 #> 
-#> Fit time:  13ms 
+#> Fit time:  14ms 
 #> 
 #> Call:  glmnet::glmnet(x = as.matrix(x), y = y, family = "gaussian",      alpha = ~0.5) 
 #> 
-#>    Df  %Dev Lambda
-#> 1   0 0.000 0.1370
-#> 2   1 0.019 0.1250
-#> 3   1 0.036 0.1140
-#> 4   1 0.050 0.1040
-#> 5   2 0.068 0.0946
-#> 6   4 0.093 0.0862
-#> 7   5 0.125 0.0785
-#> 8   5 0.153 0.0716
-#> 9   7 0.184 0.0652
-#> 10  7 0.214 0.0594
-#> 11  7 0.240 0.0541
-#> 12  8 0.262 0.0493
-#> 13  8 0.286 0.0449
-#> 14  8 0.306 0.0409
-#> 15  8 0.323 0.0373
-#> 16  8 0.338 0.0340
-#> 17  8 0.350 0.0310
-#> 18  8 0.361 0.0282
-#> 19  9 0.370 0.0257
-#> 20  9 0.379 0.0234
-#> 21  9 0.386 0.0213
-#> 22  9 0.392 0.0195
-#> 23  9 0.397 0.0177
-#> 24  9 0.401 0.0161
-#> 25  9 0.405 0.0147
-#> 26  9 0.408 0.0134
-#> 27 10 0.410 0.0122
-#> 28 11 0.413 0.0111
-#> 29 11 0.415 0.0101
-#> 30 11 0.417 0.0092
-#> 31 12 0.418 0.0084
-#> 32 12 0.420 0.0077
-#> 33 12 0.421 0.0070
-#> 34 12 0.422 0.0064
-#> 35 12 0.423 0.0058
-#> 36 12 0.423 0.0053
-#> 37 12 0.424 0.0048
-#> 38 12 0.425 0.0044
-#> 39 12 0.425 0.0040
-#> 40 12 0.425 0.0036
-#> 41 12 0.426 0.0033
-#> 42 12 0.426 0.0030
-#> 43 12 0.426 0.0028
-#> 44 12 0.426 0.0025
-#> 45 12 0.426 0.0023
-#> 46 12 0.426 0.0021
-#> 47 12 0.427 0.0019
-#> 48 12 0.427 0.0017
-#> 49 12 0.427 0.0016
-#> 50 12 0.427 0.0014
-#> 51 12 0.427 0.0013
-#> 52 12 0.427 0.0012
-#> 53 12 0.427 0.0011
-#> 54 12 0.427 0.0010
-#> 55 12 0.427 0.0009
-#> 56 12 0.427 0.0008
-#> 57 12 0.427 0.0008
-#> 58 12 0.427 0.0007
-#> 59 12 0.427 0.0006
-#> 60 12 0.427 0.0006
-#> 61 12 0.427 0.0005
-#> 62 12 0.427 0.0005
-#> 63 12 0.427 0.0004
-#> 64 12 0.427 0.0004
-#> 65 12 0.427 0.0004
+#>    Df %Dev Lambda
+#> 1   0  0.0 0.1370
+#> 2   1  1.9 0.1250
+#> 3   1  3.5 0.1140
+#> 4   1  5.0 0.1040
+#> 5   2  6.8 0.0946
+#> 6   4  9.3 0.0862
+#> 7   5 12.5 0.0785
+#> 8   5 15.3 0.0716
+#> 9   7 18.4 0.0652
+#> 10  7 21.4 0.0594
+#> 11  7 24.0 0.0541
+#> 12  8 26.2 0.0493
+#> 13  8 28.6 0.0449
+#> 14  8 30.6 0.0409
+#> 15  8 32.3 0.0373
+#> 16  8 33.8 0.0340
+#> 17  8 35.0 0.0310
+#> 18  8 36.1 0.0282
+#> 19  9 37.0 0.0257
+#> 20  9 37.9 0.0234
+#> 21  9 38.6 0.0213
+#> 22  9 39.2 0.0195
+#> 23  9 39.7 0.0177
+#> 24  9 40.1 0.0161
+#> 25  9 40.5 0.0147
+#> 26  9 40.8 0.0134
+#> 27 10 41.0 0.0122
+#> 28 11 41.3 0.0111
+#> 29 11 41.5 0.0101
+#> 30 11 41.7 0.0092
+#> 31 12 41.8 0.0084
+#> 32 12 42.0 0.0077
+#> 33 12 42.1 0.0070
+#> 34 12 42.2 0.0064
+#> 35 12 42.3 0.0058
+#> 36 12 42.4 0.0053
+#> 37 12 42.4 0.0048
+#> 38 12 42.5 0.0044
+#> 39 12 42.5 0.0040
+#> 40 12 42.5 0.0036
+#> 41 12 42.6 0.0033
+#> 42 12 42.6 0.0030
+#> 43 12 42.6 0.0028
+#> 44 12 42.6 0.0025
+#> 45 12 42.6 0.0023
+#> 46 12 42.6 0.0021
+#> 47 12 42.7 0.0019
+#> 48 12 42.7 0.0017
+#> 49 12 42.7 0.0016
+#> 50 12 42.7 0.0014
+#> 51 12 42.7 0.0013
+#> 52 12 42.7 0.0012
+#> 53 12 42.7 0.0011
+#> 54 12 42.7 0.0010
+#> 55 12 42.7 0.0009
+#> 56 12 42.7 0.0008
+#> 57 12 42.7 0.0008
+#> 58 12 42.7 0.0007
+#> 59 12 42.7 0.0006
+#> 60 12 42.7 0.0006
+#> 61 12 42.7 0.0005
+#> 62 12 42.7 0.0005
+#> 63 12 42.7 0.0004
+#> 64 12 42.7 0.0004
+#> 65 12 42.7 0.0004
 ```
 
 If `penalty` were not specified, all of the `lambda` values would be computed. 
@@ -393,38 +392,37 @@ This final plot compares the performance of the random forest and regularized re
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 3.6.2 (2019-12-12)
-#>  os       macOS Mojave 10.14.6        
-#>  system   x86_64, darwin15.6.0        
+#>  version  R version 4.0.2 (2020-06-22)
+#>  os       macOS Catalina 10.15.6      
+#>  system   x86_64, darwin17.0          
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-04-17                  
+#>  date     2020-07-21                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package      * version date       lib source        
-#>  AmesHousing  * 0.0.3   2017-12-17 [1] CRAN (R 3.6.0)
-#>  broom        * 0.5.5   2020-02-29 [1] CRAN (R 3.6.0)
-#>  dials        * 0.0.6   2020-04-03 [1] CRAN (R 3.6.2)
-#>  dplyr        * 0.8.5   2020-03-07 [1] CRAN (R 3.6.0)
-#>  ggplot2      * 3.3.0   2020-03-05 [1] CRAN (R 3.6.0)
-#>  glmnet       * 3.0-2   2019-12-11 [1] CRAN (R 3.6.0)
-#>  infer        * 0.5.1   2019-11-19 [1] CRAN (R 3.6.0)
-#>  parsnip      * 0.1.0   2020-04-09 [1] CRAN (R 3.6.2)
-#>  purrr        * 0.3.3   2019-10-18 [1] CRAN (R 3.6.0)
-#>  randomForest * 4.6-14  2018-03-25 [1] CRAN (R 3.6.0)
-#>  ranger       * 0.12.1  2020-01-10 [1] CRAN (R 3.6.0)
-#>  recipes      * 0.1.10  2020-03-18 [1] CRAN (R 3.6.0)
-#>  rlang          0.4.5   2020-03-01 [1] CRAN (R 3.6.0)
-#>  rsample      * 0.0.6   2020-03-31 [1] CRAN (R 3.6.2)
-#>  tibble       * 2.1.3   2019-06-06 [1] CRAN (R 3.6.2)
-#>  tidymodels   * 0.1.0   2020-02-16 [1] CRAN (R 3.6.0)
-#>  tune         * 0.1.0   2020-04-02 [1] CRAN (R 3.6.2)
-#>  workflows    * 0.1.1   2020-03-17 [1] CRAN (R 3.6.0)
-#>  yardstick    * 0.0.6   2020-03-17 [1] CRAN (R 3.6.0)
+#>  broom        * 0.7.0   2020-07-09 [1] CRAN (R 4.0.0)
+#>  dials        * 0.0.8   2020-07-08 [1] CRAN (R 4.0.0)
+#>  dplyr        * 1.0.0   2020-05-29 [1] CRAN (R 4.0.0)
+#>  ggplot2      * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
+#>  glmnet       * 4.0-2   2020-06-16 [1] CRAN (R 4.0.2)
+#>  infer        * 0.5.3   2020-07-14 [1] CRAN (R 4.0.2)
+#>  parsnip      * 0.1.2   2020-07-03 [1] CRAN (R 4.0.1)
+#>  purrr        * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
+#>  randomForest * 4.6-14  2018-03-25 [1] CRAN (R 4.0.2)
+#>  ranger       * 0.12.1  2020-01-10 [1] CRAN (R 4.0.2)
+#>  recipes      * 0.1.13  2020-06-23 [1] CRAN (R 4.0.0)
+#>  rlang          0.4.7   2020-07-09 [1] CRAN (R 4.0.2)
+#>  rsample      * 0.0.7   2020-06-04 [1] CRAN (R 4.0.0)
+#>  tibble       * 3.0.3   2020-07-10 [1] CRAN (R 4.0.2)
+#>  tidymodels   * 0.1.1   2020-07-14 [1] CRAN (R 4.0.2)
+#>  tune         * 0.1.1   2020-07-08 [1] CRAN (R 4.0.0)
+#>  workflows    * 0.1.2   2020-07-07 [1] CRAN (R 4.0.0)
+#>  yardstick    * 0.0.7   2020-07-13 [1] CRAN (R 4.0.2)
 #> 
-#> [1] /Library/Frameworks/R.framework/Versions/3.6/Resources/library
+#> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
 ```
  

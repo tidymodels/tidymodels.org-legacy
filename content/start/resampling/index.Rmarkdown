@@ -30,11 +30,6 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 
 So far, we have [built a model](/start/models/) and [preprocessed data with a recipe](/start/recipes/). We also introduced [workflows](/start/recipes/#fit-workflow) as a way to bundle a [parsnip model](https://tidymodels.github.io/parsnip/) and [recipe](https://tidymodels.github.io/recipes/) together. Once we have a model trained, we need a way to measure how well that model predicts new data. This tutorial explains how to characterize model performance based on **resampling** statistics. 
 
-Alternatively, take this tutorial for a test drive on RStudio Cloud with ready-to-go examples:
-
-{{< test-drive url="https://rstudio.cloud/project/1479888" >}}
-
-
 `r req_pkgs(pkgs)`
 
 ```{r eval=FALSE}
@@ -44,6 +39,7 @@ library(tidymodels) # for the rsample package, along with the rest of tidymodels
 library(modeldata)  # for the cells data
 ```
 
+{{< test-drive url="https://rstudio.cloud/project/1479888" >}}
 
 ## The cell image data {#data}
 
@@ -238,7 +234,6 @@ The other 90% of the data (about `r floor(nrow(cell_train) * .9)` cells) are use
 In this example, 10-fold CV moves iteratively through the folds and leaves a different 10% out each time for model assessment. At the end of this process, there are 10 sets of performance statistics that were created on 10 data sets that were not used in the modeling process. For the cell example, this means 10 accuracies and 10 areas under the ROC curve. While 10 models were created, these are not used further; we do not keep the models themselves trained on these folds because their only purpose is calculating performance metrics. 
 
 ```{r rf-rs, include = FALSE}
-library(tidyr)
 set.seed(345)
 folds <- vfold_cv(cell_train)
 

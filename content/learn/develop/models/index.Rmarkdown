@@ -438,7 +438,7 @@ Previously, when discussing the `pred` information:
 
 > For `pred`, the model requires an unnamed numeric vector output **(usually)**.
 
-There are some models (e.g. `glmnet`, `plsr`, `Cubust`, etc.) that can make predictions for different models from the same fitted model object. We want to facilitate that here so, for these cases, the current convention is to return a tibble with the prediction in a column called `values` and have extra columns for any parameters that define the different sub-models. 
+There are some models (e.g. `glmnet`, `plsr`, `Cubist`, etc.) that can make predictions for different models from the same fitted model object. We want to facilitate that here so, for these cases, the current convention is to return a tibble with the prediction in a column called `values` and have extra columns for any parameters that define the different sub-models. 
 
 For example, if I fit a linear regression model via `glmnet` and get four values of the regularization parameter (`lambda`):
 
@@ -450,6 +450,30 @@ linear_reg() %>%
 ```
 
 _However_, the API is still being developed. Currently, there is not an interface in the prediction functions to pass in the values of the parameters to make predictions with (`lambda`, in this case). 
+
+**What do I do about how my model handles factors or categorical data?**
+
+Some modeling functions in R create indicator/dummy variables from categorical data when you use a model formula (typically using `model.matrix()`), and some do not. Some examples of models that do _not_ create indicator variables include tree-based models, naive Bayes models, and multilevel or hierarchical models. The tidymodels ecosystem assumes a `model.matrix()`-like default encoding for categorical data used in a model formula, but you can change this encoding using `set_encoding()`. For example, you can set predictor encodings that say, "leave my data alone," and keep factors as is:
+
+```{r encodinginfo, eval=FALSE}
+set_encoding(
+  model = "decision_tree",
+  eng = "rpart",
+  mode = "regression",
+  options = list(
+    predictor_indicators = "none",
+    compute_intercept = FALSE,
+    remove_intercept = FALSE
+  )
+)
+```
+
+{{% note %}} There are three options for `predictor_indicators`: 
+- "none" (do not expand factor predictors)
+- "traditional" (apply the standard `model.matrix()` encoding)
+- "one_hot" (create the complete set including the baseline level for all factors)  {{%/ note %}}
+
+To learn more about encoding categorical predictors, check out [this blog post](https://www.tidyverse.org/blog/2020/07/parsnip-0-1-2/#predictor-encoding-consistency).
 
 **What is the `defaults` slot and why do I need it?**
 

@@ -38,7 +38,6 @@ library(readr)       # for importing data
 library(broom.mixed) # for converting bayesian models to tidy tibbles
 ```
 
-Alternatively, take this tutorial for a test drive on RStudio Cloud with ready-to-go examples:
 
 {{< test-drive url="https://rstudio.cloud/project/1479888" >}}
 

@@ -14,13 +14,13 @@ source(here::here("content/learn/common.R"))
 
 ```{r load, include = FALSE}
 library(tidymodels)
-pkgs <- c("tidymodels", "tidyr")
+pkgs <- c("tidymodels")
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
 ## Introduction
 
-`r req_pkgs(pkgs)`
+This article only requires the tidymodels package.
 
 While the tidymodels package [broom](https://broom.tidyverse.org/) is useful for summarizing the result of a single analysis in a consistent format, it is really designed for high-throughput applications, where you must combine results from multiple analyses. These could be subgroups of data, analyses using different models, bootstrap replicates, permutations, and so on. In particular, it plays well with the `nest()/unnest()` functions from [tidyr](https://tidyr.tidyverse.org/) and the `map()` function in [purrr](https://purrr.tidyverse.org/).
 
@@ -74,8 +74,6 @@ tidy(ct)
 Often, we want to perform multiple tests or fit multiple models, each on a different part of the data. In this case, we recommend a `nest-map-unnest` workflow. For example, suppose we want to perform correlation tests for each different tree. We start by `nest`ing our data based on the group of interest:
 
 ```{r}
-library(tidyr)
-
 nested <- 
   Orange %>% 
   nest(data = c(age, circumference))
