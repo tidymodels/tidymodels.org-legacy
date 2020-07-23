@@ -11,9 +11,9 @@ get_pkgdown_urls <-
   function(x, pth = tempdir(), fltr = "[\\s\\S]*") {
     pkg_name <- x$pkg
     
-    x <- mutate(x, base_url = paste0(base_url, pkg, "/reference/"))
+    x <- mutate(x, base_url = paste0(base_url, "reference"))
     
-    base_url <- "https://tidymodels.github.io/{pkg}/reference/{file}"
+    base_url <- paste0(x$base_url, "/{file}")
     null_res <-
       tibble::tibble(
         topic = rlang::na_chr,
@@ -55,6 +55,7 @@ get_pkgdown_urls <-
         str_detect(topic, "reexport", negate = TRUE),
         str_detect(topic, "-package$", negate = TRUE),
         str_detect(title, "^Internal", negate = TRUE),
+        str_detect(title, "^Tidy eval", negate = TRUE),
         topic != "_PACKAGE",
         title != "Pipe",
         topic != "%>%",
