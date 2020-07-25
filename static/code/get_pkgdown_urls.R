@@ -11,9 +11,9 @@ get_pkgdown_urls <-
   function(x, pth = tempdir(), fltr = "[\\s\\S]*") {
     pkg_name <- x$pkg
     
-    x <- mutate(x, base_url = paste0(base_url, "reference"))
+    x <- mutate(x, base_url = paste0(base_url, "reference/"))
     
-    base_url <- paste0(x$base_url, "/{file}")
+    base_url <- paste0(x$base_url, "{file}")
     null_res <-
       tibble::tibble(
         topic = rlang::na_chr,
