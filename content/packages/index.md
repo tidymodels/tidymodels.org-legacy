@@ -21,59 +21,59 @@ title: Tidymodels packages
   <div class="package">
     <img class="package-image" src="/images/tidymodels.png" alt=""></img>
     <div class="package-info">
-      <h3><a href="https://tidymodels.github.io/tidymodels/"> tidymodels </a></h3>
+      <h3><a href="https://tidymodels.tidymodels.org/"> tidymodels </a></h3>
       <p>tidymodels is a meta-package that installs and load the core packages listed below that you need for modeling and machine learning.
-      <a href="https://tidymodels.github.io/tidymodels/" aria-hidden="true">Go to package ...</a></p>
+      <a href="https://tidymodels.tidymodels.org/" aria-hidden="true">Go to package ...</a></p>
     </div>
   </div>
   <div class="package">
     <img class="package-image" src="/images/rsample.png" alt=""></img>
     <div class="package-info">
-      <h3><a href="https://tidymodels.github.io/rsample/">rsample</a></h3>
-      <p>rsample provides infrastructure for efficient data splitting and resampling. <a href="https://tidymodels.github.io/rsample/" aria-hidden="true">Go to package ...</a></p>
+      <h3><a href="https://rsample.tidymodels.org/">rsample</a></h3>
+      <p>rsample provides infrastructure for efficient data splitting and resampling. <a href="https://rsample.tidymodels.org/" aria-hidden="true">Go to package ...</a></p>
     </div>
   </div>
   <div class="package">
     <img class="package-image" src="/images/parsnip.png" alt=""></img>
     <div class="package-info">
-      <h3><a href="https://tidymodels.github.io/parsnip/"> parsnip </a></h3>
-      <p>parsnip is a tidy, unified interface to models that can be used to try a range of models without getting bogged down in the syntactical minutiae of the underlying packages. <a href="https://tidymodels.github.io/parsnip/" aria-hidden="true">Go to package ...</a></p>
+      <h3><a href="https://parsnip.tidymodels.org/"> parsnip </a></h3>
+      <p>parsnip is a tidy, unified interface to models that can be used to try a range of models without getting bogged down in the syntactical minutiae of the underlying packages. <a href="https://parsnip.tidymodels.org/" aria-hidden="true">Go to package ...</a></p>
     </div>
   </div>  
   <div class="package">
     <img class="package-image" src="/images/recipes.png" alt=""></img>
     <div class="package-info">
-      <h3><a href="https://tidymodels.github.io/recipes/"> recipes </a></h3>
-      <p>recipes is a tidy interface to data pre-processing tools for feature engineering. <a href="https://tidymodels.github.io/recipes/" aria-hidden="true">Go to package ...</a></p>
+      <h3><a href="https://recipes.tidymodels.org/"> recipes </a></h3>
+      <p>recipes is a tidy interface to data pre-processing tools for feature engineering. <a href="https://recipes.tidymodels.org/" aria-hidden="true">Go to package ...</a></p>
     </div>
   </div>
   <div class="package">
     <img class="package-image" src="/images/workflows.png" alt=""></img>
     <div class="package-info">
-      <h3><a href="https://tidymodels.github.io/workflows/"> workflows </a></h3>
-      <p>workflows bundle your pre-processing, modeling, and post-processing together. <a href="https://tidymodels.github.io/workflows/" aria-hidden="true">Go to package ...</a></p>
+      <h3><a href="https://workflows.tidymodels.org/"> workflows </a></h3>
+      <p>workflows bundle your pre-processing, modeling, and post-processing together. <a href="https://workflows.tidymodels.org/" aria-hidden="true">Go to package ...</a></p>
     </div>
   </div> 
   <div class="package">
     <img class="package-image" src="/images/tune.png" alt=""></img>
     <div class="package-info">
-      <h3><a href="https://tidymodels.github.io/tune/"> tune </a></h3>
-      <p>tune helps you optimize the hyperparameters of your model and pre-processing steps. <a href="https://tidymodels.github.io/tune/" aria-hidden="true">Go to package ...</a></p>
+      <h3><a href="https://tune.tidymodels.org/"> tune </a></h3>
+      <p>tune helps you optimize the hyperparameters of your model and pre-processing steps. <a href="https://tune.tidymodels.org/" aria-hidden="true">Go to package ...</a></p>
     </div>
   </div>  
   <div class="package">
     <img class="package-image" src="/images/yardstick.png" alt=""></img>
     <div class="package-info">
-      <h3><a href="https://tidymodels.github.io/yardstick/"> yardstick </a></h3>
-      <p>yardstick measures the effectiveness of models using performance metrics. <a href="https://tidymodels.github.io/yardstick/" aria-hidden="true">Go to package ...</a></p>
+      <h3><a href="https://yardstick.tidymodels.org/"> yardstick </a></h3>
+      <p>yardstick measures the effectiveness of models using performance metrics. <a href="https://yardstick.tidymodels.org/" aria-hidden="true">Go to package ...</a></p>
     </div>
   </div>
   <div class="package">
     <img class="package-image" src="/images/broom.png" alt=""></img>
     <div class="package-info">
-      <h3><a href="https://broom.tidyverse.org/"> broom </a></h3>
+      <h3><a href="https://broom.tidymodels.org/"> broom </a></h3>
       <p>broom converts the information in common statistical R objects into user-friendly, predictable formats. 
-      <a href="https://broom.tidyverse.org/" aria-hidden="true">Go to package ...</a></p>
+      <a href="https://broom.tidymodels.org/" aria-hidden="true">Go to package ...</a></p>
     </div>
   </div>
   <div class="package">
@@ -88,7 +88,7 @@ title: Tidymodels packages
 </div>
 </div>
 
-Learn more about the tidymodels metapackage itself at <https://tidymodels.github.io/tidymodels/>.
+Learn more about the tidymodels metapackage itself at <https://tidymodels.tidymodels.org/>.
 
 ## Specialized packages
 
@@ -98,26 +98,26 @@ The tidymodels framework also includes many other packages designed for speciali
 
 * [infer](https://infer.netlify.com/) is a high-level API for tidyverse-friendly statistical inference.
 
-* The [corrr](https://tidymodels.github.io/corrr/) package has tidy interfaces for working with correlation matrices.
+* The [corrr](https://corrr.tidymodels.org/) package has tidy interfaces for working with correlation matrices.
 
 ### [Create robust models](/learn/models/)
 
-* parsnip also has additional packages that contain more model definitions. [discrim](https://tidymodels.github.io/discrim/) contains definitions for discriminant analysis models, [poissonreg](https://poissonreg.tidymodels.org/) provides definitions for Poisson regression models, [plsmod](https://plsmod.tidymodels.org/) enables linear projection models, and [rules](https://github.com/tidymodels/rules/) does the same for rule-based classification and regression models. [baguette](https://baguette.tidymodels.org/) creates ensemble models via bagging. 
+* parsnip also has additional packages that contain more model definitions. [discrim](https://discrim.tidymodels.org/) contains definitions for discriminant analysis models, [poissonreg](https://poissonreg.tidymodels.org/) provides definitions for Poisson regression models, [plsmod](https://plsmod.tidymodels.org/) enables linear projection models, and [rules](https://rules.tidymodels.org/) does the same for rule-based classification and regression models. [baguette](https://baguette.tidymodels.org/) creates ensemble models via bagging. 
 
-* There are several add-on packages for creating recipes. [embed](https://tidymodels.github.io/embed/) contains steps to create embeddings or projections of predictors. [textrecipes](https://tidymodels.github.io/textrecipes/) has extra steps for text processing, and [themis](https://tidymodels.github.io/themis/) can help alleviate class imbalance using sampling methods. 
+* There are several add-on packages for creating recipes. [embed](https://embed.tidymodels.org/) contains steps to create embeddings or projections of predictors. [textrecipes](https://textrecipes.tidymodels.org/) has extra steps for text processing, and [themis](https://themis.tidymodels.org/) can help alleviate class imbalance using sampling methods. 
 
-* [tidypredict](https://tidymodels.github.io/tidypredict/) and [modeldb](https://tidymodels.github.io/modeldb/) can convert prediction equations to different languages (e.g. SQL) and fit some models in-database. 
+* [tidypredict](https://tidypredict.tidymodels.org/) and [modeldb](https://modeldb.tidymodels.org/) can convert prediction equations to different languages (e.g. SQL) and fit some models in-database. 
 
 ### [Tune, compare, and work with your models](/learn/work/)
 
-* [probably](https://tidymodels.github.io/probably/) has tools for post-processing class probability estimates.
+* [probably](https://probably.tidymodels.org/) has tools for post-processing class probability estimates.
 
-* The [tidyposterior](https://tidymodels.github.io/tidyposterior/) package enables users to make formal statistical comparisons between models using resampling and Bayesian methods. 
+* The [tidyposterior](https://tidyposterior.tidymodels.org/) package enables users to make formal statistical comparisons between models using resampling and Bayesian methods. 
 
 * Some R objects become inconveniently large when saved to disk. The [butcher](https://tidymodels.github.io/butcher/) package can reduce the size of those objects by removing the sub-components. 
 
-* To know whether the data that you are predicting are _extrapolations_ from the training set, [applicable](https://tidymodels.github.io/applicable/) can produce metrics the measure extrapolation. 
+* To know whether the data that you are predicting are _extrapolations_ from the training set, [applicable](https://applicable.tidymodels.org/) can produce metrics the measure extrapolation. 
 
 ### [Develop custom modeling tools](/learn/develop/)
 
-* [hardhat](https://tidymodels.github.io/hardhat/) is a _developer-focused_ package that helps beginners create high-quality R packages for modeling. 
+* [hardhat](https://hardhat.tidymodels.org/) is a _developer-focused_ package that helps beginners create high-quality R packages for modeling. 
