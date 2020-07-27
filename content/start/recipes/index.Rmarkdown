@@ -252,7 +252,7 @@ At this stage in the recipe, this step selects the `origin`, `dest`, and `carrie
 
 More generally, the recipe selectors mean that you don't always have to apply steps to individual variables one at a time. Since a recipe knows the _variable type_ and _role_ of each column, they can also be selected (or dropped) using this information. 
 
-We need one final step to add to our recipe. Since `carrier` and `dest` have some infrequently occurring values, it is possible that dummy variables might be created for values that don't exist in the training set. For example, there is one destination that is only in the test set: 
+We need one final step to add to our recipe. Since `carrier` and `dest` have some infrequently occurring factor values, it is possible that dummy variables might be created for values that don't exist in the training set. For example, there is one destination that is only in the test set: 
 
 ```{r zv-cols}
 test_data %>% 
@@ -260,7 +260,7 @@ test_data %>%
   anti_join(train_data)
 ```
 
-When the recipe is applied to the training set, a column is made for `r dplyr::setdiff(test_data$dest, train_data$dest)` but it will contain all zeros. This is a "zero-variance predictor" that has no information within the column. While some R functions will not produce an error for such predictors, it usually causes warnings and other issues. `step_zv()` will remove columns from the data when the training set data have a single value, so it is added to the recipe *after* `step_dummy()`: 
+When the recipe is applied to the training set, a column is made for `r dplyr::setdiff(test_data$dest, train_data$dest)` because the factor levels come from `flight_data` (not the training set), but this column will contain all zeros. This is a "zero-variance predictor" that has no information within the column. While some R functions will not produce an error for such predictors, it usually causes warnings and other issues. `step_zv()` will remove columns from the data when the training set data have a single value, so it is added to the recipe *after* `step_dummy()`: 
 
 ```{r zv}
 flights_rec <- 
