@@ -27,7 +27,9 @@ pkgs <- c("baguette", "broom", "butcher", "corrr", "dials", "discrim",
           "embed", "hardhat", "infer", "modeldata", "modeldb", "parsnip", "plsmod",
           "poissonreg", "probably", "recipes", "rsample", "textrecipes", 
           "tidyposterior", "tidypredict", "yardstick", "workflows")
-pkgs <- tibble(pkg = pkgs, base_url = "https://tidymodels.github.io/") 
+pkgs <- tibble(pkg = pkgs, 
+               base_url = case_when(pkg == "butcher" ~ "https://tidymodels.github.io/butcher/",
+                         TRUE ~ paste0("https://", pkg, ".tidymodels.org/"))) 
 
 pkg_urls <- get_pkgdown_urls(pkgs) %>% 
   select(title, topic, package)
