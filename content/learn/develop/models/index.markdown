@@ -343,7 +343,7 @@ mda_fit <- mda_spec %>%
 mda_fit
 #> parsnip model object
 #> 
-#> Fit time:  24ms 
+#> Fit time:  21ms 
 #> Call:
 #> mda::mda(formula = Class ~ ., data = data, subclasses = ~2)
 #> 
@@ -480,6 +480,17 @@ For an example package that uses parsnip definitions, take a look at the [discri
 
 {{% warning %}} To use a new model and/or engine in the broader tidymodels infrastructure, we recommend your model definition declarations (e.g. `set_new_model()` and similar) reside in a package. If these definitions are in a script only, the new model may not work with the tune package, for example for parallel processing. {{%/ warning %}}
 
+As an additional note related to parallel processing, it is also important to **list the home package as a dependency**. If the `discrim_mixture()` function lived in a package called `mixedup`, the line
+
+```r
+set_dependency("discrim_mixture", eng = "mda", pkg = "mixedup")
+```
+
+should also be included. 
+
+The reason for this is parallel processing. When parallel worker processes are created, there is heterogeneity across technologies regarding which packages are loaded. For example, multicore methods on macOS and Linux will have all of the packages loaded that were loaded in the main R process. Alternatively, parallel processing using psock clusters have no additional packages loaded. If the home package for a parsnip model is not loaded in the worker processes, the model will not have an entry in parsnip's internal database (and produce an error). 
+
+
 ## Your model, tuning parameters, and you
 
 The tune package can be used to find reasonable values of model arguments via tuning. There are some S3 methods that are useful to define for your model. `discrim_mixture()` has one main tuning parameter: `sub_classes`. To work with tune it is _helpful_ (but not required) to use an S3 method called `tunable()` to define which arguments should be tuned and how values of those arguments should be generated. 
@@ -507,7 +518,7 @@ info <- list(pkg = "dials", fun = "neighbors")
 # FYI: how it is used under-the-hood: 
 new_param_call <- rlang::call2(.fn = info$fun, .ns = info$pkg)
 rlang::eval_tidy(new_param_call)
-#> # Nearest Neighbors  (quantitative)
+#> # Nearest Neighbors (quantitative)
 #> Range: [1, 10]
 ```
 
@@ -701,34 +712,34 @@ If you have a suggestion, please add a [GitHub issue](https://github.com/tidymod
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
 #>  version  R version 4.0.2 (2020-06-22)
-#>  os       macOS Mojave 10.14.6        
+#>  os       macOS Catalina 10.15.5      
 #>  system   x86_64, darwin17.0          
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/Denver              
-#>  date     2020-07-22                  
+#>  tz       America/New_York            
+#>  date     2020-08-23                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version date       lib source        
-#>  broom      * 0.7.0   2020-07-09 [1] CRAN (R 4.0.0)
-#>  dials      * 0.0.8   2020-07-08 [1] CRAN (R 4.0.2)
-#>  dplyr      * 1.0.0   2020-05-29 [1] CRAN (R 4.0.0)
-#>  ggplot2    * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
-#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
-#>  mda        * 0.5-2   2020-06-29 [1] CRAN (R 4.0.1)
-#>  modeldata  * 0.0.2   2020-06-22 [1] CRAN (R 4.0.0)
-#>  parsnip    * 0.1.2   2020-07-03 [1] CRAN (R 4.0.1)
-#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
-#>  recipes    * 0.1.13  2020-06-23 [1] CRAN (R 4.0.0)
-#>  rlang        0.4.7   2020-07-09 [1] CRAN (R 4.0.0)
-#>  rsample    * 0.0.7   2020-06-04 [1] CRAN (R 4.0.0)
-#>  tibble     * 3.0.3   2020-07-10 [1] CRAN (R 4.0.2)
-#>  tidymodels * 0.1.1   2020-07-14 [1] CRAN (R 4.0.0)
-#>  tune       * 0.1.1   2020-07-08 [1] CRAN (R 4.0.2)
-#>  workflows  * 0.1.2   2020-07-07 [1] CRAN (R 4.0.2)
-#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.0)
+#>  package    * version     date       lib source                             
+#>  broom      * 0.7.0       2020-07-09 [1] CRAN (R 4.0.0)                     
+#>  dials      * 0.0.8.9000  2020-08-23 [1] Github (tidymodels/dials@71ce06f)  
+#>  dplyr      * 1.0.2       2020-08-18 [1] CRAN (R 4.0.0)                     
+#>  ggplot2    * 3.3.2       2020-06-19 [1] CRAN (R 4.0.0)                     
+#>  infer      * 0.5.2       2020-06-14 [1] CRAN (R 4.0.0)                     
+#>  mda        * 0.5-2       2020-06-29 [1] CRAN (R 4.0.2)                     
+#>  modeldata  * 0.0.2       2020-06-22 [1] CRAN (R 4.0.0)                     
+#>  parsnip    * 0.1.3.9000  2020-08-23 [1] local                              
+#>  purrr      * 0.3.4       2020-04-17 [1] CRAN (R 4.0.0)                     
+#>  recipes    * 0.1.13.9000 2020-08-23 [1] Github (tidymodels/recipes@9f16070)
+#>  rlang        0.4.7       2020-07-09 [1] CRAN (R 4.0.0)                     
+#>  rsample    * 0.0.7       2020-06-04 [1] CRAN (R 4.0.2)                     
+#>  tibble     * 3.0.3       2020-07-10 [1] CRAN (R 4.0.0)                     
+#>  tidymodels * 0.1.1       2020-07-14 [1] CRAN (R 4.0.0)                     
+#>  tune       * 0.1.1.9000  2020-08-23 [1] local                              
+#>  workflows  * 0.1.3       2020-08-10 [1] CRAN (R 4.0.2)                     
+#>  yardstick  * 0.0.7       2020-07-13 [1] CRAN (R 4.0.2)                     
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
 ```
