@@ -353,6 +353,32 @@ recipe(HHV ~ ., data = biomass_tr) %>%
 rec_obj
 ```
  
+### Methods for declaring required packages
+
+Some recipe steps use functions from other packages. When this is the case, the `step_*()` function should check to see if the package is installed. The function `recipes::recipes_pkg_check()` will do this. For example: 
+
+```
+> recipes::recipes_pkg_check("some_package")
+1 package is needed for this step and is not installed. (some_package). Start 
+a clean R session then run: install.packages("some_package")
+```
+
+There is an S3 method that can be used to declare what packages should be loaded when using the step. For a hypothetical step that relies on the `hypothetical` package, this might look like: 
+
+```{r eval = FALSE}
+required_pkgs.step_hypothetical <- function(x, ...) {
+  c("hypothetical", "myrecipespkg")
+}
+```
+
+In this example, `myrecipespkg` is the package where the step resides (if it is in a package). The reason for this is parallel processing. When parallel worker processes are created, there is heterogeneity across technologies regarding which packages are loaded. For example, multicore methods on macOS and Linux will have all of the packages loaded that were loaded in the main R process. Alternatively, parallel processing using psock clusters have no additional packages loaded. If the home package for a recipe step is not loaded in the worker processes, the `prep()` methods are not found and an error occurs. 
+
+If this S3 method is used for your step, you can rely on this for checking the installation: 
+ 
+```{r eval = FALSE}
+recipes::recipes_pkg_check(required_pkgs.step_hypothetical())
+``` 
+ 
 ### A tidy method
 
 The `broom::tidy()` method is a means to return information about the step in a usable format. For our step, it would be helpful to know the reference values. 
