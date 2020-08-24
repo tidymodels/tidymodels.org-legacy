@@ -428,7 +428,9 @@ required_pkgs.step_hypothetical <- function(x, ...) {
 }
 ```
 
-In this example, `myrecipespkg` is the package where the step resides (if it is in a package). The reason for this is parallel processing. When parallel worker processes are created, there is heterogeneity across technologies regarding which packages are loaded. For example, multicore methods on macOS and Linux will have all of the packages loaded that were loaded in the main R process. Alternatively, parallel processing using psock clusters have no additional packages loaded. If the home package for a recipe step is not loaded in the worker processes, the `prep()` methods are not found and an error occurs. 
+In this example, `myrecipespkg` is the package where the step resides (if it is in a package).
+
+The reason to declare what packages should be loaded is parallel processing. When parallel worker processes are created, there is heterogeneity across technologies regarding which packages are loaded. Multicore methods on macOS and Linux load all of the packages that were loaded in the main R process. However, parallel processing using psock clusters have no additional packages loaded. If the home package for a recipe step is not loaded in the worker processes, the `prep()` methods cannot be found and an error occurs. 
 
 If this S3 method is used for your step, you can rely on this for checking the installation: 
  
@@ -499,16 +501,16 @@ tidy(rec_obj, number = 1)
 #> # A tibble: 274 x 4
 #>    term     value percentile id              
 #>    <chr>    <dbl>      <dbl> <chr>           
-#>  1 hydrogen 0.03           0 percentile_IjbkJ
-#>  2 hydrogen 0.934          1 percentile_IjbkJ
-#>  3 hydrogen 1.60           2 percentile_IjbkJ
-#>  4 hydrogen 2.07           3 percentile_IjbkJ
-#>  5 hydrogen 2.45           4 percentile_IjbkJ
-#>  6 hydrogen 2.74           5 percentile_IjbkJ
-#>  7 hydrogen 3.15           6 percentile_IjbkJ
-#>  8 hydrogen 3.49           7 percentile_IjbkJ
-#>  9 hydrogen 3.71           8 percentile_IjbkJ
-#> 10 hydrogen 3.99           9 percentile_IjbkJ
+#>  1 hydrogen 0.03           0 percentile_grcTK
+#>  2 hydrogen 0.934          1 percentile_grcTK
+#>  3 hydrogen 1.60           2 percentile_grcTK
+#>  4 hydrogen 2.07           3 percentile_grcTK
+#>  5 hydrogen 2.45           4 percentile_grcTK
+#>  6 hydrogen 2.74           5 percentile_grcTK
+#>  7 hydrogen 3.15           6 percentile_grcTK
+#>  8 hydrogen 3.49           7 percentile_grcTK
+#>  9 hydrogen 3.71           8 percentile_grcTK
+#> 10 hydrogen 3.99           9 percentile_grcTK
 #> # … with 264 more rows
 ```
 
@@ -551,7 +553,7 @@ info <- list(pkg = "dials", fun = "neighbors")
 # FYI: how it is used under-the-hood: 
 new_param_call <- rlang::call2(.fn = info$fun, .ns = info$pkg)
 rlang::eval_tidy(new_param_call)
-#> # Nearest Neighbors (quantitative)
+#> # Nearest Neighbors  (quantitative)
 #> Range: [1, 10]
 ```
 
@@ -590,33 +592,33 @@ tunable.step_poly <- function (x, ...) {
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
 #>  version  R version 4.0.2 (2020-06-22)
-#>  os       macOS Catalina 10.15.5      
+#>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin17.0          
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
-#>  tz       America/New_York            
-#>  date     2020-08-23                  
+#>  tz       America/Denver              
+#>  date     2020-08-24                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version     date       lib source                             
-#>  broom      * 0.7.0       2020-07-09 [1] CRAN (R 4.0.0)                     
-#>  dials      * 0.0.8.9000  2020-08-23 [1] Github (tidymodels/dials@71ce06f)  
-#>  dplyr      * 1.0.2       2020-08-18 [1] CRAN (R 4.0.0)                     
-#>  ggplot2    * 3.3.2       2020-06-19 [1] CRAN (R 4.0.0)                     
-#>  infer      * 0.5.2       2020-06-14 [1] CRAN (R 4.0.0)                     
-#>  modeldata  * 0.0.2       2020-06-22 [1] CRAN (R 4.0.0)                     
-#>  parsnip    * 0.1.3.9000  2020-08-23 [1] local                              
-#>  purrr      * 0.3.4       2020-04-17 [1] CRAN (R 4.0.0)                     
-#>  recipes    * 0.1.13.9000 2020-08-23 [1] Github (tidymodels/recipes@9f16070)
-#>  rlang        0.4.7       2020-07-09 [1] CRAN (R 4.0.0)                     
-#>  rsample    * 0.0.7       2020-06-04 [1] CRAN (R 4.0.2)                     
-#>  tibble     * 3.0.3       2020-07-10 [1] CRAN (R 4.0.0)                     
-#>  tidymodels * 0.1.1       2020-07-14 [1] CRAN (R 4.0.0)                     
-#>  tune       * 0.1.1.9000  2020-08-23 [1] local                              
-#>  workflows  * 0.1.3       2020-08-10 [1] CRAN (R 4.0.2)                     
-#>  yardstick  * 0.0.7       2020-07-13 [1] CRAN (R 4.0.2)                     
+#>  package    * version date       lib source        
+#>  broom      * 0.7.0   2020-07-09 [1] CRAN (R 4.0.0)
+#>  dials      * 0.0.8   2020-07-08 [1] CRAN (R 4.0.2)
+#>  dplyr      * 1.0.2   2020-08-18 [1] CRAN (R 4.0.2)
+#>  ggplot2    * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
+#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
+#>  modeldata  * 0.0.2   2020-06-22 [1] CRAN (R 4.0.0)
+#>  parsnip    * 0.1.3   2020-08-04 [1] CRAN (R 4.0.2)
+#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
+#>  recipes    * 0.1.13  2020-06-23 [1] CRAN (R 4.0.0)
+#>  rlang        0.4.7   2020-07-09 [1] CRAN (R 4.0.0)
+#>  rsample    * 0.0.7   2020-06-04 [1] CRAN (R 4.0.0)
+#>  tibble     * 3.0.3   2020-07-10 [1] CRAN (R 4.0.2)
+#>  tidymodels * 0.1.1   2020-07-14 [1] CRAN (R 4.0.2)
+#>  tune       * 0.1.1   2020-07-08 [1] CRAN (R 4.0.2)
+#>  workflows  * 0.1.3   2020-08-10 [1] CRAN (R 4.0.2)
+#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.0)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
 ```
