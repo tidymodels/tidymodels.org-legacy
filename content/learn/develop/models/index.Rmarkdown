@@ -355,15 +355,13 @@ For an example package that uses parsnip definitions, take a look at the [discri
 
 {{% warning %}} To use a new model and/or engine in the broader tidymodels infrastructure, we recommend your model definition declarations (e.g. `set_new_model()` and similar) reside in a package. If these definitions are in a script only, the new model may not work with the tune package, for example for parallel processing. {{%/ warning %}}
 
-As an additional note related to parallel processing, it is also important to **list the home package as a dependency**. If the `discrim_mixture()` function lived in a package called `mixedup`, the line
+It is also important for parallel processing support to **list the home package as a dependency**. If the `discrim_mixture()` function lived in a package called `mixedup`, include the line:
 
 ```r
 set_dependency("discrim_mixture", eng = "mda", pkg = "mixedup")
 ```
 
-should also be included. 
-
-The reason for this is parallel processing. When parallel worker processes are created, there is heterogeneity across technologies regarding which packages are loaded. For example, multicore methods on macOS and Linux will have all of the packages loaded that were loaded in the main R process. Alternatively, parallel processing using psock clusters have no additional packages loaded. If the home package for a parsnip model is not loaded in the worker processes, the model will not have an entry in parsnip's internal database (and produce an error). 
+Parallel processing requires this explicit dependency setting. When parallel worker processes are created, there is heterogeneity across technologies regarding which packages are loaded. Multicore methods on macOS and Linux will load all of the packages that were loaded in the main R process. However, parallel processing using psock clusters have no additional packages loaded. If the home package for a parsnip model is not loaded in the worker processes, the model will not have an entry in parsnip's internal database (and produce an error). 
 
 
 ## Your model, tuning parameters, and you
