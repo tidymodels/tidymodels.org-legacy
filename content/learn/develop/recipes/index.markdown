@@ -74,7 +74,9 @@ Our new step will do this computation for any numeric variables of interest. We 
 
 To start, there is a _user-facing_ function. Let's call that `step_percentile()`. This is just a simple wrapper around a _constructor function_, which defines the rules for any step object that defines a percentile transformation. We'll call this constructor `step_percentile_new()`. 
 
-The function `step_percentile()` takes the same arguments as your function and simply adds it to a new recipe. The `...` signifies the variable selectors that can be used^[Towards the end of 2020, recipes will make the change to move to the tidyverse's new selection style that _does not_ use `...` to capture the selectors. See the [tidyverse principles page](https://principles.tidyverse.org/dots-data.html) for a discussion.].
+The function `step_percentile()` takes the same arguments as your function and simply adds it to a new recipe. The `...` signifies the variable selectors that can be used[^selectnote].
+
+[^selectnote]: Towards the end of 2020, recipes will make the change to move to the tidyverse's new selection style that _does not_ use `...` to capture the selectors. See the [tidyverse principles page](https://principles.tidyverse.org/dots-data.html) for a discussion.
 
 
 ```r
@@ -501,16 +503,16 @@ tidy(rec_obj, number = 1)
 #> # A tibble: 274 x 4
 #>    term     value percentile id              
 #>    <chr>    <dbl>      <dbl> <chr>           
-#>  1 hydrogen 0.03           0 percentile_grcTK
-#>  2 hydrogen 0.934          1 percentile_grcTK
-#>  3 hydrogen 1.60           2 percentile_grcTK
-#>  4 hydrogen 2.07           3 percentile_grcTK
-#>  5 hydrogen 2.45           4 percentile_grcTK
-#>  6 hydrogen 2.74           5 percentile_grcTK
-#>  7 hydrogen 3.15           6 percentile_grcTK
-#>  8 hydrogen 3.49           7 percentile_grcTK
-#>  9 hydrogen 3.71           8 percentile_grcTK
-#> 10 hydrogen 3.99           9 percentile_grcTK
+#>  1 hydrogen 0.03           0 percentile_XV7CF
+#>  2 hydrogen 0.934          1 percentile_XV7CF
+#>  3 hydrogen 1.60           2 percentile_XV7CF
+#>  4 hydrogen 2.07           3 percentile_XV7CF
+#>  5 hydrogen 2.45           4 percentile_XV7CF
+#>  6 hydrogen 2.74           5 percentile_XV7CF
+#>  7 hydrogen 3.15           6 percentile_XV7CF
+#>  8 hydrogen 3.49           7 percentile_XV7CF
+#>  9 hydrogen 3.71           8 percentile_XV7CF
+#> 10 hydrogen 3.99           9 percentile_XV7CF
 #> # … with 264 more rows
 ```
 
@@ -599,7 +601,7 @@ tunable.step_poly <- function (x, ...) {
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-08-24                  
+#>  date     2020-09-15                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
@@ -611,9 +613,9 @@ tunable.step_poly <- function (x, ...) {
 #>  modeldata  * 0.0.2   2020-06-22 [1] CRAN (R 4.0.0)
 #>  parsnip    * 0.1.3   2020-08-04 [1] CRAN (R 4.0.2)
 #>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
-#>  recipes    * 0.1.13  2020-06-23 [1] CRAN (R 4.0.0)
+#>  recipes    * 0.1.13  2020-06-23 [1] CRAN (R 4.0.2)
 #>  rlang        0.4.7   2020-07-09 [1] CRAN (R 4.0.0)
-#>  rsample    * 0.0.7   2020-06-04 [1] CRAN (R 4.0.0)
+#>  rsample    * 0.0.7   2020-06-04 [1] CRAN (R 4.0.2)
 #>  tibble     * 3.0.3   2020-07-10 [1] CRAN (R 4.0.2)
 #>  tidymodels * 0.1.1   2020-07-14 [1] CRAN (R 4.0.2)
 #>  tune       * 0.1.1   2020-07-08 [1] CRAN (R 4.0.2)
