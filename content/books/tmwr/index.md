@@ -5,7 +5,10 @@ authors: [Max Kuhn, Julia Silge]
 weight: 1
 ---
 
-Modeling of data is integral to science, business, politics, and many other aspects of our lives. The goals of this book are to: introduce neophytes to models and the tidyverse, demonstrate the `tidymodels` packages, and to outline good practices for the phases of the modeling process.
+Modeling of data is integral to science, business, politics, and many other aspects of our lives. The goals of this book are to:
+
+- introduce and demonstrate how to use the tidymodels packages, and 
+- outline good practices for the phases of the modeling process.
 
 An **HTML version** of this text can be found at [`https://tmwr.org`](https://tmwr.org). 
 
