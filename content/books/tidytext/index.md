@@ -2,7 +2,7 @@
 title: 'Text Mining with R'
 description: 'A Tidy Approach'
 authors: [Julia Silge, David Robinson]
-weight: 2
+weight: 4
 ---
 
 ![](cover.png)

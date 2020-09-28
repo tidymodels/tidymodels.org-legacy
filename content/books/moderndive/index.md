@@ -2,7 +2,7 @@
 title: 'Statistical Inference via Data Science'
 description: 'A ModernDive into R and the Tidyverse'
 authors: [Chester Ismay, Albert Y. Kim]
-weight: 3
+weight: 5
 ---
 
 ![](cover.png) 
