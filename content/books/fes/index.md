@@ -2,7 +2,7 @@
 title: 'Feature Engineering & Selection'
 description: 'A Practical Approach for Predictive Models'
 authors: [Max Kuhn, Kjell Johnson]
-weight: 1
+weight: 3
 ---
 
 ![](cover.jpg) 
