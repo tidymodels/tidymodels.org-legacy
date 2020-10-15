@@ -25,7 +25,7 @@ The text data we'll use in this article are from Amazon:
 
 > This dataset consists of reviews of fine foods from amazon. The data span a period of more than 10 years, including all ~500,000 reviews up to October 2012. Reviews include product and user information, ratings, and a plaintext review.
 
-This article uses a small subset of the total reviews available at the original source. We sampled a single review from 5,000 random products and allocated 80% of these data to the training set, with the remaining 1,000 reviews held out for the test set.   
+This article uses a small subset of the total reviews [available at the original source](https://snap.stanford.edu/data/web-FineFoods.html). We sampled a single review from 5,000 random products and allocated 80% of these data to the training set, with the remaining 1,000 reviews held out for the test set.   
 
 There is a column for the product, a column for the text of the review, and a factor column for the outcome variable. The outcome is whether the reviewer gave the product a five-star rating or not.
 
@@ -785,6 +785,7 @@ These results might help guide the choice of the `penalty` range if more optimiz
 #>  recipes      * 0.1.13  2020-06-23 [1] CRAN (R 4.0.2)
 #>  rlang          0.4.8   2020-10-08 [1] CRAN (R 4.0.2)
 #>  rsample      * 0.0.8   2020-09-23 [1] CRAN (R 4.0.2)
+#>  stopwords    * 2.0     2020-04-14 [1] CRAN (R 4.0.0)
 #>  textfeatures * 0.3.3   2019-09-03 [1] CRAN (R 4.0.2)
 #>  textrecipes  * 0.3.0   2020-07-08 [1] CRAN (R 4.0.2)
 #>  tibble       * 3.0.4   2020-10-12 [1] CRAN (R 4.0.2)

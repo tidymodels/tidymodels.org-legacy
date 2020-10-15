@@ -14,6 +14,7 @@ source(here::here("content/learn/common.R"))
 
 ```{r load, include=FALSE}
 library(tidymodels)
+library(stopwords)
 library(doMC)
 registerDoMC(cores = parallel::detectCores())
 
