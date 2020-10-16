@@ -163,7 +163,7 @@ Let's begin our tuning with [grid search](https://www.tidymodels.org/learn/work/
 five_star_grid <- 
   crossing(
     penalty = 10^seq(-3, 0, length = 20),
-    mixture = seq(0, 1, length = 5),
+    mixture = c(0.01, 0.25, 0.50, 0.75, 1),
     num_terms = 2^c(8, 10, 12)
   )
 five_star_grid
@@ -214,17 +214,20 @@ grid_roc
 
 The best results have a fairly high penalty value and focus on the ridge penalty (i.e. no feature selection via the lasso's L1 penalty). The best solutions also use the largest number of hashing features. 
 
-What was the relationship between performance and the tuning parameters? 
+What is the relationship between performance and the tuning parameters? 
 
 ```{r grid-plot, fig.width = 10}
 autoplot(five_star_glmnet, metric = "roc_auc")
 ```
 
-There is definitely an effect due to the number of features used. (This is a small sample of the overall data set available. When more data are used, a larger feature set is optimal.). The profiles with mixture values greater than zero had steep drop-offs in performance. What's that about? Those are cases where the lasso penalty is removing too many (and perhaps all) features from the model.  
+- We can definitely see that performance improves with the number of features included. In this article, we've used a small sample of the overall data set available. When more data are used, an even larger feature set is optimal. 
 
-The panel with at least 4096 features shows that there are several parameter combinations that have roughly equivalent performance. A case could be made that we should choose a larger mixture value and a smaller penalty to select a more simplistic model that contains fewer predictors. If more experimentation were conducted, a largest set of features should also be considered.  
+- The profiles with larger mixture values (greater than 0.01) have steep drop-offs in performance. What's that about? Those are cases where the lasso penalty is removing too many (and perhaps all) features from the model.  
+- The panel with at least 4096 features shows that there are several parameter combinations that have about the same performance; there isn't much difference between the best performance for the different mixture values. A case could be made that we should choose a _larger_ mixture value and a _smaller_ penalty to select a simpler model that contains fewer predictors. 
 
-We'll come back to the extracted glmnet components at the end of this example. 
+- If more experimentation were conducted, a larger set of features (more than 4096) should also be considered.  
+
+We'll come back to the extracted glmnet components at the end of this article. 
 
 ## Directed search
 

@@ -189,16 +189,16 @@ Let's begin our tuning with [grid search](https://www.tidymodels.org/learn/work/
 five_star_grid <- 
   crossing(
     penalty = 10^seq(-3, 0, length = 20),
-    mixture = seq(0, 1, length = 5),
+    mixture = c(0.01, 0.25, 0.50, 0.75, 1),
     num_terms = 2^c(8, 10, 12)
   )
 five_star_grid
 #> # A tibble: 300 x 3
 #>    penalty mixture num_terms
 #>      <dbl>   <dbl>     <dbl>
-#>  1   0.001    0          256
-#>  2   0.001    0         1024
-#>  3   0.001    0         4096
+#>  1   0.001    0.01       256
+#>  2   0.001    0.01      1024
+#>  3   0.001    0.01      4096
 #>  4   0.001    0.25       256
 #>  5   0.001    0.25      1024
 #>  6   0.001    0.25      4096
@@ -271,22 +271,22 @@ grid_roc
 #> # A tibble: 300 x 9
 #>    penalty mixture num_terms .metric .estimator  mean     n std_err .config     
 #>      <dbl>   <dbl>     <dbl> <chr>   <chr>      <dbl> <int>   <dbl> <chr>       
-#>  1 0.0379     0.25      4096 roc_auc binary     0.816    10 0.00753 Recipe3_Mod…
-#>  2 0.0183     0.5       4096 roc_auc binary     0.814    10 0.00776 Recipe3_Mod…
-#>  3 0.0127     0.75      4096 roc_auc binary     0.814    10 0.00781 Recipe3_Mod…
-#>  4 0.00886    1         4096 roc_auc binary     0.813    10 0.00794 Recipe3_Mod…
-#>  5 0.0264     0.25      4096 roc_auc binary     0.813    10 0.00790 Recipe3_Mod…
-#>  6 0.0546     0.25      4096 roc_auc binary     0.811    10 0.00805 Recipe3_Mod…
-#>  7 0.0127     0.5       4096 roc_auc binary     0.811    10 0.00810 Recipe3_Mod…
-#>  8 0.00886    0.75      4096 roc_auc binary     0.810    10 0.00803 Recipe3_Mod…
-#>  9 0.0264     0.5       4096 roc_auc binary     0.810    10 0.00812 Recipe3_Mod…
-#> 10 0.0127     1         4096 roc_auc binary     0.810    10 0.00808 Recipe3_Mod…
+#>  1 0.695      0.01      4096 roc_auc binary     0.818    10 0.00739 Recipe3_Mod…
+#>  2 0.483      0.01      4096 roc_auc binary     0.818    10 0.00776 Recipe3_Mod…
+#>  3 0.0379     0.25      4096 roc_auc binary     0.816    10 0.00753 Recipe3_Mod…
+#>  4 0.336      0.01      4096 roc_auc binary     0.815    10 0.00822 Recipe3_Mod…
+#>  5 0.0183     0.5       4096 roc_auc binary     0.814    10 0.00776 Recipe3_Mod…
+#>  6 0.0127     0.75      4096 roc_auc binary     0.814    10 0.00781 Recipe3_Mod…
+#>  7 0.00886    1         4096 roc_auc binary     0.813    10 0.00794 Recipe3_Mod…
+#>  8 0.0264     0.25      4096 roc_auc binary     0.813    10 0.00790 Recipe3_Mod…
+#>  9 1          0.01      4096 roc_auc binary     0.812    10 0.00764 Recipe3_Mod…
+#> 10 0.234      0.01      4096 roc_auc binary     0.811    10 0.00838 Recipe3_Mod…
 #> # … with 290 more rows
 ```
 
 The best results have a fairly high penalty value and focus on the ridge penalty (i.e. no feature selection via the lasso's L1 penalty). The best solutions also use the largest number of hashing features. 
 
-What was the relationship between performance and the tuning parameters? 
+What is the relationship between performance and the tuning parameters? 
 
 
 ```r
@@ -295,11 +295,14 @@ autoplot(five_star_glmnet, metric = "roc_auc")
 
 <img src="figs/grid-plot-1.svg" width="960" />
 
-There is definitely an effect due to the number of features used. (This is a small sample of the overall data set available. When more data are used, a larger feature set is optimal.). The profiles with mixture values greater than zero had steep drop-offs in performance. What's that about? Those are cases where the lasso penalty is removing too many (and perhaps all) features from the model.  
+- We can definitely see that performance improves with the number of features included. In this article, we've used a small sample of the overall data set available. When more data are used, an even larger feature set is optimal. 
 
-The panel with at least 4096 features shows that there are several parameter combinations that have roughly equivalent performance. A case could be made that we should choose a larger mixture value and a smaller penalty to select a more simplistic model that contains fewer predictors. If more experimentation were conducted, a largest set of features should also be considered.  
+- The profiles with larger mixture values (greater than 0.01) have steep drop-offs in performance. What's that about? Those are cases where the lasso penalty is removing too many (and perhaps all) features from the model.  
+- The panel with at least 4096 features shows that there are several parameter combinations that have about the same performance; there isn't much difference between the best performance for the different mixture values. A case could be made that we should choose a _larger_ mixture value and a _smaller_ penalty to select a simpler model that contains fewer predictors. 
 
-We'll come back to the extracted glmnet components at the end of this example. 
+- If more experimentation were conducted, a larger set of features (more than 4096) should also be considered.  
+
+We'll come back to the extracted glmnet components at the end of this article. 
 
 ## Directed search
 
@@ -639,7 +642,7 @@ params
 #> # A tibble: 1 x 4
 #>   penalty mixture num_terms .config         
 #>     <dbl>   <dbl>     <dbl> <chr>           
-#> 1  0.0379    0.25      4096 Recipe3_Model031
+#> 1   0.695    0.01      4096 Recipe3_Model019
 ```
 
 Recall that we saved the glmnet results in a tibble. The column `five_star_glmnet$.extracts` is a list of tibbles. As an example, the first element of the list is:
@@ -650,16 +653,16 @@ five_star_glmnet$.extracts[[1]]
 #> # A tibble: 300 x 5
 #>    num_terms penalty mixture .extracts          .config         
 #>        <dbl>   <dbl>   <dbl> <list>             <chr>           
-#>  1       256       1       0 <tibble [100 × 2]> Recipe1_Model001
-#>  2       256       1       0 <tibble [100 × 2]> Recipe1_Model002
-#>  3       256       1       0 <tibble [100 × 2]> Recipe1_Model003
-#>  4       256       1       0 <tibble [100 × 2]> Recipe1_Model004
-#>  5       256       1       0 <tibble [100 × 2]> Recipe1_Model005
-#>  6       256       1       0 <tibble [100 × 2]> Recipe1_Model006
-#>  7       256       1       0 <tibble [100 × 2]> Recipe1_Model007
-#>  8       256       1       0 <tibble [100 × 2]> Recipe1_Model008
-#>  9       256       1       0 <tibble [100 × 2]> Recipe1_Model009
-#> 10       256       1       0 <tibble [100 × 2]> Recipe1_Model010
+#>  1       256       1    0.01 <tibble [100 × 2]> Recipe1_Model001
+#>  2       256       1    0.01 <tibble [100 × 2]> Recipe1_Model002
+#>  3       256       1    0.01 <tibble [100 × 2]> Recipe1_Model003
+#>  4       256       1    0.01 <tibble [100 × 2]> Recipe1_Model004
+#>  5       256       1    0.01 <tibble [100 × 2]> Recipe1_Model005
+#>  6       256       1    0.01 <tibble [100 × 2]> Recipe1_Model006
+#>  7       256       1    0.01 <tibble [100 × 2]> Recipe1_Model007
+#>  8       256       1    0.01 <tibble [100 × 2]> Recipe1_Model008
+#>  9       256       1    0.01 <tibble [100 × 2]> Recipe1_Model009
+#> 10       256       1    0.01 <tibble [100 × 2]> Recipe1_Model010
 #> # … with 290 more rows
 ```
 
@@ -676,16 +679,16 @@ extracted
 #> # A tibble: 3,000 x 6
 #>    id     num_terms penalty mixture .extracts          .config         
 #>    <chr>      <dbl>   <dbl>   <dbl> <list>             <chr>           
-#>  1 Fold01       256       1       0 <tibble [100 × 2]> Recipe1_Model001
-#>  2 Fold01       256       1       0 <tibble [100 × 2]> Recipe1_Model002
-#>  3 Fold01       256       1       0 <tibble [100 × 2]> Recipe1_Model003
-#>  4 Fold01       256       1       0 <tibble [100 × 2]> Recipe1_Model004
-#>  5 Fold01       256       1       0 <tibble [100 × 2]> Recipe1_Model005
-#>  6 Fold01       256       1       0 <tibble [100 × 2]> Recipe1_Model006
-#>  7 Fold01       256       1       0 <tibble [100 × 2]> Recipe1_Model007
-#>  8 Fold01       256       1       0 <tibble [100 × 2]> Recipe1_Model008
-#>  9 Fold01       256       1       0 <tibble [100 × 2]> Recipe1_Model009
-#> 10 Fold01       256       1       0 <tibble [100 × 2]> Recipe1_Model010
+#>  1 Fold01       256       1    0.01 <tibble [100 × 2]> Recipe1_Model001
+#>  2 Fold01       256       1    0.01 <tibble [100 × 2]> Recipe1_Model002
+#>  3 Fold01       256       1    0.01 <tibble [100 × 2]> Recipe1_Model003
+#>  4 Fold01       256       1    0.01 <tibble [100 × 2]> Recipe1_Model004
+#>  5 Fold01       256       1    0.01 <tibble [100 × 2]> Recipe1_Model005
+#>  6 Fold01       256       1    0.01 <tibble [100 × 2]> Recipe1_Model006
+#>  7 Fold01       256       1    0.01 <tibble [100 × 2]> Recipe1_Model007
+#>  8 Fold01       256       1    0.01 <tibble [100 × 2]> Recipe1_Model008
+#>  9 Fold01       256       1    0.01 <tibble [100 × 2]> Recipe1_Model009
+#> 10 Fold01       256       1    0.01 <tibble [100 × 2]> Recipe1_Model010
 #> # … with 2,990 more rows
 ```
 
@@ -704,16 +707,16 @@ extracted
 #> # A tibble: 200 x 6
 #>    id     num_terms mixture .extracts          .config.x        .config.y       
 #>    <chr>      <dbl>   <dbl> <list>             <chr>            <chr>           
-#>  1 Fold01      4096    0.25 <tibble [100 × 2]> Recipe3_Model021 Recipe3_Model031
-#>  2 Fold01      4096    0.25 <tibble [100 × 2]> Recipe3_Model022 Recipe3_Model031
-#>  3 Fold01      4096    0.25 <tibble [100 × 2]> Recipe3_Model023 Recipe3_Model031
-#>  4 Fold01      4096    0.25 <tibble [100 × 2]> Recipe3_Model024 Recipe3_Model031
-#>  5 Fold01      4096    0.25 <tibble [100 × 2]> Recipe3_Model025 Recipe3_Model031
-#>  6 Fold01      4096    0.25 <tibble [100 × 2]> Recipe3_Model026 Recipe3_Model031
-#>  7 Fold01      4096    0.25 <tibble [100 × 2]> Recipe3_Model027 Recipe3_Model031
-#>  8 Fold01      4096    0.25 <tibble [100 × 2]> Recipe3_Model028 Recipe3_Model031
-#>  9 Fold01      4096    0.25 <tibble [100 × 2]> Recipe3_Model029 Recipe3_Model031
-#> 10 Fold01      4096    0.25 <tibble [100 × 2]> Recipe3_Model030 Recipe3_Model031
+#>  1 Fold01      4096    0.01 <tibble [100 × 2]> Recipe3_Model001 Recipe3_Model019
+#>  2 Fold01      4096    0.01 <tibble [100 × 2]> Recipe3_Model002 Recipe3_Model019
+#>  3 Fold01      4096    0.01 <tibble [100 × 2]> Recipe3_Model003 Recipe3_Model019
+#>  4 Fold01      4096    0.01 <tibble [100 × 2]> Recipe3_Model004 Recipe3_Model019
+#>  5 Fold01      4096    0.01 <tibble [100 × 2]> Recipe3_Model005 Recipe3_Model019
+#>  6 Fold01      4096    0.01 <tibble [100 × 2]> Recipe3_Model006 Recipe3_Model019
+#>  7 Fold01      4096    0.01 <tibble [100 × 2]> Recipe3_Model007 Recipe3_Model019
+#>  8 Fold01      4096    0.01 <tibble [100 × 2]> Recipe3_Model008 Recipe3_Model019
+#>  9 Fold01      4096    0.01 <tibble [100 × 2]> Recipe3_Model009 Recipe3_Model019
+#> 10 Fold01      4096    0.01 <tibble [100 × 2]> Recipe3_Model010 Recipe3_Model019
 #> # … with 190 more rows
 ```
 
@@ -728,16 +731,16 @@ extracted
 #> # A tibble: 20,000 x 7
 #>    id     num_terms mixture penalty num_vars .config.x        .config.y       
 #>    <chr>      <dbl>   <dbl>   <dbl>    <int> <chr>            <chr>           
-#>  1 Fold01      4096    0.25   0.360        0 Recipe3_Model021 Recipe3_Model031
-#>  2 Fold01      4096    0.25   0.344        1 Recipe3_Model021 Recipe3_Model031
-#>  3 Fold01      4096    0.25   0.328        2 Recipe3_Model021 Recipe3_Model031
-#>  4 Fold01      4096    0.25   0.313        2 Recipe3_Model021 Recipe3_Model031
-#>  5 Fold01      4096    0.25   0.299        3 Recipe3_Model021 Recipe3_Model031
-#>  6 Fold01      4096    0.25   0.286        3 Recipe3_Model021 Recipe3_Model031
-#>  7 Fold01      4096    0.25   0.273        4 Recipe3_Model021 Recipe3_Model031
-#>  8 Fold01      4096    0.25   0.260        5 Recipe3_Model021 Recipe3_Model031
-#>  9 Fold01      4096    0.25   0.248        7 Recipe3_Model021 Recipe3_Model031
-#> 10 Fold01      4096    0.25   0.237        7 Recipe3_Model021 Recipe3_Model031
+#>  1 Fold01      4096    0.01    9.01        0 Recipe3_Model001 Recipe3_Model019
+#>  2 Fold01      4096    0.01    8.60        1 Recipe3_Model001 Recipe3_Model019
+#>  3 Fold01      4096    0.01    8.21        2 Recipe3_Model001 Recipe3_Model019
+#>  4 Fold01      4096    0.01    7.84        2 Recipe3_Model001 Recipe3_Model019
+#>  5 Fold01      4096    0.01    7.48        3 Recipe3_Model001 Recipe3_Model019
+#>  6 Fold01      4096    0.01    7.14        3 Recipe3_Model001 Recipe3_Model019
+#>  7 Fold01      4096    0.01    6.82        4 Recipe3_Model001 Recipe3_Model019
+#>  8 Fold01      4096    0.01    6.51        6 Recipe3_Model001 Recipe3_Model019
+#>  9 Fold01      4096    0.01    6.21        7 Recipe3_Model001 Recipe3_Model019
+#> 10 Fold01      4096    0.01    5.93        7 Recipe3_Model001 Recipe3_Model019
 #> # … with 19,990 more rows
 ```
 
@@ -771,7 +774,7 @@ These results might help guide the choice of the `penalty` range if more optimiz
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-10-14                  
+#>  date     2020-10-16                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package      * version date       lib source        
