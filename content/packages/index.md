@@ -110,13 +110,15 @@ The tidymodels framework also includes many other packages designed for speciali
 
 ### [Tune, compare, and work with your models](/learn/work/)
 
+* To integrate predictions from many models, the [stacks](https://stacks.tidymodels.org/) package provides tools for stacked ensemble modeling.
+
 * [probably](https://probably.tidymodels.org/) has tools for post-processing class probability estimates.
 
 * The [tidyposterior](https://tidyposterior.tidymodels.org/) package enables users to make formal statistical comparisons between models using resampling and Bayesian methods. 
 
 * Some R objects become inconveniently large when saved to disk. The [butcher](https://tidymodels.github.io/butcher/) package can reduce the size of those objects by removing the sub-components. 
 
-* To know whether the data that you are predicting are _extrapolations_ from the training set, [applicable](https://applicable.tidymodels.org/) can produce metrics the measure extrapolation. 
+* To know whether the data that you are predicting are _extrapolations_ from the training set, [applicable](https://applicable.tidymodels.org/) can produce metrics that measure extrapolation. 
 
 ### [Develop custom modeling tools](/learn/develop/)
 
