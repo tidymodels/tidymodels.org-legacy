@@ -118,7 +118,7 @@ The tidymodels framework also includes many other packages designed for speciali
 
 * Some R objects become inconveniently large when saved to disk. The [butcher](https://tidymodels.github.io/butcher/) package can reduce the size of those objects by removing the sub-components. 
 
-* To know whether the data that you are predicting are _extrapolations_ from the training set, [applicable](https://applicable.tidymodels.org/) can produce metrics the measure extrapolation. 
+* To know whether the data that you are predicting are _extrapolations_ from the training set, [applicable](https://applicable.tidymodels.org/) can produce metrics that measure extrapolation. 
 
 ### [Develop custom modeling tools](/learn/develop/)
 
