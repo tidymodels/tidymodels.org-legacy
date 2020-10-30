@@ -288,7 +288,7 @@ bake.step_percentile <- function(object, new_data, ...) {
 }
 ```
 
-{{% note %}} You need to import `recipes::prep()` and `recipes::bake()` to make your own step function in a package. {{%/ note %}}
+{{% note %}} You need to import `recipes::prep()` and `recipes::bake()` to create your own step function in a package. {{%/ note %}}
 
 ## Run the example
 
@@ -505,16 +505,16 @@ tidy(rec_obj, number = 1)
 #> # A tibble: 274 x 4
 #>    term     value percentile id              
 #>    <chr>    <dbl>      <dbl> <chr>           
-#>  1 hydrogen 0.03           0 percentile_5V5sr
-#>  2 hydrogen 0.934          1 percentile_5V5sr
-#>  3 hydrogen 1.60           2 percentile_5V5sr
-#>  4 hydrogen 2.07           3 percentile_5V5sr
-#>  5 hydrogen 2.45           4 percentile_5V5sr
-#>  6 hydrogen 2.74           5 percentile_5V5sr
-#>  7 hydrogen 3.15           6 percentile_5V5sr
-#>  8 hydrogen 3.49           7 percentile_5V5sr
-#>  9 hydrogen 3.71           8 percentile_5V5sr
-#> 10 hydrogen 3.99           9 percentile_5V5sr
+#>  1 hydrogen 0.03           0 percentile_fC98S
+#>  2 hydrogen 0.934          1 percentile_fC98S
+#>  3 hydrogen 1.60           2 percentile_fC98S
+#>  4 hydrogen 2.07           3 percentile_fC98S
+#>  5 hydrogen 2.45           4 percentile_fC98S
+#>  6 hydrogen 2.74           5 percentile_fC98S
+#>  7 hydrogen 3.15           6 percentile_fC98S
+#>  8 hydrogen 3.49           7 percentile_fC98S
+#>  9 hydrogen 3.71           8 percentile_fC98S
+#> 10 hydrogen 3.99           9 percentile_fC98S
 #> # … with 264 more rows
 ```
 
@@ -603,7 +603,7 @@ tunable.step_poly <- function (x, ...) {
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-10-29                  
+#>  date     2020-10-30                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
