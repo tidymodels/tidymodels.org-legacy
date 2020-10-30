@@ -142,7 +142,7 @@ step_percentile() calls recipes::add_step()
     └──> step_percentile_new() calls recipes::step()
 ```
 
-`step()` is a general constructor for recipes that mainly makes sure that the resulting step object is a list with an appropriate S3 class structure. Using `subclass = "percentile"` will set the class of new objects to `"step_percentile()"`. 
+`step()` is a general constructor for recipes that mainly makes sure that the resulting step object is a list with an appropriate S3 class structure. Using `subclass = "percentile"` will set the class of new objects to `"step_percentile"`. 
 
 
 ```r
@@ -287,6 +287,8 @@ bake.step_percentile <- function(object, new_data, ...) {
   tibble::as_tibble(new_data)
 }
 ```
+
+{{% note %}} You need to import `recipes::prep()` and `recipes::bake()` to create your own step function in a package. {{%/ note %}}
 
 ## Run the example
 
@@ -503,16 +505,16 @@ tidy(rec_obj, number = 1)
 #> # A tibble: 274 x 4
 #>    term     value percentile id              
 #>    <chr>    <dbl>      <dbl> <chr>           
-#>  1 hydrogen 0.03           0 percentile_XV7CF
-#>  2 hydrogen 0.934          1 percentile_XV7CF
-#>  3 hydrogen 1.60           2 percentile_XV7CF
-#>  4 hydrogen 2.07           3 percentile_XV7CF
-#>  5 hydrogen 2.45           4 percentile_XV7CF
-#>  6 hydrogen 2.74           5 percentile_XV7CF
-#>  7 hydrogen 3.15           6 percentile_XV7CF
-#>  8 hydrogen 3.49           7 percentile_XV7CF
-#>  9 hydrogen 3.71           8 percentile_XV7CF
-#> 10 hydrogen 3.99           9 percentile_XV7CF
+#>  1 hydrogen 0.03           0 percentile_fC98S
+#>  2 hydrogen 0.934          1 percentile_fC98S
+#>  3 hydrogen 1.60           2 percentile_fC98S
+#>  4 hydrogen 2.07           3 percentile_fC98S
+#>  5 hydrogen 2.45           4 percentile_fC98S
+#>  6 hydrogen 2.74           5 percentile_fC98S
+#>  7 hydrogen 3.15           6 percentile_fC98S
+#>  8 hydrogen 3.49           7 percentile_fC98S
+#>  9 hydrogen 3.71           8 percentile_fC98S
+#> 10 hydrogen 3.99           9 percentile_fC98S
 #> # … with 264 more rows
 ```
 
@@ -555,7 +557,7 @@ info <- list(pkg = "dials", fun = "neighbors")
 # FYI: how it is used under-the-hood: 
 new_param_call <- rlang::call2(.fn = info$fun, .ns = info$pkg)
 rlang::eval_tidy(new_param_call)
-#> # Nearest Neighbors  (quantitative)
+#> # Nearest Neighbors (quantitative)
 #> Range: [1, 10]
 ```
 
@@ -593,7 +595,7 @@ tunable.step_poly <- function (x, ...) {
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 4.0.2 (2020-06-22)
+#>  version  R version 4.0.3 (2020-10-10)
 #>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin17.0          
 #>  ui       X11                         
@@ -601,26 +603,26 @@ tunable.step_poly <- function (x, ...) {
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-09-15                  
+#>  date     2020-10-30                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
-#>  broom      * 0.7.0   2020-07-09 [1] CRAN (R 4.0.0)
-#>  dials      * 0.0.8   2020-07-08 [1] CRAN (R 4.0.2)
+#>  broom      * 0.7.2   2020-10-20 [1] CRAN (R 4.0.2)
+#>  dials      * 0.0.9   2020-09-16 [1] CRAN (R 4.0.2)
 #>  dplyr      * 1.0.2   2020-08-18 [1] CRAN (R 4.0.2)
 #>  ggplot2    * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
 #>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
-#>  modeldata  * 0.0.2   2020-06-22 [1] CRAN (R 4.0.0)
-#>  parsnip    * 0.1.3   2020-08-04 [1] CRAN (R 4.0.2)
+#>  modeldata  * 0.1.0   2020-10-22 [1] CRAN (R 4.0.2)
+#>  parsnip    * 0.1.4   2020-10-27 [1] CRAN (R 4.0.2)
 #>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
-#>  recipes    * 0.1.13  2020-06-23 [1] CRAN (R 4.0.2)
-#>  rlang        0.4.7   2020-07-09 [1] CRAN (R 4.0.0)
-#>  rsample    * 0.0.7   2020-06-04 [1] CRAN (R 4.0.2)
-#>  tibble     * 3.0.3   2020-07-10 [1] CRAN (R 4.0.2)
+#>  recipes    * 0.1.14  2020-10-17 [1] CRAN (R 4.0.2)
+#>  rlang        0.4.8   2020-10-08 [1] CRAN (R 4.0.2)
+#>  rsample    * 0.0.8   2020-09-23 [1] CRAN (R 4.0.2)
+#>  tibble     * 3.0.4   2020-10-12 [1] CRAN (R 4.0.2)
 #>  tidymodels * 0.1.1   2020-07-14 [1] CRAN (R 4.0.2)
 #>  tune       * 0.1.1   2020-07-08 [1] CRAN (R 4.0.2)
-#>  workflows  * 0.1.3   2020-08-10 [1] CRAN (R 4.0.2)
-#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.0)
+#>  workflows  * 0.2.1   2020-10-08 [1] CRAN (R 4.0.2)
+#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.2)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
 ```
