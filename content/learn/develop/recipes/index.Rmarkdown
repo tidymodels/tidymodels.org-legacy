@@ -271,6 +271,8 @@ bake.step_percentile <- function(object, new_data, ...) {
 }
 ```
 
+{{% note %}} You need to import `recipes::prep()` and `recipes::bake()` to make your own step function in a package. {{%/ note %}}
+
 ## Run the example
 
 Let's use the example data to make sure that it works: 
