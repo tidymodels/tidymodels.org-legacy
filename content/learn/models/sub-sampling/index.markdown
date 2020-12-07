@@ -139,8 +139,8 @@ collect_metrics(qda_rose_res)
 #> # A tibble: 2 x 6
 #>   .metric .estimator  mean     n std_err .config             
 #>   <chr>   <chr>      <dbl> <int>   <dbl> <chr>               
-#> 1 j_index binary     0.785    50 0.0195  Preprocessor1_Model1
-#> 2 roc_auc binary     0.951    50 0.00506 Preprocessor1_Model1
+#> 1 j_index binary     0.761    50 0.0210  Preprocessor1_Model1
+#> 2 roc_auc binary     0.949    50 0.00505 Preprocessor1_Model1
 ```
 
 What do the results look like without using ROSE? We can create another workflow and fit the QDA model along the same resamples:

@@ -77,7 +77,7 @@ nnet_fit <-
 nnet_fit
 #> parsnip model object
 #> 
-#> Fit time:  9.2s 
+#> Fit time:  9s 
 #> Model
 #> Model: "sequential"
 #> ________________________________________________________________________________
@@ -113,11 +113,11 @@ val_results %>% slice(1:5)
 #> # A tibble: 5 x 6
 #>       A     B Class .pred_class .pred_One .pred_Two
 #>   <dbl> <dbl> <fct> <fct>           <dbl>     <dbl>
-#> 1 1061.  74.5 One   Two             0.466    0.534 
-#> 2 1241.  83.4 One   Two             0.478    0.522 
-#> 3  939.  71.9 One   One             0.629    0.371 
-#> 4  813.  77.1 One   One             0.925    0.0751
-#> 5 1706.  92.8 Two   Two             0.352    0.648
+#> 1 1061.  74.5 One   Two             0.474    0.526 
+#> 2 1241.  83.4 One   Two             0.486    0.514 
+#> 3  939.  71.9 One   One             0.633    0.367 
+#> 4  813.  77.1 One   One             0.924    0.0760
+#> 5 1706.  92.8 Two   Two             0.360    0.640
 
 val_results %>% roc_auc(truth = Class, .pred_One)
 #> # A tibble: 1 x 3
@@ -129,13 +129,13 @@ val_results %>% accuracy(truth = Class, .pred_class)
 #> # A tibble: 1 x 3
 #>   .metric  .estimator .estimate
 #>   <chr>    <chr>          <dbl>
-#> 1 accuracy binary          0.74
+#> 1 accuracy binary         0.733
 
 val_results %>% conf_mat(truth = Class, .pred_class)
 #>           Truth
 #> Prediction One Two
-#>        One 150  26
-#>        Two  52  72
+#>        One 150  28
+#>        Two  52  70
 ```
 
 Let's also create a grid to get a visual sense of the class boundary for the validation set.
@@ -170,33 +170,33 @@ ggplot(x_grid, aes(x = A, y = B)) +
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 4.0.2 (2020-06-22)
-#>  os       macOS Catalina 10.15.6      
+#>  version  R version 4.0.3 (2020-10-10)
+#>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin17.0          
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-07-21                  
+#>  date     2020-12-07                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
-#>  broom      * 0.7.0   2020-07-09 [1] CRAN (R 4.0.0)
-#>  dials      * 0.0.8   2020-07-08 [1] CRAN (R 4.0.0)
-#>  dplyr      * 1.0.0   2020-05-29 [1] CRAN (R 4.0.0)
+#>  broom      * 0.7.2   2020-10-20 [1] CRAN (R 4.0.2)
+#>  dials      * 0.0.9   2020-09-16 [1] CRAN (R 4.0.2)
+#>  dplyr      * 1.0.2   2020-08-18 [1] CRAN (R 4.0.2)
 #>  ggplot2    * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
-#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.2)
-#>  keras        2.3.0.0 2020-05-19 [1] CRAN (R 4.0.2)
-#>  parsnip    * 0.1.2   2020-07-03 [1] CRAN (R 4.0.1)
+#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
+#>  keras        2.3.0.0 2020-05-19 [1] CRAN (R 4.0.0)
+#>  parsnip    * 0.1.4   2020-10-27 [1] CRAN (R 4.0.2)
 #>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
-#>  recipes    * 0.1.13  2020-06-23 [1] CRAN (R 4.0.0)
-#>  rlang        0.4.7   2020-07-09 [1] CRAN (R 4.0.2)
-#>  rsample    * 0.0.7   2020-06-04 [1] CRAN (R 4.0.0)
-#>  tibble     * 3.0.3   2020-07-10 [1] CRAN (R 4.0.2)
-#>  tidymodels * 0.1.1   2020-07-14 [1] CRAN (R 4.0.2)
-#>  tune       * 0.1.1   2020-07-08 [1] CRAN (R 4.0.0)
-#>  workflows  * 0.1.2   2020-07-07 [1] CRAN (R 4.0.0)
+#>  recipes    * 0.1.15  2020-11-11 [1] CRAN (R 4.0.2)
+#>  rlang        0.4.9   2020-11-26 [1] CRAN (R 4.0.2)
+#>  rsample    * 0.0.8   2020-09-23 [1] CRAN (R 4.0.2)
+#>  tibble     * 3.0.4   2020-10-12 [1] CRAN (R 4.0.2)
+#>  tidymodels * 0.1.2   2020-11-22 [1] CRAN (R 4.0.2)
+#>  tune       * 0.1.2   2020-11-17 [1] CRAN (R 4.0.3)
+#>  workflows  * 0.2.1   2020-10-08 [1] CRAN (R 4.0.2)
 #>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.2)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
