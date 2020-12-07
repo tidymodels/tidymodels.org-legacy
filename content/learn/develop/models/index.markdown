@@ -192,6 +192,7 @@ set_fit(
     defaults = list()
   )
 )
+
 show_model_info("discrim_mixture")
 #> Information for `discrim_mixture`
 #>  modes: unknown, classification 
@@ -209,6 +210,32 @@ show_model_info("discrim_mixture")
 #> 
 #>  no registered prediction modules.
 ```
+
+We also set up the information on how the predictors should be handled. These options ensure that the data that parsnip gives to the underlying model allows for a model fit that is as similar as possible to what it would have produced directly.
+
+ * `predictor_indicators` describes whether and how to create indicator/dummy variables from factor predictors. There are three options: `"none"` (do not expand factor predictors), `"traditional"` (apply the standard `model.matrix()` encodings), and `"one_hot"` (create the complete set including the baseline level for all factors). 
+ 
+ * `compute_intercept` controls whether `model.matrix()` should include the intercept in its formula. This affects more than the inclusion of an intercept column. With an intercept, `model.matrix()` computes dummy variables for all but one factor level. Without an intercept, `model.matrix()` computes a full set of indicators for the first factor variable, but an incomplete set for the remainder.
+ 
+ * `remove_intercept` removes the intercept column *after* `model.matrix()` is finished. This can be useful if the model function (e.g. `lm()`) automatically generates an intercept.
+
+* `allow_sparse_x` specifies whether the model can accommodate a sparse recommendation for predictors during fitting and tuning.
+
+
+```r
+set_encoding(
+  model = "discrim_mixture",
+  eng = "mda",
+  mode = "classification",
+  options = list(
+    predictor_indicators = "traditional",
+    compute_intercept = TRUE,
+    remove_intercept = TRUE,
+    allow_sparse_x = FALSE
+  )
+)
+```
+
 
 ### Step 4. Add modules for prediction
 
@@ -343,7 +370,7 @@ mda_fit <- mda_spec %>%
 mda_fit
 #> parsnip model object
 #> 
-#> Fit time:  25ms 
+#> Fit time:  22ms 
 #> Call:
 #> mda::mda(formula = Class ~ ., data = data, subclasses = ~2)
 #> 
@@ -405,6 +432,18 @@ set_fit(
     protect = c("formula", "data", "weights"),
     func = c(pkg = "MASS", fun = "rlm"),
     defaults = list()
+  )
+)
+
+set_encoding(
+  model = "linear_reg",
+  eng = "rlm",
+  mode = "regression",
+  options = list(
+    predictor_indicators = "traditional",
+    compute_intercept = TRUE,
+    remove_intercept = TRUE,
+    allow_sparse_x = FALSE
   )
 )
 
@@ -516,7 +555,7 @@ info <- list(pkg = "dials", fun = "neighbors")
 # FYI: how it is used under-the-hood: 
 new_param_call <- rlang::call2(.fn = info$fun, .ns = info$pkg)
 rlang::eval_tidy(new_param_call)
-#> # Nearest Neighbors  (quantitative)
+#> # Nearest Neighbors (quantitative)
 #> Range: [1, 10]
 ```
 
@@ -565,12 +604,12 @@ mda_tune_res <- mda_spec %>%
   tune_grid(Class ~ ., cv, grid = 4)
 show_best(mda_tune_res, metric = "roc_auc")
 #> # A tibble: 4 x 7
-#>   sub_classes .metric .estimator  mean     n std_err .config
-#>         <int> <chr>   <chr>      <dbl> <int>   <dbl> <chr>  
-#> 1           2 roc_auc binary     0.885    10  0.0143 Model3 
-#> 2           3 roc_auc binary     0.884    10  0.0140 Model4 
-#> 3           6 roc_auc binary     0.879    10  0.0146 Model2 
-#> 4           8 roc_auc binary     0.878    10  0.0141 Model1
+#>   sub_classes .metric .estimator  mean     n std_err .config             
+#>         <int> <chr>   <chr>      <dbl> <int>   <dbl> <chr>               
+#> 1           2 roc_auc binary     0.885    10  0.0143 Preprocessor1_Model3
+#> 2           3 roc_auc binary     0.884    10  0.0141 Preprocessor1_Model4
+#> 3           6 roc_auc binary     0.880    10  0.0142 Preprocessor1_Model2
+#> 4           8 roc_auc binary     0.879    10  0.0139 Preprocessor1_Model1
 ```
 
 
@@ -709,7 +748,7 @@ If you have a suggestion, please add a [GitHub issue](https://github.com/tidymod
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 4.0.2 (2020-06-22)
+#>  version  R version 4.0.3 (2020-10-10)
 #>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin17.0          
 #>  ui       X11                         
@@ -717,27 +756,27 @@ If you have a suggestion, please add a [GitHub issue](https://github.com/tidymod
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-08-24                  
+#>  date     2020-12-07                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
-#>  broom      * 0.7.0   2020-07-09 [1] CRAN (R 4.0.0)
-#>  dials      * 0.0.8   2020-07-08 [1] CRAN (R 4.0.2)
+#>  broom      * 0.7.2   2020-10-20 [1] CRAN (R 4.0.2)
+#>  dials      * 0.0.9   2020-09-16 [1] CRAN (R 4.0.2)
 #>  dplyr      * 1.0.2   2020-08-18 [1] CRAN (R 4.0.2)
 #>  ggplot2    * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
 #>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
 #>  mda        * 0.5-2   2020-06-29 [1] CRAN (R 4.0.1)
-#>  modeldata  * 0.0.2   2020-06-22 [1] CRAN (R 4.0.0)
-#>  parsnip    * 0.1.3   2020-08-04 [1] CRAN (R 4.0.2)
+#>  modeldata  * 0.1.0   2020-10-22 [1] CRAN (R 4.0.2)
+#>  parsnip    * 0.1.4   2020-10-27 [1] CRAN (R 4.0.2)
 #>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
-#>  recipes    * 0.1.13  2020-06-23 [1] CRAN (R 4.0.0)
-#>  rlang        0.4.7   2020-07-09 [1] CRAN (R 4.0.0)
-#>  rsample    * 0.0.7   2020-06-04 [1] CRAN (R 4.0.0)
-#>  tibble     * 3.0.3   2020-07-10 [1] CRAN (R 4.0.2)
-#>  tidymodels * 0.1.1   2020-07-14 [1] CRAN (R 4.0.2)
-#>  tune       * 0.1.1   2020-07-08 [1] CRAN (R 4.0.2)
-#>  workflows  * 0.1.3   2020-08-10 [1] CRAN (R 4.0.2)
-#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.0)
+#>  recipes    * 0.1.15  2020-11-11 [1] CRAN (R 4.0.2)
+#>  rlang      * 0.4.9   2020-11-26 [1] CRAN (R 4.0.2)
+#>  rsample    * 0.0.8   2020-09-23 [1] CRAN (R 4.0.2)
+#>  tibble     * 3.0.4   2020-10-12 [1] CRAN (R 4.0.2)
+#>  tidymodels * 0.1.2   2020-11-22 [1] CRAN (R 4.0.2)
+#>  tune       * 0.1.2   2020-11-17 [1] CRAN (R 4.0.3)
+#>  workflows  * 0.2.1   2020-10-08 [1] CRAN (R 4.0.2)
+#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.2)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
 ```
