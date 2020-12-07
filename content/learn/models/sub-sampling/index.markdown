@@ -114,7 +114,7 @@ cv_folds <- vfold_cv(imbal_data, strata = "Class", repeats = 5)
 
 To measure model performance, let's use two metrics:
 
- * The area under the [ROC curve](https://en.wikipedia.org/wiki/Receiver_operating_characteristic) is an overall assessment of performance across _all_ cutoffs. Values near one indicate very good results while values near 0.05 would imply that the model is very poor. 
+ * The area under the [ROC curve](https://en.wikipedia.org/wiki/Receiver_operating_characteristic) is an overall assessment of performance across _all_ cutoffs. Values near one indicate very good results while values near 0.5 would imply that the model is very poor. 
  * The _J_ index (a.k.a. [Youden's _J_](https://en.wikipedia.org/wiki/Youden%27s_J_statistic) statistic) is `sensitivity + specificity - 1`. Values near one are once again best. 
 
 If a model is poorly calibrated, the ROC curve value might not show diminished performance. However, the _J_ index would be lower for models with pathological distributions for the class probabilities. The yardstick package will be used to compute these metrics. 
@@ -136,11 +136,11 @@ qda_rose_res <- fit_resamples(
 )
 
 collect_metrics(qda_rose_res)
-#> # A tibble: 2 x 5
-#>   .metric .estimator  mean     n std_err
-#>   <chr>   <chr>      <dbl> <int>   <dbl>
-#> 1 j_index binary     0.757    50 0.0220 
-#> 2 roc_auc binary     0.945    50 0.00619
+#> # A tibble: 2 x 6
+#>   .metric .estimator  mean     n std_err .config             
+#>   <chr>   <chr>      <dbl> <int>   <dbl> <chr>               
+#> 1 j_index binary     0.785    50 0.0195  Preprocessor1_Model1
+#> 2 roc_auc binary     0.951    50 0.00506 Preprocessor1_Model1
 ```
 
 What do the results look like without using ROSE? We can create another workflow and fit the QDA model along the same resamples:
@@ -155,11 +155,11 @@ qda_wflw <-
 set.seed(2180)
 qda_only_res <- fit_resamples(qda_wflw, resamples = cv_folds, metrics = cls_metrics)
 collect_metrics(qda_only_res)
-#> # A tibble: 2 x 5
-#>   .metric .estimator  mean     n std_err
-#>   <chr>   <chr>      <dbl> <int>   <dbl>
-#> 1 j_index binary     0.250    50 0.0288 
-#> 2 roc_auc binary     0.953    50 0.00479
+#> # A tibble: 2 x 6
+#>   .metric .estimator  mean     n std_err .config             
+#>   <chr>   <chr>      <dbl> <int>   <dbl> <chr>               
+#> 1 j_index binary     0.250    50 0.0288  Preprocessor1_Model1
+#> 2 roc_auc binary     0.953    50 0.00479 Preprocessor1_Model1
 ```
 
 It looks like ROSE helped a lot, especially with the J-index. Class imbalance sampling methods tend to greatly improve metrics based on the hard class predictions (i.e., the categorical predictions) because the default cutoff tends to be a better balance of sensitivity and specificity. 
@@ -197,37 +197,37 @@ This visually demonstrates that the subsampling mostly affects metrics that use 
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 4.0.2 (2020-06-22)
-#>  os       macOS Catalina 10.15.6      
+#>  version  R version 4.0.3 (2020-10-10)
+#>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin17.0          
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-07-21                  
+#>  date     2020-12-07                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
-#>  broom      * 0.7.0   2020-07-09 [1] CRAN (R 4.0.0)
-#>  dials      * 0.0.8   2020-07-08 [1] CRAN (R 4.0.0)
-#>  discrim    * 0.1.0   2020-07-07 [1] CRAN (R 4.0.2)
-#>  dplyr      * 1.0.0   2020-05-29 [1] CRAN (R 4.0.0)
+#>  broom      * 0.7.2   2020-10-20 [1] CRAN (R 4.0.2)
+#>  dials      * 0.0.9   2020-09-16 [1] CRAN (R 4.0.2)
+#>  discrim    * 0.1.1   2020-10-28 [1] CRAN (R 4.0.2)
+#>  dplyr      * 1.0.2   2020-08-18 [1] CRAN (R 4.0.2)
 #>  ggplot2    * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
-#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.2)
-#>  klaR       * 0.6-15  2020-02-19 [1] CRAN (R 4.0.2)
-#>  parsnip    * 0.1.2   2020-07-03 [1] CRAN (R 4.0.1)
+#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
+#>  klaR       * 0.6-15  2020-02-19 [1] CRAN (R 4.0.0)
+#>  parsnip    * 0.1.4   2020-10-27 [1] CRAN (R 4.0.2)
 #>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
-#>  readr      * 1.3.1   2018-12-21 [1] CRAN (R 4.0.0)
-#>  recipes    * 0.1.13  2020-06-23 [1] CRAN (R 4.0.0)
-#>  rlang        0.4.7   2020-07-09 [1] CRAN (R 4.0.2)
-#>  ROSE       * 0.0-3   2014-07-15 [1] CRAN (R 4.0.2)
-#>  rsample    * 0.0.7   2020-06-04 [1] CRAN (R 4.0.0)
-#>  themis     * 0.1.1   2020-05-17 [1] CRAN (R 4.0.2)
-#>  tibble     * 3.0.3   2020-07-10 [1] CRAN (R 4.0.2)
-#>  tidymodels * 0.1.1   2020-07-14 [1] CRAN (R 4.0.2)
-#>  tune       * 0.1.1   2020-07-08 [1] CRAN (R 4.0.0)
-#>  workflows  * 0.1.2   2020-07-07 [1] CRAN (R 4.0.0)
+#>  readr      * 1.4.0   2020-10-05 [1] CRAN (R 4.0.2)
+#>  recipes    * 0.1.15  2020-11-11 [1] CRAN (R 4.0.2)
+#>  rlang      * 0.4.9   2020-11-26 [1] CRAN (R 4.0.2)
+#>  ROSE       * 0.0-3   2014-07-15 [1] CRAN (R 4.0.0)
+#>  rsample    * 0.0.8   2020-09-23 [1] CRAN (R 4.0.2)
+#>  themis     * 0.1.3   2020-11-12 [1] CRAN (R 4.0.3)
+#>  tibble     * 3.0.4   2020-10-12 [1] CRAN (R 4.0.2)
+#>  tidymodels * 0.1.2   2020-11-22 [1] CRAN (R 4.0.2)
+#>  tune       * 0.1.2   2020-11-17 [1] CRAN (R 4.0.3)
+#>  workflows  * 0.2.1   2020-10-08 [1] CRAN (R 4.0.2)
 #>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.2)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library

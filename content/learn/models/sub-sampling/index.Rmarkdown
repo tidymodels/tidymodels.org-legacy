@@ -101,7 +101,7 @@ cv_folds <- vfold_cv(imbal_data, strata = "Class", repeats = 5)
 
 To measure model performance, let's use two metrics:
 
- * The area under the [ROC curve](https://en.wikipedia.org/wiki/Receiver_operating_characteristic) is an overall assessment of performance across _all_ cutoffs. Values near one indicate very good results while values near 0.05 would imply that the model is very poor. 
+ * The area under the [ROC curve](https://en.wikipedia.org/wiki/Receiver_operating_characteristic) is an overall assessment of performance across _all_ cutoffs. Values near one indicate very good results while values near 0.5 would imply that the model is very poor. 
  * The _J_ index (a.k.a. [Youden's _J_](https://en.wikipedia.org/wiki/Youden%27s_J_statistic) statistic) is `sensitivity + specificity - 1`. Values near one are once again best. 
 
 If a model is poorly calibrated, the ROC curve value might not show diminished performance. However, the _J_ index would be lower for models with pathological distributions for the class probabilities. The yardstick package will be used to compute these metrics. 
@@ -112,7 +112,7 @@ cls_metrics <- metric_set(roc_auc, j_index)
 
 Now, we train the models and generate the results using `tune::fit_resamples()`:
 
-```{r resample-rose}
+```{r resample-rose, message=FALSE}
 set.seed(2180)
 qda_rose_res <- fit_resamples(
   qda_rose_wflw, 
