@@ -76,7 +76,7 @@ rf_xy_fit <-
 rf_xy_fit
 #> parsnip model object
 #> 
-#> Fit time:  936ms 
+#> Fit time:  919ms 
 #> Ranger result
 #> 
 #> Call:
@@ -144,7 +144,7 @@ rand_forest(mode = "regression", mtry = 3, trees = 1000) %>%
   )
 #> parsnip model object
 #> 
-#> Fit time:  2.6s 
+#> Fit time:  2.5s 
 #> Ranger result
 #> 
 #> Call:
@@ -175,7 +175,7 @@ rand_forest(mode = "regression", mtry = 3, trees = 1000) %>%
   )
 #> parsnip model object
 #> 
-#> Fit time:  7.7s 
+#> Fit time:  7.5s 
 #> 
 #> Call:
 #>  randomForest(x = maybe_data_frame(x), y = y, ntree = ~1000, mtry = min_cols(~3,      x)) 
@@ -212,7 +212,7 @@ rand_forest(mode = "regression", mtry = .preds(), trees = 1000) %>%
   )
 #> parsnip model object
 #> 
-#> Fit time:  3.6s 
+#> Fit time:  3.5s 
 #> Ranger result
 #> 
 #> Call:
@@ -257,11 +257,11 @@ norm_recipe <-
 glmn_fit <- 
   linear_reg(penalty = 0.001, mixture = 0.5) %>% 
   set_engine("glmnet") %>%
-  fit(Sale_Price ~ ., data = juice(norm_recipe))
+  fit(Sale_Price ~ ., data = bake(norm_recipe, new_data = NULL))
 glmn_fit
 #> parsnip model object
 #> 
-#> Fit time:  8ms 
+#> Fit time:  11ms 
 #> 
 #> Call:  glmnet::glmnet(x = maybe_matrix(x), y = y, family = "gaussian",      alpha = ~0.5) 
 #> 
@@ -400,7 +400,7 @@ This final plot compares the performance of the random forest and regularized re
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-12-07                  
+#>  date     2020-12-08                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package      * version date       lib source        
