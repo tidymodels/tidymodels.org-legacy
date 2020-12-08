@@ -130,7 +130,7 @@ We are ready to tune! Let's use [`tune_grid()`](https://tidymodels.github.io/tun
 
 Here we use a `workflow()` with a straightforward formula; if this model required more involved data preprocessing, we could use `add_recipe()` instead of `add_formula()`.
 
-```{r tree-res, dependson=c("tune-spec", "cell-folds", "tree-grid")}
+```{r tree-res, dependson=c("tune-spec", "cell-folds", "tree-grid"), message=FALSE}
 set.seed(345)
 
 tree_wf <- workflow() %>%
