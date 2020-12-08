@@ -17,7 +17,7 @@ description: |
 
 How do you create a statistical model using tidymodels? In this article, we will walk you through the steps. We start with data for modeling, learn how to specify and train models with different engines using the [parsnip package](https://tidymodels.github.io/parsnip/), and understand why these functions are designed this way.
 
-To use code in this article,  you will need to install the following packages: broom.mixed, readr, rstanarm, and tidymodels.
+To use code in this article,  you will need to install the following packages: broom.mixed, dotwhisker, readr, rstanarm, and tidymodels.
 
 
 ```r
@@ -26,6 +26,7 @@ library(tidymodels)  # for the parsnip package, along with the rest of tidymodel
 # Helper packages
 library(readr)       # for importing data
 library(broom.mixed) # for converting bayesian models to tidy tibbles
+library(dotwhisker)  # for visualizing regression results
 ```
 
 
@@ -48,7 +49,8 @@ urchins <-
   setNames(c("food_regime", "initial_volume", "width")) %>% 
   # Factors are very helpful for modeling, so we convert one column
   mutate(food_regime = factor(food_regime, levels = c("Initial", "Low", "High")))
-#> Parsed with column specification:
+#> 
+#> ── Column specification ──────────────────────────────────────────────
 #> cols(
 #>   TREAT = col_character(),
 #>   IV = col_double(),
@@ -182,6 +184,19 @@ tidy(lm_fit)
 #> 6 initial_volume:food_regimeHigh  0.000525  0.000702     0.748 0.457
 ```
 
+This kind of output can be used to generate a dot-and-whisker plot of our regression results using the dotwhisker package:
+
+
+```r
+tidy(lm_fit) %>% 
+  dwplot(dot_args = list(size = 2, color = "black"),
+         whisker_args = list(color = "black"),
+         vline = geom_vline(xintercept = 0, colour = "grey50", linetype = 2))
+```
+
+<img src="figs/dwplot-1.svg" width="672" />
+
+
 ## Use a model to predict {#predict-model}
 
 This fitted object `lm_fit` has the `lm` model output built-in, which you can access with `lm_fit$fit`, but there are some benefits to using the fitted parsnip model object when it comes to predicting.
@@ -279,7 +294,7 @@ bayes_fit <-
 print(bayes_fit, digits = 5)
 #> parsnip model object
 #> 
-#> Fit time:  1s 
+#> Fit time:  8.6s 
 #> stan_glm
 #>  family:       gaussian [identity]
 #>  formula:      width ~ initial_volume * food_regime
@@ -287,16 +302,16 @@ print(bayes_fit, digits = 5)
 #>  predictors:   6
 #> ------
 #>                                Median   MAD_SD  
-#> (Intercept)                     0.03452  0.00883
-#> initial_volume                  0.00150  0.00037
-#> food_regimeLow                  0.01805  0.01221
-#> food_regimeHigh                 0.01934  0.01367
-#> initial_volume:food_regimeLow  -0.00119  0.00047
-#> initial_volume:food_regimeHigh  0.00061  0.00065
+#> (Intercept)                     0.03281  0.00992
+#> initial_volume                  0.00157  0.00041
+#> food_regimeLow                  0.01990  0.01286
+#> food_regimeHigh                 0.02136  0.01519
+#> initial_volume:food_regimeLow  -0.00126  0.00052
+#> initial_volume:food_regimeHigh  0.00052  0.00073
 #> 
 #> Auxiliary parameter(s):
 #>       Median  MAD_SD 
-#> sigma 0.02121 0.00186
+#> sigma 0.02144 0.00192
 #> 
 #> ------
 #> * For help interpreting the printed output see ?print.stanreg
@@ -313,12 +328,12 @@ tidy(bayes_fit, conf.int = TRUE)
 #> # A tibble: 6 x 5
 #>   term                            estimate std.error  conf.low conf.high
 #>   <chr>                              <dbl>     <dbl>     <dbl>     <dbl>
-#> 1 (Intercept)                     0.0345    0.00883   0.0200    0.0490  
-#> 2 initial_volume                  0.00150   0.000369  0.000895  0.00212 
-#> 3 food_regimeLow                  0.0181    0.0122   -0.00181   0.0380  
-#> 4 food_regimeHigh                 0.0193    0.0137   -0.00317   0.0420  
-#> 5 initial_volume:food_regimeLow  -0.00119   0.000472 -0.00199  -0.000413
-#> 6 initial_volume:food_regimeHigh  0.000610  0.000651 -0.000490  0.00170
+#> 1 (Intercept)                     0.0328    0.00992   0.0168    0.0488  
+#> 2 initial_volume                  0.00157   0.000405  0.000893  0.00224 
+#> 3 food_regimeLow                  0.0199    0.0129   -0.00140   0.0420  
+#> 4 food_regimeHigh                 0.0214    0.0152   -0.00356   0.0464  
+#> 5 initial_volume:food_regimeLow  -0.00126   0.000516 -0.00210  -0.000407
+#> 6 initial_volume:food_regimeHigh  0.000517  0.000732 -0.000691  0.00171
 ```
 
 A goal of the tidymodels packages is that the **interfaces to common tasks are standardized** (as seen in the `tidy()` results above). The same is true for getting predictions; we can use the same code even though the underlying packages use very different syntax:
@@ -391,7 +406,7 @@ ggplot(urchins,
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 4.0.2 (2020-06-22)
+#>  version  R version 4.0.3 (2020-10-10)
 #>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin17.0          
 #>  ui       X11                         
@@ -399,28 +414,29 @@ ggplot(urchins,
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-07-22                  
+#>  date     2020-12-08                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package     * version date       lib source        
-#>  broom       * 0.7.0   2020-07-09 [1] CRAN (R 4.0.0)
+#>  broom       * 0.7.2   2020-10-20 [1] CRAN (R 4.0.2)
 #>  broom.mixed * 0.2.6   2020-05-17 [1] CRAN (R 4.0.0)
-#>  dials       * 0.0.8   2020-07-08 [1] CRAN (R 4.0.2)
-#>  dplyr       * 1.0.0   2020-05-29 [1] CRAN (R 4.0.0)
+#>  dials       * 0.0.9   2020-09-16 [1] CRAN (R 4.0.2)
+#>  dotwhisker  * 0.5.0   2018-06-27 [1] CRAN (R 4.0.2)
+#>  dplyr       * 1.0.2   2020-08-18 [1] CRAN (R 4.0.2)
 #>  ggplot2     * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
 #>  infer       * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
-#>  parsnip     * 0.1.2   2020-07-03 [1] CRAN (R 4.0.1)
+#>  parsnip     * 0.1.4   2020-10-27 [1] CRAN (R 4.0.2)
 #>  purrr       * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
-#>  readr       * 1.3.1   2018-12-21 [1] CRAN (R 4.0.0)
-#>  recipes     * 0.1.13  2020-06-23 [1] CRAN (R 4.0.0)
-#>  rlang         0.4.7   2020-07-09 [1] CRAN (R 4.0.0)
-#>  rsample     * 0.0.7   2020-06-04 [1] CRAN (R 4.0.0)
-#>  rstanarm    * 2.19.3  2020-02-11 [1] CRAN (R 4.0.0)
-#>  tibble      * 3.0.3   2020-07-10 [1] CRAN (R 4.0.2)
-#>  tidymodels  * 0.1.1   2020-07-14 [1] CRAN (R 4.0.0)
-#>  tune        * 0.1.1   2020-07-08 [1] CRAN (R 4.0.2)
-#>  workflows   * 0.1.2   2020-07-07 [1] CRAN (R 4.0.2)
-#>  yardstick   * 0.0.7   2020-07-13 [1] CRAN (R 4.0.0)
+#>  readr       * 1.4.0   2020-10-05 [1] CRAN (R 4.0.2)
+#>  recipes     * 0.1.15  2020-11-11 [1] CRAN (R 4.0.2)
+#>  rlang         0.4.9   2020-11-26 [1] CRAN (R 4.0.2)
+#>  rsample     * 0.0.8   2020-09-23 [1] CRAN (R 4.0.2)
+#>  rstanarm    * 2.21.1  2020-07-20 [1] CRAN (R 4.0.2)
+#>  tibble      * 3.0.4   2020-10-12 [1] CRAN (R 4.0.2)
+#>  tidymodels  * 0.1.2   2020-11-22 [1] CRAN (R 4.0.2)
+#>  tune        * 0.1.2   2020-11-17 [1] CRAN (R 4.0.3)
+#>  workflows   * 0.2.1   2020-10-08 [1] CRAN (R 4.0.2)
+#>  yardstick   * 0.0.7   2020-07-13 [1] CRAN (R 4.0.2)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
 ```

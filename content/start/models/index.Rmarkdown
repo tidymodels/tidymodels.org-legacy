@@ -16,8 +16,9 @@ library(readr)
 library(rstanarm)
 library(tidymodels)
 library(broom.mixed)
+library(dotwhisker)
 
-pkgs <- c("tidymodels", "readr", "rstanarm", "broom.mixed")
+pkgs <- c("tidymodels", "readr", "rstanarm", "broom.mixed", "dotwhisker")
 
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
@@ -36,6 +37,7 @@ library(tidymodels)  # for the parsnip package, along with the rest of tidymodel
 # Helper packages
 library(readr)       # for importing data
 library(broom.mixed) # for converting bayesian models to tidy tibbles
+library(dotwhisker)  # for visualizing regression results
 ```
 
 
@@ -132,6 +134,16 @@ Perhaps our analysis requires a description of the model parameter estimates and
 ```{r lm-table}
 tidy(lm_fit)
 ```
+
+This kind of output can be used to generate a dot-and-whisker plot of our regression results using the dotwhisker package:
+
+```{r dwplot}
+tidy(lm_fit) %>% 
+  dwplot(dot_args = list(size = 2, color = "black"),
+         whisker_args = list(color = "black"),
+         vline = geom_vline(xintercept = 0, colour = "grey50", linetype = 2))
+```
+
 
 ## Use a model to predict {#predict-model}
 
