@@ -54,7 +54,7 @@ biv_rec <-
   step_normalize(all_predictors()) %>%
   prep(training = bivariate_train, retain = TRUE)
 
-# We will juice() to get the processed training set back
+# We will bake(new_data = NULL) to get the processed training set back
 
 # For validation:
 val_normalized <- bake(biv_rec, new_data = bivariate_val, all_predictors())
@@ -72,12 +72,12 @@ nnet_fit <-
   set_mode("classification") %>% 
   # Also set engine-specific `verbose` argument to prevent logging the results: 
   set_engine("keras", verbose = 0) %>%
-  fit(Class ~ ., data = juice(biv_rec))
+  fit(Class ~ ., data = bake(biv_rec, new_data = NULL))
 
 nnet_fit
 #> parsnip model object
 #> 
-#> Fit time:  9s 
+#> Fit time:  10.5s 
 #> Model
 #> Model: "sequential"
 #> ________________________________________________________________________________
@@ -113,11 +113,11 @@ val_results %>% slice(1:5)
 #> # A tibble: 5 x 6
 #>       A     B Class .pred_class .pred_One .pred_Two
 #>   <dbl> <dbl> <fct> <fct>           <dbl>     <dbl>
-#> 1 1061.  74.5 One   Two             0.474    0.526 
-#> 2 1241.  83.4 One   Two             0.486    0.514 
-#> 3  939.  71.9 One   One             0.633    0.367 
-#> 4  813.  77.1 One   One             0.924    0.0760
-#> 5 1706.  92.8 Two   Two             0.360    0.640
+#> 1 1061.  74.5 One   Two             0.470    0.530 
+#> 2 1241.  83.4 One   Two             0.480    0.520 
+#> 3  939.  71.9 One   One             0.632    0.368 
+#> 4  813.  77.1 One   One             0.923    0.0773
+#> 5 1706.  92.8 Two   Two             0.354    0.646
 
 val_results %>% roc_auc(truth = Class, .pred_One)
 #> # A tibble: 1 x 3
@@ -129,13 +129,13 @@ val_results %>% accuracy(truth = Class, .pred_class)
 #> # A tibble: 1 x 3
 #>   .metric  .estimator .estimate
 #>   <chr>    <chr>          <dbl>
-#> 1 accuracy binary         0.733
+#> 1 accuracy binary         0.737
 
 val_results %>% conf_mat(truth = Class, .pred_class)
 #>           Truth
 #> Prediction One Two
-#>        One 150  28
-#>        Two  52  70
+#>        One 150  27
+#>        Two  52  71
 ```
 
 Let's also create a grid to get a visual sense of the class boundary for the validation set.
@@ -178,7 +178,7 @@ ggplot(x_grid, aes(x = A, y = B)) +
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-12-07                  
+#>  date     2020-12-08                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
