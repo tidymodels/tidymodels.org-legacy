@@ -117,11 +117,11 @@ roc_vals <- metric_set(roc_auc)
 
 If no grid or parameters are provided, a set of 10 hyperparameters are created using a space-filling design (via a Latin hypercube). A grid can be given in a data frame where the parameters are in columns and parameter combinations are in rows. Here, the default will be used.
 
-Also, a control object can be passed that specifies different aspects of the search. Here, the verbose option is turned off. 
+Also, a control object can be passed that specifies different aspects of the search. Here, the verbose option is turned off and the option to save the out-of-sample predictions is turned on. 
 
 
 ```r
-ctrl <- control_grid(verbose = FALSE)
+ctrl <- control_grid(verbose = FALSE, save_pred = TRUE)
 ```
 
 ## Executing with a formula
@@ -142,19 +142,19 @@ formula_res <-
 formula_res
 #> # Tuning results
 #> # Bootstrap sampling 
-#> # A tibble: 30 x 4
-#>    splits            id          .metrics          .notes          
-#>    <list>            <chr>       <list>            <list>          
-#>  1 <split [351/120]> Bootstrap01 <tibble [10 × 6]> <tibble [0 × 1]>
-#>  2 <split [351/130]> Bootstrap02 <tibble [10 × 6]> <tibble [0 × 1]>
-#>  3 <split [351/137]> Bootstrap03 <tibble [10 × 6]> <tibble [0 × 1]>
-#>  4 <split [351/141]> Bootstrap04 <tibble [10 × 6]> <tibble [0 × 1]>
-#>  5 <split [351/131]> Bootstrap05 <tibble [10 × 6]> <tibble [0 × 1]>
-#>  6 <split [351/131]> Bootstrap06 <tibble [10 × 6]> <tibble [0 × 1]>
-#>  7 <split [351/127]> Bootstrap07 <tibble [10 × 6]> <tibble [0 × 1]>
-#>  8 <split [351/123]> Bootstrap08 <tibble [10 × 6]> <tibble [0 × 1]>
-#>  9 <split [351/131]> Bootstrap09 <tibble [10 × 6]> <tibble [0 × 1]>
-#> 10 <split [351/117]> Bootstrap10 <tibble [10 × 6]> <tibble [0 × 1]>
+#> # A tibble: 30 x 5
+#>    splits          id         .metrics         .notes         .predictions      
+#>    <list>          <chr>      <list>           <list>         <list>            
+#>  1 <split [351/12… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,200 × …
+#>  2 <split [351/13… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,300 × …
+#>  3 <split [351/13… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,370 × …
+#>  4 <split [351/14… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,410 × …
+#>  5 <split [351/13… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,310 × …
+#>  6 <split [351/13… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,310 × …
+#>  7 <split [351/12… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,270 × …
+#>  8 <split [351/12… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,230 × …
+#>  9 <split [351/13… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,310 × …
+#> 10 <split [351/11… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,170 × …
 #> # … with 20 more rows
 ```
 
@@ -236,19 +236,19 @@ recipe_res <-
 recipe_res
 #> # Tuning results
 #> # Bootstrap sampling 
-#> # A tibble: 30 x 4
-#>    splits            id          .metrics          .notes          
-#>    <list>            <chr>       <list>            <list>          
-#>  1 <split [351/120]> Bootstrap01 <tibble [10 × 6]> <tibble [0 × 1]>
-#>  2 <split [351/130]> Bootstrap02 <tibble [10 × 6]> <tibble [0 × 1]>
-#>  3 <split [351/137]> Bootstrap03 <tibble [10 × 6]> <tibble [0 × 1]>
-#>  4 <split [351/141]> Bootstrap04 <tibble [10 × 6]> <tibble [0 × 1]>
-#>  5 <split [351/131]> Bootstrap05 <tibble [10 × 6]> <tibble [0 × 1]>
-#>  6 <split [351/131]> Bootstrap06 <tibble [10 × 6]> <tibble [0 × 1]>
-#>  7 <split [351/127]> Bootstrap07 <tibble [10 × 6]> <tibble [0 × 1]>
-#>  8 <split [351/123]> Bootstrap08 <tibble [10 × 6]> <tibble [0 × 1]>
-#>  9 <split [351/131]> Bootstrap09 <tibble [10 × 6]> <tibble [0 × 1]>
-#> 10 <split [351/117]> Bootstrap10 <tibble [10 × 6]> <tibble [0 × 1]>
+#> # A tibble: 30 x 5
+#>    splits          id         .metrics         .notes         .predictions      
+#>    <list>          <chr>      <list>           <list>         <list>            
+#>  1 <split [351/12… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,200 × …
+#>  2 <split [351/13… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,300 × …
+#>  3 <split [351/13… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,370 × …
+#>  4 <split [351/14… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,410 × …
+#>  5 <split [351/13… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,310 × …
+#>  6 <split [351/13… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,310 × …
+#>  7 <split [351/12… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,270 × …
+#>  8 <split [351/12… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,230 × …
+#>  9 <split [351/13… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,310 × …
+#> 10 <split [351/11… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,170 × …
 #> # … with 20 more rows
 ```
 
@@ -267,7 +267,40 @@ show_best(recipe_res, metric = "roc_auc")
 #> 5  0.0499 0.0000335 roc_auc binary     0.872    30 0.00521 Preprocessor1_Model08
 ```
 
+## Out-of-sample predictions
 
+If we used `save_pred = TRUE` to keep the out-of-sample predictions for each resample during tuning, we can obtain those predictions, along with the tuning parameters and resample identifier, using `collect_predictions()`:
+
+
+```r
+collect_predictions(recipe_res)
+#> # A tibble: 38,740 x 8
+#>    id        .pred_bad .pred_good  .row    cost  rbf_sigma Class .config        
+#>    <chr>         <dbl>      <dbl> <int>   <dbl>      <dbl> <fct> <chr>          
+#>  1 Bootstra…     0.333      0.667     1 0.00296 0.00000383 good  Preprocessor1_…
+#>  2 Bootstra…     0.333      0.667     9 0.00296 0.00000383 good  Preprocessor1_…
+#>  3 Bootstra…     0.333      0.667    10 0.00296 0.00000383 bad   Preprocessor1_…
+#>  4 Bootstra…     0.333      0.667    12 0.00296 0.00000383 bad   Preprocessor1_…
+#>  5 Bootstra…     0.333      0.667    14 0.00296 0.00000383 bad   Preprocessor1_…
+#>  6 Bootstra…     0.333      0.667    15 0.00296 0.00000383 good  Preprocessor1_…
+#>  7 Bootstra…     0.333      0.667    16 0.00296 0.00000383 bad   Preprocessor1_…
+#>  8 Bootstra…     0.334      0.666    22 0.00296 0.00000383 bad   Preprocessor1_…
+#>  9 Bootstra…     0.333      0.667    23 0.00296 0.00000383 good  Preprocessor1_…
+#> 10 Bootstra…     0.334      0.666    24 0.00296 0.00000383 bad   Preprocessor1_…
+#> # … with 38,730 more rows
+```
+
+We can obtain the hold-out sets for all the resamples augmented with the predictions using `augment()`, which provides opportunities for flexible visualization of model results:
+
+
+```r
+augment(recipe_res) %>%
+  ggplot(aes(V3, .pred_good, color = Class)) +
+  geom_point(show.legend = FALSE) +
+  facet_wrap(~Class)
+```
+
+<img src="figs/augment-preds-1.svg" width="672" />
 
 ## Session information
 
@@ -283,7 +316,7 @@ show_best(recipe_res, metric = "roc_auc")
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-12-07                  
+#>  date     2020-12-08                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
