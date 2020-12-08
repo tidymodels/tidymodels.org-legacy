@@ -829,7 +829,7 @@ autoplot(search_res, type = "parameters") +
   labs(x = "Iterations", y = NULL)
 ```
 
-<img src="figs/bo-param-plot-1.svg" width="672" />
+<img src="figs/bo-param-plot-1.svg" width="864" />
 
 
 
@@ -848,7 +848,7 @@ autoplot(search_res, type = "parameters") +
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-12-07                  
+#>  date     2020-12-08                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
