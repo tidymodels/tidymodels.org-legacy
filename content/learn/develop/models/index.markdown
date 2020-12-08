@@ -219,7 +219,7 @@ We also set up the information on how the predictors should be handled. These op
  
  * `remove_intercept` removes the intercept column *after* `model.matrix()` is finished. This can be useful if the model function (e.g. `lm()`) automatically generates an intercept.
 
-* `allow_sparse_x` specifies whether the model can accommodate a sparse recommendation for predictors during fitting and tuning.
+* `allow_sparse_x` specifies whether the model can accommodate a sparse representation for predictors during fitting and tuning.
 
 
 ```r
