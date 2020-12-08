@@ -186,7 +186,7 @@ ctrl <- control_grid(extract = glmnet_vars, verbose = TRUE)
 
 Finally, let's run the grid search:
 
-```{r grid-search}
+```{r grid-search, message=FALSE}
 roc_scores <- metric_set(roc_auc)
 
 set.seed(1559)

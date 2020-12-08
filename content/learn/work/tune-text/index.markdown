@@ -271,16 +271,16 @@ grid_roc
 #> # A tibble: 300 x 9
 #>    penalty mixture num_terms .metric .estimator  mean     n std_err .config     
 #>      <dbl>   <dbl>     <dbl> <chr>   <chr>      <dbl> <int>   <dbl> <chr>       
-#>  1 0.695      0.01      4096 roc_auc binary     0.818    10 0.00739 Recipe3_Mod…
-#>  2 0.483      0.01      4096 roc_auc binary     0.818    10 0.00776 Recipe3_Mod…
-#>  3 0.0379     0.25      4096 roc_auc binary     0.816    10 0.00753 Recipe3_Mod…
-#>  4 0.336      0.01      4096 roc_auc binary     0.815    10 0.00822 Recipe3_Mod…
-#>  5 0.0183     0.5       4096 roc_auc binary     0.814    10 0.00776 Recipe3_Mod…
-#>  6 0.0127     0.75      4096 roc_auc binary     0.814    10 0.00781 Recipe3_Mod…
-#>  7 0.00886    1         4096 roc_auc binary     0.813    10 0.00794 Recipe3_Mod…
-#>  8 0.0264     0.25      4096 roc_auc binary     0.813    10 0.00790 Recipe3_Mod…
-#>  9 1          0.01      4096 roc_auc binary     0.812    10 0.00764 Recipe3_Mod…
-#> 10 0.234      0.01      4096 roc_auc binary     0.811    10 0.00838 Recipe3_Mod…
+#>  1 0.695      0.01      4096 roc_auc binary     0.818    10 0.00739 Preprocesso…
+#>  2 0.483      0.01      4096 roc_auc binary     0.818    10 0.00776 Preprocesso…
+#>  3 0.0379     0.25      4096 roc_auc binary     0.816    10 0.00753 Preprocesso…
+#>  4 0.336      0.01      4096 roc_auc binary     0.815    10 0.00822 Preprocesso…
+#>  5 0.0183     0.5       4096 roc_auc binary     0.814    10 0.00776 Preprocesso…
+#>  6 0.0127     0.75      4096 roc_auc binary     0.814    10 0.00781 Preprocesso…
+#>  7 0.00886    1         4096 roc_auc binary     0.813    10 0.00794 Preprocesso…
+#>  8 0.0264     0.25      4096 roc_auc binary     0.813    10 0.00790 Preprocesso…
+#>  9 1          0.01      4096 roc_auc binary     0.812    10 0.00764 Preprocesso…
+#> 10 0.234      0.01      4096 roc_auc binary     0.811    10 0.00838 Preprocesso…
 #> # … with 290 more rows
 ```
 
@@ -376,7 +376,8 @@ five_star_search <-
 #> >  Generating a set of 5 initial parameter results
 #> ✓ Initialization complete
 #> 
-#> Optimizing roc_auc using the expected improvement with variable trade-off values.
+#> Optimizing roc_auc using the expected improvement with variable trade-off
+#> values.
 #> 
 #> ── Iteration 1 ───────────────────────────────────────────────────────
 #> 
@@ -386,10 +387,10 @@ five_star_search <-
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.01
-#> i penalty=0.992, mixture=0.732, num_terms=298
+#> i penalty=0.00251, mixture=0.0528, num_terms=260
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.5
+#> ⓧ Newest results:	roc_auc=0.7475 (+/-0.0102)
 #> 
 #> ── Iteration 2 ───────────────────────────────────────────────────────
 #> 
@@ -399,213 +400,381 @@ five_star_search <-
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.007788
-#> i penalty=0.00276, mixture=0.0931, num_terms=257
+#> i penalty=0.00389, mixture=0.616, num_terms=489
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.7457 (+/-0.00813)
+#> ♥ Newest results:	roc_auc=0.7753 (+/-0.009)
 #> 
 #> ── Iteration 3 ───────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.7559 (@iter 0)
+#> i Current best:		roc_auc=0.7753 (@iter 2)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.006065
-#> i penalty=0.00697, mixture=0.18, num_terms=4090
+#> i penalty=0.00101, mixture=0.463, num_terms=517
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ♥ Newest results:	roc_auc=0.7945 (+/-0.00494)
+#> ⓧ Newest results:	roc_auc=0.7456 (+/-0.0107)
 #> 
 #> ── Iteration 4 ───────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.7945 (@iter 3)
+#> i Current best:		roc_auc=0.7753 (@iter 2)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.004724
-#> i penalty=0.00325, mixture=1, num_terms=2939
+#> i penalty=0.00112, mixture=0.807, num_terms=4072
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ♥ Newest results:	roc_auc=0.8015 (+/-0.00618)
+#> ⓧ Newest results:	roc_auc=0.7703 (+/-0.00716)
 #> 
 #> ── Iteration 5 ───────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.8015 (@iter 4)
+#> i Current best:		roc_auc=0.7753 (@iter 2)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.003679
-#> i penalty=0.269, mixture=0.666, num_terms=258
+#> i penalty=0.00343, mixture=0.523, num_terms=4038
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.5
+#> ⓧ Newest results:	roc_auc=0.7751 (+/-0.00694)
 #> 
 #> ── Iteration 6 ───────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.8015 (@iter 4)
+#> i Current best:		roc_auc=0.7753 (@iter 2)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.002865
-#> i penalty=0.0317, mixture=0.151, num_terms=4091
+#> i penalty=0.00306, mixture=0.989, num_terms=1251
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ♥ Newest results:	roc_auc=0.8132 (+/-0.00563)
+#> ♥ Newest results:	roc_auc=0.7859 (+/-0.00933)
 #> 
 #> ── Iteration 7 ───────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.8132 (@iter 6)
+#> i Current best:		roc_auc=0.7859 (@iter 6)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.002231
-#> i penalty=0.0218, mixture=0.687, num_terms=4089
+#> i penalty=0.0174, mixture=0.991, num_terms=2349
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ♥ Newest results:	roc_auc=0.8134 (+/-0.00997)
+#> ♥ Newest results:	roc_auc=0.7981 (+/-0.0078)
 #> 
 #> ── Iteration 8 ───────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.8134 (@iter 7)
+#> i Current best:		roc_auc=0.7981 (@iter 7)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.001738
-#> i penalty=0.00102, mixture=0.538, num_terms=334
+#> i penalty=0.011, mixture=0.999, num_terms=1832
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.7548 (+/-0.00496)
+#> ♥ Newest results:	roc_auc=0.8022 (+/-0.00809)
 #> 
 #> ── Iteration 9 ───────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.8134 (@iter 7)
+#> i Current best:		roc_auc=0.8022 (@iter 8)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.001353
-#> i penalty=0.00102, mixture=0.202, num_terms=3964
+#> i penalty=0.00632, mixture=0.943, num_terms=2806
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.7785 (+/-0.00568)
+#> ♥ Newest results:	roc_auc=0.8035 (+/-0.0047)
 #> 
 #> ── Iteration 10 ──────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.8134 (@iter 7)
+#> i Current best:		roc_auc=0.8035 (@iter 9)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.001054
-#> i penalty=0.242, mixture=0.682, num_terms=4063
+#> i penalty=0.00701, mixture=0.969, num_terms=3717
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.5
+#> ⓧ Newest results:	roc_auc=0.8034 (+/-0.0061)
 #> 
 #> ── Iteration 11 ──────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.8134 (@iter 7)
+#> i Current best:		roc_auc=0.8035 (@iter 9)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.0008208
-#> i penalty=0.989, mixture=0.885, num_terms=4057
+#> i penalty=0.00554, mixture=0.99, num_terms=3414
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.5
+#> ⓧ Newest results:	roc_auc=0.8028 (+/-0.00628)
 #> 
 #> ── Iteration 12 ──────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.8134 (@iter 7)
+#> i Current best:		roc_auc=0.8035 (@iter 9)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.0006393
-#> i penalty=0.0693, mixture=0.302, num_terms=4088
+#> i penalty=0.0137, mixture=0.987, num_terms=3233
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.7971 (+/-0.00783)
+#> ♥ Newest results:	roc_auc=0.8162 (+/-0.00823)
 #> 
 #> ── Iteration 13 ──────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.8134 (@iter 7)
+#> i Current best:		roc_auc=0.8162 (@iter 12)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.0004979
-#> i penalty=0.0537, mixture=0.0652, num_terms=491
+#> i penalty=0.0136, mixture=0.967, num_terms=290
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.7694 (+/-0.00751)
+#> ⓧ Newest results:	roc_auc=0.7445 (+/-0.00702)
 #> 
 #> ── Iteration 14 ──────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.8134 (@iter 7)
+#> i Current best:		roc_auc=0.8162 (@iter 12)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.0003877
-#> i penalty=0.036, mixture=0.415, num_terms=2450
+#> i penalty=0.0143, mixture=0.921, num_terms=4085
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.7931 (+/-0.00966)
+#> ⓧ Newest results:	roc_auc=0.814 (+/-0.00775)
 #> 
 #> ── Iteration 15 ──────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.8134 (@iter 7)
+#> i Current best:		roc_auc=0.8162 (@iter 12)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.000302
-#> i penalty=0.0123, mixture=0.991, num_terms=785
+#> i penalty=0.013, mixture=0.973, num_terms=3974
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.7817 (+/-0.00834)
+#> ⓧ Newest results:	roc_auc=0.8099 (+/-0.00471)
 #> 
 #> ── Iteration 16 ──────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.8134 (@iter 7)
+#> i Current best:		roc_auc=0.8162 (@iter 12)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.0002352
-#> i penalty=0.0457, mixture=0.054, num_terms=4075
+#> i penalty=0.0148, mixture=0.0565, num_terms=3023
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.8073 (+/-0.00653)
+#> ⓧ Newest results:	roc_auc=0.7757 (+/-0.00876)
 #> 
 #> ── Iteration 17 ──────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.8134 (@iter 7)
+#> i Current best:		roc_auc=0.8162 (@iter 12)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.0001832
-#> i penalty=0.0049, mixture=0.965, num_terms=1973
+#> i penalty=0.0139, mixture=0.992, num_terms=3427
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.7961 (+/-0.00669)
-#> ! No improvement for 10 iterations; returning current results.
+#> ⓧ Newest results:	roc_auc=0.8021 (+/-0.00829)
+#> 
+#> ── Iteration 18 ──────────────────────────────────────────────────────
+#> 
+#> i Current best:		roc_auc=0.8162 (@iter 12)
+#> i Gaussian process model
+#> ✓ Gaussian process model
+#> i Generating 5000 candidates
+#> i Predicted candidates
+#> i Trade-off value: 0.0001426
+#> i penalty=0.152, mixture=0.0898, num_terms=3286
+#> i Estimating performance
+#> ✓ Estimating performance
+#> ♥ Newest results:	roc_auc=0.8206 (+/-0.00922)
+#> 
+#> ── Iteration 19 ──────────────────────────────────────────────────────
+#> 
+#> i Current best:		roc_auc=0.8206 (@iter 18)
+#> i Gaussian process model
+#> ✓ Gaussian process model
+#> i Generating 5000 candidates
+#> i Predicted candidates
+#> i Trade-off value: 0.0001111
+#> i penalty=0.0978, mixture=0.121, num_terms=3755
+#> i Estimating performance
+#> ✓ Estimating performance
+#> ♥ Newest results:	roc_auc=0.8206 (+/-0.00836)
+#> 
+#> ── Iteration 20 ──────────────────────────────────────────────────────
+#> 
+#> i Current best:		roc_auc=0.8206 (@iter 19)
+#> i Gaussian process model
+#> ✓ Gaussian process model
+#> i Generating 5000 candidates
+#> i Predicted candidates
+#> i Trade-off value: 8.652e-05
+#> i penalty=0.575, mixture=0.156, num_terms=366
+#> i Estimating performance
+#> ✓ Estimating performance
+#> ⓧ Newest results:	roc_auc=0.5
+#> 
+#> ── Iteration 21 ──────────────────────────────────────────────────────
+#> 
+#> i Current best:		roc_auc=0.8206 (@iter 19)
+#> i Gaussian process model
+#> ✓ Gaussian process model
+#> i Generating 5000 candidates
+#> i Predicted candidates
+#> i Trade-off value: 6.738e-05
+#> i penalty=0.0705, mixture=0.108, num_terms=2883
+#> i Estimating performance
+#> ✓ Estimating performance
+#> ♥ Newest results:	roc_auc=0.8314 (+/-0.00731)
+#> 
+#> ── Iteration 22 ──────────────────────────────────────────────────────
+#> 
+#> i Current best:		roc_auc=0.8314 (@iter 21)
+#> i Gaussian process model
+#> ✓ Gaussian process model
+#> i Generating 5000 candidates
+#> i Predicted candidates
+#> i Trade-off value: 5.248e-05
+#> i penalty=0.00145, mixture=0.654, num_terms=2857
+#> i Estimating performance
+#> ✓ Estimating performance
+#> ⓧ Newest results:	roc_auc=0.7585 (+/-0.0102)
+#> 
+#> ── Iteration 23 ──────────────────────────────────────────────────────
+#> 
+#> i Current best:		roc_auc=0.8314 (@iter 21)
+#> i Gaussian process model
+#> ✓ Gaussian process model
+#> i Generating 5000 candidates
+#> i Predicted candidates
+#> i Trade-off value: 4.087e-05
+#> i penalty=0.0633, mixture=0.26, num_terms=297
+#> i Estimating performance
+#> ✓ Estimating performance
+#> ⓧ Newest results:	roc_auc=0.7461 (+/-0.00837)
+#> 
+#> ── Iteration 24 ──────────────────────────────────────────────────────
+#> 
+#> i Current best:		roc_auc=0.8314 (@iter 21)
+#> i Gaussian process model
+#> ✓ Gaussian process model
+#> i Generating 5000 candidates
+#> i Predicted candidates
+#> i Trade-off value: 3.183e-05
+#> i penalty=0.00393, mixture=0.421, num_terms=257
+#> i Estimating performance
+#> ✓ Estimating performance
+#> ⓧ Newest results:	roc_auc=0.7489 (+/-0.00842)
+#> 
+#> ── Iteration 25 ──────────────────────────────────────────────────────
+#> 
+#> i Current best:		roc_auc=0.8314 (@iter 21)
+#> i Gaussian process model
+#> ✓ Gaussian process model
+#> i Generating 5000 candidates
+#> i Predicted candidates
+#> i Trade-off value: 2.479e-05
+#> i penalty=0.0129, mixture=0.16, num_terms=2730
+#> i Estimating performance
+#> ✓ Estimating performance
+#> ⓧ Newest results:	roc_auc=0.7876 (+/-0.00503)
+#> 
+#> ── Iteration 26 ──────────────────────────────────────────────────────
+#> 
+#> i Current best:		roc_auc=0.8314 (@iter 21)
+#> i Gaussian process model
+#> ✓ Gaussian process model
+#> i Generating 5000 candidates
+#> i Predicted candidates
+#> i Trade-off value: 1.93e-05
+#> i penalty=0.0659, mixture=0.0836, num_terms=3179
+#> i Estimating performance
+#> ✓ Estimating performance
+#> ⓧ Newest results:	roc_auc=0.8094 (+/-0.00417)
+#> 
+#> ── Iteration 27 ──────────────────────────────────────────────────────
+#> 
+#> i Current best:		roc_auc=0.8314 (@iter 21)
+#> i Gaussian process model
+#> ✓ Gaussian process model
+#> i Generating 5000 candidates
+#> i Predicted candidates
+#> i Trade-off value: 1.503e-05
+#> i penalty=0.181, mixture=0.13, num_terms=2383
+#> i Estimating performance
+#> ✓ Estimating performance
+#> ⓧ Newest results:	roc_auc=0.7755 (+/-0.0098)
+#> 
+#> ── Iteration 28 ──────────────────────────────────────────────────────
+#> 
+#> i Current best:		roc_auc=0.8314 (@iter 21)
+#> i Gaussian process model
+#> ✓ Gaussian process model
+#> i Generating 5000 candidates
+#> i Predicted candidates
+#> i Trade-off value: 1.171e-05
+#> i penalty=0.257, mixture=0.622, num_terms=3937
+#> i Estimating performance
+#> ✓ Estimating performance
+#> ⓧ Newest results:	roc_auc=0.5
+#> 
+#> ── Iteration 29 ──────────────────────────────────────────────────────
+#> 
+#> i Current best:		roc_auc=0.8314 (@iter 21)
+#> i Gaussian process model
+#> ✓ Gaussian process model
+#> i Generating 5000 candidates
+#> i Predicted candidates
+#> i Trade-off value: 9.119e-06
+#> i penalty=0.0122, mixture=0.103, num_terms=744
+#> i Estimating performance
+#> ✓ Estimating performance
+#> ⓧ Newest results:	roc_auc=0.7777 (+/-0.00696)
+#> 
+#> ── Iteration 30 ──────────────────────────────────────────────────────
+#> 
+#> i Current best:		roc_auc=0.8314 (@iter 21)
+#> i Gaussian process model
+#> ✓ Gaussian process model
+#> i Generating 5000 candidates
+#> i Predicted candidates
+#> i Trade-off value: 7.102e-06
+#> i penalty=0.00135, mixture=0.0737, num_terms=3215
+#> i Estimating performance
+#> ✓ Estimating performance
+#> ⓧ Newest results:	roc_auc=0.726 (+/-0.0066)
 
 five_star_search
 #> # Tuning results
 #> # 10-fold cross-validation 
-#> # A tibble: 180 x 5
+#> # A tibble: 310 x 5
 #>    splits             id     .metrics         .notes           .iter
-#>    <list>             <chr>  <list>           <list>           <dbl>
+#>    <list>             <chr>  <list>           <list>           <int>
 #>  1 <split [3.6K/400]> Fold01 <tibble [5 × 7]> <tibble [0 × 1]>     0
 #>  2 <split [3.6K/400]> Fold02 <tibble [5 × 7]> <tibble [0 × 1]>     0
 #>  3 <split [3.6K/400]> Fold03 <tibble [5 × 7]> <tibble [0 × 1]>     0
@@ -616,7 +785,7 @@ five_star_search
 #>  8 <split [3.6K/400]> Fold08 <tibble [5 × 7]> <tibble [0 × 1]>     0
 #>  9 <split [3.6K/400]> Fold09 <tibble [5 × 7]> <tibble [0 × 1]>     0
 #> 10 <split [3.6K/400]> Fold10 <tibble [5 × 7]> <tibble [0 × 1]>     0
-#> # … with 170 more rows
+#> # … with 300 more rows
 ```
 
 These results show some improvement over the initial set. One issue is that so many settings are sub-optimal (as shown in the plot above for grid search) so there are poor results periodically. There are regions where the penalty parameter becomes too large and all of the predictors are removed from the model. These regions are also dependent on the number of terms. There is a fairly narrow ridge (sorry, pun intended!) where good performance can be achieved. Using more iterations would probably result in the search finding better results. 
@@ -640,9 +809,9 @@ Let's return to the grid search results and examine the results of our `extract`
 params <- select_best(five_star_glmnet, metric = "roc_auc")
 params
 #> # A tibble: 1 x 4
-#>   penalty mixture num_terms .config         
-#>     <dbl>   <dbl>     <dbl> <chr>           
-#> 1   0.695    0.01      4096 Recipe3_Model019
+#>   penalty mixture num_terms .config               
+#>     <dbl>   <dbl>     <dbl> <chr>                 
+#> 1   0.695    0.01      4096 Preprocessor3_Model019
 ```
 
 Recall that we saved the glmnet results in a tibble. The column `five_star_glmnet$.extracts` is a list of tibbles. As an example, the first element of the list is:
@@ -651,18 +820,18 @@ Recall that we saved the glmnet results in a tibble. The column `five_star_glmne
 ```r
 five_star_glmnet$.extracts[[1]]
 #> # A tibble: 300 x 5
-#>    num_terms penalty mixture .extracts          .config         
-#>        <dbl>   <dbl>   <dbl> <list>             <chr>           
-#>  1       256       1    0.01 <tibble [100 × 2]> Recipe1_Model001
-#>  2       256       1    0.01 <tibble [100 × 2]> Recipe1_Model002
-#>  3       256       1    0.01 <tibble [100 × 2]> Recipe1_Model003
-#>  4       256       1    0.01 <tibble [100 × 2]> Recipe1_Model004
-#>  5       256       1    0.01 <tibble [100 × 2]> Recipe1_Model005
-#>  6       256       1    0.01 <tibble [100 × 2]> Recipe1_Model006
-#>  7       256       1    0.01 <tibble [100 × 2]> Recipe1_Model007
-#>  8       256       1    0.01 <tibble [100 × 2]> Recipe1_Model008
-#>  9       256       1    0.01 <tibble [100 × 2]> Recipe1_Model009
-#> 10       256       1    0.01 <tibble [100 × 2]> Recipe1_Model010
+#>    num_terms penalty mixture .extracts          .config               
+#>        <dbl>   <dbl>   <dbl> <list>             <chr>                 
+#>  1       256       1    0.01 <tibble [100 × 2]> Preprocessor1_Model001
+#>  2       256       1    0.01 <tibble [100 × 2]> Preprocessor1_Model002
+#>  3       256       1    0.01 <tibble [100 × 2]> Preprocessor1_Model003
+#>  4       256       1    0.01 <tibble [100 × 2]> Preprocessor1_Model004
+#>  5       256       1    0.01 <tibble [100 × 2]> Preprocessor1_Model005
+#>  6       256       1    0.01 <tibble [100 × 2]> Preprocessor1_Model006
+#>  7       256       1    0.01 <tibble [100 × 2]> Preprocessor1_Model007
+#>  8       256       1    0.01 <tibble [100 × 2]> Preprocessor1_Model008
+#>  9       256       1    0.01 <tibble [100 × 2]> Preprocessor1_Model009
+#> 10       256       1    0.01 <tibble [100 × 2]> Preprocessor1_Model010
 #> # … with 290 more rows
 ```
 
@@ -677,18 +846,18 @@ extracted <-
   unnest(cols = .extracts)
 extracted
 #> # A tibble: 3,000 x 6
-#>    id     num_terms penalty mixture .extracts          .config         
-#>    <chr>      <dbl>   <dbl>   <dbl> <list>             <chr>           
-#>  1 Fold01       256       1    0.01 <tibble [100 × 2]> Recipe1_Model001
-#>  2 Fold01       256       1    0.01 <tibble [100 × 2]> Recipe1_Model002
-#>  3 Fold01       256       1    0.01 <tibble [100 × 2]> Recipe1_Model003
-#>  4 Fold01       256       1    0.01 <tibble [100 × 2]> Recipe1_Model004
-#>  5 Fold01       256       1    0.01 <tibble [100 × 2]> Recipe1_Model005
-#>  6 Fold01       256       1    0.01 <tibble [100 × 2]> Recipe1_Model006
-#>  7 Fold01       256       1    0.01 <tibble [100 × 2]> Recipe1_Model007
-#>  8 Fold01       256       1    0.01 <tibble [100 × 2]> Recipe1_Model008
-#>  9 Fold01       256       1    0.01 <tibble [100 × 2]> Recipe1_Model009
-#> 10 Fold01       256       1    0.01 <tibble [100 × 2]> Recipe1_Model010
+#>    id     num_terms penalty mixture .extracts          .config               
+#>    <chr>      <dbl>   <dbl>   <dbl> <list>             <chr>                 
+#>  1 Fold01       256       1    0.01 <tibble [100 × 2]> Preprocessor1_Model001
+#>  2 Fold01       256       1    0.01 <tibble [100 × 2]> Preprocessor1_Model002
+#>  3 Fold01       256       1    0.01 <tibble [100 × 2]> Preprocessor1_Model003
+#>  4 Fold01       256       1    0.01 <tibble [100 × 2]> Preprocessor1_Model004
+#>  5 Fold01       256       1    0.01 <tibble [100 × 2]> Preprocessor1_Model005
+#>  6 Fold01       256       1    0.01 <tibble [100 × 2]> Preprocessor1_Model006
+#>  7 Fold01       256       1    0.01 <tibble [100 × 2]> Preprocessor1_Model007
+#>  8 Fold01       256       1    0.01 <tibble [100 × 2]> Preprocessor1_Model008
+#>  9 Fold01       256       1    0.01 <tibble [100 × 2]> Preprocessor1_Model009
+#> 10 Fold01       256       1    0.01 <tibble [100 × 2]> Preprocessor1_Model010
 #> # … with 2,990 more rows
 ```
 
@@ -705,18 +874,18 @@ extracted <-
   dplyr::select(-penalty)
 extracted
 #> # A tibble: 200 x 6
-#>    id     num_terms mixture .extracts          .config.x        .config.y       
-#>    <chr>      <dbl>   <dbl> <list>             <chr>            <chr>           
-#>  1 Fold01      4096    0.01 <tibble [100 × 2]> Recipe3_Model001 Recipe3_Model019
-#>  2 Fold01      4096    0.01 <tibble [100 × 2]> Recipe3_Model002 Recipe3_Model019
-#>  3 Fold01      4096    0.01 <tibble [100 × 2]> Recipe3_Model003 Recipe3_Model019
-#>  4 Fold01      4096    0.01 <tibble [100 × 2]> Recipe3_Model004 Recipe3_Model019
-#>  5 Fold01      4096    0.01 <tibble [100 × 2]> Recipe3_Model005 Recipe3_Model019
-#>  6 Fold01      4096    0.01 <tibble [100 × 2]> Recipe3_Model006 Recipe3_Model019
-#>  7 Fold01      4096    0.01 <tibble [100 × 2]> Recipe3_Model007 Recipe3_Model019
-#>  8 Fold01      4096    0.01 <tibble [100 × 2]> Recipe3_Model008 Recipe3_Model019
-#>  9 Fold01      4096    0.01 <tibble [100 × 2]> Recipe3_Model009 Recipe3_Model019
-#> 10 Fold01      4096    0.01 <tibble [100 × 2]> Recipe3_Model010 Recipe3_Model019
+#>    id     num_terms mixture .extracts       .config.x          .config.y        
+#>    <chr>      <dbl>   <dbl> <list>          <chr>              <chr>            
+#>  1 Fold01      4096    0.01 <tibble [100 ×… Preprocessor3_Mod… Preprocessor3_Mo…
+#>  2 Fold01      4096    0.01 <tibble [100 ×… Preprocessor3_Mod… Preprocessor3_Mo…
+#>  3 Fold01      4096    0.01 <tibble [100 ×… Preprocessor3_Mod… Preprocessor3_Mo…
+#>  4 Fold01      4096    0.01 <tibble [100 ×… Preprocessor3_Mod… Preprocessor3_Mo…
+#>  5 Fold01      4096    0.01 <tibble [100 ×… Preprocessor3_Mod… Preprocessor3_Mo…
+#>  6 Fold01      4096    0.01 <tibble [100 ×… Preprocessor3_Mod… Preprocessor3_Mo…
+#>  7 Fold01      4096    0.01 <tibble [100 ×… Preprocessor3_Mod… Preprocessor3_Mo…
+#>  8 Fold01      4096    0.01 <tibble [100 ×… Preprocessor3_Mod… Preprocessor3_Mo…
+#>  9 Fold01      4096    0.01 <tibble [100 ×… Preprocessor3_Mod… Preprocessor3_Mo…
+#> 10 Fold01      4096    0.01 <tibble [100 ×… Preprocessor3_Mod… Preprocessor3_Mo…
 #> # … with 190 more rows
 ```
 
@@ -729,18 +898,18 @@ extracted <-
   unnest(col = .extracts) # <- these contain a `penalty` column
 extracted
 #> # A tibble: 20,000 x 7
-#>    id     num_terms mixture penalty num_vars .config.x        .config.y       
-#>    <chr>      <dbl>   <dbl>   <dbl>    <int> <chr>            <chr>           
-#>  1 Fold01      4096    0.01    9.01        0 Recipe3_Model001 Recipe3_Model019
-#>  2 Fold01      4096    0.01    8.60        1 Recipe3_Model001 Recipe3_Model019
-#>  3 Fold01      4096    0.01    8.21        2 Recipe3_Model001 Recipe3_Model019
-#>  4 Fold01      4096    0.01    7.84        2 Recipe3_Model001 Recipe3_Model019
-#>  5 Fold01      4096    0.01    7.48        3 Recipe3_Model001 Recipe3_Model019
-#>  6 Fold01      4096    0.01    7.14        3 Recipe3_Model001 Recipe3_Model019
-#>  7 Fold01      4096    0.01    6.82        4 Recipe3_Model001 Recipe3_Model019
-#>  8 Fold01      4096    0.01    6.51        6 Recipe3_Model001 Recipe3_Model019
-#>  9 Fold01      4096    0.01    6.21        7 Recipe3_Model001 Recipe3_Model019
-#> 10 Fold01      4096    0.01    5.93        7 Recipe3_Model001 Recipe3_Model019
+#>    id     num_terms mixture penalty num_vars .config.x         .config.y        
+#>    <chr>      <dbl>   <dbl>   <dbl>    <int> <chr>             <chr>            
+#>  1 Fold01      4096    0.01    9.01        0 Preprocessor3_Mo… Preprocessor3_Mo…
+#>  2 Fold01      4096    0.01    8.60        1 Preprocessor3_Mo… Preprocessor3_Mo…
+#>  3 Fold01      4096    0.01    8.21        2 Preprocessor3_Mo… Preprocessor3_Mo…
+#>  4 Fold01      4096    0.01    7.84        2 Preprocessor3_Mo… Preprocessor3_Mo…
+#>  5 Fold01      4096    0.01    7.48        3 Preprocessor3_Mo… Preprocessor3_Mo…
+#>  6 Fold01      4096    0.01    7.14        3 Preprocessor3_Mo… Preprocessor3_Mo…
+#>  7 Fold01      4096    0.01    6.82        4 Preprocessor3_Mo… Preprocessor3_Mo…
+#>  8 Fold01      4096    0.01    6.51        6 Preprocessor3_Mo… Preprocessor3_Mo…
+#>  9 Fold01      4096    0.01    6.21        7 Preprocessor3_Mo… Preprocessor3_Mo…
+#> 10 Fold01      4096    0.01    5.93        7 Preprocessor3_Mo… Preprocessor3_Mo…
 #> # … with 19,990 more rows
 ```
 
@@ -766,7 +935,7 @@ These results might help guide the choice of the `penalty` range if more optimiz
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 4.0.2 (2020-06-22)
+#>  version  R version 4.0.3 (2020-10-10)
 #>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin17.0          
 #>  ui       X11                         
@@ -774,26 +943,26 @@ These results might help guide the choice of the `penalty` range if more optimiz
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-10-16                  
+#>  date     2020-12-07                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package      * version date       lib source        
-#>  broom        * 0.7.1   2020-10-02 [1] CRAN (R 4.0.2)
+#>  broom        * 0.7.2   2020-10-20 [1] CRAN (R 4.0.2)
 #>  dials        * 0.0.9   2020-09-16 [1] CRAN (R 4.0.2)
 #>  dplyr        * 1.0.2   2020-08-18 [1] CRAN (R 4.0.2)
 #>  ggplot2      * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
 #>  infer        * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
-#>  parsnip      * 0.1.3   2020-08-04 [1] CRAN (R 4.0.2)
+#>  parsnip      * 0.1.4   2020-10-27 [1] CRAN (R 4.0.2)
 #>  purrr        * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
-#>  recipes      * 0.1.13  2020-06-23 [1] CRAN (R 4.0.2)
-#>  rlang          0.4.8   2020-10-08 [1] CRAN (R 4.0.2)
+#>  recipes      * 0.1.15  2020-11-11 [1] CRAN (R 4.0.2)
+#>  rlang        * 0.4.9   2020-11-26 [1] CRAN (R 4.0.2)
 #>  rsample      * 0.0.8   2020-09-23 [1] CRAN (R 4.0.2)
 #>  stopwords    * 2.0     2020-04-14 [1] CRAN (R 4.0.0)
 #>  textfeatures * 0.3.3   2019-09-03 [1] CRAN (R 4.0.2)
-#>  textrecipes  * 0.3.0   2020-07-08 [1] CRAN (R 4.0.2)
+#>  textrecipes  * 0.4.0   2020-11-12 [1] CRAN (R 4.0.2)
 #>  tibble       * 3.0.4   2020-10-12 [1] CRAN (R 4.0.2)
-#>  tidymodels   * 0.1.1   2020-07-14 [1] CRAN (R 4.0.2)
-#>  tune         * 0.1.1   2020-07-08 [1] CRAN (R 4.0.2)
+#>  tidymodels   * 0.1.2   2020-11-22 [1] CRAN (R 4.0.2)
+#>  tune         * 0.1.2   2020-11-17 [1] CRAN (R 4.0.3)
 #>  workflows    * 0.2.1   2020-10-08 [1] CRAN (R 4.0.2)
 #>  yardstick    * 0.0.7   2020-07-13 [1] CRAN (R 4.0.2)
 #> 
