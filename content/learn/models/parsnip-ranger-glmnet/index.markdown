@@ -32,7 +32,7 @@ library(tidymodels)
 data(ames)
 
 set.seed(4595)
-data_split <- initial_split(ames, strata = "Sale_Price", p = 0.75)
+data_split <- initial_split(ames, strata = "Sale_Price", prop = 0.75)
 
 ames_train <- training(data_split)
 ames_test  <- testing(data_split)
@@ -76,7 +76,7 @@ rf_xy_fit <-
 rf_xy_fit
 #> parsnip model object
 #> 
-#> Fit time:  919ms 
+#> Fit time:  944ms 
 #> Ranger result
 #> 
 #> Call:
@@ -144,7 +144,7 @@ rand_forest(mode = "regression", mtry = 3, trees = 1000) %>%
   )
 #> parsnip model object
 #> 
-#> Fit time:  2.5s 
+#> Fit time:  2.6s 
 #> Ranger result
 #> 
 #> Call:
@@ -175,7 +175,7 @@ rand_forest(mode = "regression", mtry = 3, trees = 1000) %>%
   )
 #> parsnip model object
 #> 
-#> Fit time:  7.5s 
+#> Fit time:  7.6s 
 #> 
 #> Call:
 #>  randomForest(x = maybe_data_frame(x), y = y, ntree = ~1000, mtry = min_cols(~3,      x)) 
@@ -261,7 +261,7 @@ glmn_fit <-
 glmn_fit
 #> parsnip model object
 #> 
-#> Fit time:  11ms 
+#> Fit time:  8ms 
 #> 
 #> Call:  glmnet::glmnet(x = maybe_matrix(x), y = y, family = "gaussian",      alpha = ~0.5) 
 #> 
@@ -400,11 +400,11 @@ This final plot compares the performance of the random forest and regularized re
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-12-08                  
+#>  date     2020-12-17                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package      * version date       lib source        
-#>  broom        * 0.7.2   2020-10-20 [1] CRAN (R 4.0.2)
+#>  broom        * 0.7.3   2020-12-16 [1] CRAN (R 4.0.3)
 #>  dials        * 0.0.9   2020-09-16 [1] CRAN (R 4.0.2)
 #>  dplyr        * 1.0.2   2020-08-18 [1] CRAN (R 4.0.2)
 #>  ggplot2      * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
