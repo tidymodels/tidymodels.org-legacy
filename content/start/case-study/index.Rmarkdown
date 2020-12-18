@@ -197,7 +197,7 @@ lr_reg_grid %>% top_n(5)  # highest penalty values
 
 Let's use `tune::tune_grid()` to train these 30 penalized logistic regression models. We'll also save the validation set predictions (via the call to `control_grid()`) so that diagnostic information can be available after the model fit. The area under the ROC curve will be used to quantify how well the model performs across a continuum of event thresholds (recall that the event rate&mdash;the proportion of stays including children&mdash; is very low for these data). 
 
-```{r logistic-fit, cache = TRUE}
+```{r logistic-fit, cache = TRUE, message = FALSE}
 lr_res <- 
   lr_workflow %>% 
   tune_grid(val_set,

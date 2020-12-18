@@ -175,7 +175,7 @@ There are many parameter combinations have roughly equivalent results.
 How did the parameters change over iterations? 
 
 
-```{r bo-param-plot}
+```{r bo-param-plot, fig.width=9}
 autoplot(search_res, type = "parameters") + 
   labs(x = "Iterations", y = NULL)
 ```

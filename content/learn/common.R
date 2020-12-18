@@ -23,7 +23,7 @@ req_pkgs <- function(x, what = "To use the code in this article,") {
 small_session <- function(pkgs = NULL) {
   pkgs <- c(pkgs, "recipes", "parsnip", "tune", "workflows", "dials", "dplyr",
             "broom", "ggplot2", "purrr", "rlang", "rsample", "tibble", "infer",
-            "yardstick", "tidymodels", "infer")
+            "yardstick", "tidymodels", "infer", "dotwhisker")
   pkgs <- unique(pkgs)
   library(sessioninfo)
   library(dplyr)

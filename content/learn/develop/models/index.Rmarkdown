@@ -167,8 +167,34 @@ set_fit(
     defaults = list()
   )
 )
+
 show_model_info("discrim_mixture")
 ```
+
+We also set up the information on how the predictors should be handled. These options ensure that the data that parsnip gives to the underlying model allows for a model fit that is as similar as possible to what it would have produced directly.
+
+ * `predictor_indicators` describes whether and how to create indicator/dummy variables from factor predictors. There are three options: `"none"` (do not expand factor predictors), `"traditional"` (apply the standard `model.matrix()` encodings), and `"one_hot"` (create the complete set including the baseline level for all factors). 
+ 
+ * `compute_intercept` controls whether `model.matrix()` should include the intercept in its formula. This affects more than the inclusion of an intercept column. With an intercept, `model.matrix()` computes dummy variables for all but one factor level. Without an intercept, `model.matrix()` computes a full set of indicators for the first factor variable, but an incomplete set for the remainder.
+ 
+ * `remove_intercept` removes the intercept column *after* `model.matrix()` is finished. This can be useful if the model function (e.g. `lm()`) automatically generates an intercept.
+
+* `allow_sparse_x` specifies whether the model can accommodate a sparse representation for predictors during fitting and tuning.
+
+```{r}
+set_encoding(
+  model = "discrim_mixture",
+  eng = "mda",
+  mode = "classification",
+  options = list(
+    predictor_indicators = "traditional",
+    compute_intercept = TRUE,
+    remove_intercept = TRUE,
+    allow_sparse_x = FALSE
+  )
+)
+```
+
 
 ### Step 4. Add modules for prediction
 
@@ -300,6 +326,18 @@ set_fit(
   )
 )
 
+set_encoding(
+  model = "linear_reg",
+  eng = "rlm",
+  mode = "regression",
+  options = list(
+    predictor_indicators = "traditional",
+    compute_intercept = TRUE,
+    remove_intercept = TRUE,
+    allow_sparse_x = FALSE
+  )
+)
+
 set_pred(
   model = "linear_reg",
   eng = "rlm",
@@ -423,7 +461,7 @@ tunable.discrim_mixture <- function(x, ...) {
 
 Once this method is in place, the tuning functions can be used: 
 
-```{r tune-mda}
+```{r tune-mda, message = FALSE}
 mda_spec <- 
   discrim_mixture(sub_classes = tune()) %>% 
   set_engine("mda")

@@ -219,7 +219,7 @@ origin_dummies <-
 
 ```{r dummy-table, echo = FALSE}
 # Get a row for each factor level
-juice(origin_dummies, origin, starts_with("origin")) %>% 
+bake(origin_dummies, new_data = NULL, origin, starts_with("origin")) %>% 
   distinct() %>% 
   knitr::kable() %>% 
   kable_styling(full_width = FALSE)

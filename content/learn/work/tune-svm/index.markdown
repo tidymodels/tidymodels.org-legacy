@@ -117,11 +117,11 @@ roc_vals <- metric_set(roc_auc)
 
 If no grid or parameters are provided, a set of 10 hyperparameters are created using a space-filling design (via a Latin hypercube). A grid can be given in a data frame where the parameters are in columns and parameter combinations are in rows. Here, the default will be used.
 
-Also, a control object can be passed that specifies different aspects of the search. Here, the verbose option is turned off. 
+Also, a control object can be passed that specifies different aspects of the search. Here, the verbose option is turned off and the option to save the out-of-sample predictions is turned on. 
 
 
 ```r
-ctrl <- control_grid(verbose = FALSE)
+ctrl <- control_grid(verbose = FALSE, save_pred = TRUE)
 ```
 
 ## Executing with a formula
@@ -142,19 +142,19 @@ formula_res <-
 formula_res
 #> # Tuning results
 #> # Bootstrap sampling 
-#> # A tibble: 30 x 4
-#>    splits            id          .metrics          .notes          
-#>    <list>            <chr>       <list>            <list>          
-#>  1 <split [351/120]> Bootstrap01 <tibble [10 × 6]> <tibble [0 × 1]>
-#>  2 <split [351/130]> Bootstrap02 <tibble [10 × 6]> <tibble [0 × 1]>
-#>  3 <split [351/137]> Bootstrap03 <tibble [10 × 6]> <tibble [0 × 1]>
-#>  4 <split [351/141]> Bootstrap04 <tibble [10 × 6]> <tibble [0 × 1]>
-#>  5 <split [351/131]> Bootstrap05 <tibble [10 × 6]> <tibble [0 × 1]>
-#>  6 <split [351/131]> Bootstrap06 <tibble [10 × 6]> <tibble [0 × 1]>
-#>  7 <split [351/127]> Bootstrap07 <tibble [10 × 6]> <tibble [0 × 1]>
-#>  8 <split [351/123]> Bootstrap08 <tibble [10 × 6]> <tibble [0 × 1]>
-#>  9 <split [351/131]> Bootstrap09 <tibble [10 × 6]> <tibble [0 × 1]>
-#> 10 <split [351/117]> Bootstrap10 <tibble [10 × 6]> <tibble [0 × 1]>
+#> # A tibble: 30 x 5
+#>    splits          id         .metrics         .notes         .predictions      
+#>    <list>          <chr>      <list>           <list>         <list>            
+#>  1 <split [351/12… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,200 × …
+#>  2 <split [351/13… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,300 × …
+#>  3 <split [351/13… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,370 × …
+#>  4 <split [351/14… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,410 × …
+#>  5 <split [351/13… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,310 × …
+#>  6 <split [351/13… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,310 × …
+#>  7 <split [351/12… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,270 × …
+#>  8 <split [351/12… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,230 × …
+#>  9 <split [351/13… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,310 × …
+#> 10 <split [351/11… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,170 × …
 #> # … with 20 more rows
 ```
 
@@ -168,18 +168,18 @@ formula_res %>%
   pull(1)
 #> [[1]]
 #> # A tibble: 10 x 6
-#>        cost rbf_sigma .metric .estimator .estimate .config
-#>       <dbl>     <dbl> <chr>   <chr>          <dbl> <chr>  
-#>  1  0.00849  1.11e-10 roc_auc binary         0.815 Model01
-#>  2  0.176    7.28e- 8 roc_auc binary         0.839 Model02
-#>  3 14.9      3.93e- 4 roc_auc binary         0.870 Model03
-#>  4  5.51     2.10e- 3 roc_auc binary         0.919 Model04
-#>  5  1.87     3.53e- 7 roc_auc binary         0.838 Model05
-#>  6  0.00719  1.45e- 5 roc_auc binary         0.832 Model06
-#>  7  0.00114  8.41e- 2 roc_auc binary         0.969 Model07
-#>  8  0.950    1.74e- 1 roc_auc binary         0.984 Model08
-#>  9  0.189    3.13e- 6 roc_auc binary         0.832 Model09
-#> 10  0.0364   4.96e- 9 roc_auc binary         0.839 Model10
+#>        cost rbf_sigma .metric .estimator .estimate .config              
+#>       <dbl>     <dbl> <chr>   <chr>          <dbl> <chr>                
+#>  1  0.00849  1.11e-10 roc_auc binary         0.815 Preprocessor1_Model01
+#>  2  0.176    7.28e- 8 roc_auc binary         0.839 Preprocessor1_Model02
+#>  3 14.9      3.93e- 4 roc_auc binary         0.870 Preprocessor1_Model03
+#>  4  5.51     2.10e- 3 roc_auc binary         0.919 Preprocessor1_Model04
+#>  5  1.87     3.53e- 7 roc_auc binary         0.838 Preprocessor1_Model05
+#>  6  0.00719  1.45e- 5 roc_auc binary         0.832 Preprocessor1_Model06
+#>  7  0.00114  8.41e- 2 roc_auc binary         0.969 Preprocessor1_Model07
+#>  8  0.950    1.74e- 1 roc_auc binary         0.984 Preprocessor1_Model08
+#>  9  0.189    3.13e- 6 roc_auc binary         0.832 Preprocessor1_Model09
+#> 10  0.0364   4.96e- 9 roc_auc binary         0.839 Preprocessor1_Model10
 ```
 
 To get the final resampling estimates, the `collect_metrics()` function can be used on the grid object:
@@ -189,18 +189,18 @@ To get the final resampling estimates, the `collect_metrics()` function can be u
 estimates <- collect_metrics(formula_res)
 estimates
 #> # A tibble: 10 x 8
-#>        cost rbf_sigma .metric .estimator  mean     n std_err .config
-#>       <dbl>     <dbl> <chr>   <chr>      <dbl> <int>   <dbl> <chr>  
-#>  1  0.00849  1.11e-10 roc_auc binary     0.822    30 0.00718 Model01
-#>  2  0.176    7.28e- 8 roc_auc binary     0.871    30 0.00525 Model02
-#>  3 14.9      3.93e- 4 roc_auc binary     0.916    30 0.00497 Model03
-#>  4  5.51     2.10e- 3 roc_auc binary     0.960    30 0.00378 Model04
-#>  5  1.87     3.53e- 7 roc_auc binary     0.871    30 0.00524 Model05
-#>  6  0.00719  1.45e- 5 roc_auc binary     0.871    30 0.00534 Model06
-#>  7  0.00114  8.41e- 2 roc_auc binary     0.966    30 0.00301 Model07
-#>  8  0.950    1.74e- 1 roc_auc binary     0.979    30 0.00204 Model08
-#>  9  0.189    3.13e- 6 roc_auc binary     0.871    30 0.00536 Model09
-#> 10  0.0364   4.96e- 9 roc_auc binary     0.871    30 0.00537 Model10
+#>        cost rbf_sigma .metric .estimator  mean     n std_err .config            
+#>       <dbl>     <dbl> <chr>   <chr>      <dbl> <int>   <dbl> <chr>              
+#>  1  0.00849  1.11e-10 roc_auc binary     0.822    30 0.00718 Preprocessor1_Mode…
+#>  2  0.176    7.28e- 8 roc_auc binary     0.871    30 0.00525 Preprocessor1_Mode…
+#>  3 14.9      3.93e- 4 roc_auc binary     0.916    30 0.00497 Preprocessor1_Mode…
+#>  4  5.51     2.10e- 3 roc_auc binary     0.960    30 0.00378 Preprocessor1_Mode…
+#>  5  1.87     3.53e- 7 roc_auc binary     0.871    30 0.00524 Preprocessor1_Mode…
+#>  6  0.00719  1.45e- 5 roc_auc binary     0.871    30 0.00534 Preprocessor1_Mode…
+#>  7  0.00114  8.41e- 2 roc_auc binary     0.966    30 0.00301 Preprocessor1_Mode…
+#>  8  0.950    1.74e- 1 roc_auc binary     0.979    30 0.00204 Preprocessor1_Mode…
+#>  9  0.189    3.13e- 6 roc_auc binary     0.871    30 0.00536 Preprocessor1_Mode…
+#> 10  0.0364   4.96e- 9 roc_auc binary     0.871    30 0.00537 Preprocessor1_Mode…
 ```
 
 The top combinations are:
@@ -209,13 +209,13 @@ The top combinations are:
 ```r
 show_best(formula_res, metric = "roc_auc")
 #> # A tibble: 5 x 8
-#>       cost rbf_sigma .metric .estimator  mean     n std_err .config
-#>      <dbl>     <dbl> <chr>   <chr>      <dbl> <int>   <dbl> <chr>  
-#> 1  0.950   0.174     roc_auc binary     0.979    30 0.00204 Model08
-#> 2  0.00114 0.0841    roc_auc binary     0.966    30 0.00301 Model07
-#> 3  5.51    0.00210   roc_auc binary     0.960    30 0.00378 Model04
-#> 4 14.9     0.000393  roc_auc binary     0.916    30 0.00497 Model03
-#> 5  0.00719 0.0000145 roc_auc binary     0.871    30 0.00534 Model06
+#>       cost rbf_sigma .metric .estimator  mean     n std_err .config             
+#>      <dbl>     <dbl> <chr>   <chr>      <dbl> <int>   <dbl> <chr>               
+#> 1  0.950   0.174     roc_auc binary     0.979    30 0.00204 Preprocessor1_Model…
+#> 2  0.00114 0.0841    roc_auc binary     0.966    30 0.00301 Preprocessor1_Model…
+#> 3  5.51    0.00210   roc_auc binary     0.960    30 0.00378 Preprocessor1_Model…
+#> 4 14.9     0.000393  roc_auc binary     0.916    30 0.00497 Preprocessor1_Model…
+#> 5  0.00719 0.0000145 roc_auc binary     0.871    30 0.00534 Preprocessor1_Model…
 ```
 
 ##  Executing with a recipe
@@ -236,19 +236,19 @@ recipe_res <-
 recipe_res
 #> # Tuning results
 #> # Bootstrap sampling 
-#> # A tibble: 30 x 4
-#>    splits            id          .metrics          .notes          
-#>    <list>            <chr>       <list>            <list>          
-#>  1 <split [351/120]> Bootstrap01 <tibble [10 × 6]> <tibble [0 × 1]>
-#>  2 <split [351/130]> Bootstrap02 <tibble [10 × 6]> <tibble [0 × 1]>
-#>  3 <split [351/137]> Bootstrap03 <tibble [10 × 6]> <tibble [0 × 1]>
-#>  4 <split [351/141]> Bootstrap04 <tibble [10 × 6]> <tibble [0 × 1]>
-#>  5 <split [351/131]> Bootstrap05 <tibble [10 × 6]> <tibble [0 × 1]>
-#>  6 <split [351/131]> Bootstrap06 <tibble [10 × 6]> <tibble [0 × 1]>
-#>  7 <split [351/127]> Bootstrap07 <tibble [10 × 6]> <tibble [0 × 1]>
-#>  8 <split [351/123]> Bootstrap08 <tibble [10 × 6]> <tibble [0 × 1]>
-#>  9 <split [351/131]> Bootstrap09 <tibble [10 × 6]> <tibble [0 × 1]>
-#> 10 <split [351/117]> Bootstrap10 <tibble [10 × 6]> <tibble [0 × 1]>
+#> # A tibble: 30 x 5
+#>    splits          id         .metrics         .notes         .predictions      
+#>    <list>          <chr>      <list>           <list>         <list>            
+#>  1 <split [351/12… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,200 × …
+#>  2 <split [351/13… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,300 × …
+#>  3 <split [351/13… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,370 × …
+#>  4 <split [351/14… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,410 × …
+#>  5 <split [351/13… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,310 × …
+#>  6 <split [351/13… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,310 × …
+#>  7 <split [351/12… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,270 × …
+#>  8 <split [351/12… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,230 × …
+#>  9 <split [351/13… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,310 × …
+#> 10 <split [351/11… Bootstrap… <tibble [10 × 6… <tibble [0 × … <tibble [1,170 × …
 #> # … with 20 more rows
 ```
 
@@ -258,16 +258,49 @@ The best setting here is:
 ```r
 show_best(recipe_res, metric = "roc_auc")
 #> # A tibble: 5 x 8
-#>      cost rbf_sigma .metric .estimator  mean     n std_err .config
-#>     <dbl>     <dbl> <chr>   <chr>      <dbl> <int>   <dbl> <chr>  
-#> 1 15.6    0.182     roc_auc binary     0.981    30 0.00213 Model04
-#> 2  0.385  0.0276    roc_auc binary     0.978    30 0.00222 Model03
-#> 3  0.143  0.00243   roc_auc binary     0.930    30 0.00443 Model06
-#> 4  0.841  0.000691  roc_auc binary     0.892    30 0.00504 Model07
-#> 5  0.0499 0.0000335 roc_auc binary     0.872    30 0.00521 Model08
+#>      cost rbf_sigma .metric .estimator  mean     n std_err .config              
+#>     <dbl>     <dbl> <chr>   <chr>      <dbl> <int>   <dbl> <chr>                
+#> 1 15.6    0.182     roc_auc binary     0.981    30 0.00213 Preprocessor1_Model04
+#> 2  0.385  0.0276    roc_auc binary     0.978    30 0.00222 Preprocessor1_Model03
+#> 3  0.143  0.00243   roc_auc binary     0.930    30 0.00443 Preprocessor1_Model06
+#> 4  0.841  0.000691  roc_auc binary     0.892    30 0.00504 Preprocessor1_Model07
+#> 5  0.0499 0.0000335 roc_auc binary     0.872    30 0.00521 Preprocessor1_Model08
 ```
 
+## Out-of-sample predictions
 
+If we used `save_pred = TRUE` to keep the out-of-sample predictions for each resample during tuning, we can obtain those predictions, along with the tuning parameters and resample identifier, using `collect_predictions()`:
+
+
+```r
+collect_predictions(recipe_res)
+#> # A tibble: 38,740 x 8
+#>    id        .pred_bad .pred_good  .row    cost  rbf_sigma Class .config        
+#>    <chr>         <dbl>      <dbl> <int>   <dbl>      <dbl> <fct> <chr>          
+#>  1 Bootstra…     0.333      0.667     1 0.00296 0.00000383 good  Preprocessor1_…
+#>  2 Bootstra…     0.333      0.667     9 0.00296 0.00000383 good  Preprocessor1_…
+#>  3 Bootstra…     0.333      0.667    10 0.00296 0.00000383 bad   Preprocessor1_…
+#>  4 Bootstra…     0.333      0.667    12 0.00296 0.00000383 bad   Preprocessor1_…
+#>  5 Bootstra…     0.333      0.667    14 0.00296 0.00000383 bad   Preprocessor1_…
+#>  6 Bootstra…     0.333      0.667    15 0.00296 0.00000383 good  Preprocessor1_…
+#>  7 Bootstra…     0.333      0.667    16 0.00296 0.00000383 bad   Preprocessor1_…
+#>  8 Bootstra…     0.334      0.666    22 0.00296 0.00000383 bad   Preprocessor1_…
+#>  9 Bootstra…     0.333      0.667    23 0.00296 0.00000383 good  Preprocessor1_…
+#> 10 Bootstra…     0.334      0.666    24 0.00296 0.00000383 bad   Preprocessor1_…
+#> # … with 38,730 more rows
+```
+
+We can obtain the hold-out sets for all the resamples augmented with the predictions using `augment()`, which provides opportunities for flexible visualization of model results:
+
+
+```r
+augment(recipe_res) %>%
+  ggplot(aes(V3, .pred_good, color = Class)) +
+  geom_point(show.legend = FALSE) +
+  facet_wrap(~Class)
+```
+
+<img src="figs/augment-preds-1.svg" width="672" />
 
 ## Session information
 
@@ -275,34 +308,34 @@ show_best(recipe_res, metric = "roc_auc")
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 4.0.2 (2020-06-22)
-#>  os       macOS Catalina 10.15.6      
+#>  version  R version 4.0.3 (2020-10-10)
+#>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin17.0          
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-07-21                  
+#>  date     2020-12-08                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
-#>  broom      * 0.7.0   2020-07-09 [1] CRAN (R 4.0.0)
-#>  dials      * 0.0.8   2020-07-08 [1] CRAN (R 4.0.0)
-#>  dplyr      * 1.0.0   2020-05-29 [1] CRAN (R 4.0.0)
+#>  broom      * 0.7.2   2020-10-20 [1] CRAN (R 4.0.2)
+#>  dials      * 0.0.9   2020-09-16 [1] CRAN (R 4.0.2)
+#>  dplyr      * 1.0.2   2020-08-18 [1] CRAN (R 4.0.2)
 #>  ggplot2    * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
-#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.2)
-#>  kernlab    * 0.9-29  2019-11-12 [1] CRAN (R 4.0.2)
-#>  mlbench    * 2.1-1   2012-07-10 [1] CRAN (R 4.0.2)
-#>  parsnip    * 0.1.2   2020-07-03 [1] CRAN (R 4.0.1)
+#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
+#>  kernlab    * 0.9-29  2019-11-12 [1] CRAN (R 4.0.0)
+#>  mlbench    * 2.1-1   2012-07-10 [1] CRAN (R 4.0.0)
+#>  parsnip    * 0.1.4   2020-10-27 [1] CRAN (R 4.0.2)
 #>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
-#>  recipes    * 0.1.13  2020-06-23 [1] CRAN (R 4.0.0)
-#>  rlang        0.4.7   2020-07-09 [1] CRAN (R 4.0.2)
-#>  rsample    * 0.0.7   2020-06-04 [1] CRAN (R 4.0.0)
-#>  tibble     * 3.0.3   2020-07-10 [1] CRAN (R 4.0.2)
-#>  tidymodels * 0.1.1   2020-07-14 [1] CRAN (R 4.0.2)
-#>  tune       * 0.1.1   2020-07-08 [1] CRAN (R 4.0.0)
-#>  workflows  * 0.1.2   2020-07-07 [1] CRAN (R 4.0.0)
+#>  recipes    * 0.1.15  2020-11-11 [1] CRAN (R 4.0.2)
+#>  rlang      * 0.4.9   2020-11-26 [1] CRAN (R 4.0.2)
+#>  rsample    * 0.0.8   2020-09-23 [1] CRAN (R 4.0.2)
+#>  tibble     * 3.0.4   2020-10-12 [1] CRAN (R 4.0.2)
+#>  tidymodels * 0.1.2   2020-11-22 [1] CRAN (R 4.0.2)
+#>  tune       * 0.1.2   2020-11-17 [1] CRAN (R 4.0.3)
+#>  workflows  * 0.2.1   2020-10-08 [1] CRAN (R 4.0.2)
 #>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.2)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library

@@ -113,17 +113,17 @@ roc_vals <- metric_set(roc_auc)
 
 If no grid or parameters are provided, a set of 10 hyperparameters are created using a space-filling design (via a Latin hypercube). A grid can be given in a data frame where the parameters are in columns and parameter combinations are in rows. Here, the default will be used.
 
-Also, a control object can be passed that specifies different aspects of the search. Here, the verbose option is turned off. 
+Also, a control object can be passed that specifies different aspects of the search. Here, the verbose option is turned off and the option to save the out-of-sample predictions is turned on. 
 
 ```{r ctrl}
-ctrl <- control_grid(verbose = FALSE)
+ctrl <- control_grid(verbose = FALSE, save_pred = TRUE)
 ```
 
 ## Executing with a formula
 
 First, we can use the formula interface:
 
-```{r grid}
+```{r grid, message=FALSE}
 set.seed(35)
 formula_res <-
   svm_mod %>% 
@@ -181,7 +181,22 @@ The best setting here is:
 show_best(recipe_res, metric = "roc_auc")
 ```
 
+## Out-of-sample predictions
 
+If we used `save_pred = TRUE` to keep the out-of-sample predictions for each resample during tuning, we can obtain those predictions, along with the tuning parameters and resample identifier, using `collect_predictions()`:
+
+```{r rec-preds}
+collect_predictions(recipe_res)
+```
+
+We can obtain the hold-out sets for all the resamples augmented with the predictions using `augment()`, which provides opportunities for flexible visualization of model results:
+
+```{r augment-preds}
+augment(recipe_res) %>%
+  ggplot(aes(V3, .pred_good, color = Class)) +
+  geom_point(show.legend = FALSE) +
+  facet_wrap(~Class)
+```
 
 ## Session information
 

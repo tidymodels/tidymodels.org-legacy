@@ -505,16 +505,16 @@ tidy(rec_obj, number = 1)
 #> # A tibble: 274 x 4
 #>    term     value percentile id              
 #>    <chr>    <dbl>      <dbl> <chr>           
-#>  1 hydrogen 0.03           0 percentile_fC98S
-#>  2 hydrogen 0.934          1 percentile_fC98S
-#>  3 hydrogen 1.60           2 percentile_fC98S
-#>  4 hydrogen 2.07           3 percentile_fC98S
-#>  5 hydrogen 2.45           4 percentile_fC98S
-#>  6 hydrogen 2.74           5 percentile_fC98S
-#>  7 hydrogen 3.15           6 percentile_fC98S
-#>  8 hydrogen 3.49           7 percentile_fC98S
-#>  9 hydrogen 3.71           8 percentile_fC98S
-#> 10 hydrogen 3.99           9 percentile_fC98S
+#>  1 hydrogen 0.03           0 percentile_s6V8f
+#>  2 hydrogen 0.934          1 percentile_s6V8f
+#>  3 hydrogen 1.60           2 percentile_s6V8f
+#>  4 hydrogen 2.07           3 percentile_s6V8f
+#>  5 hydrogen 2.45           4 percentile_s6V8f
+#>  6 hydrogen 2.74           5 percentile_s6V8f
+#>  7 hydrogen 3.15           6 percentile_s6V8f
+#>  8 hydrogen 3.49           7 percentile_s6V8f
+#>  9 hydrogen 3.71           8 percentile_s6V8f
+#> 10 hydrogen 3.99           9 percentile_s6V8f
 #> # … with 264 more rows
 ```
 
@@ -603,7 +603,7 @@ tunable.step_poly <- function (x, ...) {
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-10-30                  
+#>  date     2020-12-07                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
@@ -615,12 +615,12 @@ tunable.step_poly <- function (x, ...) {
 #>  modeldata  * 0.1.0   2020-10-22 [1] CRAN (R 4.0.2)
 #>  parsnip    * 0.1.4   2020-10-27 [1] CRAN (R 4.0.2)
 #>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
-#>  recipes    * 0.1.14  2020-10-17 [1] CRAN (R 4.0.2)
-#>  rlang        0.4.8   2020-10-08 [1] CRAN (R 4.0.2)
+#>  recipes    * 0.1.15  2020-11-11 [1] CRAN (R 4.0.2)
+#>  rlang        0.4.9   2020-11-26 [1] CRAN (R 4.0.2)
 #>  rsample    * 0.0.8   2020-09-23 [1] CRAN (R 4.0.2)
 #>  tibble     * 3.0.4   2020-10-12 [1] CRAN (R 4.0.2)
-#>  tidymodels * 0.1.1   2020-07-14 [1] CRAN (R 4.0.2)
-#>  tune       * 0.1.1   2020-07-08 [1] CRAN (R 4.0.2)
+#>  tidymodels * 0.1.2   2020-11-22 [1] CRAN (R 4.0.2)
+#>  tune       * 0.1.2   2020-11-17 [1] CRAN (R 4.0.3)
 #>  workflows  * 0.2.1   2020-10-08 [1] CRAN (R 4.0.2)
 #>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.2)
 #> 

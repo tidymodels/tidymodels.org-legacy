@@ -32,7 +32,7 @@ library(tidymodels)
 data(ames)
 
 set.seed(4595)
-data_split <- initial_split(ames, strata = "Sale_Price", p = 0.75)
+data_split <- initial_split(ames, strata = "Sale_Price", prop = 0.75)
 
 ames_train <- training(data_split)
 ames_test  <- testing(data_split)
@@ -76,11 +76,11 @@ rf_xy_fit <-
 rf_xy_fit
 #> parsnip model object
 #> 
-#> Fit time:  1.2s 
+#> Fit time:  944ms 
 #> Ranger result
 #> 
 #> Call:
-#>  ranger::ranger(formula = ..y ~ ., data = data, num.threads = 1,      verbose = FALSE, seed = sample.int(10^5, 1)) 
+#>  ranger::ranger(x = maybe_data_frame(x), y = y, num.threads = 1,      verbose = FALSE, seed = sample.int(10^5, 1)) 
 #> 
 #> Type:                             Regression 
 #> Number of trees:                  500 
@@ -144,11 +144,11 @@ rand_forest(mode = "regression", mtry = 3, trees = 1000) %>%
   )
 #> parsnip model object
 #> 
-#> Fit time:  3.4s 
+#> Fit time:  2.6s 
 #> Ranger result
 #> 
 #> Call:
-#>  ranger::ranger(formula = log10(Sale_Price) ~ Longitude + Latitude +      Lot_Area + Neighborhood + Year_Sold, data = data, mtry = ~3,      num.trees = ~1000, num.threads = 1, verbose = FALSE, seed = sample.int(10^5,          1)) 
+#>  ranger::ranger(x = maybe_data_frame(x), y = y, mtry = min_cols(~3,      x), num.trees = ~1000, num.threads = 1, verbose = FALSE,      seed = sample.int(10^5, 1)) 
 #> 
 #> Type:                             Regression 
 #> Number of trees:                  1000 
@@ -175,10 +175,10 @@ rand_forest(mode = "regression", mtry = 3, trees = 1000) %>%
   )
 #> parsnip model object
 #> 
-#> Fit time:  9.9s 
+#> Fit time:  7.6s 
 #> 
 #> Call:
-#>  randomForest(x = as.data.frame(x), y = y, ntree = ~1000, mtry = ~3) 
+#>  randomForest(x = maybe_data_frame(x), y = y, ntree = ~1000, mtry = min_cols(~3,      x)) 
 #>                Type of random forest: regression
 #>                      Number of trees: 1000
 #> No. of variables tried at each split: 3
@@ -212,11 +212,11 @@ rand_forest(mode = "regression", mtry = .preds(), trees = 1000) %>%
   )
 #> parsnip model object
 #> 
-#> Fit time:  4.7s 
+#> Fit time:  3.5s 
 #> Ranger result
 #> 
 #> Call:
-#>  ranger::ranger(formula = log10(Sale_Price) ~ Longitude + Latitude +      Lot_Area + Neighborhood + Year_Sold, data = data, mtry = ~.preds(),      num.trees = ~1000, num.threads = 1, verbose = FALSE, seed = sample.int(10^5,          1)) 
+#>  ranger::ranger(x = maybe_data_frame(x), y = y, mtry = min_cols(~.preds(),      x), num.trees = ~1000, num.threads = 1, verbose = FALSE,      seed = sample.int(10^5, 1)) 
 #> 
 #> Type:                             Regression 
 #> Number of trees:                  1000 
@@ -257,13 +257,13 @@ norm_recipe <-
 glmn_fit <- 
   linear_reg(penalty = 0.001, mixture = 0.5) %>% 
   set_engine("glmnet") %>%
-  fit(Sale_Price ~ ., data = juice(norm_recipe))
+  fit(Sale_Price ~ ., data = bake(norm_recipe, new_data = NULL))
 glmn_fit
 #> parsnip model object
 #> 
-#> Fit time:  14ms 
+#> Fit time:  8ms 
 #> 
-#> Call:  glmnet::glmnet(x = as.matrix(x), y = y, family = "gaussian",      alpha = ~0.5) 
+#> Call:  glmnet::glmnet(x = maybe_matrix(x), y = y, family = "gaussian",      alpha = ~0.5) 
 #> 
 #>    Df %Dev Lambda
 #> 1   0  0.0 0.1370
@@ -392,35 +392,35 @@ This final plot compares the performance of the random forest and regularized re
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 4.0.2 (2020-06-22)
-#>  os       macOS Catalina 10.15.6      
+#>  version  R version 4.0.3 (2020-10-10)
+#>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin17.0          
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-07-21                  
+#>  date     2020-12-17                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package      * version date       lib source        
-#>  broom        * 0.7.0   2020-07-09 [1] CRAN (R 4.0.0)
-#>  dials        * 0.0.8   2020-07-08 [1] CRAN (R 4.0.0)
-#>  dplyr        * 1.0.0   2020-05-29 [1] CRAN (R 4.0.0)
+#>  broom        * 0.7.3   2020-12-16 [1] CRAN (R 4.0.3)
+#>  dials        * 0.0.9   2020-09-16 [1] CRAN (R 4.0.2)
+#>  dplyr        * 1.0.2   2020-08-18 [1] CRAN (R 4.0.2)
 #>  ggplot2      * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
-#>  glmnet       * 4.0-2   2020-06-16 [1] CRAN (R 4.0.2)
-#>  infer        * 0.5.3   2020-07-14 [1] CRAN (R 4.0.2)
-#>  parsnip      * 0.1.2   2020-07-03 [1] CRAN (R 4.0.1)
+#>  glmnet       * 4.0-2   2020-06-16 [1] CRAN (R 4.0.0)
+#>  infer        * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
+#>  parsnip      * 0.1.4   2020-10-27 [1] CRAN (R 4.0.2)
 #>  purrr        * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
-#>  randomForest * 4.6-14  2018-03-25 [1] CRAN (R 4.0.2)
-#>  ranger       * 0.12.1  2020-01-10 [1] CRAN (R 4.0.2)
-#>  recipes      * 0.1.13  2020-06-23 [1] CRAN (R 4.0.0)
-#>  rlang          0.4.7   2020-07-09 [1] CRAN (R 4.0.2)
-#>  rsample      * 0.0.7   2020-06-04 [1] CRAN (R 4.0.0)
-#>  tibble       * 3.0.3   2020-07-10 [1] CRAN (R 4.0.2)
-#>  tidymodels   * 0.1.1   2020-07-14 [1] CRAN (R 4.0.2)
-#>  tune         * 0.1.1   2020-07-08 [1] CRAN (R 4.0.0)
-#>  workflows    * 0.1.2   2020-07-07 [1] CRAN (R 4.0.0)
+#>  randomForest * 4.6-14  2018-03-25 [1] CRAN (R 4.0.0)
+#>  ranger       * 0.12.1  2020-01-10 [1] CRAN (R 4.0.0)
+#>  recipes      * 0.1.15  2020-11-11 [1] CRAN (R 4.0.2)
+#>  rlang          0.4.9   2020-11-26 [1] CRAN (R 4.0.2)
+#>  rsample      * 0.0.8   2020-09-23 [1] CRAN (R 4.0.2)
+#>  tibble       * 3.0.4   2020-10-12 [1] CRAN (R 4.0.2)
+#>  tidymodels   * 0.1.2   2020-11-22 [1] CRAN (R 4.0.2)
+#>  tune         * 0.1.2   2020-11-17 [1] CRAN (R 4.0.3)
+#>  workflows    * 0.2.1   2020-10-08 [1] CRAN (R 4.0.2)
 #>  yardstick    * 0.0.7   2020-07-13 [1] CRAN (R 4.0.2)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library

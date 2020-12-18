@@ -160,7 +160,7 @@ tuning_results <- map(results$inner_resamples, summarize_tune_results)
 
 Alternatively, since these computations can be run in parallel, we can use the furrr package. Instead of using `map()`, the function `future_map()` parallelizes the iterations using the [future package](https://cran.r-project.org/web/packages/future/vignettes/future-1-overview.html). The `multisession` plan uses the local cores to process the inner resampling loop. The end results are the same as the sequential computations. 
 
-```{r inner-runs-parallel, R.options=list(dplyr.summarise.inform = FALSE)}
+```{r inner-runs-parallel, R.options=list(dplyr.summarise.inform = FALSE), warning=FALSE}
 library(furrr)
 plan(multisession)
 

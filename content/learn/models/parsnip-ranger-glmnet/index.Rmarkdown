@@ -45,7 +45,7 @@ library(tidymodels)
 data(ames)
 
 set.seed(4595)
-data_split <- initial_split(ames, strata = "Sale_Price", p = 0.75)
+data_split <- initial_split(ames, strata = "Sale_Price", prop = 0.75)
 
 ames_train <- training(data_split)
 ames_test  <- testing(data_split)
@@ -182,7 +182,7 @@ norm_recipe <-
 glmn_fit <- 
   linear_reg(penalty = 0.001, mixture = 0.5) %>% 
   set_engine("glmnet") %>%
-  fit(Sale_Price ~ ., data = juice(norm_recipe))
+  fit(Sale_Price ~ ., data = bake(norm_recipe, new_data = NULL))
 glmn_fit
 ```
 

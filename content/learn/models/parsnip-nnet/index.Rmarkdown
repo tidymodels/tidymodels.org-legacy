@@ -54,7 +54,7 @@ biv_rec <-
   step_normalize(all_predictors()) %>%
   prep(training = bivariate_train, retain = TRUE)
 
-# We will juice() to get the processed training set back
+# We will bake(new_data = NULL) to get the processed training set back
 
 # For validation:
 val_normalized <- bake(biv_rec, new_data = bivariate_val, all_predictors())
@@ -71,7 +71,7 @@ nnet_fit <-
   set_mode("classification") %>% 
   # Also set engine-specific `verbose` argument to prevent logging the results: 
   set_engine("keras", verbose = 0) %>%
-  fit(Class ~ ., data = juice(biv_rec))
+  fit(Class ~ ., data = bake(biv_rec, new_data = NULL))
 
 nnet_fit
 ```

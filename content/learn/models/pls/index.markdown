@@ -84,7 +84,7 @@ The complicated parts for moving forward are:
 1. Formatting the predictors and outcomes into the format that the pls package requires, and
 2. Estimating the proportions. 
 
-For the first part, the standardized outcomes and predictors need to be formatted into two separate matrices. Since we used `retain = TRUE` when prepping the recipes, we can use the `juice()` function. To save the data as a matrix, the option `composition = "matrix"` will avoid saving the data as tibbles and use the required format. 
+For the first part, the standardized outcomes and predictors need to be formatted into two separate matrices. Since we used `retain = TRUE` when prepping the recipes, we can `bake()` with `new_data = NULl` to get the processed data back out. To save the data as a matrix, the option `composition = "matrix"` will avoid saving the data as tibbles and use the required format. 
 
 The pls package expects a simple formula to specify the model, but each side of the formula should _represent a matrix_. In other words, we need a data set with two columns where each column is a matrix. The secret to doing this is to "protect" the two matrices using `I()` when adding them to the data frame.
 
@@ -100,8 +100,8 @@ library(pls)
 get_var_explained <- function(recipe, ...) {
   
   # Extract the predictors and outcomes into their own matrices
-  y_mat <- juice(recipe, composition = "matrix", all_outcomes())
-  x_mat <- juice(recipe, composition = "matrix", all_predictors())
+  y_mat <- bake(recipe, new_data = NULL, composition = "matrix", all_outcomes())
+  x_mat <- bake(recipe, new_data = NULL, composition = "matrix", all_predictors())
   
   # The pls package prefers the data in a data frame where the outcome
   # and predictors are in _matrices_. To make sure this is formatted
@@ -156,7 +156,6 @@ variance_data <-
   filter(components <= 15) %>%
   group_by(components, source) %>%
   summarize(proportion = mean(proportion))
-#> `summarise()` regrouping output by 'components' (override with `.groups` argument)
 ```
 
 The plot below shows that, if the protein measurement is important, you might require 10 or so components to achieve a good representation of that outcome. Note that the predictor variance is captured extremely well using a single component. This is due to the high degree of correlation in those data. 
@@ -177,34 +176,34 @@ ggplot(variance_data, aes(x = components, y = proportion, col = source)) +
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 4.0.2 (2020-06-22)
-#>  os       macOS Catalina 10.15.6      
+#>  version  R version 4.0.3 (2020-10-10)
+#>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin17.0          
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-07-21                  
+#>  date     2020-12-08                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
-#>  broom      * 0.7.0   2020-07-09 [1] CRAN (R 4.0.0)
-#>  dials      * 0.0.8   2020-07-08 [1] CRAN (R 4.0.0)
-#>  dplyr      * 1.0.0   2020-05-29 [1] CRAN (R 4.0.0)
+#>  broom      * 0.7.2   2020-10-20 [1] CRAN (R 4.0.2)
+#>  dials      * 0.0.9   2020-09-16 [1] CRAN (R 4.0.2)
+#>  dplyr      * 1.0.2   2020-08-18 [1] CRAN (R 4.0.2)
 #>  ggplot2    * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
-#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.2)
-#>  modeldata  * 0.0.2   2020-06-22 [1] CRAN (R 4.0.2)
-#>  parsnip    * 0.1.2   2020-07-03 [1] CRAN (R 4.0.1)
-#>  pls        * 2.7-2   2019-10-01 [1] CRAN (R 4.0.2)
+#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
+#>  modeldata  * 0.1.0   2020-10-22 [1] CRAN (R 4.0.2)
+#>  parsnip    * 0.1.4   2020-10-27 [1] CRAN (R 4.0.2)
+#>  pls        * 2.7-3   2020-08-07 [1] CRAN (R 4.0.2)
 #>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
-#>  recipes    * 0.1.13  2020-06-23 [1] CRAN (R 4.0.0)
-#>  rlang        0.4.7   2020-07-09 [1] CRAN (R 4.0.2)
-#>  rsample    * 0.0.7   2020-06-04 [1] CRAN (R 4.0.0)
-#>  tibble     * 3.0.3   2020-07-10 [1] CRAN (R 4.0.2)
-#>  tidymodels * 0.1.1   2020-07-14 [1] CRAN (R 4.0.2)
-#>  tune       * 0.1.1   2020-07-08 [1] CRAN (R 4.0.0)
-#>  workflows  * 0.1.2   2020-07-07 [1] CRAN (R 4.0.0)
+#>  recipes    * 0.1.15  2020-11-11 [1] CRAN (R 4.0.2)
+#>  rlang        0.4.9   2020-11-26 [1] CRAN (R 4.0.2)
+#>  rsample    * 0.0.8   2020-09-23 [1] CRAN (R 4.0.2)
+#>  tibble     * 3.0.4   2020-10-12 [1] CRAN (R 4.0.2)
+#>  tidymodels * 0.1.2   2020-11-22 [1] CRAN (R 4.0.2)
+#>  tune       * 0.1.2   2020-11-17 [1] CRAN (R 4.0.3)
+#>  workflows  * 0.2.1   2020-10-08 [1] CRAN (R 4.0.2)
 #>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.2)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library

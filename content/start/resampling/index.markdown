@@ -186,11 +186,11 @@ rf_fit <-
 rf_fit
 #> parsnip model object
 #> 
-#> Fit time:  2.4s 
+#> Fit time:  2.8s 
 #> Ranger result
 #> 
 #> Call:
-#>  ranger::ranger(formula = class ~ ., data = data, num.trees = ~1000,      num.threads = 1, verbose = FALSE, seed = sample.int(10^5,          1), probability = TRUE) 
+#>  ranger::ranger(x = maybe_data_frame(x), y = y, num.trees = ~1000,      num.threads = 1, verbose = FALSE, seed = sample.int(10^5,          1), probability = TRUE) 
 #> 
 #> Type:                             Probability estimation 
 #> Number of trees:                  1000 
@@ -317,67 +317,67 @@ The final resampling estimates for the model are the **averages** of the perform
   <tr>
    <td style="text-align:left;"> Fold01 </td>
    <td style="text-align:right;"> 0.7828947 </td>
-   <td style="text-align:right;"> 0.8419206 </td>
+   <td style="text-align:right;"> 0.8443213 </td>
    <td style="text-align:right;"> 152 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Fold02 </td>
-   <td style="text-align:right;"> 0.8092105 </td>
-   <td style="text-align:right;"> 0.8939982 </td>
+   <td style="text-align:right;"> 0.8157895 </td>
+   <td style="text-align:right;"> 0.8930748 </td>
    <td style="text-align:right;"> 152 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Fold03 </td>
-   <td style="text-align:right;"> 0.8486842 </td>
-   <td style="text-align:right;"> 0.9174923 </td>
+   <td style="text-align:right;"> 0.8223684 </td>
+   <td style="text-align:right;"> 0.9165916 </td>
    <td style="text-align:right;"> 152 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Fold04 </td>
-   <td style="text-align:right;"> 0.8355263 </td>
-   <td style="text-align:right;"> 0.8941946 </td>
+   <td style="text-align:right;"> 0.8289474 </td>
+   <td style="text-align:right;"> 0.8922132 </td>
    <td style="text-align:right;"> 152 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Fold05 </td>
-   <td style="text-align:right;"> 0.8684211 </td>
-   <td style="text-align:right;"> 0.9063232 </td>
+   <td style="text-align:right;"> 0.8486842 </td>
+   <td style="text-align:right;"> 0.9074041 </td>
    <td style="text-align:right;"> 152 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Fold06 </td>
-   <td style="text-align:right;"> 0.8410596 </td>
-   <td style="text-align:right;"> 0.9136661 </td>
+   <td style="text-align:right;"> 0.8476821 </td>
+   <td style="text-align:right;"> 0.9110065 </td>
    <td style="text-align:right;"> 151 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Fold07 </td>
    <td style="text-align:right;"> 0.8807947 </td>
-   <td style="text-align:right;"> 0.9368932 </td>
+   <td style="text-align:right;"> 0.9381068 </td>
    <td style="text-align:right;"> 151 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Fold08 </td>
    <td style="text-align:right;"> 0.7814570 </td>
-   <td style="text-align:right;"> 0.8890798 </td>
+   <td style="text-align:right;"> 0.8925162 </td>
    <td style="text-align:right;"> 151 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Fold09 </td>
-   <td style="text-align:right;"> 0.8145695 </td>
-   <td style="text-align:right;"> 0.9075369 </td>
+   <td style="text-align:right;"> 0.8211921 </td>
+   <td style="text-align:right;"> 0.9092852 </td>
    <td style="text-align:right;"> 151 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Fold10 </td>
-   <td style="text-align:right;"> 0.8675497 </td>
-   <td style="text-align:right;"> 0.9310806 </td>
+   <td style="text-align:right;"> 0.8741722 </td>
+   <td style="text-align:right;"> 0.9327988 </td>
    <td style="text-align:right;"> 151 </td>
   </tr>
 </tbody>
 </table>
 
-From these resampling statistics, the final estimate of performance for this random forest model would be 0.903 for the area under the ROC curve and 0.833 for accuracy. 
+From these resampling statistics, the final estimate of performance for this random forest model would be 0.904 for the area under the ROC curve and 0.83 for accuracy. 
 
 These resampling statistics are an effective method for measuring model performance _without_ predicting the training set directly as a whole. 
 
@@ -437,16 +437,16 @@ rf_fit_rs
 #> # A tibble: 10 x 4
 #>    splits             id     .metrics         .notes          
 #>    <list>             <chr>  <list>           <list>          
-#>  1 <split [1.4K/152]> Fold01 <tibble [2 × 3]> <tibble [0 × 1]>
-#>  2 <split [1.4K/152]> Fold02 <tibble [2 × 3]> <tibble [0 × 1]>
-#>  3 <split [1.4K/152]> Fold03 <tibble [2 × 3]> <tibble [0 × 1]>
-#>  4 <split [1.4K/152]> Fold04 <tibble [2 × 3]> <tibble [0 × 1]>
-#>  5 <split [1.4K/152]> Fold05 <tibble [2 × 3]> <tibble [0 × 1]>
-#>  6 <split [1.4K/151]> Fold06 <tibble [2 × 3]> <tibble [0 × 1]>
-#>  7 <split [1.4K/151]> Fold07 <tibble [2 × 3]> <tibble [0 × 1]>
-#>  8 <split [1.4K/151]> Fold08 <tibble [2 × 3]> <tibble [0 × 1]>
-#>  9 <split [1.4K/151]> Fold09 <tibble [2 × 3]> <tibble [0 × 1]>
-#> 10 <split [1.4K/151]> Fold10 <tibble [2 × 3]> <tibble [0 × 1]>
+#>  1 <split [1.4K/152]> Fold01 <tibble [2 × 4]> <tibble [0 × 1]>
+#>  2 <split [1.4K/152]> Fold02 <tibble [2 × 4]> <tibble [0 × 1]>
+#>  3 <split [1.4K/152]> Fold03 <tibble [2 × 4]> <tibble [0 × 1]>
+#>  4 <split [1.4K/152]> Fold04 <tibble [2 × 4]> <tibble [0 × 1]>
+#>  5 <split [1.4K/152]> Fold05 <tibble [2 × 4]> <tibble [0 × 1]>
+#>  6 <split [1.4K/151]> Fold06 <tibble [2 × 4]> <tibble [0 × 1]>
+#>  7 <split [1.4K/151]> Fold07 <tibble [2 × 4]> <tibble [0 × 1]>
+#>  8 <split [1.4K/151]> Fold08 <tibble [2 × 4]> <tibble [0 × 1]>
+#>  9 <split [1.4K/151]> Fold09 <tibble [2 × 4]> <tibble [0 × 1]>
+#> 10 <split [1.4K/151]> Fold10 <tibble [2 × 4]> <tibble [0 × 1]>
 ```
 
 The results are similar to the `folds` results with some extra columns. The column `.metrics` contains the performance statistics created from the 10 assessment sets. These can be manually unnested but the tune package contains a number of simple functions that can extract these data: 
@@ -454,11 +454,11 @@ The results are similar to the `folds` results with some extra columns. The colu
 
 ```r
 collect_metrics(rf_fit_rs)
-#> # A tibble: 2 x 5
-#>   .metric  .estimator  mean     n std_err
-#>   <chr>    <chr>      <dbl> <int>   <dbl>
-#> 1 accuracy binary     0.833    10 0.0111 
-#> 2 roc_auc  binary     0.903    10 0.00842
+#> # A tibble: 2 x 6
+#>   .metric  .estimator  mean     n std_err .config             
+#>   <chr>    <chr>      <dbl> <int>   <dbl> <chr>               
+#> 1 accuracy binary     0.830    10 0.0106  Preprocessor1_Model1
+#> 2 roc_auc  binary     0.904    10 0.00829 Preprocessor1_Model1
 ```
 
 Think about these values we now have for accuracy and AUC. These performance metrics are now more realistic (i.e. lower) than our ill-advised first attempt at computing performance metrics in the section above. If we wanted to try different model types for this data set, we could more confidently compare performance metrics computed using resampling to choose between models. Also, remember that at the end of our project, we return to our test set to estimate final model performance. We have looked at this once already before we started using resampling, but let's remind ourselves of the results:
@@ -489,7 +489,7 @@ The performance metrics from the test set are much closer to the performance met
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 4.0.2 (2020-06-22)
+#>  version  R version 4.0.3 (2020-10-10)
 #>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin17.0          
 #>  ui       X11                         
@@ -497,27 +497,27 @@ The performance metrics from the test set are much closer to the performance met
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-07-22                  
+#>  date     2020-12-08                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
-#>  broom      * 0.7.0   2020-07-09 [1] CRAN (R 4.0.0)
-#>  dials      * 0.0.8   2020-07-08 [1] CRAN (R 4.0.2)
-#>  dplyr      * 1.0.0   2020-05-29 [1] CRAN (R 4.0.0)
+#>  broom      * 0.7.2   2020-10-20 [1] CRAN (R 4.0.2)
+#>  dials      * 0.0.9   2020-09-16 [1] CRAN (R 4.0.2)
+#>  dplyr      * 1.0.2   2020-08-18 [1] CRAN (R 4.0.2)
 #>  ggplot2    * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
 #>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
-#>  modeldata  * 0.0.2   2020-06-22 [1] CRAN (R 4.0.0)
-#>  parsnip    * 0.1.2   2020-07-03 [1] CRAN (R 4.0.1)
+#>  modeldata  * 0.1.0   2020-10-22 [1] CRAN (R 4.0.2)
+#>  parsnip    * 0.1.4   2020-10-27 [1] CRAN (R 4.0.2)
 #>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
 #>  ranger     * 0.12.1  2020-01-10 [1] CRAN (R 4.0.0)
-#>  recipes    * 0.1.13  2020-06-23 [1] CRAN (R 4.0.0)
-#>  rlang        0.4.7   2020-07-09 [1] CRAN (R 4.0.0)
-#>  rsample    * 0.0.7   2020-06-04 [1] CRAN (R 4.0.0)
-#>  tibble     * 3.0.3   2020-07-10 [1] CRAN (R 4.0.2)
-#>  tidymodels * 0.1.1   2020-07-14 [1] CRAN (R 4.0.0)
-#>  tune       * 0.1.1   2020-07-08 [1] CRAN (R 4.0.2)
-#>  workflows  * 0.1.2   2020-07-07 [1] CRAN (R 4.0.2)
-#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.0)
+#>  recipes    * 0.1.15  2020-11-11 [1] CRAN (R 4.0.2)
+#>  rlang      * 0.4.9   2020-11-26 [1] CRAN (R 4.0.2)
+#>  rsample    * 0.0.8   2020-09-23 [1] CRAN (R 4.0.2)
+#>  tibble     * 3.0.4   2020-10-12 [1] CRAN (R 4.0.2)
+#>  tidymodels * 0.1.2   2020-11-22 [1] CRAN (R 4.0.2)
+#>  tune       * 0.1.2   2020-11-17 [1] CRAN (R 4.0.3)
+#>  workflows  * 0.2.1   2020-10-08 [1] CRAN (R 4.0.2)
+#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.2)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
 ```

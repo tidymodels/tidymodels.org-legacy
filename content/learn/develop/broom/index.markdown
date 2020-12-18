@@ -605,6 +605,10 @@ Tidier methods have a standardized set of acceptable argument and output column 
   </tr>
   <tr>
    <td style="text-align:left;"> augment </td>
+   <td style="text-align:left;"> interval </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> augment </td>
    <td style="text-align:left;"> newdata </td>
   </tr>
   <tr>
@@ -647,6 +651,14 @@ The currently acceptable column names by tidier method are:
   <tr>
    <td style="text-align:left;"> tidy </td>
    <td style="text-align:left;"> alternative </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> tidy </td>
+   <td style="text-align:left;"> at.value </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> tidy </td>
+   <td style="text-align:left;"> at.variable </td>
   </tr>
   <tr>
    <td style="text-align:left;"> tidy </td>
@@ -1446,6 +1458,10 @@ The currently acceptable column names by tidier method are:
   </tr>
   <tr>
    <td style="text-align:left;"> glance </td>
+   <td style="text-align:left;"> p.value.weak.instr </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> glance </td>
    <td style="text-align:left;"> p.value.Wu.Hausman </td>
   </tr>
   <tr>
@@ -1539,6 +1555,10 @@ The currently acceptable column names by tidier method are:
   <tr>
    <td style="text-align:left;"> glance </td>
    <td style="text-align:left;"> statistic.Sargan </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> glance </td>
+   <td style="text-align:left;"> statistic.weak.instr </td>
   </tr>
   <tr>
    <td style="text-align:left;"> glance </td>
@@ -1658,6 +1678,10 @@ The currently acceptable column names by tidier method are:
   </tr>
   <tr>
    <td style="text-align:left;"> augment </td>
+   <td style="text-align:left;"> .lower </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> augment </td>
    <td style="text-align:left;"> .moderator </td>
   </tr>
   <tr>
@@ -1738,6 +1762,10 @@ The currently acceptable column names by tidier method are:
   </tr>
   <tr>
    <td style="text-align:left;"> augment </td>
+   <td style="text-align:left;"> .upper </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> augment </td>
    <td style="text-align:left;"> .weight </td>
   </tr>
 </tbody>
@@ -1751,34 +1779,34 @@ The [alexpghayes/modeltests](https://github.com/alexpghayes/modeltests) package 
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 4.0.2 (2020-06-22)
-#>  os       macOS Catalina 10.15.6      
+#>  version  R version 4.0.3 (2020-10-10)
+#>  os       macOS Mojave 10.14.6        
 #>  system   x86_64, darwin17.0          
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-07-21                  
+#>  date     2020-12-07                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
-#>  broom      * 0.7.0   2020-07-09 [1] CRAN (R 4.0.0)
-#>  dials      * 0.0.8   2020-07-08 [1] CRAN (R 4.0.0)
-#>  dplyr      * 1.0.0   2020-05-29 [1] CRAN (R 4.0.0)
-#>  generics   * 0.0.2   2018-11-29 [1] CRAN (R 4.0.0)
+#>  broom      * 0.7.2   2020-10-20 [1] CRAN (R 4.0.2)
+#>  dials      * 0.0.9   2020-09-16 [1] CRAN (R 4.0.2)
+#>  dplyr      * 1.0.2   2020-08-18 [1] CRAN (R 4.0.2)
+#>  generics   * 0.1.0   2020-10-31 [1] CRAN (R 4.0.3)
 #>  ggplot2    * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
-#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.2)
-#>  parsnip    * 0.1.2   2020-07-03 [1] CRAN (R 4.0.1)
+#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
+#>  parsnip    * 0.1.4   2020-10-27 [1] CRAN (R 4.0.2)
 #>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
-#>  recipes    * 0.1.13  2020-06-23 [1] CRAN (R 4.0.0)
-#>  rlang        0.4.7   2020-07-09 [1] CRAN (R 4.0.2)
-#>  rsample    * 0.0.7   2020-06-04 [1] CRAN (R 4.0.0)
-#>  tibble     * 3.0.3   2020-07-10 [1] CRAN (R 4.0.2)
-#>  tidymodels * 0.1.1   2020-07-14 [1] CRAN (R 4.0.2)
+#>  recipes    * 0.1.15  2020-11-11 [1] CRAN (R 4.0.2)
+#>  rlang        0.4.9   2020-11-26 [1] CRAN (R 4.0.2)
+#>  rsample    * 0.0.8   2020-09-23 [1] CRAN (R 4.0.2)
+#>  tibble     * 3.0.4   2020-10-12 [1] CRAN (R 4.0.2)
+#>  tidymodels * 0.1.2   2020-11-22 [1] CRAN (R 4.0.2)
 #>  tidyverse  * 1.3.0   2019-11-21 [1] CRAN (R 4.0.0)
-#>  tune       * 0.1.1   2020-07-08 [1] CRAN (R 4.0.0)
-#>  workflows  * 0.1.2   2020-07-07 [1] CRAN (R 4.0.0)
+#>  tune       * 0.1.2   2020-11-17 [1] CRAN (R 4.0.3)
+#>  workflows  * 0.2.1   2020-10-08 [1] CRAN (R 4.0.2)
 #>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.2)
 #> 
 #> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
