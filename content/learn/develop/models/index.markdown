@@ -95,7 +95,7 @@ show_model_info("discrim_mixture")
 
 The next step would be to declare the main arguments to the model. These are declared independent of the mode.  To specify the argument, there are a few slots to fill in:
 
- * The name that parsnip uses for the argument. In general, we try to use non-jargony names for arguments (e.g. "penalty" instead of "lambda" for regularized regression). We recommend consulting [this page](/functions/) to see if an existing argument name can be used before creating a new one. 
+ * The name that parsnip uses for the argument. In general, we try to use non-jargony names for arguments (e.g. "penalty" instead of "lambda" for regularized regression). We recommend consulting [the model argument table available here](/find/parsnip/) to see if an existing argument name can be used before creating a new one. 
  
  * The argument name that is used by the underlying modeling function. 
  
@@ -756,25 +756,25 @@ If you have a suggestion, please add a [GitHub issue](https://github.com/tidymod
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-12-07                  
+#>  date     2021-01-15                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
-#>  broom      * 0.7.2   2020-10-20 [1] CRAN (R 4.0.2)
+#>  broom      * 0.7.3   2020-12-16 [1] CRAN (R 4.0.3)
 #>  dials      * 0.0.9   2020-09-16 [1] CRAN (R 4.0.2)
 #>  dplyr      * 1.0.2   2020-08-18 [1] CRAN (R 4.0.2)
-#>  ggplot2    * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
+#>  ggplot2    * 3.3.3   2020-12-30 [1] CRAN (R 4.0.3)
 #>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
 #>  mda        * 0.5-2   2020-06-29 [1] CRAN (R 4.0.1)
 #>  modeldata  * 0.1.0   2020-10-22 [1] CRAN (R 4.0.2)
 #>  parsnip    * 0.1.4   2020-10-27 [1] CRAN (R 4.0.2)
 #>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
 #>  recipes    * 0.1.15  2020-11-11 [1] CRAN (R 4.0.2)
-#>  rlang      * 0.4.9   2020-11-26 [1] CRAN (R 4.0.2)
+#>  rlang      * 0.4.10  2020-12-30 [1] CRAN (R 4.0.2)
 #>  rsample    * 0.0.8   2020-09-23 [1] CRAN (R 4.0.2)
 #>  tibble     * 3.0.4   2020-10-12 [1] CRAN (R 4.0.2)
 #>  tidymodels * 0.1.2   2020-11-22 [1] CRAN (R 4.0.2)
-#>  tune       * 0.1.2   2020-11-17 [1] CRAN (R 4.0.3)
+#>  tune       * 0.1.2   2020-11-17 [1] CRAN (R 4.0.2)
 #>  workflows  * 0.2.1   2020-10-08 [1] CRAN (R 4.0.2)
 #>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.2)
 #> 

@@ -86,7 +86,7 @@ show_model_info("discrim_mixture")
 
 The next step would be to declare the main arguments to the model. These are declared independent of the mode.  To specify the argument, there are a few slots to fill in:
 
- * The name that parsnip uses for the argument. In general, we try to use non-jargony names for arguments (e.g. "penalty" instead of "lambda" for regularized regression). We recommend consulting [this page](/functions/) to see if an existing argument name can be used before creating a new one. 
+ * The name that parsnip uses for the argument. In general, we try to use non-jargony names for arguments (e.g. "penalty" instead of "lambda" for regularized regression). We recommend consulting [the model argument table available here](/find/parsnip/) to see if an existing argument name can be used before creating a new one. 
  
  * The argument name that is used by the underlying modeling function. 
  
