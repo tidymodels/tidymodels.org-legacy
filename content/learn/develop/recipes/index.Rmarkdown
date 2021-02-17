@@ -111,11 +111,11 @@ You should always keep the first four arguments (`recipe` though `trained`) the 
  * `skip` is a logical. Whenever a recipe is prepped, each step is trained and then baked. However, there are some steps that should not be applied when a call to `bake()` is used. For example, if a step is applied to the variables with roles of "outcomes", these data would not be available for new samples. 
  * `id` is a character string that can be used to identify steps in package code. `rand_id()` will create an ID that has the prefix and a random character sequence. 
 
-In order to calculate the percentile, the training data for the relevant columns need to be saved. This data will be saved in the `ref_dist` object. `approx()` would be used when you want to save a grid of pre-computed percentiles from the training set and use these to estimate the percentile for a new data point. 
+We can estimate the percentiles of new data points based on the percentiles from the training set with `approx()`. Our `step_percentile` contains a `ref_dist` object to store these percentiles (pre-computed from the training set in `prep()`) for later use in `bake()`.
 
-We will use the `stats::quantile()` to compute the grid. However, we might also want to have control over the granularity of this grid, so the `options` argument will be used to define how that calculations is done. We can use the ellipses (aka `...`) so that any options passed to `step_percentile()` that are not one of its arguments will then be passed to `stats::quantile()`. We recommend making a separate list object with the options and use these inside the function. 
+We will use the `stats::quantile()` to compute the grid. However, we might also want to have control over the granularity of this grid, so the `options` argument will be used to define how that calculations is done. We could use the ellipses (aka `...`) so that any options passed to `step_percentile()` that are not one of its arguments will then be passed to `stats::quantile()`. However, we recommend making a separate list object with the options and use these inside the function because `...` is already used to define the variable selection. 
 
-It is also important to consider if there are any _main arguments_ to the step. For example, for spline-related steps such as `step_ns()`, users typically want to adjust the argument for the degrees of freedom in the spline (e.g. `splines::ns(x, df)`). Rather letting users add `df` to the `options` argument: 
+It is also important to consider if there are any _main arguments_ to the step. For example, for spline-related steps such as `step_ns()`, users typically want to adjust the argument for the degrees of freedom in the spline (e.g. `splines::ns(x, df)`). Rather than letting users add `df` to the `options` argument: 
 
 * Allow the important arguments to be main arguments to the step function. 
 
@@ -155,7 +155,7 @@ step_percentile_new <-
 
 This constructor function should have no default argument values. Defaults should be set in the user-facing step object. 
 
-## Define the procedure
+## Create the `prep` method
 
 You will need to create a new `prep()` method for your step's class. To do this, three arguments that the method should have are:
 
@@ -169,13 +169,14 @@ where
  * `training` will be a _tibble_ that has the training set data, and
  * `info` will also be a tibble that has information on the current set of data available. This information is updated as each step is evaluated by its specific `prep()` method so it may not have the variables from the original data. The columns in this tibble are `variable` (the variable name), `type` (currently either "numeric" or "nominal"), `role` (defining the variable's role), and `source` (either "original" or "derived" depending on where it originated).
 
-You can define other options as well. 
+You can define other arguments as well. 
 
 The first thing that you might want to do in the `prep()` function is to translate the specification listed in the `terms` argument to column names in the current data. There is an internal function called `terms_select()` that can be used to obtain this. 
 
 ```{r prep_1, eval = FALSE}
 prep.step_percentile <- function(x, training, info = NULL, ...) {
   col_names <- terms_select(terms = x$terms, info = info) 
+  # TODO finish the rest of the function
 }
 ```
 
@@ -202,7 +203,7 @@ prep.step_percentile <- function(x, training, info = NULL, ...) {
   col_names <- terms_select(terms = x$terms, info = info) 
   ## You can add error trapping for non-numeric data here and so on. 
   
-  ## We'll use the names later so
+  ## We'll use the names later so make sure they are available
   if (x$options$names == FALSE) {
     rlang::abort("`names` should be set to TRUE")
   }
@@ -330,7 +331,7 @@ There are a few other S3 methods that can be created for your step function. The
 
 ### A print method
 
-Printing `rec_obj` is a bit ugly; since there is no print method for `step_percentile()` it prints it as a list of (potentially large) objects. The recipes package contains a helper function called `printer()` that should work for most cases. It requires the the names of the selected columns that are resolved after `prep()` has been run as well as the original terms specification. For the former, our step object is structured so that the list object `ref_dist` has the names of the selected variables: 
+If you don't add a print method for `step_percentile`, it will still print but it will be printed as a list of (potentially large) objects and look a bit ugly. The recipes package contains a helper function called `printer()` that should be useful in most cases. We are using it here for the custom print method for `step_percentile`. It requires the the names of the selected columns that are resolved after `prep()` has been run as well as the original terms specification. For the former, our step object is structured so that the list object `ref_dist` has the names of the selected variables: 
 
 ```{r print-method}
 print.step_percentile <-
@@ -384,7 +385,9 @@ If this S3 method is used for your step, you can rely on this for checking the i
 ```{r eval = FALSE}
 recipes::recipes_pkg_check(required_pkgs.step_hypothetical())
 ``` 
- 
+
+If you'd like an example of this in a package, please take a look at the [embed](https://github.com/tidymodels/embed/) or [themis](https://github.com/tidymodels/themis/) package.
+
 ### A tidy method
 
 The `broom::tidy()` method is a means to return information about the step in a usable format. For our step, it would be helpful to know the reference values. 
