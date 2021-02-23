@@ -331,7 +331,7 @@ There are a few other S3 methods that can be created for your step function. The
 
 ### A print method
 
-If you don't add a print method for `step_percentile`, it will still print but it will be printed as a list of (potentially large) objects and look a bit ugly. The recipes package contains a helper function called `printer()` that should be useful in most cases. We are using it here for the custom print method for `step_percentile`. It requires the the names of the selected columns that are resolved after `prep()` has been run as well as the original terms specification. For the former, our step object is structured so that the list object `ref_dist` has the names of the selected variables: 
+If you don't add a print method for `step_percentile`, it will still print but it will be printed as a list of (potentially large) objects and look a bit ugly. The recipes package contains a helper function called `printer()` that should be useful in most cases. We are using it here for the custom print method for `step_percentile`. It requires the original terms specification and the column names this specification is evaluated to by `prep()`. For the former, our step object is structured so that the list object `ref_dist` has the names of the selected variables: 
 
 ```{r print-method}
 print.step_percentile <-
