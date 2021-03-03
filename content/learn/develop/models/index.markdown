@@ -147,23 +147,27 @@ discrim_mixture <-
   function(mode = "classification",  sub_classes = NULL) {
     # Check for correct mode
     if (mode  != "classification") {
-      stop("`mode` should be 'classification'", call. = FALSE)
+      rlang::abort("`mode` should be 'classification'")
     }
     
     # Capture the arguments in quosures
     args <- list(sub_classes = rlang::enquo(sub_classes))
-
-    # Save some empty slots for future parts of the specification
-    out <- list(args = args, eng_args = NULL,
-                mode = mode, method = NULL, engine = NULL)
     
-    # set classes in the correct order
-    class(out) <- make_classes("discrim_mixture")
-    out
+    # Save some empty slots for future parts of the specification
+    new_model_spec(
+      "discrim_mixture",
+      args = args,
+      eng_args = NULL,
+      mode = mode,
+      method = NULL,
+      engine = NULL
+    )
   }
 ```
 
 This is pretty simple since the data are not exposed to this function. 
+
+We suggest favoring `rlang::abort()` and `rlang::warn()` over `stop()` and `warning()`. The former can be used for better traceback results.
 
 ### Step 3. Add a fit module
 
@@ -326,7 +330,7 @@ show_model_info("discrim_mixture")
 #>    classification    mda class, prob
 ```
 
-If this model could be used for regression situations, we could also add a "numeric" module. The convention used here is very similar to the two that are detailed in the next section. For `pred`, the model requires an unnamed numeric vector output (usually). 
+If this model could be used for regression situations, we could also add a "numeric" module. For `pred`, the model requires an unnamed numeric vector output (usually). 
 
 Examples are [here](https://github.com/tidymodels/parsnip/blob/master/R/linear_reg_data.R) and [here](https://github.com/tidymodels/parsnip/blob/master/R/rand_forest_data.R). 
 
@@ -370,7 +374,7 @@ mda_fit <- mda_spec %>%
 mda_fit
 #> parsnip model object
 #> 
-#> Fit time:  22ms 
+#> Fit time:  29ms 
 #> Call:
 #> mda::mda(formula = Class ~ ., data = data, subclasses = ~2)
 #> 
@@ -471,7 +475,7 @@ linear_reg() %>%
   fit(mpg ~ ., data = mtcars)
 #> parsnip model object
 #> 
-#> Fit time:  5ms 
+#> Fit time:  7ms 
 #> Call:
 #> rlm(formula = mpg ~ ., data = data)
 #> Converged in 8 iterations
@@ -706,8 +710,7 @@ translate.rand_forest <- function (x, engine, ...){
   if (x$engine == "ranger") {
     if (any(names(x$method$fit$args) == "importance")) 
       if (is.logical(x$method$fit$args$importance)) 
-        stop("`importance` should be a character value. See ?ranger::ranger.", 
-             call. = FALSE)
+        rlang::abort("`importance` should be a character value. See ?ranger::ranger.")
   }
   x
 }
@@ -749,36 +752,37 @@ If you have a suggestion, please add a [GitHub issue](https://github.com/tidymod
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
 #>  version  R version 4.0.3 (2020-10-10)
-#>  os       macOS Mojave 10.14.6        
-#>  system   x86_64, darwin17.0          
+#>  os       Ubuntu 18.04.5 LTS          
+#>  system   x86_64, linux-gnu           
 #>  ui       X11                         
-#>  language (EN)                        
-#>  collate  en_US.UTF-8                 
-#>  ctype    en_US.UTF-8                 
-#>  tz       America/Denver              
-#>  date     2021-01-15                  
+#>  language en                          
+#>  collate  en_GB.UTF-8                 
+#>  ctype    en_GB.UTF-8                 
+#>  tz       Europe/London               
+#>  date     2021-03-03                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version date       lib source        
-#>  broom      * 0.7.3   2020-12-16 [1] CRAN (R 4.0.3)
-#>  dials      * 0.0.9   2020-09-16 [1] CRAN (R 4.0.2)
-#>  dplyr      * 1.0.2   2020-08-18 [1] CRAN (R 4.0.2)
-#>  ggplot2    * 3.3.3   2020-12-30 [1] CRAN (R 4.0.3)
-#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
-#>  mda        * 0.5-2   2020-06-29 [1] CRAN (R 4.0.1)
-#>  modeldata  * 0.1.0   2020-10-22 [1] CRAN (R 4.0.2)
-#>  parsnip    * 0.1.4   2020-10-27 [1] CRAN (R 4.0.2)
-#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
-#>  recipes    * 0.1.15  2020-11-11 [1] CRAN (R 4.0.2)
-#>  rlang      * 0.4.10  2020-12-30 [1] CRAN (R 4.0.2)
-#>  rsample    * 0.0.8   2020-09-23 [1] CRAN (R 4.0.2)
-#>  tibble     * 3.0.4   2020-10-12 [1] CRAN (R 4.0.2)
-#>  tidymodels * 0.1.2   2020-11-22 [1] CRAN (R 4.0.2)
-#>  tune       * 0.1.2   2020-11-17 [1] CRAN (R 4.0.2)
-#>  workflows  * 0.2.1   2020-10-08 [1] CRAN (R 4.0.2)
-#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.2)
+#>  package    * version    date       lib source        
+#>  broom      * 0.7.3      2020-12-16 [1] CRAN (R 4.0.3)
+#>  dials      * 0.0.9      2020-09-16 [1] CRAN (R 4.0.3)
+#>  dplyr      * 1.0.4      2021-02-02 [1] CRAN (R 4.0.3)
+#>  ggplot2    * 3.3.3      2020-12-30 [1] CRAN (R 4.0.3)
+#>  infer      * 0.5.3      2020-07-14 [1] CRAN (R 4.0.3)
+#>  mda        * 0.5-2      2020-06-29 [1] CRAN (R 4.0.3)
+#>  modeldata  * 0.1.0      2020-10-22 [1] CRAN (R 4.0.3)
+#>  parsnip    * 0.1.5.9000 2021-03-02 [1] local         
+#>  purrr      * 0.3.4      2020-04-17 [1] CRAN (R 4.0.3)
+#>  recipes    * 0.1.15     2020-11-11 [1] CRAN (R 4.0.3)
+#>  rlang      * 0.4.10     2020-12-30 [1] CRAN (R 4.0.3)
+#>  rsample    * 0.0.8      2020-09-23 [1] CRAN (R 4.0.3)
+#>  tibble     * 3.0.6      2021-01-29 [1] CRAN (R 4.0.3)
+#>  tidymodels * 0.1.2      2020-11-22 [1] CRAN (R 4.0.3)
+#>  tune       * 0.1.2      2020-11-17 [1] CRAN (R 4.0.3)
+#>  workflows  * 0.2.1      2020-10-08 [1] CRAN (R 4.0.3)
+#>  yardstick  * 0.0.7      2020-07-13 [1] CRAN (R 4.0.3)
 #> 
-#> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
+#> [1] /usr/local/lib/R/site-library
+#> [2] /usr/lib/R/library
 ```
 
 

@@ -123,23 +123,27 @@ discrim_mixture <-
   function(mode = "classification",  sub_classes = NULL) {
     # Check for correct mode
     if (mode  != "classification") {
-      stop("`mode` should be 'classification'", call. = FALSE)
+      rlang::abort("`mode` should be 'classification'")
     }
     
     # Capture the arguments in quosures
     args <- list(sub_classes = rlang::enquo(sub_classes))
-
-    # Save some empty slots for future parts of the specification
-    out <- list(args = args, eng_args = NULL,
-                mode = mode, method = NULL, engine = NULL)
     
-    # set classes in the correct order
-    class(out) <- make_classes("discrim_mixture")
-    out
+    # Save some empty slots for future parts of the specification
+    new_model_spec(
+      "discrim_mixture",
+      args = args,
+      eng_args = NULL,
+      mode = mode,
+      method = NULL,
+      engine = NULL
+    )
   }
 ```
 
 This is pretty simple since the data are not exposed to this function. 
+
+We suggest favoring `rlang::abort()` and `rlang::warn()` over `stop()` and `warning()`. The former can be used for better traceback results.
 
 ### Step 3. Add a fit module
 
@@ -266,7 +270,7 @@ set_pred(
 show_model_info("discrim_mixture")
 ```
 
-If this model could be used for regression situations, we could also add a "numeric" module. The convention used here is very similar to the two that are detailed in the next section. For `pred`, the model requires an unnamed numeric vector output (usually). 
+If this model could be used for regression situations, we could also add a "numeric" module. For `pred`, the model requires an unnamed numeric vector output (usually). 
 
 Examples are [here](https://github.com/tidymodels/parsnip/blob/master/R/linear_reg_data.R) and [here](https://github.com/tidymodels/parsnip/blob/master/R/rand_forest_data.R). 
 
@@ -562,8 +566,7 @@ translate.rand_forest <- function (x, engine, ...){
   if (x$engine == "ranger") {
     if (any(names(x$method$fit$args) == "importance")) 
       if (is.logical(x$method$fit$args$importance)) 
-        stop("`importance` should be a character value. See ?ranger::ranger.", 
-             call. = FALSE)
+        rlang::abort("`importance` should be a character value. See ?ranger::ranger.")
   }
   x
 }
