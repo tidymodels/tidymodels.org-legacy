@@ -506,16 +506,16 @@ tidy(rec_obj, number = 1)
 #> # A tibble: 274 x 4
 #>    term     value percentile id              
 #>    <chr>    <dbl>      <dbl> <chr>           
-#>  1 hydrogen 0.03           0 percentile_FH1mJ
-#>  2 hydrogen 0.934          1 percentile_FH1mJ
-#>  3 hydrogen 1.60           2 percentile_FH1mJ
-#>  4 hydrogen 2.07           3 percentile_FH1mJ
-#>  5 hydrogen 2.45           4 percentile_FH1mJ
-#>  6 hydrogen 2.74           5 percentile_FH1mJ
-#>  7 hydrogen 3.15           6 percentile_FH1mJ
-#>  8 hydrogen 3.49           7 percentile_FH1mJ
-#>  9 hydrogen 3.71           8 percentile_FH1mJ
-#> 10 hydrogen 3.99           9 percentile_FH1mJ
+#>  1 hydrogen 0.03           0 percentile_3L556
+#>  2 hydrogen 0.934          1 percentile_3L556
+#>  3 hydrogen 1.60           2 percentile_3L556
+#>  4 hydrogen 2.07           3 percentile_3L556
+#>  5 hydrogen 2.45           4 percentile_3L556
+#>  6 hydrogen 2.74           5 percentile_3L556
+#>  7 hydrogen 3.15           6 percentile_3L556
+#>  8 hydrogen 3.49           7 percentile_3L556
+#>  9 hydrogen 3.71           8 percentile_3L556
+#> 10 hydrogen 3.99           9 percentile_3L556
 #> # … with 264 more rows
 ```
 
@@ -607,27 +607,26 @@ tunable.step_poly <- function (x, ...) {
 #>  date     2021-03-03                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version    date       lib source        
-#>  broom      * 0.7.3      2020-12-16 [1] CRAN (R 4.0.3)
-#>  dials      * 0.0.9      2020-09-16 [1] CRAN (R 4.0.3)
-#>  dplyr      * 1.0.4      2021-02-02 [1] CRAN (R 4.0.3)
-#>  ggplot2    * 3.3.3      2020-12-30 [1] CRAN (R 4.0.3)
-#>  infer      * 0.5.3      2020-07-14 [1] CRAN (R 4.0.3)
-#>  modeldata  * 0.1.0      2020-10-22 [1] CRAN (R 4.0.3)
-#>  parsnip    * 0.1.5.9000 2021-03-02 [1] local         
-#>  purrr      * 0.3.4      2020-04-17 [1] CRAN (R 4.0.3)
-#>  recipes    * 0.1.15     2020-11-11 [1] CRAN (R 4.0.3)
-#>  rlang        0.4.10     2020-12-30 [1] CRAN (R 4.0.3)
-#>  rsample    * 0.0.8      2020-09-23 [1] CRAN (R 4.0.3)
-#>  tibble     * 3.0.6      2021-01-29 [1] CRAN (R 4.0.3)
-#>  tidymodels * 0.1.2      2020-11-22 [1] CRAN (R 4.0.3)
-#>  tune       * 0.1.2      2020-11-17 [1] CRAN (R 4.0.3)
-#>  workflows  * 0.2.1      2020-10-08 [1] CRAN (R 4.0.3)
-#>  yardstick  * 0.0.7      2020-07-13 [1] CRAN (R 4.0.3)
+#>  package    * version date       lib source        
+#>  broom      * 0.7.3   2020-12-16 [1] CRAN (R 4.0.3)
+#>  dials      * 0.0.9   2020-09-16 [1] CRAN (R 4.0.3)
+#>  dplyr      * 1.0.4   2021-02-02 [1] CRAN (R 4.0.3)
+#>  ggplot2    * 3.3.3   2020-12-30 [1] CRAN (R 4.0.3)
+#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.3)
+#>  modeldata  * 0.1.0   2020-10-22 [1] CRAN (R 4.0.3)
+#>  parsnip    * 0.1.5   2021-01-19 [1] CRAN (R 4.0.3)
+#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.3)
+#>  recipes    * 0.1.15  2020-11-11 [1] CRAN (R 4.0.3)
+#>  rlang        0.4.10  2020-12-30 [1] CRAN (R 4.0.3)
+#>  rsample    * 0.0.8   2020-09-23 [1] CRAN (R 4.0.3)
+#>  tibble     * 3.0.6   2021-01-29 [1] CRAN (R 4.0.3)
+#>  tidymodels * 0.1.2   2020-11-22 [1] CRAN (R 4.0.3)
+#>  tune       * 0.1.2   2020-11-17 [1] CRAN (R 4.0.3)
+#>  workflows  * 0.2.1   2020-10-08 [1] CRAN (R 4.0.3)
+#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.3)
 #> 
-#> [1] /home/hannah/lib/R
-#> [2] /usr/local/lib/R/site-library
-#> [3] /usr/lib/R/library
+#> [1] /usr/local/lib/R/site-library
+#> [2] /usr/lib/R/library
 ```
  
  
