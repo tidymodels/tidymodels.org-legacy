@@ -68,9 +68,7 @@ Our new step will do this computation for any numeric variables of interest. We 
 
 To start, there is a _user-facing_ function. Let's call that `step_percentile()`. This is just a simple wrapper around a _constructor function_, which defines the rules for any step object that defines a percentile transformation. We'll call this constructor `step_percentile_new()`. 
 
-The function `step_percentile()` takes the same arguments as your function and simply adds it to a new recipe. The `...` signifies the variable selectors that can be used[^selectnote].
-
-[^selectnote]: Towards the end of 2020, recipes will make the change to move to the tidyverse's new selection style that _does not_ use `...` to capture the selectors. See the [tidyverse principles page](https://principles.tidyverse.org/dots-data.html) for a discussion.
+The function `step_percentile()` takes the same arguments as your function and simply adds it to a new recipe. The `...` signifies the variable selectors that can be used.
 
 ```{r initial_def}
 step_percentile <- function(
