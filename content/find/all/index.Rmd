@@ -25,11 +25,11 @@ Here are all the functions available across all of the [tidymodels packages](/pa
 ```{r table-compute, include = FALSE}
 pkgs <- c("baguette", "broom", "butcher", "corrr", "dials", "discrim", 
           "embed", "hardhat", "infer", "modeldata", "modeldb", "parsnip", "plsmod",
-          "poissonreg", "probably", "recipes", "rsample", "textrecipes", 
-          "tidyposterior", "tidypredict", "yardstick", "workflows")
+          "poissonreg", "probably", "recipes", "rsample", "spatialsample", 
+          "textrecipes", "tidyposterior", "tidypredict", "yardstick", 
+          "workflows")
 pkgs <- tibble(pkg = pkgs, 
-               base_url = case_when(pkg == "butcher" ~ "https://tidymodels.github.io/butcher/",
-                         TRUE ~ paste0("https://", pkg, ".tidymodels.org/"))) 
+               base_url = paste0("https://", pkg, ".tidymodels.org/")) 
 
 pkg_urls <- get_pkgdown_urls(pkgs) %>% 
   select(title, topic, package)
