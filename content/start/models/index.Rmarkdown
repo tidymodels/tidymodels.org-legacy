@@ -38,6 +38,7 @@ library(tidymodels)  # for the parsnip package, along with the rest of tidymodel
 library(readr)       # for importing data
 library(broom.mixed) # for converting bayesian models to tidy tibbles
 library(dotwhisker)  # for visualizing regression results
+library(dplyr)       # for data manipulation
 ```
 
 
