@@ -114,6 +114,8 @@ The tidymodels framework also includes many other packages designed for speciali
 
 * To integrate predictions from many models, the [stacks](https://stacks.tidymodels.org/) package provides tools for stacked ensemble modeling.
 
+* The [usemodels](https://usemodels.tidymodels.org/) package is a helpful way of quickly creating code snippets to fit models using the tidymodels framework.
+
 * [probably](https://probably.tidymodels.org/) has tools for post-processing class probability estimates.
 
 * The [tidyposterior](https://tidyposterior.tidymodels.org/) package enables users to make formal statistical comparisons between models using resampling and Bayesian methods. 
