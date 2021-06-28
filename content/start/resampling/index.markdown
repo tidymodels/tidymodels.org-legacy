@@ -27,7 +27,7 @@ library(tidymodels) # for the rsample package, along with the rest of tidymodels
 library(modeldata)  # for the cells data
 ```
 
-{{< test-drive url="https://rstudio.cloud/project/1479888" >}}
+{{< test-drive url="https://rstudio.cloud/project/2674862" >}}
 
 ## The cell image data {#data}
 
