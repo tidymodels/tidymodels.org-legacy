@@ -143,7 +143,7 @@ discrim_mixture <-
 
 This is pretty simple since the data are not exposed to this function. 
 
-We suggest favoring `rlang::abort()` and `rlang::warn()` over `stop()` and `warning()`. The former can be used for better traceback results.
+{{% warning %}} We strongly suggest favoring `rlang::abort()` and `rlang::warn()` over `stop()` and `warning()`. The former return better traceback results and have safer defaults for handling call objects. {{%/ warning %}}
 
 ### Step 3. Add a fit module
 

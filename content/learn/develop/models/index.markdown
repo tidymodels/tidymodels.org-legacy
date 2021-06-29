@@ -167,7 +167,7 @@ discrim_mixture <-
 
 This is pretty simple since the data are not exposed to this function. 
 
-We suggest favoring `rlang::abort()` and `rlang::warn()` over `stop()` and `warning()`. The former can be used for better traceback results.
+{{% warning %}} We strongly suggest favoring `rlang::abort()` and `rlang::warn()` over `stop()` and `warning()`. The former return better traceback results and have safer defaults for handling call objects. {{%/ warning %}}
 
 ### Step 3. Add a fit module
 
@@ -374,7 +374,7 @@ mda_fit <- mda_spec %>%
 mda_fit
 #> parsnip model object
 #> 
-#> Fit time:  35ms 
+#> Fit time:  13ms 
 #> Call:
 #> mda::mda(formula = Class ~ ., data = data, subclasses = ~2)
 #> 
@@ -382,39 +382,41 @@ mda_fit
 #> 
 #> Percent Between-Group Variance Explained:
 #>    v1    v2 
-#>  82.5 100.0 
+#>  82.6 100.0 
 #> 
 #> Degrees of Freedom (per dimension): 3 
 #> 
-#> Training Misclassification Error: 0.17 ( N = 784 )
+#> Training Misclassification Error: 0.172 ( N = 783 )
 #> 
-#> Deviance: 674
+#> Deviance: 671
 
 predict(mda_fit, new_data = example_test, type = "prob") %>%
   bind_cols(example_test %>% select(Class))
-#> # A tibble: 7 x 3
+#> # A tibble: 8 x 3
 #>   .pred_Class1 .pred_Class2 Class 
 #>          <dbl>        <dbl> <fct> 
-#> 1       0.586        0.414  Class1
-#> 2       0.968        0.0321 Class1
-#> 3       0.0155       0.984  Class2
-#> 4       0.670        0.330  Class1
-#> 5       0.837        0.163  Class1
-#> 6       0.898        0.102  Class1
-#> 7       0.676        0.324  Class2
+#> 1       0.679         0.321 Class1
+#> 2       0.690         0.310 Class1
+#> 3       0.384         0.616 Class2
+#> 4       0.300         0.700 Class1
+#> 5       0.0262        0.974 Class2
+#> 6       0.405         0.595 Class2
+#> 7       0.793         0.207 Class1
+#> 8       0.0949        0.905 Class2
 
 predict(mda_fit, new_data = example_test) %>% 
  bind_cols(example_test %>% select(Class))
-#> # A tibble: 7 x 2
+#> # A tibble: 8 x 2
 #>   .pred_class Class 
 #>   <fct>       <fct> 
 #> 1 Class1      Class1
 #> 2 Class1      Class1
 #> 3 Class2      Class2
-#> 4 Class1      Class1
-#> 5 Class1      Class1
-#> 6 Class1      Class1
-#> 7 Class1      Class2
+#> 4 Class2      Class1
+#> 5 Class2      Class2
+#> 6 Class2      Class2
+#> 7 Class1      Class1
+#> 8 Class2      Class2
 ```
 
 
@@ -475,7 +477,7 @@ linear_reg() %>%
   fit(mpg ~ ., data = mtcars)
 #> parsnip model object
 #> 
-#> Fit time:  10ms 
+#> Fit time:  3ms 
 #> Call:
 #> rlm(formula = mpg ~ ., data = data)
 #> Converged in 8 iterations
@@ -610,10 +612,10 @@ show_best(mda_tune_res, metric = "roc_auc")
 #> # A tibble: 4 x 7
 #>   sub_classes .metric .estimator  mean     n std_err .config             
 #>         <int> <chr>   <chr>      <dbl> <int>   <dbl> <chr>               
-#> 1           2 roc_auc binary     0.885    10  0.0143 Preprocessor1_Model3
-#> 2           3 roc_auc binary     0.884    10  0.0141 Preprocessor1_Model4
-#> 3           6 roc_auc binary     0.880    10  0.0142 Preprocessor1_Model2
-#> 4           8 roc_auc binary     0.879    10  0.0139 Preprocessor1_Model1
+#> 1           2 roc_auc binary     0.890    10  0.0143 Preprocessor1_Model3
+#> 2           3 roc_auc binary     0.889    10  0.0142 Preprocessor1_Model4
+#> 3           6 roc_auc binary     0.884    10  0.0147 Preprocessor1_Model2
+#> 4           8 roc_auc binary     0.881    10  0.0146 Preprocessor1_Model1
 ```
 
 
@@ -751,38 +753,37 @@ If you have a suggestion, please add a [GitHub issue](https://github.com/tidymod
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 4.0.3 (2020-10-10)
-#>  os       Ubuntu 18.04.5 LTS          
-#>  system   x86_64, linux-gnu           
+#>  version  R version 4.1.0 (2021-05-18)
+#>  os       macOS Big Sur 11.4          
+#>  system   aarch64, darwin20           
 #>  ui       X11                         
-#>  language en                          
-#>  collate  en_GB.UTF-8                 
-#>  ctype    en_GB.UTF-8                 
-#>  tz       Europe/London               
-#>  date     2021-03-03                  
+#>  language (EN)                        
+#>  collate  en_US.UTF-8                 
+#>  ctype    en_US.UTF-8                 
+#>  tz       America/Denver              
+#>  date     2021-06-29                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
-#>  broom      * 0.7.3   2020-12-16 [1] CRAN (R 4.0.3)
-#>  dials      * 0.0.9   2020-09-16 [1] CRAN (R 4.0.3)
-#>  dplyr      * 1.0.4   2021-02-02 [1] CRAN (R 4.0.3)
-#>  ggplot2    * 3.3.3   2020-12-30 [1] CRAN (R 4.0.3)
-#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.3)
-#>  mda        * 0.5-2   2020-06-29 [1] CRAN (R 4.0.3)
-#>  modeldata  * 0.1.0   2020-10-22 [1] CRAN (R 4.0.3)
-#>  parsnip    * 0.1.5   2021-01-19 [1] CRAN (R 4.0.3)
-#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.3)
-#>  recipes    * 0.1.15  2020-11-11 [1] CRAN (R 4.0.3)
-#>  rlang      * 0.4.10  2020-12-30 [1] CRAN (R 4.0.3)
-#>  rsample    * 0.0.8   2020-09-23 [1] CRAN (R 4.0.3)
-#>  tibble     * 3.0.6   2021-01-29 [1] CRAN (R 4.0.3)
-#>  tidymodels * 0.1.2   2020-11-22 [1] CRAN (R 4.0.3)
-#>  tune       * 0.1.2   2020-11-17 [1] CRAN (R 4.0.3)
-#>  workflows  * 0.2.1   2020-10-08 [1] CRAN (R 4.0.3)
-#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.3)
+#>  broom      * 0.7.8   2021-06-24 [1] CRAN (R 4.1.0)
+#>  dials      * 0.0.9   2020-09-16 [1] CRAN (R 4.1.0)
+#>  dplyr      * 1.0.7   2021-06-18 [1] CRAN (R 4.1.0)
+#>  ggplot2    * 3.3.5   2021-06-25 [1] CRAN (R 4.1.0)
+#>  infer      * 0.5.4   2021-01-13 [1] CRAN (R 4.1.0)
+#>  mda        * 0.5-2   2020-06-29 [1] CRAN (R 4.1.0)
+#>  modeldata  * 0.1.0   2020-10-22 [1] CRAN (R 4.1.0)
+#>  parsnip    * 0.1.6   2021-05-27 [1] CRAN (R 4.1.0)
+#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.1.0)
+#>  recipes    * 0.1.16  2021-04-16 [1] CRAN (R 4.1.0)
+#>  rlang      * 0.4.11  2021-04-30 [1] CRAN (R 4.1.0)
+#>  rsample    * 0.1.0   2021-05-08 [1] CRAN (R 4.1.0)
+#>  tibble     * 3.1.2   2021-05-16 [1] CRAN (R 4.1.0)
+#>  tidymodels * 0.1.3   2021-04-19 [1] CRAN (R 4.1.0)
+#>  tune       * 0.1.5   2021-04-23 [1] CRAN (R 4.1.0)
+#>  workflows  * 0.2.2   2021-03-10 [1] CRAN (R 4.1.0)
+#>  yardstick  * 0.0.8   2021-03-28 [1] CRAN (R 4.1.0)
 #> 
-#> [1] /usr/local/lib/R/site-library
-#> [2] /usr/lib/R/library
+#> [1] /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/library
 ```
 
 
