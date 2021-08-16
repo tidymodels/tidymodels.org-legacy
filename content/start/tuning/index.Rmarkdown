@@ -14,12 +14,12 @@ source(here::here("content/start/common.R"))
 ```{r load, include = FALSE, message = FALSE, warning = FALSE}
 library(tidymodels)
 library(rpart)
-library(modeldata)
+library(rpart.plot)
 library(kableExtra)
 library(vip)
 theme_set(theme_bw())
 doParallel::registerDoParallel()
-pkgs <- c("tidymodels", "modeldata", "rpart", "vip")
+pkgs <- c("tidymodels", "rpart", "rpart.plot", "vip")
 ```
 
 
@@ -33,7 +33,7 @@ Some model parameters cannot be learned directly from a data set during model tr
 library(tidymodels)  # for the tune package, along with the rest of tidymodels
 
 # Helper packages
-library(modeldata)   # for the cells data
+library(rpart.plot)  # for visualizing a decision tree
 library(vip)         # for variable importance plots
 ```
 
@@ -73,7 +73,7 @@ We use the training data for tuning the model.
 
 ## Tuning hyperparameters {#tuning}
 
-Let’s start with the parsnip package, using a [`decision_tree()`](https://tidymodels.github.io/parsnip/reference/decision_tree.html) model with the [rpart](https://cran.r-project.org/web/packages/rpart/index.html) engine. To tune the decision tree hyperparameters `cost_complexity` and `tree_depth`, we create a model specification that identifies which hyperparameters we plan to tune. 
+Let’s start with the parsnip package, using a [`decision_tree()`](https://parsnip.tidymodels.org/reference/decision_tree.html) model with the [rpart](https://cran.r-project.org/web/packages/rpart/index.html) engine. To tune the decision tree hyperparameters `cost_complexity` and `tree_depth`, we create a model specification that identifies which hyperparameters we plan to tune. 
 
 ```{r tune-spec}
 tune_spec <- 
@@ -97,7 +97,7 @@ tree_grid <- grid_regular(cost_complexity(),
                           levels = 5)
 ```
 
-The function [`grid_regular()`](https://tidymodels.github.io/dials/reference/grid_regular.html) is from the [dials](https://tidymodels.github.io/dials/) package. It chooses sensible values to try for each hyperparameter; here, we asked for 5 of each. Since we have two to tune, `grid_regular()` returns 5 $\times$ 5 = 25 different possible tuning combinations to try in a tidy tibble format.
+The function [`grid_regular()`](https://dials.tidymodels.org/reference/grid_regular.html) is from the [dials](https://dials.tidymodels.org/) package. It chooses sensible values to try for each hyperparameter; here, we asked for 5 of each. Since we have two to tune, `grid_regular()` returns 5 $\times$ 5 = 25 different possible tuning combinations to try in a tidy tibble format.
 
 ```{r tree-grid-tibble}
 tree_grid
@@ -118,15 +118,15 @@ set.seed(234)
 cell_folds <- vfold_cv(cell_train)
 ```
 
-Tuning in tidymodels requires a resampled object created with the [rsample](https://tidymodels.github.io/rsample/) package.
+Tuning in tidymodels requires a resampled object created with the [rsample](https://rsample.tidymodels.org/) package.
 
 ## Model tuning with a grid {#tune-grid}
 
-We are ready to tune! Let's use [`tune_grid()`](https://tidymodels.github.io/tune/reference/tune_grid.html) to fit models at all the different values we chose for each tuned hyperparameter. There are several options for building the object for tuning:
+We are ready to tune! Let's use [`tune_grid()`](https://tune.tidymodels.org/reference/tune_grid.html) to fit models at all the different values we chose for each tuned hyperparameter. There are several options for building the object for tuning:
 
 + Tune a model specification along with a recipe or model, or 
 
-+ Tune a [`workflow()`](https://tidymodels.github.io/workflows/) that bundles together a model specification and a recipe or model preprocessor. 
++ Tune a [`workflow()`](https://workflows.tidymodels.org/) that bundles together a model specification and a recipe or model preprocessor. 
 
 Here we use a `workflow()` with a straightforward formula; if this model required more involved data preprocessing, we could use `add_recipe()` instead of `add_formula()`.
 
@@ -168,18 +168,18 @@ tree_res %>%
   scale_color_viridis_d(option = "plasma", begin = .9, end = 0)
 ```
 
-We can see that our "stubbiest" tree, with a depth of `r min(tree_grid$tree_depth)`, is the worst model according to both metrics and across all candidate values of `cost_complexity`. Our deepest tree, with a depth of `r max(tree_grid$tree_depth)`, did better. However, the best tree seems to be between these values with a tree depth of 4. The [`show_best()`](https://tidymodels.github.io/tune/reference/show_best.html) function shows us the top 5 candidate models by default:
+We can see that our "stubbiest" tree, with a depth of `r min(tree_grid$tree_depth)`, is the worst model according to both metrics and across all candidate values of `cost_complexity`. Our deepest tree, with a depth of `r max(tree_grid$tree_depth)`, did better. However, the best tree seems to be between these values with a tree depth of 4. The [`show_best()`](https://tune.tidymodels.org/reference/show_best.html) function shows us the top 5 candidate models by default:
 
 ```{r show-best-tree, dependson="tree-res"}
 tree_res %>%
-  show_best("roc_auc")
+  show_best("accuracy")
 ```
 
-We can also use the [`select_best()`](https://tidymodels.github.io/tune/reference/show_best.html) function to pull out the single set of hyperparameter values for our best decision tree model:
+We can also use the [`select_best()`](https://tune.tidymodels.org/reference/show_best.html) function to pull out the single set of hyperparameter values for our best decision tree model:
 
 ```{r select-best-tree, dependson="tree-res"}
 best_tree <- tree_res %>%
-  select_best("roc_auc")
+  select_best("accuracy")
 
 best_tree
 ```
@@ -201,37 +201,11 @@ final_wf
 
 Our tuning is done!
 
-### Exploring results
-
-Let's fit this final model to the training data. What does the decision tree look like?
-
-```{r final-tree, dependson="final-mod"}
-final_tree <- 
-  final_wf %>%
-  fit(data = cell_train) 
-
-final_tree
-```
-
-This `final_tree` object has the finalized, fitted model object inside. You may want to extract the model object from the workflow. To do this, you can use the helper function [`pull_workflow_fit()`](https://tidymodels.github.io/workflows/reference/workflow-extractors.html).
-
-For example, perhaps we would also like to understand what variables are important in this final model. We can use the [vip](https://koalaverse.github.io/vip/) package to estimate variable importance. 
-
-```{r vip, dependson="final-tree", fig.width=6, fig.height=5}
-library(vip)
-
-final_tree %>% 
-  pull_workflow_fit() %>% 
-  vip()
-```
-
-These are the automated image analysis measurements that are the most important in driving segmentation quality predictions.
-
 ### The last fit
 
-Finally, let's return to our test data and estimate the model performance we expect to see with new data. We can use the function [`last_fit()`](https://tidymodels.github.io/tune/reference/last_fit.html) with our finalized model; this function _fits_ the finalized model on the full training data set and _evaluates_ the finalized model on the testing data.
+Finally, let's fit this final model to the training data and use our test data to estimate the model performance we expect to see with new data. We can use the function [`last_fit()`](https://tune.tidymodels.org/reference/last_fit.html) with our finalized model; this function _fits_ the finalized model on the full training data set and _evaluates_ the finalized model on the testing data.
 
-```{r last-fit, dependson=c("final_mod", "cell-split")}
+```{r last-fit, dependson=c("final-wf", "cell-split")}
 final_fit <- 
   final_wf %>%
   last_fit(cell_split) 
@@ -246,6 +220,34 @@ final_fit %>%
 ```
 
 The performance metrics from the test set indicate that we did not overfit during our tuning procedure.
+
+The `final_fit` object contains a finalized, fitted workflow that you can use for predicting on new data or further understanding the results. You may want to extract this object, using [one of the `extract_` helper functions](https://tune.tidymodels.org/reference/extract-tune.html).
+
+```{r last-fit-wf, dependson="last-fit"}
+final_tree <- extract_workflow(final_fit)
+final_tree
+```
+
+We can create a visualization of the decision tree using another helper function to extract the underlying engine-specific fit.
+
+```{r rpart-plot, dependson="last-fit-wf", fig.width=8, fig.height=5}
+final_tree %>%
+  extract_fit_engine() %>%
+  rpart.plot(roundint = FALSE)
+```
+
+Perhaps we would also like to understand what variables are important in this final model. We can use the [vip](https://koalaverse.github.io/vip/) package to estimate variable importance. 
+
+```{r vip, dependson="final-tree", fig.width=6, fig.height=5}
+library(vip)
+
+final_tree %>% 
+  extract_fit_parsnip() %>% 
+  vip()
+```
+
+These are the automated image analysis measurements that are the most important in driving segmentation quality predictions.
+
 
 We leave it to the reader to explore whether you can tune a different decision tree hyperparameter. You can explore the [reference docs](/find/parsnip/#models), or use the `args()` function to see which parsnip object arguments are available:
 
