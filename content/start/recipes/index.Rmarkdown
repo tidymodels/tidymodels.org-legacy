@@ -264,7 +264,7 @@ flights_rec <-
   step_holiday(date, 
                holidays = timeDate::listHolidays("US"), 
                keep_original_cols = FALSE) %>% 
-  step_dummy(all_nominal(), -all_outcomes()) %>% 
+  step_dummy(all_nominal_predictors()) %>% 
   step_zv(all_predictors())
 ```
 
