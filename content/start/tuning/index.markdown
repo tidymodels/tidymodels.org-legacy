@@ -16,14 +16,14 @@ description: |
 
 Some model parameters cannot be learned directly from a data set during model training; these kinds of parameters are called **hyperparameters**. Some examples of hyperparameters include the number of predictors that are sampled at splits in a tree-based model (we call this `mtry` in tidymodels) or the learning rate in a boosted tree model (we call this `learn_rate`). Instead of learning these kinds of hyperparameters during model training, we can _estimate_ the best values for these values by training many models on resampled data sets and exploring how well all these models perform. This process is called **tuning**.
 
-To use code in this article,  you will need to install the following packages: modeldata, rpart, tidymodels, and vip.
+To use code in this article,  you will need to install the following packages: rpart, rpart.plot, tidymodels, and vip.
 
 
 ```r
 library(tidymodels)  # for the tune package, along with the rest of tidymodels
 
 # Helper packages
-library(modeldata)   # for the cells data
+library(rpart.plot)  # for visualizing a decision tree
 library(vip)         # for variable importance plots
 ```
 
@@ -37,7 +37,7 @@ In our previous [*Evaluate your model with resampling*](/start/resampling/) arti
 ```r
 data(cells, package = "modeldata")
 cells
-#> # A tibble: 2,019 x 58
+#> # A tibble: 2,019 × 58
 #>   case  class angle_ch_1 area_ch_1 avg_inten_ch_1 avg_inten_ch_2 avg_inten_ch_3
 #>   <fct> <fct>      <dbl>     <int>          <dbl>          <dbl>          <dbl>
 #> 1 Test  PS        143.         185           15.7           4.95           9.55
@@ -76,7 +76,7 @@ We use the training data for tuning the model.
 
 ## Tuning hyperparameters {#tuning}
 
-Let’s start with the parsnip package, using a [`decision_tree()`](https://tidymodels.github.io/parsnip/reference/decision_tree.html) model with the [rpart](https://cran.r-project.org/web/packages/rpart/index.html) engine. To tune the decision tree hyperparameters `cost_complexity` and `tree_depth`, we create a model specification that identifies which hyperparameters we plan to tune. 
+Let’s start with the parsnip package, using a [`decision_tree()`](https://parsnip.tidymodels.org/reference/decision_tree.html) model with the [rpart](https://cran.r-project.org/web/packages/rpart/index.html) engine. To tune the decision tree hyperparameters `cost_complexity` and `tree_depth`, we create a model specification that identifies which hyperparameters we plan to tune. 
 
 
 ```r
@@ -109,12 +109,12 @@ tree_grid <- grid_regular(cost_complexity(),
                           levels = 5)
 ```
 
-The function [`grid_regular()`](https://tidymodels.github.io/dials/reference/grid_regular.html) is from the [dials](https://tidymodels.github.io/dials/) package. It chooses sensible values to try for each hyperparameter; here, we asked for 5 of each. Since we have two to tune, `grid_regular()` returns 5 `\(\times\)` 5 = 25 different possible tuning combinations to try in a tidy tibble format.
+The function [`grid_regular()`](https://dials.tidymodels.org/reference/grid_regular.html) is from the [dials](https://dials.tidymodels.org/) package. It chooses sensible values to try for each hyperparameter; here, we asked for 5 of each. Since we have two to tune, `grid_regular()` returns 5 `\(\times\)` 5 = 25 different possible tuning combinations to try in a tidy tibble format.
 
 
 ```r
 tree_grid
-#> # A tibble: 25 x 2
+#> # A tibble: 25 × 2
 #>    cost_complexity tree_depth
 #>              <dbl>      <int>
 #>  1    0.0000000001          1
@@ -136,7 +136,7 @@ Here, you can see all 5 values of `cost_complexity` ranging up to 0.1. These val
 ```r
 tree_grid %>% 
   count(tree_depth)
-#> # A tibble: 5 x 2
+#> # A tibble: 5 × 2
 #>   tree_depth     n
 #>        <int> <int>
 #> 1          1     5
@@ -155,15 +155,15 @@ set.seed(234)
 cell_folds <- vfold_cv(cell_train)
 ```
 
-Tuning in tidymodels requires a resampled object created with the [rsample](https://tidymodels.github.io/rsample/) package.
+Tuning in tidymodels requires a resampled object created with the [rsample](https://rsample.tidymodels.org/) package.
 
 ## Model tuning with a grid {#tune-grid}
 
-We are ready to tune! Let's use [`tune_grid()`](https://tidymodels.github.io/tune/reference/tune_grid.html) to fit models at all the different values we chose for each tuned hyperparameter. There are several options for building the object for tuning:
+We are ready to tune! Let's use [`tune_grid()`](https://tune.tidymodels.org/reference/tune_grid.html) to fit models at all the different values we chose for each tuned hyperparameter. There are several options for building the object for tuning:
 
 + Tune a model specification along with a recipe or model, or 
 
-+ Tune a [`workflow()`](https://tidymodels.github.io/workflows/) that bundles together a model specification and a recipe or model preprocessor. 
++ Tune a [`workflow()`](https://workflows.tidymodels.org/) that bundles together a model specification and a recipe or model preprocessor. 
 
 Here we use a `workflow()` with a straightforward formula; if this model required more involved data preprocessing, we could use `add_recipe()` instead of `add_formula()`.
 
@@ -185,19 +185,19 @@ tree_res <-
 tree_res
 #> # Tuning results
 #> # 10-fold cross-validation 
-#> # A tibble: 10 x 4
+#> # A tibble: 10 × 4
 #>    splits             id     .metrics          .notes          
 #>    <list>             <chr>  <list>            <list>          
-#>  1 <split [1.4K/152]> Fold01 <tibble [50 × 6]> <tibble [0 × 1]>
-#>  2 <split [1.4K/152]> Fold02 <tibble [50 × 6]> <tibble [0 × 1]>
-#>  3 <split [1.4K/152]> Fold03 <tibble [50 × 6]> <tibble [0 × 1]>
-#>  4 <split [1.4K/152]> Fold04 <tibble [50 × 6]> <tibble [0 × 1]>
-#>  5 <split [1.4K/152]> Fold05 <tibble [50 × 6]> <tibble [0 × 1]>
-#>  6 <split [1.4K/151]> Fold06 <tibble [50 × 6]> <tibble [0 × 1]>
-#>  7 <split [1.4K/151]> Fold07 <tibble [50 × 6]> <tibble [0 × 1]>
-#>  8 <split [1.4K/151]> Fold08 <tibble [50 × 6]> <tibble [0 × 1]>
-#>  9 <split [1.4K/151]> Fold09 <tibble [50 × 6]> <tibble [0 × 1]>
-#> 10 <split [1.4K/151]> Fold10 <tibble [50 × 6]> <tibble [0 × 1]>
+#>  1 <split [1362/152]> Fold01 <tibble [50 × 6]> <tibble [0 × 1]>
+#>  2 <split [1362/152]> Fold02 <tibble [50 × 6]> <tibble [0 × 1]>
+#>  3 <split [1362/152]> Fold03 <tibble [50 × 6]> <tibble [0 × 1]>
+#>  4 <split [1362/152]> Fold04 <tibble [50 × 6]> <tibble [0 × 1]>
+#>  5 <split [1363/151]> Fold05 <tibble [50 × 6]> <tibble [0 × 1]>
+#>  6 <split [1363/151]> Fold06 <tibble [50 × 6]> <tibble [0 × 1]>
+#>  7 <split [1363/151]> Fold07 <tibble [50 × 6]> <tibble [0 × 1]>
+#>  8 <split [1363/151]> Fold08 <tibble [50 × 6]> <tibble [0 × 1]>
+#>  9 <split [1363/151]> Fold09 <tibble [50 × 6]> <tibble [0 × 1]>
+#> 10 <split [1363/151]> Fold10 <tibble [50 × 6]> <tibble [0 × 1]>
 ```
 
 Once we have our tuning results, we can both explore them through visualization and then select the best result. The function `collect_metrics()` gives us a tidy tibble with all the results. We had 25 candidate models and two metrics, `accuracy` and `roc_auc`, and we get a row for each `.metric` and model. 
@@ -206,19 +206,19 @@ Once we have our tuning results, we can both explore them through visualization 
 ```r
 tree_res %>% 
   collect_metrics()
-#> # A tibble: 50 x 8
+#> # A tibble: 50 × 8
 #>    cost_complexity tree_depth .metric  .estimator  mean     n std_err .config   
 #>              <dbl>      <int> <chr>    <chr>      <dbl> <int>   <dbl> <chr>     
-#>  1    0.0000000001          1 accuracy binary     0.734    10 0.00877 Preproces…
-#>  2    0.0000000001          1 roc_auc  binary     0.772    10 0.00617 Preproces…
-#>  3    0.0000000178          1 accuracy binary     0.734    10 0.00877 Preproces…
-#>  4    0.0000000178          1 roc_auc  binary     0.772    10 0.00617 Preproces…
-#>  5    0.00000316            1 accuracy binary     0.734    10 0.00877 Preproces…
-#>  6    0.00000316            1 roc_auc  binary     0.772    10 0.00617 Preproces…
-#>  7    0.000562              1 accuracy binary     0.734    10 0.00877 Preproces…
-#>  8    0.000562              1 roc_auc  binary     0.772    10 0.00617 Preproces…
-#>  9    0.1                   1 accuracy binary     0.734    10 0.00877 Preproces…
-#> 10    0.1                   1 roc_auc  binary     0.772    10 0.00617 Preproces…
+#>  1    0.0000000001          1 accuracy binary     0.732    10  0.0148 Preproces…
+#>  2    0.0000000001          1 roc_auc  binary     0.777    10  0.0107 Preproces…
+#>  3    0.0000000178          1 accuracy binary     0.732    10  0.0148 Preproces…
+#>  4    0.0000000178          1 roc_auc  binary     0.777    10  0.0107 Preproces…
+#>  5    0.00000316            1 accuracy binary     0.732    10  0.0148 Preproces…
+#>  6    0.00000316            1 roc_auc  binary     0.777    10  0.0107 Preproces…
+#>  7    0.000562              1 accuracy binary     0.732    10  0.0148 Preproces…
+#>  8    0.000562              1 roc_auc  binary     0.777    10  0.0107 Preproces…
+#>  9    0.1                   1 accuracy binary     0.732    10  0.0148 Preproces…
+#> 10    0.1                   1 roc_auc  binary     0.777    10  0.0107 Preproces…
 #> # … with 40 more rows
 ```
 
@@ -239,31 +239,31 @@ tree_res %>%
 
 <img src="figs/best-tree-1.svg" width="768" />
 
-We can see that our "stubbiest" tree, with a depth of 1, is the worst model according to both metrics and across all candidate values of `cost_complexity`. Our deepest tree, with a depth of 15, did better. However, the best tree seems to be between these values with a tree depth of 4. The [`show_best()`](https://tidymodels.github.io/tune/reference/show_best.html) function shows us the top 5 candidate models by default:
+We can see that our "stubbiest" tree, with a depth of 1, is the worst model according to both metrics and across all candidate values of `cost_complexity`. Our deepest tree, with a depth of 15, did better. However, the best tree seems to be between these values with a tree depth of 4. The [`show_best()`](https://tune.tidymodels.org/reference/show_best.html) function shows us the top 5 candidate models by default:
 
 
 ```r
 tree_res %>%
-  show_best("roc_auc")
-#> # A tibble: 5 x 8
-#>   cost_complexity tree_depth .metric .estimator  mean     n std_err .config     
-#>             <dbl>      <int> <chr>   <chr>      <dbl> <int>   <dbl> <chr>       
-#> 1    0.0000000001          4 roc_auc binary     0.865    10 0.00965 Preprocesso…
-#> 2    0.0000000178          4 roc_auc binary     0.865    10 0.00965 Preprocesso…
-#> 3    0.00000316            4 roc_auc binary     0.865    10 0.00965 Preprocesso…
-#> 4    0.000562              4 roc_auc binary     0.865    10 0.00965 Preprocesso…
-#> 5    0.0000000001          8 roc_auc binary     0.859    10 0.0104  Preprocesso…
+  show_best("accuracy")
+#> # A tibble: 5 × 8
+#>   cost_complexity tree_depth .metric  .estimator  mean     n std_err .config    
+#>             <dbl>      <int> <chr>    <chr>      <dbl> <int>   <dbl> <chr>      
+#> 1    0.0000000001          4 accuracy binary     0.807    10  0.0119 Preprocess…
+#> 2    0.0000000178          4 accuracy binary     0.807    10  0.0119 Preprocess…
+#> 3    0.00000316            4 accuracy binary     0.807    10  0.0119 Preprocess…
+#> 4    0.000562              4 accuracy binary     0.807    10  0.0119 Preprocess…
+#> 5    0.1                   4 accuracy binary     0.786    10  0.0124 Preprocess…
 ```
 
-We can also use the [`select_best()`](https://tidymodels.github.io/tune/reference/show_best.html) function to pull out the single set of hyperparameter values for our best decision tree model:
+We can also use the [`select_best()`](https://tune.tidymodels.org/reference/show_best.html) function to pull out the single set of hyperparameter values for our best decision tree model:
 
 
 ```r
 best_tree <- tree_res %>%
-  select_best("roc_auc")
+  select_best("accuracy")
 
 best_tree
-#> # A tibble: 1 x 3
+#> # A tibble: 1 × 3
 #>   cost_complexity tree_depth .config              
 #>             <dbl>      <int> <chr>                
 #> 1    0.0000000001          4 Preprocessor1_Model06
@@ -302,71 +302,9 @@ final_wf
 
 Our tuning is done!
 
-### Exploring results
-
-Let's fit this final model to the training data. What does the decision tree look like?
-
-
-```r
-final_tree <- 
-  final_wf %>%
-  fit(data = cell_train) 
-
-final_tree
-#> ══ Workflow [trained] ════════════════════════════════════════════════
-#> Preprocessor: Formula
-#> Model: decision_tree()
-#> 
-#> ── Preprocessor ──────────────────────────────────────────────────────
-#> class ~ .
-#> 
-#> ── Model ─────────────────────────────────────────────────────────────
-#> n= 1515 
-#> 
-#> node), split, n, loss, yval, (yprob)
-#>       * denotes terminal node
-#> 
-#>  1) root 1515 540 PS (0.64356436 0.35643564)  
-#>    2) total_inten_ch_2< 47256.5 731  63 PS (0.91381669 0.08618331)  
-#>      4) total_inten_ch_2< 37166 585  19 PS (0.96752137 0.03247863) *
-#>      5) total_inten_ch_2>=37166 146  44 PS (0.69863014 0.30136986)  
-#>       10) avg_inten_ch_1< 99.15056 98  14 PS (0.85714286 0.14285714) *
-#>       11) avg_inten_ch_1>=99.15056 48  18 WS (0.37500000 0.62500000)  
-#>         22) fiber_align_2_ch_3>=1.47949 20   8 PS (0.60000000 0.40000000) *
-#>         23) fiber_align_2_ch_3< 1.47949 28   6 WS (0.21428571 0.78571429) *
-#>    3) total_inten_ch_2>=47256.5 784 307 WS (0.39158163 0.60841837)  
-#>      6) fiber_width_ch_1< 11.19756 329 137 PS (0.58358663 0.41641337)  
-#>       12) avg_inten_ch_1< 194.4183 254  82 PS (0.67716535 0.32283465) *
-#>       13) avg_inten_ch_1>=194.4183 75  20 WS (0.26666667 0.73333333)  
-#>         26) total_inten_ch_3>=62458.5 23   9 PS (0.60869565 0.39130435) *
-#>         27) total_inten_ch_3< 62458.5 52   6 WS (0.11538462 0.88461538) *
-#>      7) fiber_width_ch_1>=11.19756 455 115 WS (0.25274725 0.74725275)  
-#>       14) shape_p_2_a_ch_1>=1.225676 300  97 WS (0.32333333 0.67666667)  
-#>         28) avg_inten_ch_2>=362.0108 55  23 PS (0.58181818 0.41818182) *
-#>         29) avg_inten_ch_2< 362.0108 245  65 WS (0.26530612 0.73469388) *
-#>       15) shape_p_2_a_ch_1< 1.225676 155  18 WS (0.11612903 0.88387097) *
-```
-
-This `final_tree` object has the finalized, fitted model object inside. You may want to extract the model object from the workflow. To do this, you can use the helper function [`pull_workflow_fit()`](https://tidymodels.github.io/workflows/reference/workflow-extractors.html).
-
-For example, perhaps we would also like to understand what variables are important in this final model. We can use the [vip](https://koalaverse.github.io/vip/) package to estimate variable importance. 
-
-
-```r
-library(vip)
-
-final_tree %>% 
-  pull_workflow_fit() %>% 
-  vip()
-```
-
-<img src="figs/vip-1.svg" width="576" />
-
-These are the automated image analysis measurements that are the most important in driving segmentation quality predictions.
-
 ### The last fit
 
-Finally, let's return to our test data and estimate the model performance we expect to see with new data. We can use the function [`last_fit()`](https://tidymodels.github.io/tune/reference/last_fit.html) with our finalized model; this function _fits_ the finalized model on the full training data set and _evaluates_ the finalized model on the testing data.
+Finally, let's fit this final model to the training data and use our test data to estimate the model performance we expect to see with new data. We can use the function [`last_fit()`](https://tune.tidymodels.org/reference/last_fit.html) with our finalized model; this function _fits_ the finalized model on the full training data set and _evaluates_ the finalized model on the testing data.
 
 
 ```r
@@ -376,11 +314,11 @@ final_fit <-
 
 final_fit %>%
   collect_metrics()
-#> # A tibble: 2 x 4
+#> # A tibble: 2 × 4
 #>   .metric  .estimator .estimate .config             
 #>   <chr>    <chr>          <dbl> <chr>               
 #> 1 accuracy binary         0.802 Preprocessor1_Model1
-#> 2 roc_auc  binary         0.860 Preprocessor1_Model1
+#> 2 roc_auc  binary         0.840 Preprocessor1_Model1
 
 final_fit %>%
   collect_predictions() %>% 
@@ -392,13 +330,76 @@ final_fit %>%
 
 The performance metrics from the test set indicate that we did not overfit during our tuning procedure.
 
+The `final_fit` object contains a finalized, fitted workflow that you can use for predicting on new data or further understanding the results. You may want to extract this object, using [one of the `extract_` helper functions](https://tune.tidymodels.org/reference/extract-tune.html).
+
+
+```r
+final_tree <- extract_workflow(final_fit)
+final_tree
+#> ══ Workflow [trained] ════════════════════════════════════════════════
+#> Preprocessor: Formula
+#> Model: decision_tree()
+#> 
+#> ── Preprocessor ──────────────────────────────────────────────────────
+#> class ~ .
+#> 
+#> ── Model ─────────────────────────────────────────────────────────────
+#> n= 1514 
+#> 
+#> node), split, n, loss, yval, (yprob)
+#>       * denotes terminal node
+#> 
+#>  1) root 1514 539 PS (0.64398943 0.35601057)  
+#>    2) total_inten_ch_2< 41732.5 642  33 PS (0.94859813 0.05140187)  
+#>      4) shape_p_2_a_ch_1>=1.251801 631  27 PS (0.95721078 0.04278922) *
+#>      5) shape_p_2_a_ch_1< 1.251801 11   5 WS (0.45454545 0.54545455) *
+#>    3) total_inten_ch_2>=41732.5 872 366 WS (0.41972477 0.58027523)  
+#>      6) fiber_width_ch_1< 11.37318 406 160 PS (0.60591133 0.39408867)  
+#>       12) avg_inten_ch_1< 145.4883 293  85 PS (0.70989761 0.29010239) *
+#>       13) avg_inten_ch_1>=145.4883 113  38 WS (0.33628319 0.66371681)  
+#>         26) total_inten_ch_3>=57919.5 33  10 PS (0.69696970 0.30303030) *
+#>         27) total_inten_ch_3< 57919.5 80  15 WS (0.18750000 0.81250000) *
+#>      7) fiber_width_ch_1>=11.37318 466 120 WS (0.25751073 0.74248927)  
+#>       14) eq_ellipse_oblate_vol_ch_1>=1673.942 30   8 PS (0.73333333 0.26666667)  
+#>         28) var_inten_ch_3>=41.10858 20   2 PS (0.90000000 0.10000000) *
+#>         29) var_inten_ch_3< 41.10858 10   4 WS (0.40000000 0.60000000) *
+#>       15) eq_ellipse_oblate_vol_ch_1< 1673.942 436  98 WS (0.22477064 0.77522936) *
+```
+
+We can create a visualization of the decision tree using another helper function to extract the underlying engine-specific fit.
+
+
+```r
+final_tree %>%
+  extract_fit_engine() %>%
+  rpart.plot(roundint = FALSE)
+```
+
+<img src="figs/rpart-plot-1.svg" width="768" />
+
+Perhaps we would also like to understand what variables are important in this final model. We can use the [vip](https://koalaverse.github.io/vip/) package to estimate variable importance. 
+
+
+```r
+library(vip)
+
+final_tree %>% 
+  extract_fit_parsnip() %>% 
+  vip()
+```
+
+<img src="figs/vip-1.svg" width="576" />
+
+These are the automated image analysis measurements that are the most important in driving segmentation quality predictions.
+
+
 We leave it to the reader to explore whether you can tune a different decision tree hyperparameter. You can explore the [reference docs](/find/parsnip/#models), or use the `args()` function to see which parsnip object arguments are available:
 
 
 ```r
 args(decision_tree)
-#> function (mode = "unknown", cost_complexity = NULL, tree_depth = NULL, 
-#>     min_n = NULL) 
+#> function (mode = "unknown", engine = "rpart", cost_complexity = NULL, 
+#>     tree_depth = NULL, min_n = NULL) 
 #> NULL
 ```
 
@@ -412,36 +413,36 @@ You could tune the other hyperparameter we didn't use here, `min_n`, which sets 
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 4.0.3 (2020-10-10)
-#>  os       macOS Mojave 10.14.6        
-#>  system   x86_64, darwin17.0          
+#>  version  R version 4.1.0 (2021-05-18)
+#>  os       macOS Big Sur 11.5.2        
+#>  system   aarch64, darwin20           
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-12-08                  
+#>  date     2021-08-16                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
-#>  broom      * 0.7.2   2020-10-20 [1] CRAN (R 4.0.2)
-#>  dials      * 0.0.9   2020-09-16 [1] CRAN (R 4.0.2)
-#>  dplyr      * 1.0.2   2020-08-18 [1] CRAN (R 4.0.2)
-#>  ggplot2    * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
-#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
-#>  modeldata  * 0.1.0   2020-10-22 [1] CRAN (R 4.0.2)
-#>  parsnip    * 0.1.4   2020-10-27 [1] CRAN (R 4.0.2)
-#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
-#>  recipes    * 0.1.15  2020-11-11 [1] CRAN (R 4.0.2)
-#>  rlang      * 0.4.9   2020-11-26 [1] CRAN (R 4.0.2)
-#>  rpart      * 4.1-15  2019-04-12 [1] CRAN (R 4.0.3)
-#>  rsample    * 0.0.8   2020-09-23 [1] CRAN (R 4.0.2)
-#>  tibble     * 3.0.4   2020-10-12 [1] CRAN (R 4.0.2)
-#>  tidymodels * 0.1.2   2020-11-22 [1] CRAN (R 4.0.2)
-#>  tune       * 0.1.2   2020-11-17 [1] CRAN (R 4.0.3)
-#>  vip        * 0.2.2   2020-04-06 [1] CRAN (R 4.0.0)
-#>  workflows  * 0.2.1   2020-10-08 [1] CRAN (R 4.0.2)
-#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.2)
+#>  broom      * 0.7.9   2021-07-27 [1] CRAN (R 4.1.0)
+#>  dials      * 0.0.9   2020-09-16 [1] CRAN (R 4.1.0)
+#>  dplyr      * 1.0.7   2021-06-18 [1] CRAN (R 4.1.0)
+#>  ggplot2    * 3.3.5   2021-06-25 [1] CRAN (R 4.1.0)
+#>  infer      * 0.5.4   2021-01-13 [1] CRAN (R 4.1.0)
+#>  parsnip    * 0.1.7   2021-07-21 [1] CRAN (R 4.1.0)
+#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.1.0)
+#>  recipes    * 0.1.16  2021-04-16 [1] CRAN (R 4.1.0)
+#>  rlang      * 0.4.11  2021-04-30 [1] CRAN (R 4.1.0)
+#>  rpart      * 4.1-15  2019-04-12 [1] CRAN (R 4.1.0)
+#>  rpart.plot * 3.1.0   2021-07-24 [1] CRAN (R 4.1.0)
+#>  rsample    * 0.1.0   2021-05-08 [1] CRAN (R 4.1.1)
+#>  tibble     * 3.1.3   2021-07-23 [1] CRAN (R 4.1.0)
+#>  tidymodels * 0.1.3   2021-04-19 [1] CRAN (R 4.1.0)
+#>  tune       * 0.1.6   2021-07-21 [1] CRAN (R 4.1.0)
+#>  vip        * 0.3.2   2020-12-17 [1] CRAN (R 4.1.0)
+#>  workflows  * 0.2.3   2021-07-16 [1] CRAN (R 4.1.0)
+#>  yardstick  * 0.0.8   2021-03-28 [1] CRAN (R 4.1.0)
 #> 
-#> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
+#> [1] /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/library
 ```
