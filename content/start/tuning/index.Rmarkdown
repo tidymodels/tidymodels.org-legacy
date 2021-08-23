@@ -236,7 +236,7 @@ final_tree %>%
   rpart.plot(roundint = FALSE)
 ```
 
-Perhaps we would also like to understand what variables are important in this final model. We can use the [vip](https://koalaverse.github.io/vip/) package to estimate variable importance. 
+Perhaps we would also like to understand what variables are important in this final model. We can use the [vip](https://koalaverse.github.io/vip/) package to estimate variable importance [based on the model's structure](https://koalaverse.github.io/vip/reference/vi_model.html#details). 
 
 ```{r vip, dependson="final-tree", fig.width=6, fig.height=5}
 library(vip)

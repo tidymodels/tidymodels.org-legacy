@@ -377,7 +377,7 @@ final_tree %>%
 
 <img src="figs/rpart-plot-1.svg" width="768" />
 
-Perhaps we would also like to understand what variables are important in this final model. We can use the [vip](https://koalaverse.github.io/vip/) package to estimate variable importance. 
+Perhaps we would also like to understand what variables are important in this final model. We can use the [vip](https://koalaverse.github.io/vip/) package to estimate variable importance [based on the model's structure](https://koalaverse.github.io/vip/reference/vi_model.html#details). 
 
 
 ```r
@@ -413,7 +413,7 @@ You could tune the other hyperparameter we didn't use here, `min_n`, which sets 
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 4.1.0 (2021-05-18)
+#>  version  R version 4.1.1 (2021-08-10)
 #>  os       macOS Big Sur 11.5.2        
 #>  system   aarch64, darwin20           
 #>  ui       X11                         
@@ -421,7 +421,7 @@ You could tune the other hyperparameter we didn't use here, `min_n`, which sets 
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2021-08-16                  
+#>  date     2021-08-23                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
@@ -429,12 +429,12 @@ You could tune the other hyperparameter we didn't use here, `min_n`, which sets 
 #>  dials      * 0.0.9   2020-09-16 [1] CRAN (R 4.1.0)
 #>  dplyr      * 1.0.7   2021-06-18 [1] CRAN (R 4.1.0)
 #>  ggplot2    * 3.3.5   2021-06-25 [1] CRAN (R 4.1.0)
-#>  infer      * 0.5.4   2021-01-13 [1] CRAN (R 4.1.0)
+#>  infer      * 1.0.0   2021-08-13 [1] CRAN (R 4.1.1)
 #>  parsnip    * 0.1.7   2021-07-21 [1] CRAN (R 4.1.0)
 #>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.1.0)
 #>  recipes    * 0.1.16  2021-04-16 [1] CRAN (R 4.1.0)
 #>  rlang      * 0.4.11  2021-04-30 [1] CRAN (R 4.1.0)
-#>  rpart      * 4.1-15  2019-04-12 [1] CRAN (R 4.1.0)
+#>  rpart      * 4.1-15  2019-04-12 [1] CRAN (R 4.1.1)
 #>  rpart.plot * 3.1.0   2021-07-24 [1] CRAN (R 4.1.0)
 #>  rsample    * 0.1.0   2021-05-08 [1] CRAN (R 4.1.1)
 #>  tibble     * 3.1.3   2021-07-23 [1] CRAN (R 4.1.0)
