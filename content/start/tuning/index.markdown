@@ -269,7 +269,7 @@ best_tree
 #> 1    0.0000000001          4 Preprocessor1_Model06
 ```
 
-These are the values for `tree_depth` and `cost_complexity` that maximize AUC in this data set of cell images. 
+These are the values for `tree_depth` and `cost_complexity` that maximize accuracy in this data set of cell images. 
 
 
 ## Finalizing our model {#final-model}
@@ -421,7 +421,7 @@ You could tune the other hyperparameter we didn't use here, `min_n`, which sets 
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2021-08-23                  
+#>  date     2021-08-24                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        

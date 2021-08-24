@@ -184,7 +184,7 @@ best_tree <- tree_res %>%
 best_tree
 ```
 
-These are the values for `tree_depth` and `cost_complexity` that maximize AUC in this data set of cell images. 
+These are the values for `tree_depth` and `cost_complexity` that maximize accuracy in this data set of cell images. 
 
 
 ## Finalizing our model {#final-model}
