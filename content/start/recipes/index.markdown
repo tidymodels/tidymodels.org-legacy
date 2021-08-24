@@ -6,6 +6,8 @@ categories: [pre-processing]
 description: | 
   Prepare data for modeling with modular preprocessing steps.
 ---
+<script src="{{< blogdown/postref >}}index_files/kePrint/kePrint.js"></script>
+<link href="{{< blogdown/postref >}}index_files/lightable/lightable.css" rel="stylesheet" />
 
 
 
@@ -13,7 +15,7 @@ description: |
 
 ## Introduction {#intro}
 
-In our [*Build a Model*](/start/models/) article, we learned how to specify and train models with different engines using the [parsnip package](https://tidymodels.github.io/parsnip/). In this article, we'll explore another tidymodels package, [recipes](https://tidymodels.github.io/recipes/), which is designed to help you preprocess your data *before* training your model. Recipes are built as a series of preprocessing steps, such as: 
+In our [*Build a Model*](/start/models/) article, we learned how to specify and train models with different engines using the [parsnip package](https://parsnip.tidymodels.org/). In this article, we'll explore another tidymodels package, [recipes](https://recipes.tidymodels.org/), which is designed to help you preprocess your data *before* training your model. Recipes are built as a series of preprocessing steps, such as: 
 
 + converting qualitative predictors to indicator variables (also known as dummy variables),
  
@@ -55,7 +57,7 @@ flight_data <-
     arr_delay = ifelse(arr_delay >= 30, "late", "on_time"),
     arr_delay = factor(arr_delay),
     # We will use the date (not date-time) in the recipe below
-    date = as.Date(time_hour)
+    date = lubridate::as_date(time_hour)
   ) %>% 
   # Include the weather data
   inner_join(weather, by = c("origin", "time_hour")) %>% 
@@ -77,7 +79,7 @@ We can see that about 16% of the flights in this data set arrived more than 30 m
 flight_data %>% 
   count(arr_delay) %>% 
   mutate(prop = n/sum(n))
-#> # A tibble: 2 x 3
+#> # A tibble: 2 × 3
 #>   arr_delay      n  prop
 #>   <fct>      <int> <dbl>
 #> 1 late       52540 0.161
@@ -94,16 +96,16 @@ First, notice that the variable we created called `arr_delay` is a factor variab
 glimpse(flight_data)
 #> Rows: 325,819
 #> Columns: 10
-#> $ dep_time  <int> 517, 533, 542, 544, 554, 554, 555, 557, 557, 558, 558, 558,…
-#> $ flight    <int> 1545, 1714, 1141, 725, 461, 1696, 507, 5708, 79, 301, 49, 7…
-#> $ origin    <fct> EWR, LGA, JFK, JFK, LGA, EWR, EWR, LGA, JFK, LGA, JFK, JFK,…
-#> $ dest      <fct> IAH, IAH, MIA, BQN, ATL, ORD, FLL, IAD, MCO, ORD, PBI, TPA,…
-#> $ air_time  <dbl> 227, 227, 160, 183, 116, 150, 158, 53, 140, 138, 149, 158, …
-#> $ distance  <dbl> 1400, 1416, 1089, 1576, 762, 719, 1065, 229, 944, 733, 1028…
-#> $ carrier   <fct> UA, UA, AA, B6, DL, UA, B6, EV, B6, AA, B6, B6, UA, UA, AA,…
-#> $ date      <date> 2013-01-01, 2013-01-01, 2013-01-01, 2013-01-01, 2013-01-01…
-#> $ arr_delay <fct> on_time, on_time, late, on_time, on_time, on_time, on_time,…
-#> $ time_hour <dttm> 2013-01-01 05:00:00, 2013-01-01 05:00:00, 2013-01-01 05:00…
+#> $ dep_time  <int> 517, 533, 542, 544, 554, 554, 555, 557, 557, 558, 558, 558, …
+#> $ flight    <int> 1545, 1714, 1141, 725, 461, 1696, 507, 5708, 79, 301, 49, 71…
+#> $ origin    <fct> EWR, LGA, JFK, JFK, LGA, EWR, EWR, LGA, JFK, LGA, JFK, JFK, …
+#> $ dest      <fct> IAH, IAH, MIA, BQN, ATL, ORD, FLL, IAD, MCO, ORD, PBI, TPA, …
+#> $ air_time  <dbl> 227, 227, 160, 183, 116, 150, 158, 53, 140, 138, 149, 158, 3…
+#> $ distance  <dbl> 1400, 1416, 1089, 1576, 762, 719, 1065, 229, 944, 733, 1028,…
+#> $ carrier   <fct> UA, UA, AA, B6, DL, UA, B6, EV, B6, AA, B6, B6, UA, UA, AA, …
+#> $ date      <date> 2013-01-01, 2013-01-01, 2013-01-01, 2013-01-01, 2013-01-01,…
+#> $ arr_delay <fct> on_time, on_time, late, on_time, on_time, on_time, on_time, …
+#> $ time_hour <dttm> 2013-01-01 05:00:00, 2013-01-01 05:00:00, 2013-01-01 05:00:…
 ```
 
 Second, there are two variables that we don't want to use as predictors in our model, but that we would like to retain as identification variables that can be used to troubleshoot poorly predicted data points. These are `flight`, a numeric value, and `time_hour`, a date-time value.
@@ -203,13 +205,13 @@ Because we'll be using a simple logistic regression model, the variables `dest` 
 
 To get started, let's split this single dataset into two: a _training_ set and a _testing_ set. We'll keep most of the rows in the original dataset (subset chosen randomly) in the _training_ set. The training data will be used to *fit* the model, and the _testing_ set will be used to measure model performance. 
 
-To do this, we can use the [rsample](https://tidymodels.github.io/rsample/) package to create an object that contains the information on _how_ to split the data, and then two more rsample functions to create data frames for the training and testing sets: 
+To do this, we can use the [rsample](https://rsample.tidymodels.org/) package to create an object that contains the information on _how_ to split the data, and then two more rsample functions to create data frames for the training and testing sets: 
 
 
 ```r
 # Fix the random numbers by setting the seed 
 # This enables the analysis to be reproducible when random numbers are used 
-set.seed(555)
+set.seed(222)
 # Put 3/4 of the data into the training set 
 data_split <- initial_split(flight_data, prop = 3/4)
 
@@ -231,13 +233,13 @@ flights_rec <-
   recipe(arr_delay ~ ., data = train_data) 
 ```
 
-The [`recipe()` function](https://tidymodels.github.io/recipes/reference/recipe.html) as we used it here has two arguments:
+The [`recipe()` function](https://recipes.tidymodels.org/reference/recipe.html) as we used it here has two arguments:
 
 + A **formula**. Any variable on the left-hand side of the tilde (`~`) is considered the model outcome (here, `arr_delay`). On the right-hand side of the tilde are the predictors. Variables may be listed by name, or you can use the dot (`.`) to indicate all other variables as predictors.
 
 + The **data**. A recipe is associated with the data set used to create the model. This will typically be the _training_ set, so `data = train_data` here. Naming a data set doesn't actually change the data itself; it is only used to catalog the names of the variables and their types, like factors, integers, dates, etc.
 
-Now we can add [roles](https://tidymodels.github.io/recipes/reference/roles.html) to this recipe. We can use the [`update_role()` function](https://tidymodels.github.io/recipes/reference/roles.html) to let recipes know that `flight` and `time_hour` are variables with a custom role that we called `"ID"` (a role can have any character value). Whereas our formula included all variables in the training set other than `arr_delay` as predictors, this tells the recipe to keep these two variables but not use them as either outcomes or predictors.
+Now we can add [roles](https://recipes.tidymodels.org/reference/roles.html) to this recipe. We can use the [`update_role()` function](https://recipes.tidymodels.org/reference/roles.html) to let recipes know that `flight` and `time_hour` are variables with a custom role that we called `"ID"` (a role can have any character value). Whereas our formula included all variables in the training set other than `arr_delay` as predictors, this tells the recipe to keep these two variables but not use them as either outcomes or predictors.
 
 
 ```r
@@ -253,7 +255,7 @@ To get the current set of variables and roles, use the `summary()` function:
 
 ```r
 summary(flights_rec)
-#> # A tibble: 10 x 4
+#> # A tibble: 10 × 4
 #>    variable  type    role      source  
 #>    <chr>     <chr>   <chr>     <chr>   
 #>  1 dep_time  numeric predictor original
@@ -279,7 +281,7 @@ Now we can start adding steps onto our recipe using the pipe operator. Perhaps i
 flight_data %>% 
   distinct(date) %>% 
   mutate(numeric_date = as.numeric(date)) 
-#> # A tibble: 364 x 2
+#> # A tibble: 364 × 2
 #>   date       numeric_date
 #>   <date>            <dbl>
 #> 1 2013-01-01        15706
@@ -307,19 +309,20 @@ flights_rec <-
   recipe(arr_delay ~ ., data = train_data) %>% 
   update_role(flight, time_hour, new_role = "ID") %>% 
   step_date(date, features = c("dow", "month")) %>%               
-  step_holiday(date, holidays = timeDate::listHolidays("US")) %>% 
-  step_rm(date)
+  step_holiday(date, 
+               holidays = timeDate::listHolidays("US"), 
+               keep_original_cols = FALSE)
 ```
 
 What do each of these steps do?
 
-* With [`step_date()`](https://tidymodels.github.io/recipes/reference/step_date.html), we created two new factor columns with the appropriate day of the week and the month. 
+* With [`step_date()`](https://recipes.tidymodels.org/reference/step_date.html), we created two new factor columns with the appropriate day of the week and the month. 
 
-* With [`step_holiday()`](https://tidymodels.github.io/recipes/reference/step_holiday.html), we created a binary variable indicating whether the current date is a holiday or not. The argument value of `timeDate::listHolidays("US")` uses the [timeDate package](https://cran.r-project.org/web/packages/timeDate/index.html) to list the 17 standard US holidays.
+* With [`step_holiday()`](https://recipes.tidymodels.org/reference/step_holiday.html), we created a binary variable indicating whether the current date is a holiday or not. The argument value of `timeDate::listHolidays("US")` uses the [timeDate package](https://cran.r-project.org/web/packages/timeDate/index.html) to list the 17 standard US holidays.
 
-* With [`step_rm()`](https://tidymodels.github.io/recipes/reference/step_rm.html), we remove the original `date` variable since we no longer want it in the model.
+* With `keep_original_cols = FALSE`, we remove the original `date` variable since we no longer want it in the model. Many recipe steps that create new variables have this argument.
 
-Next, we'll turn our attention to the variable types of our predictors. Because we plan to train a logistic regression model, we know that predictors will ultimately need to be numeric, as opposed to factor variables. In other words, there may be a difference in how we store our data (in factors inside a data frame), and how the underlying equations require them (a purely numeric matrix).
+Next, we'll turn our attention to the variable types of our predictors. Because we plan to train a logistic regression model, we know that predictors will ultimately need to be numeric, as opposed to nominal data like strings and factor variables. In other words, there may be a difference in how we store our data (in factors inside a data frame), and how the underlying equations require them (a purely numeric matrix).
 
 For factors like `dest` and `origin`, [standard practice](https://bookdown.org/max/FES/creating-dummy-variables-for-unordered-categories.html) is to convert them into _dummy_ or _indicator_ variables to make them numeric. These are binary values for each level of the factor. For example, our `origin` variable has values of `"EWR"`, `"JFK"`, and `"LGA"`. The standard dummy variable encoding, shown below, will create _two_ numeric columns of the data that are 1 when the originating airport is `"JFK"` or `"LGA"` and zero otherwise, respectively. 
 
@@ -335,13 +338,13 @@ For factors like `dest` and `origin`, [standard practice](https://bookdown.org/m
  </thead>
 <tbody>
   <tr>
-   <td style="text-align:left;"> EWR </td>
-   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:left;"> JFK </td>
+   <td style="text-align:right;"> 1 </td>
    <td style="text-align:right;"> 0 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> JFK </td>
-   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> EWR </td>
+   <td style="text-align:right;"> 0 </td>
    <td style="text-align:right;"> 0 </td>
   </tr>
   <tr>
@@ -360,21 +363,14 @@ But, unlike the standard model formula methods in R, a recipe **does not** autom
 flights_rec <- 
   recipe(arr_delay ~ ., data = train_data) %>% 
   update_role(flight, time_hour, new_role = "ID") %>% 
-  step_date(date, features = c("dow", "month")) %>% 
-  step_holiday(date, holidays = timeDate::listHolidays("US")) %>% 
-  step_rm(date) %>% 
-  step_dummy(all_nominal(), -all_outcomes())
+  step_date(date, features = c("dow", "month")) %>%               
+  step_holiday(date, 
+               holidays = timeDate::listHolidays("US"), 
+               keep_original_cols = FALSE) %>% 
+  step_dummy(all_nominal_predictors())
 ```
 
-Here, we did something different than before: instead of applying a step to an individual variable, we used [selectors](https://tidymodels.github.io/recipes/reference/selections.html) to apply this recipe step to several variables at once. 
-
-+ The first selector, `all_nominal()`, selects all variables that are either factors or characters. 
-
-+ The second selector, `-all_outcomes()` removes any outcome variables from this recipe step.
-
-With these two selectors together, our recipe step above translates to:
-
-> Create dummy variables for all of the factor or character columns _unless_ they are outcomes. 
+Here, we did something different than before: instead of applying a step to an individual variable, we used [selectors](https://recipes.tidymodels.org/reference/selections.html) to apply this recipe step to several variables at once, `all_nominal_predictors()`. The [selector functions](https://recipes.tidymodels.org/reference/selections.html) can be combined to select intersections of variables.
 
 At this stage in the recipe, this step selects the `origin`, `dest`, and `carrier` variables. It also includes two new variables, `date_dow` and `date_month`, that were created by the earlier `step_date()`. 
 
@@ -388,7 +384,7 @@ test_data %>%
   distinct(dest) %>% 
   anti_join(train_data)
 #> Joining, by = "dest"
-#> # A tibble: 1 x 1
+#> # A tibble: 1 × 1
 #>   dest 
 #>   <fct>
 #> 1 LEX
@@ -401,10 +397,11 @@ When the recipe is applied to the training set, a column is made for LEX because
 flights_rec <- 
   recipe(arr_delay ~ ., data = train_data) %>% 
   update_role(flight, time_hour, new_role = "ID") %>% 
-  step_date(date, features = c("dow", "month")) %>% 
-  step_holiday(date, holidays = timeDate::listHolidays("US")) %>% 
-  step_rm(date) %>% 
-  step_dummy(all_nominal(), -all_outcomes()) %>% 
+  step_date(date, features = c("dow", "month")) %>%               
+  step_holiday(date, 
+               holidays = timeDate::listHolidays("US"), 
+               keep_original_cols = FALSE) %>% 
+  step_dummy(all_nominal_predictors()) %>% 
   step_zv(all_predictors())
 ```
 
@@ -431,7 +428,7 @@ We will want to use our recipe across several steps as we train and test our mod
  
 1. **Apply the recipe to the test set**: We create the final predictor set on the test set. Nothing is recomputed and no information from the test set is used here; the dummy variable and zero-variance results from the training set are applied to the test set. 
  
-To simplify this process, we can use a _model workflow_, which pairs a model and recipe together. This is a straightforward approach because different recipes are often needed for different models, so when a model and recipe are bundled, it becomes easier to train and test _workflows_. We'll use the [workflows package](https://tidymodels.github.io/workflows/) from tidymodels to bundle our parsnip model (`lr_mod`) with our recipe (`flights_rec`).
+To simplify this process, we can use a _model workflow_, which pairs a model and recipe together. This is a straightforward approach because different recipes are often needed for different models, so when a model and recipe are bundled, it becomes easier to train and test _workflows_. We'll use the [workflows package](https://workflows.tidymodels.org/) from tidymodels to bundle our parsnip model (`lr_mod`) with our recipe (`flights_rec`).
 
 
 ```r
@@ -439,19 +436,19 @@ flights_wflow <-
   workflow() %>% 
   add_model(lr_mod) %>% 
   add_recipe(flights_rec)
+
 flights_wflow
 #> ══ Workflow ══════════════════════════════════════════════════════════
 #> Preprocessor: Recipe
 #> Model: logistic_reg()
 #> 
 #> ── Preprocessor ──────────────────────────────────────────────────────
-#> 5 Recipe Steps
+#> 4 Recipe Steps
 #> 
-#> ● step_date()
-#> ● step_holiday()
-#> ● step_rm()
-#> ● step_dummy()
-#> ● step_zv()
+#> • step_date()
+#> • step_holiday()
+#> • step_dummy()
+#> • step_zv()
 #> 
 #> ── Model ─────────────────────────────────────────────────────────────
 #> Logistic Regression Model Specification (classification)
@@ -468,21 +465,21 @@ flights_fit <-
   fit(data = train_data)
 ```
  
-This object has the finalized recipe and fitted model objects inside. You may want to extract the model or recipe objects from the workflow. To do this, you can use the helper functions `pull_workflow_fit()` and `pull_workflow_prepped_recipe()`. For example, here we pull the fitted model object then use the `broom::tidy()` function to get a tidy tibble of model coefficients: 
+This object has the finalized recipe and fitted model objects inside. You may want to extract the model or recipe objects from the workflow. To do this, you can use the helper functions `extract_fit_parsnip()` and `extract_recipe()`. For example, here we pull the fitted model object then use the `broom::tidy()` function to get a tidy tibble of model coefficients: 
 
 
 ```r
 flights_fit %>% 
-  pull_workflow_fit() %>% 
+  extract_fit_parsnip() %>% 
   tidy()
-#> # A tibble: 157 x 5
+#> # A tibble: 157 × 5
 #>   term                estimate std.error statistic  p.value
 #>   <chr>                  <dbl>     <dbl>     <dbl>    <dbl>
-#> 1 (Intercept)          3.91    2.73           1.43 1.51e- 1
-#> 2 dep_time            -0.00167 0.0000141   -118.   0.      
-#> 3 air_time            -0.0439  0.000561     -78.4  0.      
-#> 4 distance             0.00686 0.00150        4.57 4.84e- 6
-#> 5 date_USChristmasDay  1.12    0.173          6.49 8.45e-11
+#> 1 (Intercept)          7.28    2.73           2.67 7.64e- 3
+#> 2 dep_time            -0.00166 0.0000141   -118.   0       
+#> 3 air_time            -0.0440  0.000563     -78.2  0       
+#> 4 distance             0.00507 0.00150        3.38 7.32e- 4
+#> 5 date_USChristmasDay  1.33    0.177          7.49 6.93e-14
 #> # … with 152 more rows
 ```
 
@@ -503,7 +500,7 @@ The next step is to use the trained workflow (`flights_fit`) to predict with the
 
 ```r
 predict(flights_fit, test_data)
-#> # A tibble: 81,454 x 1
+#> # A tibble: 81,455 × 1
 #>   .pred_class
 #>   <fct>      
 #> 1 on_time    
@@ -511,39 +508,39 @@ predict(flights_fit, test_data)
 #> 3 on_time    
 #> 4 on_time    
 #> 5 on_time    
-#> # … with 81,449 more rows
+#> # … with 81,450 more rows
 ```
 
-Because our outcome variable here is a factor, the output from `predict()` returns the predicted class: `late` versus `on_time`. But, let's say we want the predicted class probabilities for each flight instead. To return those, we can specify `type = "prob"` when we use `predict()`. We'll also bind the output with some variables from the test data and save them together:
+Because our outcome variable here is a factor, the output from `predict()` returns the predicted class: `late` versus `on_time`. But, let's say we want the predicted class probabilities for each flight instead. To return those, we can specify `type = "prob"` when we use `predict()` or use `augment()` with the model plus test data to save them together:
 
 
 ```r
-flights_pred <- 
-  predict(flights_fit, test_data, type = "prob") %>% 
-  bind_cols(test_data %>% select(arr_delay, time_hour, flight)) 
+flights_aug <- 
+  augment(flights_fit, test_data)
 
 # The data look like: 
-flights_pred
-#> # A tibble: 81,454 x 5
-#>   .pred_late .pred_on_time arr_delay time_hour           flight
-#>        <dbl>         <dbl> <fct>     <dttm>               <int>
-#> 1     0.0565         0.944 on_time   2013-01-01 05:00:00   1714
-#> 2     0.0264         0.974 on_time   2013-01-01 06:00:00     79
-#> 3     0.0481         0.952 on_time   2013-01-01 06:00:00    301
-#> 4     0.0325         0.967 on_time   2013-01-01 06:00:00     49
-#> 5     0.0711         0.929 on_time   2013-01-01 06:00:00   1187
-#> # … with 81,449 more rows
+flights_aug %>%
+  select(arr_delay, time_hour, flight, .pred_class, .pred_on_time)
+#> # A tibble: 81,455 × 5
+#>   arr_delay time_hour           flight .pred_class .pred_on_time
+#>   <fct>     <dttm>               <int> <fct>               <dbl>
+#> 1 on_time   2013-01-01 05:00:00   1545 on_time             0.945
+#> 2 on_time   2013-01-01 05:00:00   1714 on_time             0.949
+#> 3 on_time   2013-01-01 06:00:00    507 on_time             0.964
+#> 4 on_time   2013-01-01 06:00:00   5708 on_time             0.961
+#> 5 on_time   2013-01-01 06:00:00     71 on_time             0.962
+#> # … with 81,450 more rows
 ```
 
-Now that we have a tibble with our predicted class probabilities, how will we evaluate the performance of our workflow? We can see from these first few rows that our model predicted these 5 on time flights correctly because the values of `.pred_on_time` are *p* > .50. But we also know that we have 81,454 rows total to predict. We would like to calculate a metric that tells how well our model predicted late arrivals, compared to the true status of our outcome variable, `arr_delay`.
+Now that we have a tibble with our predicted class probabilities, how will we evaluate the performance of our workflow? We can see from these first few rows that our model predicted these 5 on time flights correctly because the values of `.pred_on_time` are *p* > .50. But we also know that we have 81,455 rows total to predict. We would like to calculate a metric that tells how well our model predicted late arrivals, compared to the true status of our outcome variable, `arr_delay`.
 
-Let's use the area under the [ROC curve](https://bookdown.org/max/FES/measuring-performance.html#class-metrics) as our metric, computed using `roc_curve()` and `roc_auc()` from the [yardstick package](https://tidymodels.github.io/yardstick/). 
+Let's use the area under the [ROC curve](https://bookdown.org/max/FES/measuring-performance.html#class-metrics) as our metric, computed using `roc_curve()` and `roc_auc()` from the [yardstick package](https://yardstick.tidymodels.org/). 
 
 To generate a ROC curve, we need the predicted class probabilities for `late` and `on_time`, which we just calculated in the code chunk above. We can create the ROC curve with these values, using `roc_curve()` and then piping to the `autoplot()` method: 
 
 
 ```r
-flights_pred %>% 
+flights_aug %>% 
   roc_curve(truth = arr_delay, .pred_late) %>% 
   autoplot()
 ```
@@ -554,15 +551,15 @@ Similarly, `roc_auc()` estimates the area under the curve:
 
 
 ```r
-flights_pred %>% 
+flights_aug %>% 
   roc_auc(truth = arr_delay, .pred_late)
-#> # A tibble: 1 x 3
+#> # A tibble: 1 × 3
 #>   .metric .estimator .estimate
 #>   <chr>   <chr>          <dbl>
-#> 1 roc_auc binary         0.765
+#> 1 roc_auc binary         0.764
 ```
 
-Not too bad! We leave it to the reader to test out this workflow [*without*](https://tidymodels.github.io/workflows/reference/add_formula.html) this recipe. You can use `workflows::add_formula(arr_delay ~ .)` instead of `add_recipe()` (remember to remove the identification variables first!), and see whether our recipe improved our model's ability to predict late arrivals.
+Not too bad! We leave it to the reader to test out this workflow [*without*](https://workflows.tidymodels.org/reference/add_formula.html) this recipe. You can use `workflows::add_formula(arr_delay ~ .)` instead of `add_recipe()` (remember to remove the identification variables first!), and see whether our recipe improved our model's ability to predict late arrivals.
 
 
 
@@ -573,35 +570,35 @@ Not too bad! We leave it to the reader to test out this workflow [*without*](htt
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 4.0.3 (2020-10-10)
-#>  os       macOS Mojave 10.14.6        
-#>  system   x86_64, darwin17.0          
+#>  version  R version 4.1.0 (2021-05-18)
+#>  os       macOS Big Sur 11.5.2        
+#>  system   aarch64, darwin20           
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-12-08                  
+#>  date     2021-08-16                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package      * version date       lib source        
-#>  broom        * 0.7.2   2020-10-20 [1] CRAN (R 4.0.2)
-#>  dials        * 0.0.9   2020-09-16 [1] CRAN (R 4.0.2)
-#>  dplyr        * 1.0.2   2020-08-18 [1] CRAN (R 4.0.2)
-#>  ggplot2      * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
-#>  infer        * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
-#>  nycflights13 * 1.0.1   2019-09-16 [1] CRAN (R 4.0.0)
-#>  parsnip      * 0.1.4   2020-10-27 [1] CRAN (R 4.0.2)
-#>  purrr        * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
-#>  recipes      * 0.1.15  2020-11-11 [1] CRAN (R 4.0.2)
-#>  rlang          0.4.9   2020-11-26 [1] CRAN (R 4.0.2)
-#>  rsample      * 0.0.8   2020-09-23 [1] CRAN (R 4.0.2)
-#>  skimr        * 2.1.2   2020-07-06 [1] CRAN (R 4.0.2)
-#>  tibble       * 3.0.4   2020-10-12 [1] CRAN (R 4.0.2)
-#>  tidymodels   * 0.1.2   2020-11-22 [1] CRAN (R 4.0.2)
-#>  tune         * 0.1.2   2020-11-17 [1] CRAN (R 4.0.3)
-#>  workflows    * 0.2.1   2020-10-08 [1] CRAN (R 4.0.2)
-#>  yardstick    * 0.0.7   2020-07-13 [1] CRAN (R 4.0.2)
+#>  broom        * 0.7.9   2021-07-27 [1] CRAN (R 4.1.0)
+#>  dials        * 0.0.9   2020-09-16 [1] CRAN (R 4.1.0)
+#>  dplyr        * 1.0.7   2021-06-18 [1] CRAN (R 4.1.0)
+#>  ggplot2      * 3.3.5   2021-06-25 [1] CRAN (R 4.1.0)
+#>  infer        * 0.5.4   2021-01-13 [1] CRAN (R 4.1.0)
+#>  nycflights13 * 1.0.2   2021-04-12 [1] CRAN (R 4.1.0)
+#>  parsnip      * 0.1.7   2021-07-21 [1] CRAN (R 4.1.0)
+#>  purrr        * 0.3.4   2020-04-17 [1] CRAN (R 4.1.0)
+#>  recipes      * 0.1.16  2021-04-16 [1] CRAN (R 4.1.0)
+#>  rlang          0.4.11  2021-04-30 [1] CRAN (R 4.1.0)
+#>  rsample      * 0.1.0   2021-05-08 [1] CRAN (R 4.1.1)
+#>  skimr        * 2.1.3   2021-03-07 [1] CRAN (R 4.1.0)
+#>  tibble       * 3.1.3   2021-07-23 [1] CRAN (R 4.1.0)
+#>  tidymodels   * 0.1.3   2021-04-19 [1] CRAN (R 4.1.0)
+#>  tune         * 0.1.6   2021-07-21 [1] CRAN (R 4.1.0)
+#>  workflows    * 0.2.3   2021-07-16 [1] CRAN (R 4.1.0)
+#>  yardstick    * 0.0.8   2021-03-28 [1] CRAN (R 4.1.0)
 #> 
-#> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
+#> [1] /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/library
 ```
