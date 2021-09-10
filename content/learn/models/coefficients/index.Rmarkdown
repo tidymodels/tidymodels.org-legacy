@@ -32,7 +32,7 @@ $$\hat{y} = \hat{\beta}_0 + \hat{\beta}_1x_1 + \ldots + \hat{\beta}_px_p$$
 
 The $\beta$ values are the coefficients and the $x_j$ are model predictors (a.k.a. features). 
 
-For the example, we'll use the [Chicago train data]() where we try to predict the ridership at the Clark and Lake station (column name: `ridership`) with the previous ridership data 14 days prior from two weeks earlier at three stations. 
+For the example, we'll use the [Chicago train data](https://bookdown.org/max/FES/chicago-intro.html) where we try to predict the ridership at the Clark and Lake station (column name: `ridership`) with the previous ridership data 14 days prior at three of the stations. 
 
 The data are in the modeldata package:  
 
@@ -187,7 +187,7 @@ rec <-
   step_normalize(all_numeric_predictors())
 ```
 
-These two objects are combined into a model workflow and is also fit:
+These two objects are combined into a model workflow and then the model is fit to the data:
 
 ```{r glmnet-wflow}
 glmnet_wflow <- 
@@ -233,9 +233,12 @@ For any another (single) penalty, we can use an additional argument:
 tidy(glmnet_fit, penalty = 5.5620)  # A value shown above
 ```
 
+The reason for two `tidy()` methods is that, with tidymodels, the focus is on a specific penalty value. 
+
+
 ### Tuning a glmnet model
 
-If we know proper values for penalty and mixture, we can use the `fit_resamples()` function as we did before. Otherwise, we can tune those parameters with the tidymodels `tune_*()` functions. 
+If we know acceptable values for penalty and mixture, we can use the `fit_resamples()` function as we did before. Otherwise, we can tune those parameters with the tidymodels `tune_*()` functions. 
 
 We'll tune our glmnet model over both parameters with this grid: 
 

@@ -15,7 +15,7 @@ description: |
 
 There are many types of statistical models. Some of them have coefficients (a.k.a. weights) for each term in the model. Good examples of these models are linear or logistic regression but more complex models (e.g. neural networks, MARS) can also have model coefficients. There is always interest in examining the estimated coefficients. 
 
-In this article describes how to retrieve the estimated coefficients from models when fit using tidymodels. 
+This article describes how to retrieve the estimated coefficients from models when fit using tidymodels. 
 
 To use the code in this article, you will need to install the following packages: glmnet and tidymodels. This requires parsnip version 0.1.7 and workflows version 0.2.3 or greater. 
 
@@ -27,7 +27,7 @@ Let's start with a simple linear regression model:
 
 The `\(\beta\)` values are the coefficients and the `\(x_j\)` are model predictors (a.k.a. features). 
 
-For the example, we'll use the [Chicago train data]() where we try to predict the ridership at the Clark and Lake station (column name: `ridership`) with the previous ridership data 14 days prior from two weeks earlier at three stations. 
+For the example, we'll use the [Chicago train data](https://bookdown.org/max/FES/chicago-intro.html) where we try to predict the ridership at the Clark and Lake station (column name: `ridership`) with the previous ridership data 14 days prior at three of the stations. 
 
 The data are in the modeldata package:  
 
@@ -96,7 +96,7 @@ With resampling, we fit the same model to the different versions of the data set
 
 `fit_resamples()` does not automatically save the model objects for each resample since these can be quite large. However, we can pass a function to `fit_resamples()` that can save the model object or any other aspect of the fit. 
 
-The function takes a single argument that represents the fitted [workflow object](https://www.tmwr.org/workflows.html) (even if you don't give `fit_resamples()` a workflow). We can extract the model fit. 
+The function takes a single argument that represents the fitted [workflow object](https://www.tmwr.org/workflows.html) (even if you don't give `fit_resamples()` a workflow).
 
 We can extract the model fit. There are two "levels" of model objects that are available: 
 
@@ -138,7 +138,7 @@ lm_res
 #> 5 <split [5698/2088]> Bootstrap5 <tibble [2 × 4]> <tibble [0 × 1]> <tibble [1 ×…
 ```
 
-Note that there is a `.extracts` column in the results. This object contains the results of our `get_lm_coefs()` function. The structure of the elements of this column are a little complex. Let's look at the first element (which corresponds to the first resample): 
+Note that there is a `.extracts` column in the results. This object contains the results of our `get_lm_coefs()` function. The structure of the elements of this column is a little complex. Let's look at the first element (which corresponds to the first resample): 
 
 
 
@@ -164,7 +164,7 @@ lm_res$.extracts[[1]]$.extracts[[1]]
 #> 4 Harlem        -0.637    0.163      -3.92 9.01e-  5
 ```
 
-These nested columns can flattened via the purrr `unnest()` function: 
+These nested columns can be flattened via the purrr `unnest()` function: 
 
 
 ```r
@@ -181,7 +181,7 @@ lm_res %>%
 #> 5 Bootstrap5 <tibble [4 × 5]> Preprocessor1_Model1
 ```
 
-We still have an column of nested tibbles, so we can run the same command again to get the data into a more useful format: 
+We still have a column of nested tibbles, so we can run the same command again to get the data into a more useful format: 
 
 
 ```r
@@ -238,7 +238,7 @@ Looking at the code for unnesting the results, the double-nesting structure may 
 
 ## More complex: a glmnet model
 
-The glmnet model can fit the same linear regression model structure shown above. It uses regularization (a.k.a penalization) to estimate the model parameters. This has the benefit of shrinking the coefficients towards zero. This has singificant benefits for situations where there are strong correlations between predictors or if some feature selection is required. Both of these cases is true for our data set. 
+The glmnet model can fit the same linear regression model structure shown above. It uses regularization (a.k.a penalization) to estimate the model parameters. This has the benefit of shrinking the coefficients towards zero. This has singificant benefits for situations where there are strong correlations between predictors or if some feature selection is required. Both of these cases are true for our data set. 
 
 There are two types of penalization that this model uses: 
 
@@ -257,7 +257,7 @@ glmnet_spec <-
 
 has a penalty that is 95% Lasso and 5% weight decay. The total amount of these two penalties is 0.1 (which is fairly high). 
 
-Due to to how penalization works, the model predictors should be on the same scale. The ridership at our three stations are very different so we will center and scale them using a recipe: 
+Due to how penalization works, the model predictors should be on the same scale. The ridership at our three stations are very different so we will center and scale them using a recipe: 
 
 
 ```r
@@ -266,7 +266,7 @@ rec <-
   step_normalize(all_numeric_predictors())
 ```
 
-These two objects are combined into a model workflow and is also fit:
+These two objects are combined into a model workflow and then the model is fit to the data:
 
 
 ```r
@@ -344,12 +344,13 @@ glmnet_fit
 
 In this output, the term `lambda` is used to represent the penalty. 
 
-Note that the output shows many values of the penalty despite our specification of `penalty = 0.1`. It turns out that this model fits a continuum of penalty values.  Even though our interest is in a value of 0.1, we can get the model coefficient for many associated values of the penalty form the same model object. 
+Note that the output shows many values of the penalty despite our specification of `penalty = 0.1`. It turns out that this model fits a continuum of penalty values.  Even though our interest is in a value of 0.1, we can get the model coefficient for many associated values of the penalty from the same model object. 
 
 Let's look at two different approaches to obtaining the coefficients. Both will use the `tidy()` method. One will tidy the glmnet object and the other will tidy tidymodels objects. 
+
 ### Using glmnet penalty values
 
-This glmnet fit contains multiple penalty values for each fit and these depends on the data set; changing the data (or the mixture amount) often produces a different set of values. For this data set, there are 55 penalties available. To get the set of penalties produced for this data set, we can extract the engine fit and tidy: 
+This glmnet fit contains multiple penalty values for each fit and these depend on the data set; changing the data (or the mixture amount) often produces a different set of values. For this data set, there are 55 penalties available. To get the set of penalties produced for this data set, we can extract the engine fit and tidy: 
 
 
 ```r
@@ -378,7 +379,7 @@ This works well but, it turns out that our penalty value (0.1) is not in the lis
 
 ### Using specific penalty values
 
-If we run the `tidy()` method on the workflow or parsnip object, a different function used that returns the coefficients for the penalty value that we specified: 
+If we run the `tidy()` method on the workflow or parsnip object, a different function is used that returns the coefficients for the penalty value that we specified: 
 
 
 ```r
@@ -406,9 +407,12 @@ tidy(glmnet_fit, penalty = 5.5620)  # A value shown above
 #> 4 Harlem         0        5.56
 ```
 
+The reason for two `tidy()` methods is that, with tidymodels, the focus is on a specific penalty value. 
+
+
 ### Tuning a glmnet model
 
-If we know proper values for penalty and mixture, we can use the `fit_resamples()` function as we did before. Otherwise, we can tune those parameters with the tidymodels `tune_*()` functions. 
+If we know acceptable values for penalty and mixture, we can use the `fit_resamples()` function as we did before. Otherwise, we can tune those parameters with the tidymodels `tune_*()` functions. 
 
 We'll tune our glmnet model over both parameters with this grid: 
 
@@ -420,7 +424,7 @@ grid <- crossing(penalty = pen_vals, mixture = c(0.1, 1.0))
 
 Here is where some glmnet-related complexity comes in: we know that each resample and each value of `mixture` will probably produce a different set of penalty values contained in the model object. _How can we look at the coefficients at the specific penalty values that we are using to tune?_
 
-The approach that we suggest is to use the special `path_values` option for glmnet. The details are described in the [technical documentation about glmnet and tidymodels](https://parsnip.tidymodels.org/reference/glmnet-details.html#arguments) but this parameter will assign the collection penalty values used by each glmnet fit (irregardless of the data or value of mixture). 
+The approach that we suggest is to use the special `path_values` option for glmnet. The details are described in the [technical documentation about glmnet and tidymodels](https://parsnip.tidymodels.org/reference/glmnet-details.html#arguments) but this parameter will assign the collection of penalty values used by each glmnet fit (regardless of the data or value of mixture). 
 
 We can pass these as an engine argument and then update our previous workflow object:
 
@@ -435,7 +439,7 @@ glmnet_wflow <-
   update_model(glmnet_tune_spec)
 ```
 
-Now we will use a similar extraction function. We add additional argument to retain coefficients that are coerced to zero by the lasso penalty: 
+Now we will use a similar extraction function. We add an additional argument to retain coefficients that are shrunk to zero by the lasso penalty: 
 
 
 ```r
@@ -467,7 +471,7 @@ glmnet_res
 #> 5 <split [5698/2088]> Bootstrap5 <tibble [40 × 6]> <tibble [0 × 1]> <tibble [20…
 ```
 
-As noted before, the elements of the main `.extracts` column has an embedded list column with the results of `get_glmnet_coefs()`:  
+As noted before, the elements of the main `.extracts` column have an embedded list column with the results of `get_glmnet_coefs()`:  
 
 
 ```r
