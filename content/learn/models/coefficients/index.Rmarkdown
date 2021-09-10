@@ -67,7 +67,7 @@ We'll use this function in subsequent sections.
 
 ### Resampled or tuned models
 
-tidymodels emphasizes the use of resampling methods to help evaluated and characterize how well the model works. While time series resampling methods are appropriate for these data, we can also use the [bootstrap](https://www.tmwr.org/resampling.html#bootstrap) to resample the data. This is a standard resampling approach when evaluate the uncertainty in statistical estimates.  
+tidymodels emphasizes the use of resampling methods to help evaluated and characterize how well the model works. While time series resampling methods are appropriate for these data, we can also use the [bootstrap](https://www.tmwr.org/resampling.html#bootstrap) to resample the data. This is a standard resampling approach when evaluating the uncertainty in statistical estimates.  
 
 We'll use five bootstrap resamples of the data to simplify the plots and output (normally, we use a large number of resamples).
 
@@ -161,7 +161,7 @@ Looking at the code for unnesting the results, the double-nesting structure may 
 
 ## More complex: a glmnet model
 
-The glmnet model can fit the same linear regression model structure shown above. It uses regularization (a.k.a penalization) to estimate the model parameters. This has the benefit of shrinking the coefficients towards zero. This has singificant benefits for situations where there are strong correlations between predictors or if some feature selection is required. Both of these cases are true for our data set. 
+The glmnet model can fit the same linear regression model structure shown above. It uses regularization (a.k.a penalization) to estimate the model parameters. This has the benefit of shrinking the coefficients towards zero. This has significant benefits for situations where there are strong correlations between predictors or if some feature selection is required. Both of these cases are true for our data set. 
 
 There are two types of penalization that this model uses: 
 
