@@ -3,7 +3,7 @@ title: "Multivariate analysis using partial least squares"
 tags: [recipes,rsample]
 categories: [pre-processing]
 type: learn-subsection
-weight: 5
+weight: 6
 description: | 
   Build and fit a predictive model with more than one outcome.
 ---
@@ -163,7 +163,7 @@ The plot below shows that, if the protein measurement is important, you might re
 
 ```r
 ggplot(variance_data, aes(x = components, y = proportion, col = source)) + 
-  geom_line() + 
+  geom_line(alpha = 0.5, size = 1.2) + 
   geom_point() 
 ```
 
@@ -176,36 +176,36 @@ ggplot(variance_data, aes(x = components, y = proportion, col = source)) +
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 4.0.3 (2020-10-10)
-#>  os       macOS Mojave 10.14.6        
-#>  system   x86_64, darwin17.0          
+#>  version  R version 4.1.1 (2021-08-10)
+#>  os       macOS Big Sur 11.5.2        
+#>  system   aarch64, darwin20           
 #>  ui       X11                         
 #>  language (EN)                        
 #>  collate  en_US.UTF-8                 
 #>  ctype    en_US.UTF-8                 
 #>  tz       America/Denver              
-#>  date     2020-12-08                  
+#>  date     2021-09-13                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
-#>  broom      * 0.7.2   2020-10-20 [1] CRAN (R 4.0.2)
-#>  dials      * 0.0.9   2020-09-16 [1] CRAN (R 4.0.2)
-#>  dplyr      * 1.0.2   2020-08-18 [1] CRAN (R 4.0.2)
-#>  ggplot2    * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
-#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
-#>  modeldata  * 0.1.0   2020-10-22 [1] CRAN (R 4.0.2)
-#>  parsnip    * 0.1.4   2020-10-27 [1] CRAN (R 4.0.2)
-#>  pls        * 2.7-3   2020-08-07 [1] CRAN (R 4.0.2)
-#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
-#>  recipes    * 0.1.15  2020-11-11 [1] CRAN (R 4.0.2)
-#>  rlang        0.4.9   2020-11-26 [1] CRAN (R 4.0.2)
-#>  rsample    * 0.0.8   2020-09-23 [1] CRAN (R 4.0.2)
-#>  tibble     * 3.0.4   2020-10-12 [1] CRAN (R 4.0.2)
-#>  tidymodels * 0.1.2   2020-11-22 [1] CRAN (R 4.0.2)
-#>  tune       * 0.1.2   2020-11-17 [1] CRAN (R 4.0.3)
-#>  workflows  * 0.2.1   2020-10-08 [1] CRAN (R 4.0.2)
-#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.2)
+#>  broom      * 0.7.9   2021-07-27 [1] CRAN (R 4.1.0)
+#>  dials      * 0.0.10  2021-09-10 [1] CRAN (R 4.1.1)
+#>  dplyr      * 1.0.7   2021-06-18 [1] CRAN (R 4.1.0)
+#>  ggplot2    * 3.3.5   2021-06-25 [1] CRAN (R 4.1.0)
+#>  infer      * 1.0.0   2021-08-13 [1] CRAN (R 4.1.1)
+#>  modeldata  * 0.1.1   2021-07-14 [1] CRAN (R 4.1.0)
+#>  parsnip    * 0.1.7   2021-07-21 [1] CRAN (R 4.1.0)
+#>  pls        * 2.8-0   2021-09-03 [1] CRAN (R 4.1.1)
+#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.1.0)
+#>  recipes    * 0.1.16  2021-04-16 [1] CRAN (R 4.1.0)
+#>  rlang        0.4.11  2021-04-30 [1] CRAN (R 4.1.0)
+#>  rsample    * 0.1.0   2021-05-08 [1] CRAN (R 4.1.1)
+#>  tibble     * 3.1.4   2021-08-25 [1] CRAN (R 4.1.1)
+#>  tidymodels * 0.1.3   2021-04-19 [1] CRAN (R 4.1.0)
+#>  tune       * 0.1.6   2021-07-21 [1] CRAN (R 4.1.0)
+#>  workflows  * 0.2.3   2021-07-16 [1] CRAN (R 4.1.0)
+#>  yardstick  * 0.0.8   2021-03-28 [1] CRAN (R 4.1.0)
 #> 
-#> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
+#> [1] /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/library
 ```
  
