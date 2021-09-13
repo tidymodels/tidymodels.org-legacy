@@ -1,33 +1,30 @@
 ---
 title: "Working with model coefficients"
 tags: [parsnip,tune,broom,workflows]
-categories: []
+categories: [model fitting]
 type: learn-subsection
-weight: 6
+weight: 5
 description: | 
-  Create models that use coefficients, extract these values from fitted models, 
-  and plot them.
+  Create models that use coefficients, extract them from fitted models, and visualize them.
 ---
 
 
 
 ## Introduction 
 
-There are many types of statistical models. Some of them have coefficients (a.k.a. weights) for each term in the model. Good examples of these models are linear or logistic regression but more complex models (e.g. neural networks, MARS) can also have model coefficients. There is always interest in examining the estimated coefficients. 
+There are many types of statistical models with diverse kinds of structure. Some models have coefficients (a.k.a. weights) for each term in the model. Familiar examples of such models are linear or logistic regression, but more complex models (e.g. neural networks, MARS) can also have model coefficients. When we work with models that use weights or coefficients, we often want to examine the estimated coefficients. 
 
-This article describes how to retrieve the estimated coefficients from models when fit using tidymodels. 
+This article describes how to retrieve the estimated coefficients from models fit using tidymodels. To use the code in this article, you will need to install the following packages: glmnet and tidymodels.
 
-To use the code in this article, you will need to install the following packages: glmnet and tidymodels. This requires parsnip version 0.1.7 and workflows version 0.2.3 or greater. 
+## Linear regression
 
-## A simple linear regression
-
-Let's start with a simple linear regression model: 
+Let's start with a linear regression model: 
 
 `$$\hat{y} = \hat{\beta}_0 + \hat{\beta}_1x_1 + \ldots + \hat{\beta}_px_p$$` 
 
-The `\(\beta\)` values are the coefficients and the `\(x_j\)` are model predictors (a.k.a. features). 
+The `\(\beta\)` values are the coefficients and the `\(x_j\)` are model predictors, or features. 
 
-For the example, we'll use the [Chicago train data](https://bookdown.org/max/FES/chicago-intro.html) where we try to predict the ridership at the Clark and Lake station (column name: `ridership`) with the previous ridership data 14 days prior at three of the stations. 
+Let's use the [Chicago train data](https://bookdown.org/max/FES/chicago-intro.html) where we predict the ridership at the Clark and Lake station (column name: `ridership`) with the previous ridership data 14 days prior at three of the stations. 
 
 The data are in the modeldata package:  
 
@@ -44,7 +41,11 @@ Chicago <- Chicago %>% select(ridership, Clark_Lake, Austin, Harlem)
 
 ### A single model
 
-Let's start by looking at a single parsnip model object. We'll create a model specification using `linear_reg()`. The default engine is `"lm"` so no call to `set_engine()` is required. The `fit()` function estimates the model coefficients (given a formula and data set). 
+Let's start by fitting only a single parsnip model object. We'll create a model specification using `linear_reg()`. 
+
+{{% note %}} The default engine is `"lm"` so no call to `set_engine()` is required. {{%/ note %}}
+
+The `fit()` function estimates the model coefficients, given a formula and data set. 
 
 
 
@@ -54,7 +55,7 @@ lm_fit <- fit(lm_spec, ridership ~ ., data = Chicago)
 lm_fit
 #> parsnip model object
 #> 
-#> Fit time:  5ms 
+#> Fit time:  3ms 
 #> 
 #> Call:
 #> stats::lm(formula = ridership ~ ., data = data)
@@ -82,9 +83,9 @@ We'll use this function in subsequent sections.
 
 ### Resampled or tuned models
 
-tidymodels emphasizes the use of resampling methods to help evaluated and characterize how well the model works. While time series resampling methods are appropriate for these data, we can also use the [bootstrap](https://www.tmwr.org/resampling.html#bootstrap) to resample the data. This is a standard resampling approach when evaluate the uncertainty in statistical estimates.  
+The tidymodels framework emphasizes the use of resampling methods to evaluate and characterize how well a model works. While time series resampling methods are appropriate for these data, we can also use the [bootstrap](https://www.tmwr.org/resampling.html#bootstrap) to resample the data. This is a standard resampling approach when evaluating the uncertainty in statistical estimates.  
 
-We'll use five bootstrap resamples of the data to simplify the plots and output (normally, we use a large number of resamples).
+We'll use five bootstrap resamples of the data to simplify the plots and output (normally, we would use a larger number of resamples for more reliable estimates).
 
 
 ```r
@@ -92,19 +93,19 @@ set.seed(123)
 bt <- bootstraps(Chicago, times = 5)
 ```
 
-With resampling, we fit the same model to the different versions of the data set produced by resampling. The tidymodels function [`fit_resamples()`](https://www.tmwr.org/resampling.html#resampling-performance) is the recommended approach for doing so. 
+With resampling, we fit the same model to the different simulated versions of the data set produced by resampling. The tidymodels function [`fit_resamples()`](https://www.tmwr.org/resampling.html#resampling-performance) is the recommended approach for doing so. 
 
-`fit_resamples()` does not automatically save the model objects for each resample since these can be quite large. However, we can pass a function to `fit_resamples()` that can save the model object or any other aspect of the fit. 
+{{% warning %}} The `fit_resamples()` function does not automatically save the model objects for each resample since these can be quite large and its main purpose is estimating performance. However, we can pass a function to `fit_resamples()` that _can_ save the model object or any other aspect of the fit. {{%/ warning %}}
 
-The function takes a single argument that represents the fitted [workflow object](https://www.tmwr.org/workflows.html) (even if you don't give `fit_resamples()` a workflow).
+This function takes a single argument that represents the fitted [workflow object](https://www.tmwr.org/workflows.html) (even if you don't give `fit_resamples()` a workflow).
 
-We can extract the model fit. There are two "levels" of model objects that are available: 
+From this, we can extract the model fit. There are two "levels" of model objects that are available: 
 
 * The parsnip model object, which wraps the underlying model object. We retrieve this using the `extract_fit_parsnip()` function. 
 
 * The underlying model object (a.k.a. the engine fit) via the `extract_fit_engine()`. 
 
-We'll use the latter approach and then tidy the object as we did previously. Finally, we add this to the control function so that it can be used. 
+We'll use the latter option and then tidy this model object as we did in the previous section. Let's add this to the control function so that we can re-use it. 
 
 
 ```r
@@ -112,13 +113,13 @@ get_lm_coefs <- function(x) {
   x %>% 
     # get the lm model object
     extract_fit_engine() %>% 
-    # put into a good format
+    # transform its format
     tidy()
 }
 tidy_ctrl <- control_grid(extract = get_lm_coefs)
 ```
 
-This function is then passed to `fit_resamples()`:
+This argument is then passed to `fit_resamples()`:
 
 
 ```r
@@ -138,7 +139,7 @@ lm_res
 #> 5 <split [5698/2088]> Bootstrap5 <tibble [2 × 4]> <tibble [0 × 1]> <tibble [1 ×…
 ```
 
-Note that there is a `.extracts` column in the results. This object contains the results of our `get_lm_coefs()` function. The structure of the elements of this column is a little complex. Let's look at the first element (which corresponds to the first resample): 
+Note that there is a `.extracts` column in our resampling results. This object contains the output of our `get_lm_coefs()` function for each resample. The structure of the elements of this column is a little complex. Let's start by looking at the first element (which corresponds to the first resample): 
 
 
 
@@ -232,21 +233,21 @@ lm_coefs %>%
 
 <img src="figs/lm-plot-1.svg" width="672" />
 
-There seems to be a lot of uncertainty in the coefficient for the Austin station data. 
+There seems to be a lot of uncertainty in the coefficient for the Austin station data, but less for the other two. 
 
-Looking at the code for unnesting the results, the double-nesting structure may seem excessive. However, the extraction functionality is broad and simpler structures would prevent some use cases. 
+Looking at the code for unnesting the results, you may find the double-nesting structure excessive or cumbersome. However, the extraction functionality is flexible, and a simpler structure would prevent many use cases. 
 
 ## More complex: a glmnet model
 
-The glmnet model can fit the same linear regression model structure shown above. It uses regularization (a.k.a penalization) to estimate the model parameters. This has the benefit of shrinking the coefficients towards zero. This has singificant benefits for situations where there are strong correlations between predictors or if some feature selection is required. Both of these cases are true for our data set. 
+The glmnet model can fit the same linear regression model structure shown above. It uses regularization (a.k.a penalization) to estimate the model parameters. This has the benefit of shrinking the coefficients towards zero, important in situations where there are strong correlations between predictors or if some feature selection is required. Both of these cases are true for our Chicago train data set. 
 
 There are two types of penalization that this model uses: 
 
-* Lasso (a.k.a. `\(L_1\)`) penalties can shrink the model terms to the point that they are absolute zero (i.e. their effect is removed from the model). 
+* Lasso (a.k.a. `\(L_1\)`) penalties can shrink the model terms so much that they are absolute zero (i.e. their effect is entirely removed from the model). 
 
 * Weight decay (a.k.a ridge regression or `\(L_2\)`) uses a different type of penalty that is most useful for highly correlated predictors. 
 
-The glmnet model has two primary tuning parameters: the total amount of penalization and the mixture of the two penalty types. For example, this specification:
+The glmnet model has two primary tuning parameters, the total amount of penalization and the mixture of the two penalty types. For example, this specification:
 
 
 ```r
@@ -255,36 +256,27 @@ glmnet_spec <-
   set_engine("glmnet")
 ```
 
-has a penalty that is 95% Lasso and 5% weight decay. The total amount of these two penalties is 0.1 (which is fairly high). 
+has a penalty that is 95% lasso and 5% weight decay. The total amount of these two penalties is 0.1 (which is fairly high). 
 
-Due to how penalization works, the model predictors should be on the same scale. The ridership at our three stations are very different so we will center and scale them using a recipe: 
+{{% note %}} Models with regularization require that predictors are all on the same scale. The ridership at our three stations are very different, but glmnet [automatically centers and scales the data](https://parsnip.tidymodels.org/reference/details_linear_reg_glmnet.html). You can use recipes to [center and scale your data yourself](https://recipes.tidymodels.org/reference/step_normalize.html). {{%/ note %}}
 
-
-```r
-rec <- 
-  recipe(ridership ~ ., data = Chicago) %>% 
-  step_normalize(all_numeric_predictors())
-```
-
-These two objects are combined into a model workflow and then the model is fit to the data:
+Let's combine the model specification with a formula in a model `workflow()` and then fit the model to the data:
 
 
 ```r
 glmnet_wflow <- 
   workflow() %>% 
   add_model(glmnet_spec) %>% 
-  add_recipe(rec)
+  add_formula(ridership ~ .)
 
 glmnet_fit <- fit(glmnet_wflow, Chicago)
 glmnet_fit
 #> ══ Workflow [trained] ════════════════════════════════════════════════
-#> Preprocessor: Recipe
+#> Preprocessor: Formula
 #> Model: linear_reg()
 #> 
 #> ── Preprocessor ──────────────────────────────────────────────────────
-#> 1 Recipe Step
-#> 
-#> • step_normalize()
+#> ridership ~ .
 #> 
 #> ── Model ─────────────────────────────────────────────────────────────
 #> 
@@ -344,13 +336,13 @@ glmnet_fit
 
 In this output, the term `lambda` is used to represent the penalty. 
 
-Note that the output shows many values of the penalty despite our specification of `penalty = 0.1`. It turns out that this model fits a continuum of penalty values.  Even though our interest is in a value of 0.1, we can get the model coefficient for many associated values of the penalty from the same model object. 
+Note that the output shows many values of the penalty despite our specification of `penalty = 0.1`. It turns out that this model fits a "path" of penalty values.  Even though we are interested in a value of 0.1, we can get the model coefficients for many associated values of the penalty from the same model object. 
 
-Let's look at two different approaches to obtaining the coefficients. Both will use the `tidy()` method. One will tidy the glmnet object and the other will tidy tidymodels objects. 
+Let's look at two different approaches to obtaining the coefficients. Both will use the `tidy()` method. One will tidy a glmnet object and the other will tidy a tidymodels object. 
 
 ### Using glmnet penalty values
 
-This glmnet fit contains multiple penalty values for each fit and these depend on the data set; changing the data (or the mixture amount) often produces a different set of values. For this data set, there are 55 penalties available. To get the set of penalties produced for this data set, we can extract the engine fit and tidy: 
+This glmnet fit contains multiple penalty values which depend on the data set; changing the data (or the mixture amount) often produces a different set of values. For this data set, there are 55 penalties available. To get the set of penalties produced for this data set, we can extract the engine fit and tidy: 
 
 
 ```r
@@ -362,20 +354,20 @@ glmnet_fit %>%
 #> # A tibble: 99 × 5
 #>    term        step estimate penalty dev.ratio
 #>    <chr>      <dbl>    <dbl>   <dbl>     <dbl>
-#>  1 Clark_Lake     2    0.494    5.56     0.127
-#>  2 Clark_Lake     3    0.948    5.07     0.234
-#>  3 Clark_Lake     4    1.36     4.62     0.324
-#>  4 Clark_Lake     5    1.75     4.21     0.400
-#>  5 Clark_Lake     6    2.10     3.83     0.463
-#>  6 Clark_Lake     7    2.42     3.49     0.515
-#>  7 Clark_Lake     8    2.71     3.18     0.559
-#>  8 Clark_Lake     9    2.98     2.90     0.596
-#>  9 Clark_Lake    10    3.22     2.64     0.627
-#> 10 Clark_Lake    11    3.45     2.41     0.653
+#>  1 Clark_Lake     2   0.0753    5.56     0.127
+#>  2 Clark_Lake     3   0.145     5.07     0.234
+#>  3 Clark_Lake     4   0.208     4.62     0.324
+#>  4 Clark_Lake     5   0.266     4.21     0.400
+#>  5 Clark_Lake     6   0.319     3.83     0.463
+#>  6 Clark_Lake     7   0.368     3.49     0.515
+#>  7 Clark_Lake     8   0.413     3.18     0.559
+#>  8 Clark_Lake     9   0.454     2.90     0.596
+#>  9 Clark_Lake    10   0.491     2.64     0.627
+#> 10 Clark_Lake    11   0.526     2.41     0.653
 #> # … with 89 more rows
 ```
 
-This works well but, it turns out that our penalty value (0.1) is not in the list produced by the model. The underlying package has functions that will use interpolation to produce coefficients for this value but the `tidy()` method for glmnet objects does not use it. 
+This works well but, it turns out that our penalty value (0.1) is not in the list produced by the model! The underlying package has functions that use interpolation to produce coefficients for this specific value, but the `tidy()` method for glmnet objects does not use it. 
 
 ### Using specific penalty values
 
@@ -387,9 +379,9 @@ tidy(glmnet_fit)
 #> # A tibble: 4 × 3
 #>   term        estimate penalty
 #>   <chr>          <dbl>   <dbl>
-#> 1 (Intercept)   13.6       0.1
-#> 2 Clark_Lake     5.55      0.1
-#> 3 Austin         0.153     0.1
+#> 1 (Intercept)    1.69      0.1
+#> 2 Clark_Lake     0.846     0.1
+#> 3 Austin         0.271     0.1
 #> 4 Harlem         0         0.1
 ```
 
@@ -397,24 +389,24 @@ For any another (single) penalty, we can use an additional argument:
 
 
 ```r
-tidy(glmnet_fit, penalty = 5.5620)  # A value shown above
+tidy(glmnet_fit, penalty = 5.5620)  # A value from above
 #> # A tibble: 4 × 3
 #>   term        estimate penalty
 #>   <chr>          <dbl>   <dbl>
-#> 1 (Intercept)   13.6      5.56
-#> 2 Clark_Lake     0.494    5.56
-#> 3 Austin         0        5.56
-#> 4 Harlem         0        5.56
+#> 1 (Intercept)  12.6       5.56
+#> 2 Clark_Lake    0.0753    5.56
+#> 3 Austin        0         5.56
+#> 4 Harlem        0         5.56
 ```
 
-The reason for two `tidy()` methods is that, with tidymodels, the focus is on a specific penalty value. 
+The reason for having two `tidy()` methods is that, with tidymodels, the focus is on using a specific penalty value. 
 
 
 ### Tuning a glmnet model
 
-If we know acceptable values for penalty and mixture, we can use the `fit_resamples()` function as we did before. Otherwise, we can tune those parameters with the tidymodels `tune_*()` functions. 
+If we know a priori acceptable values for penalty and mixture, we can use the `fit_resamples()` function as we did before with linear regression. Otherwise, we can tune those parameters with the tidymodels `tune_*()` functions. 
 
-We'll tune our glmnet model over both parameters with this grid: 
+Let's tune our glmnet model over both parameters with this grid: 
 
 
 ```r
@@ -422,9 +414,9 @@ pen_vals <- 10^seq(-3, 0, length.out = 10)
 grid <- crossing(penalty = pen_vals, mixture = c(0.1, 1.0))
 ```
 
-Here is where some glmnet-related complexity comes in: we know that each resample and each value of `mixture` will probably produce a different set of penalty values contained in the model object. _How can we look at the coefficients at the specific penalty values that we are using to tune?_
+Here is where more glmnet-related complexity comes in: we know that each resample and each value of `mixture` will probably produce a different set of penalty values contained in the model object. _How can we look at the coefficients at the specific penalty values that we are using to tune?_
 
-The approach that we suggest is to use the special `path_values` option for glmnet. The details are described in the [technical documentation about glmnet and tidymodels](https://parsnip.tidymodels.org/reference/glmnet-details.html#arguments) but this parameter will assign the collection of penalty values used by each glmnet fit (regardless of the data or value of mixture). 
+The approach that we suggest is to use the special `path_values` option for glmnet. Details are described in the [technical documentation about glmnet and tidymodels](https://parsnip.tidymodels.org/reference/glmnet-details.html#arguments) but in short, this parameter will assign the collection of penalty values used by each glmnet fit (regardless of the data or value of mixture). 
 
 We can pass these as an engine argument and then update our previous workflow object:
 
@@ -439,7 +431,7 @@ glmnet_wflow <-
   update_model(glmnet_tune_spec)
 ```
 
-Now we will use a similar extraction function. We add an additional argument to retain coefficients that are shrunk to zero by the lasso penalty: 
+Now we will use an extraction function similar to when we used ordinary least squares. We add an additional argument to retain coefficients that are shrunk to zero by the lasso penalty: 
 
 
 ```r
@@ -485,20 +477,19 @@ glmnet_res$.extracts[[1]] %>% head()
 #> 4       1     0.1 <tibble [40 × 5]> Preprocessor1_Model04
 #> 5       1     0.1 <tibble [40 × 5]> Preprocessor1_Model05
 #> 6       1     0.1 <tibble [40 × 5]> Preprocessor1_Model06
-
 glmnet_res$.extracts[[1]]$.extracts[[1]] %>% head()
 #> # A tibble: 6 × 5
 #>   term         step estimate penalty dev.ratio
 #>   <chr>       <dbl>    <dbl>   <dbl>     <dbl>
-#> 1 (Intercept)     1     13.6  1          0.769
-#> 2 (Intercept)     2     13.6  0.464      0.775
-#> 3 (Intercept)     3     13.6  0.215      0.779
-#> 4 (Intercept)     4     13.6  0.1        0.781
-#> 5 (Intercept)     5     13.6  0.0464     0.782
-#> 6 (Intercept)     6     13.6  0.0215     0.783
+#> 1 (Intercept)     1    0.568  1          0.769
+#> 2 (Intercept)     2    0.432  0.464      0.775
+#> 3 (Intercept)     3    0.607  0.215      0.779
+#> 4 (Intercept)     4    0.846  0.1        0.781
+#> 5 (Intercept)     5    1.06   0.0464     0.782
+#> 6 (Intercept)     6    1.22   0.0215     0.783
 ```
 
-As before, we'll have to do a double `unnest()`. Since the penalty value is in both the top-level and lower-level `.extracts`, we'll use `select()` to get rid of the first version (but keep `mixture`):
+As before, we'll have to use a double `unnest()`. Since the penalty value is in both the top-level and lower-level `.extracts`, we'll use `select()` to get rid of the first version (but keep `mixture`):
 
 
 ```r
@@ -509,7 +500,7 @@ glmnet_res %>%
   unnest(.extracts)
 ```
 
-But wait! We know that each glmnet fit contains all of the coefficients. This means, for a specific resample and value of `mixture`, that the results are the same:  
+But wait! We know that each glmnet fit contains all of the coefficients. This means, for a specific resample and value of `mixture`, the results are the same:  
 
 
 ```r
@@ -542,16 +533,16 @@ glmnet_coefs %>%
 #> # A tibble: 300 × 5
 #>    id         penalty mixture term       estimate
 #>    <chr>        <dbl>   <dbl> <chr>         <dbl>
-#>  1 Bootstrap1 1           0.1 Clark_Lake     2.56
-#>  2 Bootstrap1 0.464       0.1 Clark_Lake     3.17
-#>  3 Bootstrap1 0.215       0.1 Clark_Lake     3.86
-#>  4 Bootstrap1 0.1         0.1 Clark_Lake     4.45
-#>  5 Bootstrap1 0.0464      0.1 Clark_Lake     4.88
-#>  6 Bootstrap1 0.0215      0.1 Clark_Lake     5.19
-#>  7 Bootstrap1 0.01        0.1 Clark_Lake     5.35
-#>  8 Bootstrap1 0.00464     0.1 Clark_Lake     5.42
-#>  9 Bootstrap1 0.00215     0.1 Clark_Lake     5.46
-#> 10 Bootstrap1 0.001       0.1 Clark_Lake     5.48
+#>  1 Bootstrap1 1           0.1 Clark_Lake    0.391
+#>  2 Bootstrap1 0.464       0.1 Clark_Lake    0.485
+#>  3 Bootstrap1 0.215       0.1 Clark_Lake    0.590
+#>  4 Bootstrap1 0.1         0.1 Clark_Lake    0.680
+#>  5 Bootstrap1 0.0464      0.1 Clark_Lake    0.746
+#>  6 Bootstrap1 0.0215      0.1 Clark_Lake    0.793
+#>  7 Bootstrap1 0.01        0.1 Clark_Lake    0.817
+#>  8 Bootstrap1 0.00464     0.1 Clark_Lake    0.828
+#>  9 Bootstrap1 0.00215     0.1 Clark_Lake    0.834
+#> 10 Bootstrap1 0.001       0.1 Clark_Lake    0.837
 #> # … with 290 more rows
 ```
 
@@ -567,16 +558,53 @@ glmnet_coefs %>%
   geom_line(alpha = 0.5, lwd = 1.2) + 
   facet_wrap(~ term) + 
   scale_x_log10() +
-  scale_color_brewer(palette = "Paired") +
-  labs(y = "Coefficient") +
+  scale_color_brewer(palette = "Accent") +
+  labs(y = "coefficient") +
   theme(legend.position = "top")
 ```
 
-<img src="figs/glmnet-plot-1.svg" width="672" />
+<img src="figs/glmnet-plot-1.svg" width="816" />
 
-Interestingly: 
+Notice a couple of things: 
 
-* With a pure lasso model (i.e., `mixture = 1`), the Austin station predictor is selected out in each resample. With a mixture of both penalties, the influence increases. Also, as the penalty increases, the uncertainty in this coefficient decreases. 
+* With a pure lasso model (i.e., `mixture = 1`), the Austin station predictor is selected out in each resample. With a mixture of both penalties, its influence increases. Also, as the penalty increases, the uncertainty in this coefficient decreases. 
 
 * The Harlem predictor is either quickly selected out of the model or goes from negative to positive. 
 
+## Session information
+
+
+```
+#> ─ Session info ───────────────────────────────────────────────────────────────
+#>  setting  value                       
+#>  version  R version 4.1.1 (2021-08-10)
+#>  os       macOS Big Sur 11.5.2        
+#>  system   aarch64, darwin20           
+#>  ui       X11                         
+#>  language (EN)                        
+#>  collate  en_US.UTF-8                 
+#>  ctype    en_US.UTF-8                 
+#>  tz       America/Denver              
+#>  date     2021-09-13                  
+#> 
+#> ─ Packages ───────────────────────────────────────────────────────────────────
+#>  package    * version date       lib source        
+#>  broom      * 0.7.9   2021-07-27 [1] CRAN (R 4.1.0)
+#>  dials      * 0.0.10  2021-09-10 [1] CRAN (R 4.1.1)
+#>  dplyr      * 1.0.7   2021-06-18 [1] CRAN (R 4.1.0)
+#>  ggplot2    * 3.3.5   2021-06-25 [1] CRAN (R 4.1.0)
+#>  glmnet     * 4.1-2   2021-06-24 [1] CRAN (R 4.1.0)
+#>  infer      * 1.0.0   2021-08-13 [1] CRAN (R 4.1.1)
+#>  parsnip    * 0.1.7   2021-07-21 [1] CRAN (R 4.1.0)
+#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.1.0)
+#>  recipes    * 0.1.16  2021-04-16 [1] CRAN (R 4.1.0)
+#>  rlang      * 0.4.11  2021-04-30 [1] CRAN (R 4.1.0)
+#>  rsample    * 0.1.0   2021-05-08 [1] CRAN (R 4.1.1)
+#>  tibble     * 3.1.4   2021-08-25 [1] CRAN (R 4.1.1)
+#>  tidymodels * 0.1.3   2021-04-19 [1] CRAN (R 4.1.0)
+#>  tune       * 0.1.6   2021-07-21 [1] CRAN (R 4.1.0)
+#>  workflows  * 0.2.3   2021-07-16 [1] CRAN (R 4.1.0)
+#>  yardstick  * 0.0.8   2021-03-28 [1] CRAN (R 4.1.0)
+#> 
+#> [1] /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/library
+```
