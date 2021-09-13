@@ -1,12 +1,12 @@
 ---
 title: "Working with model coefficients"
 tags: [parsnip,tune,broom,workflows]
-categories: []
+categories: [model fitting]
 type: learn-subsection
 weight: 6
 description: | 
   Create models that use coefficients, extract these values from fitted models, 
-  and plot them.
+  and visualize them.
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}
@@ -353,3 +353,8 @@ Interestingly:
 
 * The Harlem predictor is either quickly selected out of the model or goes from negative to positive. 
 
+## Session information
+
+```{r si, echo = FALSE}
+small_session(pkgs)
+```
