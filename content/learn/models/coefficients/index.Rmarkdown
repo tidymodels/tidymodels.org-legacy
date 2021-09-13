@@ -3,10 +3,9 @@ title: "Working with model coefficients"
 tags: [parsnip,tune,broom,workflows]
 categories: [model fitting]
 type: learn-subsection
-weight: 6
+weight: 5
 description: | 
-  Create models that use coefficients, extract these values from fitted models, 
-  and visualize them.
+  Create models that use coefficients, extract them from fitted models, and visualize them.
 ---
 
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}
@@ -329,7 +328,7 @@ glmnet_coefs %>%
 
 Now we have the coefficients. Let's look at how they behave as more regularization is used: 
 
-```{r glmnet-plot, fig.width=9}
+```{r glmnet-plot, fig.height=4, fig.width=8.5}
 glmnet_coefs %>% 
   filter(term != "(Intercept)") %>% 
   mutate(mixture = format(mixture)) %>% 
