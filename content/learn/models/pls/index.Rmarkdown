@@ -3,7 +3,7 @@ title: "Multivariate analysis using partial least squares"
 tags: [recipes,rsample]
 categories: [pre-processing]
 type: learn-subsection
-weight: 5
+weight: 6
 description: | 
   Build and fit a predictive model with more than one outcome.
 ---
@@ -164,7 +164,7 @@ The plot below shows that, if the protein measurement is important, you might re
 
 ```{r plot, fig.width=6, fig.height=4.25,  out.width = '100%'}
 ggplot(variance_data, aes(x = components, y = proportion, col = source)) + 
-  geom_line() + 
+  geom_line(alpha = 0.5, size = 1.2) + 
   geom_point() 
 ```
 

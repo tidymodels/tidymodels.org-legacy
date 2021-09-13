@@ -39,7 +39,7 @@ When updating the site, the goal is to use the most recent CRAN versions of the 
    static/code/installs.R
    ```
    
-   This file will also install the `keras` python libraries and enironments. 
+   This file will also install the `keras` python libraries and environments. 
    
 1. Restart R.
 
