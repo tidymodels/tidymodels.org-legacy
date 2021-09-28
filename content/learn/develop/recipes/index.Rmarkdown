@@ -169,11 +169,13 @@ where
 
 You can define other arguments as well. 
 
-The first thing that you might want to do in the `prep()` function is to translate the specification listed in the `terms` argument to column names in the current data. There is an internal function called `terms_select()` that can be used to obtain this. 
+The first thing that you might want to do in the `prep()` function is to translate the specification listed in the `terms` argument to column names in the current data. There is a function called `recipes_eval_select()` that can be used to obtain this. 
+
+{{% warning %}} The `recipes_eval_select()` function is not one you interact with as a typical recipes user, but it is helpful if you develop your own custom recipe steps. {{%/ warning %}}
 
 ```{r prep_1, eval = FALSE}
 prep.step_percentile <- function(x, training, info = NULL, ...) {
-  col_names <- terms_select(terms = x$terms, info = info) 
+  col_names <- recipes_eval_select(x$terms, training, info) 
   # TODO finish the rest of the function
 }
 ```
@@ -198,7 +200,7 @@ Now, the `prep()` method can be created:
 
 ```{r prep-2}
 prep.step_percentile <- function(x, training, info = NULL, ...) {
-  col_names <- terms_select(terms = x$terms, info = info) 
+  col_names <- recipes_eval_select(x$terms, training, info)
   ## You can add error trapping for non-numeric data here and so on. 
   
   ## We'll use the names later so make sure they are available

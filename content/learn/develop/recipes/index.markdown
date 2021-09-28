@@ -48,7 +48,6 @@ str(biomass)
 #>  $ nitrogen: num  0.41 0.2 0.11 3.3 1 2.04 2.68 1.7 0.8 1.2 ...
 #>  $ sulfur  : num  0 0 0.02 0.16 0.02 0.1 0.2 0.2 0 0.1 ...
 #>  $ HHV     : num  20 19.2 18.3 18.2 18.4 ...
-
 biomass_tr <- biomass[biomass$dataset == "Training",]
 biomass_te <- biomass[biomass$dataset == "Testing",]
 ```
@@ -177,12 +176,13 @@ where
 
 You can define other arguments as well. 
 
-The first thing that you might want to do in the `prep()` function is to translate the specification listed in the `terms` argument to column names in the current data. There is an internal function called `terms_select()` that can be used to obtain this. 
+The first thing that you might want to do in the `prep()` function is to translate the specification listed in the `terms` argument to column names in the current data. There is a function called `recipes_eval_select()` that can be used to obtain this. 
 
+{{% warning %}} The `recipes_eval_select()` function is not one you interact with as a typical recipes user, but it is helpful if you develop your own custom recipe steps. {{%/ warning %}}
 
 ```r
 prep.step_percentile <- function(x, training, info = NULL, ...) {
-  col_names <- terms_select(terms = x$terms, info = info) 
+  col_names <- recipes_eval_select(x$terms, training, info) 
   # TODO finish the rest of the function
 }
 ```
@@ -213,7 +213,7 @@ Now, the `prep()` method can be created:
 
 ```r
 prep.step_percentile <- function(x, training, info = NULL, ...) {
-  col_names <- terms_select(terms = x$terms, info = info) 
+  col_names <- recipes_eval_select(x$terms, training, info)
   ## You can add error trapping for non-numeric data here and so on. 
   
   ## We'll use the names later so make sure they are available
@@ -305,12 +305,11 @@ biomass_te %>% select(ends_with("gen")) %>% slice(1:2)
 #> 1     5.67   47.2     0.30
 #> 2     5.50   48.1     2.85
 bake(rec_obj, biomass_te %>% slice(1:2), ends_with("gen"))
-#> # A tibble: 2 x 3
+#> # A tibble: 2 × 3
 #>   hydrogen oxygen nitrogen
 #>      <dbl>  <dbl>    <dbl>
 #> 1     0.45  0.903    0.21 
 #> 2     0.38  0.922    0.928
-
 # Checking to get approximate result: 
 mean(biomass_tr$hydrogen <= biomass_te$hydrogen[1])
 #> [1] 0.452
@@ -383,7 +382,7 @@ print.step_percentile <-
 # Results before `prep()`:
 recipe(HHV ~ ., data = biomass_tr) %>%
   step_percentile(ends_with("gen"))
-#> Data Recipe
+#> Recipe
 #> 
 #> Inputs:
 #> 
@@ -394,10 +393,9 @@ recipe(HHV ~ ., data = biomass_tr) %>%
 #> Operations:
 #> 
 #> Percentile transformation on ends_with("gen")
-
 # Results after `prep()`: 
 rec_obj
-#> Data Recipe
+#> Recipe
 #> 
 #> Inputs:
 #> 
@@ -464,7 +462,7 @@ pctl_step_object <- rec_obj$steps[[1]]
 pctl_step_object
 #> Percentile transformation on hydrogen, oxygen, nitrogen [trained]
 format_pctl(pctl_step_object$ref_dist[["hydrogen"]])
-#> # A tibble: 87 x 2
+#> # A tibble: 87 × 2
 #>    value percentile
 #>    <dbl>      <dbl>
 #>  1 0.03           0
@@ -503,19 +501,19 @@ tidy.step_percentile <- function(x, ...) {
 }
 
 tidy(rec_obj, number = 1)
-#> # A tibble: 274 x 4
+#> # A tibble: 274 × 4
 #>    term     value percentile id              
 #>    <chr>    <dbl>      <dbl> <chr>           
-#>  1 hydrogen 0.03           0 percentile_3L556
-#>  2 hydrogen 0.934          1 percentile_3L556
-#>  3 hydrogen 1.60           2 percentile_3L556
-#>  4 hydrogen 2.07           3 percentile_3L556
-#>  5 hydrogen 2.45           4 percentile_3L556
-#>  6 hydrogen 2.74           5 percentile_3L556
-#>  7 hydrogen 3.15           6 percentile_3L556
-#>  8 hydrogen 3.49           7 percentile_3L556
-#>  9 hydrogen 3.71           8 percentile_3L556
-#> 10 hydrogen 3.99           9 percentile_3L556
+#>  1 hydrogen 0.03           0 percentile_Sp98p
+#>  2 hydrogen 0.934          1 percentile_Sp98p
+#>  3 hydrogen 1.60           2 percentile_Sp98p
+#>  4 hydrogen 2.07           3 percentile_Sp98p
+#>  5 hydrogen 2.45           4 percentile_Sp98p
+#>  6 hydrogen 2.74           5 percentile_Sp98p
+#>  7 hydrogen 3.15           6 percentile_Sp98p
+#>  8 hydrogen 3.49           7 percentile_Sp98p
+#>  9 hydrogen 3.71           8 percentile_Sp98p
+#> 10 hydrogen 3.99           9 percentile_Sp98p
 #> # … with 264 more rows
 ```
 
@@ -596,37 +594,36 @@ tunable.step_poly <- function (x, ...) {
 ```
 #> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value                       
-#>  version  R version 4.0.3 (2020-10-10)
-#>  os       Ubuntu 18.04.5 LTS          
-#>  system   x86_64, linux-gnu           
+#>  version  R version 4.1.1 (2021-08-10)
+#>  os       macOS Big Sur 11.6          
+#>  system   aarch64, darwin20           
 #>  ui       X11                         
-#>  language en                          
-#>  collate  en_GB.UTF-8                 
-#>  ctype    en_GB.UTF-8                 
-#>  tz       Europe/London               
-#>  date     2021-03-03                  
+#>  language (EN)                        
+#>  collate  en_US.UTF-8                 
+#>  ctype    en_US.UTF-8                 
+#>  tz       America/Denver              
+#>  date     2021-09-27                  
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package    * version date       lib source        
-#>  broom      * 0.7.3   2020-12-16 [1] CRAN (R 4.0.3)
-#>  dials      * 0.0.9   2020-09-16 [1] CRAN (R 4.0.3)
-#>  dplyr      * 1.0.4   2021-02-02 [1] CRAN (R 4.0.3)
-#>  ggplot2    * 3.3.3   2020-12-30 [1] CRAN (R 4.0.3)
-#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.3)
-#>  modeldata  * 0.1.0   2020-10-22 [1] CRAN (R 4.0.3)
-#>  parsnip    * 0.1.5   2021-01-19 [1] CRAN (R 4.0.3)
-#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.3)
-#>  recipes    * 0.1.15  2020-11-11 [1] CRAN (R 4.0.3)
-#>  rlang        0.4.10  2020-12-30 [1] CRAN (R 4.0.3)
-#>  rsample    * 0.0.8   2020-09-23 [1] CRAN (R 4.0.3)
-#>  tibble     * 3.0.6   2021-01-29 [1] CRAN (R 4.0.3)
-#>  tidymodels * 0.1.2   2020-11-22 [1] CRAN (R 4.0.3)
-#>  tune       * 0.1.2   2020-11-17 [1] CRAN (R 4.0.3)
-#>  workflows  * 0.2.1   2020-10-08 [1] CRAN (R 4.0.3)
-#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.3)
+#>  broom      * 0.7.9   2021-07-27 [1] CRAN (R 4.1.0)
+#>  dials      * 0.0.10  2021-09-10 [1] CRAN (R 4.1.1)
+#>  dplyr      * 1.0.7   2021-06-18 [1] CRAN (R 4.1.0)
+#>  ggplot2    * 3.3.5   2021-06-25 [1] CRAN (R 4.1.0)
+#>  infer      * 1.0.0   2021-08-13 [1] CRAN (R 4.1.1)
+#>  modeldata  * 0.1.1   2021-07-14 [1] CRAN (R 4.1.0)
+#>  parsnip    * 0.1.7   2021-07-21 [1] CRAN (R 4.1.0)
+#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.1.0)
+#>  recipes    * 0.1.17  2021-09-27 [1] CRAN (R 4.1.1)
+#>  rlang        0.4.11  2021-04-30 [1] CRAN (R 4.1.0)
+#>  rsample    * 0.1.0   2021-05-08 [1] CRAN (R 4.1.1)
+#>  tibble     * 3.1.4   2021-08-25 [1] CRAN (R 4.1.1)
+#>  tidymodels * 0.1.3   2021-04-19 [1] CRAN (R 4.1.0)
+#>  tune       * 0.1.6   2021-07-21 [1] CRAN (R 4.1.0)
+#>  workflows  * 0.2.3   2021-07-16 [1] CRAN (R 4.1.0)
+#>  yardstick  * 0.0.8   2021-03-28 [1] CRAN (R 4.1.0)
 #> 
-#> [1] /usr/local/lib/R/site-library
-#> [2] /usr/lib/R/library
+#> [1] /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/library
 ```
  
  
