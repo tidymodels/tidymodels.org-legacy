@@ -98,7 +98,7 @@ svm_wflow <-
 From this object, we can derive information about what parameters are slated to be tuned. A parameter set is derived by: 
 
 ```{r pset}
-svm_set <- parameters(svm_wflow)
+svm_set <- extract_parameter_set_dials(svm_wflow)
 svm_set
 ```
 
