@@ -28,9 +28,9 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 
 ## Introduction {#intro}
 
-So far, we have [built a model](/start/models/) and [preprocessed data with a recipe](/start/recipes/). We also introduced [workflows](/start/recipes/#fit-workflow) as a way to bundle a [parsnip model](https://tidymodels.github.io/parsnip/) and [recipe](https://tidymodels.github.io/recipes/) together. Once we have a model trained, we need a way to measure how well that model predicts new data. This tutorial explains how to characterize model performance based on **resampling** statistics. 
+So far, we have [built a model](/start/models/) and [preprocessed data with a recipe](/start/recipes/). We also introduced [workflows](/start/recipes/#fit-workflow) as a way to bundle a [parsnip model](https://parsnip.tidymodels.org/) and [recipe](https://recipes.tidymodels.org/) together. Once we have a model trained, we need a way to measure how well that model predicts new data. This tutorial explains how to characterize model performance based on **resampling** statistics. 
 
-`r req_pkgs(pkgs)`
+`r article_req_pkgs(pkgs)`
 
 ```{r eval=FALSE}
 library(tidymodels) # for the rsample package, along with the rest of tidymodels
@@ -92,7 +92,7 @@ In our previous [*Preprocess your data with recipes*](/start/recipes/#data-split
 
  * The _test set_ is held in reserve until the end of the project, at which point there should only be one or two models under serious consideration. It is used as an unbiased source for measuring final model performance. 
 
-There are different ways to create these partitions of the data. The most common approach is to use a random sample. Suppose that one quarter of the data were reserved for the test set. Random sampling would randomly select 25% for the test set and use the remainder for the training set. We can use the [rsample](https://tidymodels.github.io/rsample/) package for this purpose. 
+There are different ways to create these partitions of the data. The most common approach is to use a random sample. Suppose that one quarter of the data were reserved for the test set. Random sampling would randomly select 25% for the test set and use the remainder for the training set. We can use the [rsample](https://rsample.tidymodels.org/) package for this purpose. 
 
 Since random sampling uses random numbers, it is important to set the random number seed. This ensures that the random numbers can be reproduced at a later time (if needed). 
 
@@ -104,7 +104,7 @@ cell_split <- initial_split(cells %>% select(-case),
                             strata = class)
 ```
 
-Here we used the [`strata` argument](https://tidymodels.github.io/rsample/reference/initial_split.html), which conducts a stratified split. This ensures that, despite the imbalance we noticed in our `class` variable, our training and test data sets will keep roughly the same proportions of poorly and well-segmented cells as in the original data. After the `initial_split`, the `training()` and `testing()` functions return the actual data sets. 
+Here we used the [`strata` argument](https://rsample.tidymodels.org/reference/initial_split.html), which conducts a stratified split. This ensures that, despite the imbalance we noticed in our `class` variable, our training and test data sets will keep roughly the same proportions of poorly and well-segmented cells as in the original data. After the `initial_split`, the `training()` and `testing()` functions return the actual data sets. 
 
 ```{r cell-train-test}
 cell_train <- training(cell_split)
@@ -135,7 +135,7 @@ One of the benefits of a random forest model is that it is very low maintenance;
 
 At the same time, the number of trees in the ensemble should be large (in the thousands) and this makes the model moderately expensive to compute. 
 
-To fit a random forest model on the training set, let's use the [parsnip](https://tidymodels.github.io/parsnip/) package with the [ranger](https://cran.r-project.org/web/packages/ranger/index.html) engine. We first define the model that we want to create:
+To fit a random forest model on the training set, let's use the [parsnip](https://parsnip.tidymodels.org/) package with the [ranger](https://cran.r-project.org/package=ranger) engine. We first define the model that we want to create:
 
 ```{r rf-def}
 rf_mod <- 
@@ -167,7 +167,7 @@ During a modeling project, we might create a variety of different models. To cho
  
 The ROC curve uses the class probability estimates to give us a sense of performance across the entire set of potential probability cutoffs. Overall accuracy uses the hard class predictions to measure performance. The hard class predictions tell us whether our model predicted `PS` or `WS` for each cell. But, behind those predictions, the model is actually estimating a probability. A simple 50% probability cutoff is used to categorize a cell as poorly segmented.
 
-The [yardstick package](https://tidymodels.github.io/yardstick/) has functions for computing both of these measures called `roc_auc()` and `accuracy()`. 
+The [yardstick package](https://yardstick.tidymodels.org/) has functions for computing both of these measures called `roc_auc()` and `accuracy()`. 
 
 At first glance, it might seem like a good idea to use the training set data to compute these statistics. (This is actually a very bad idea.) Let's see what happens if we try this. To evaluate performance based on the training set, we call the `predict()` method to get both types of predictions (i.e. probabilities and hard class predictions).
 
@@ -282,7 +282,7 @@ These resampling statistics are an effective method for measuring model performa
 
 ## Fit a model with resampling {#fit-resamples}
 
-To generate these results, the first step is to create a resampling object using rsample. There are [several resampling methods](https://tidymodels.github.io/rsample/reference/index.html#section-resampling-methods) implemented in rsample; cross-validation folds can be created using `vfold_cv()`: 
+To generate these results, the first step is to create a resampling object using rsample. There are [several resampling methods](https://rsample.tidymodels.org/reference/index.html#section-resampling-methods) implemented in rsample; cross-validation folds can be created using `vfold_cv()`: 
 
 ```{r folds}
 set.seed(345)
@@ -296,7 +296,7 @@ However, the tune package contains high-level functions that can do the required
 
 + Resample a model specification preprocessed with a formula or [recipe](/start/recipes/), or 
 
-+ Resample a [`workflow()`](https://tidymodels.github.io/workflows/) that bundles together a model specification and formula/recipe. 
++ Resample a [`workflow()`](https://workflows.tidymodels.org/) that bundles together a model specification and formula/recipe. 
 
 For this example, let's use a `workflow()` that bundles together the random forest model and a formula, since we are not using a recipe. Whichever of these options you use, the syntax to `fit_resamples()` is very similar to `fit()`: 
 
