@@ -9,7 +9,7 @@ knitr::opts_chunk$set(
 )
 options(width = 80, cli.width = 70)
 
-req_pkgs <- function(x, what = "To use code in this article, ") {
+article_req_pkgs <- function(x, what = "To use code in this article, ") {
   x <- sort(x)
   x <- knitr::combine_words(x, and = " and ")
   paste0(

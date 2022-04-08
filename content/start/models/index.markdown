@@ -15,7 +15,7 @@ description: |
 
 ## Introduction {#intro}
 
-How do you create a statistical model using tidymodels? In this article, we will walk you through the steps. We start with data for modeling, learn how to specify and train models with different engines using the [parsnip package](https://tidymodels.github.io/parsnip/), and understand why these functions are designed this way.
+How do you create a statistical model using tidymodels? In this article, we will walk you through the steps. We start with data for modeling, learn how to specify and train models with different engines using the [parsnip package](https://parsnip.tidymodels.org/), and understand why these functions are designed this way.
 
 To use code in this article,  you will need to install the following packages: broom.mixed, dotwhisker, readr, rstanarm, and tidymodels.
 
@@ -49,13 +49,14 @@ urchins <-
   setNames(c("food_regime", "initial_volume", "width")) %>% 
   # Factors are very helpful for modeling, so we convert one column
   mutate(food_regime = factor(food_regime, levels = c("Initial", "Low", "High")))
-#> 
+#> Rows: 72 Columns: 3
 #> ── Column specification ──────────────────────────────────────────────
-#> cols(
-#>   TREAT = col_character(),
-#>   IV = col_double(),
-#>   SUTW = col_double()
-#> )
+#> Delimiter: ","
+#> chr (1): TREAT
+#> dbl (2): IV, SUTW
+#> 
+#> ℹ Use `spec()` to retrieve the full column specification for this data.
+#> ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 ```
 
 Let's take a quick look at the data:
@@ -63,7 +64,7 @@ Let's take a quick look at the data:
 
 ```r
 urchins
-#> # A tibble: 72 x 3
+#> # A tibble: 72 × 3
 #>    food_regime initial_volume width
 #>    <fct>                <dbl> <dbl>
 #>  1 Initial                3.5 0.01 
@@ -115,36 +116,36 @@ width ~ initial_volume * food_regime
 
 allows our regression model depending on initial volume to have separate slopes and intercepts for each food regime. 
 
-For this kind of model, ordinary least squares is a good initial approach. With tidymodels, we start by specifying the _functional form_ of the model that we want using the [parsnip package](https://tidymodels.github.io/parsnip/). Since there is a numeric outcome and the model should be linear with slopes and intercepts, the model type is ["linear regression"](https://tidymodels.github.io/parsnip/reference/linear_reg.html). We can declare this with: 
+For this kind of model, ordinary least squares is a good initial approach. With tidymodels, we start by specifying the _functional form_ of the model that we want using the [parsnip package](https://parsnip.tidymodels.org/). Since there is a numeric outcome and the model should be linear with slopes and intercepts, the model type is ["linear regression"](https://parsnip.tidymodels.org/reference/linear_reg.html). We can declare this with: 
 
 
 
 ```r
 linear_reg()
 #> Linear Regression Model Specification (regression)
-```
-
-That is pretty underwhelming since, on its own, it doesn't really do much. However, now that the type of model has been specified, a method for _fitting_ or training the model can be stated using the **engine**. The engine value is often a mash-up of the software that can be used to fit or train the model as well as the estimation method. For example, to use ordinary least squares, we can set the engine to be `lm`:
-
-
-```r
-linear_reg() %>% 
-  set_engine("lm")
-#> Linear Regression Model Specification (regression)
 #> 
 #> Computational engine: lm
 ```
 
-The [documentation page for `linear_reg()`](https://tidymodels.github.io/parsnip/reference/linear_reg.html) lists the possible engines. We'll save this model object as `lm_mod`.
+That is pretty underwhelming since, on its own, it doesn't really do much. However, now that the type of model has been specified, we can think about a method for _fitting_ or training the model, the model **engine**. The engine value is often a mash-up of the software that can be used to fit or train the model as well as the estimation method. The default for `linear_reg()` is `"lm"` for ordinary least squares, as you can see above. We could set a non-default option instead:
 
 
 ```r
-lm_mod <- 
-  linear_reg() %>% 
-  set_engine("lm")
+linear_reg() %>% 
+  set_engine("keras")
+#> Linear Regression Model Specification (regression)
+#> 
+#> Computational engine: keras
 ```
 
-From here, the model can be estimated or trained using the [`fit()`](https://tidymodels.github.io/parsnip/reference/fit.html) function:
+The [documentation page for `linear_reg()`](https://parsnip.tidymodels.org/reference/linear_reg.html) lists all the possible engines. We'll save our model object using the default engine as `lm_mod`.
+
+
+```r
+lm_mod <- linear_reg()
+```
+
+From here, the model can be estimated or trained using the [`fit()`](https://parsnip.tidymodels.org/reference/fit.html) function:
 
 
 ```r
@@ -154,7 +155,6 @@ lm_fit <-
 lm_fit
 #> parsnip model object
 #> 
-#> Fit time:  3ms 
 #> 
 #> Call:
 #> stats::lm(formula = width ~ initial_volume * food_regime, data = data)
@@ -173,7 +173,7 @@ Perhaps our analysis requires a description of the model parameter estimates and
 
 ```r
 tidy(lm_fit)
-#> # A tibble: 6 x 5
+#> # A tibble: 6 × 5
 #>   term                            estimate std.error statistic  p.value
 #>   <chr>                              <dbl>     <dbl>     <dbl>    <dbl>
 #> 1 (Intercept)                     0.0331    0.00962      3.44  0.00100 
@@ -226,7 +226,7 @@ First, let's generate the mean body width values:
 ```r
 mean_pred <- predict(lm_fit, new_data = new_points)
 mean_pred
-#> # A tibble: 3 x 1
+#> # A tibble: 3 × 1
 #>    .pred
 #>    <dbl>
 #> 1 0.0642
@@ -242,7 +242,7 @@ conf_int_pred <- predict(lm_fit,
                          new_data = new_points, 
                          type = "conf_int")
 conf_int_pred
-#> # A tibble: 3 x 2
+#> # A tibble: 3 × 2
 #>   .pred_lower .pred_upper
 #>         <dbl>       <dbl>
 #> 1      0.0555      0.0729
@@ -270,7 +270,7 @@ ggplot(plot_data, aes(x = food_regime)) +
 
 Every one on your team is happy with that plot _except_ that one person who just read their first book on [Bayesian analysis](https://bayesian.org/what-is-bayesian-analysis/). They are interested in knowing if the results would be different if the model were estimated using a Bayesian approach. In such an analysis, a [_prior distribution_](https://towardsdatascience.com/introduction-to-bayesian-linear-regression-e66e60791ea7) needs to be declared for each model parameter that represents the possible values of the parameters (before being exposed to the observed data). After some discussion, the group agrees that the priors should be bell-shaped but, since no one has any idea what the range of values should be, to take a conservative approach and make the priors _wide_ using a Cauchy distribution (which is the same as a t-distribution with a single degree of freedom).
 
-The [documentation](https://mc-stan.org/rstanarm/articles/priors.html) on the rstanarm package shows us that the `stan_glm()` function can be used to estimate this model, and that the function arguments that need to be specified are called `prior` and `prior_intercept`. It turns out that `linear_reg()` has a [`stan` engine](https://tidymodels.github.io/parsnip/reference/linear_reg.html#details). Since these prior distribution arguments are specific to the Stan software, they are passed as arguments to [`parsnip::set_engine()`](https://tidymodels.github.io/parsnip/reference/set_engine.html). After that, the same exact `fit()` call is used:
+The [documentation](https://mc-stan.org/rstanarm/articles/priors.html) on the rstanarm package shows us that the `stan_glm()` function can be used to estimate this model, and that the function arguments that need to be specified are called `prior` and `prior_intercept`. It turns out that `linear_reg()` has a [`stan` engine](https://parsnip.tidymodels.org/reference/linear_reg.html#details). Since these prior distribution arguments are specific to the Stan software, they are passed as arguments to [`parsnip::set_engine()`](https://parsnip.tidymodels.org/reference/set_engine.html). After that, the same exact `fit()` call is used:
 
 
 ```r
@@ -294,7 +294,6 @@ bayes_fit <-
 print(bayes_fit, digits = 5)
 #> parsnip model object
 #> 
-#> Fit time:  8.5s 
 #> stan_glm
 #>  family:       gaussian [identity]
 #>  formula:      width ~ initial_volume * food_regime
@@ -302,16 +301,16 @@ print(bayes_fit, digits = 5)
 #>  predictors:   6
 #> ------
 #>                                Median   MAD_SD  
-#> (Intercept)                     0.03281  0.00992
-#> initial_volume                  0.00157  0.00041
-#> food_regimeLow                  0.01990  0.01286
-#> food_regimeHigh                 0.02136  0.01519
-#> initial_volume:food_regimeLow  -0.00126  0.00052
-#> initial_volume:food_regimeHigh  0.00052  0.00073
+#> (Intercept)                     0.03373  0.00963
+#> initial_volume                  0.00153  0.00040
+#> food_regimeLow                  0.01916  0.01290
+#> food_regimeHigh                 0.02090  0.01477
+#> initial_volume:food_regimeLow  -0.00124  0.00051
+#> initial_volume:food_regimeHigh  0.00053  0.00072
 #> 
 #> Auxiliary parameter(s):
 #>       Median  MAD_SD 
-#> sigma 0.02144 0.00192
+#> sigma 0.02130 0.00184
 #> 
 #> ------
 #> * For help interpreting the printed output see ?print.stanreg
@@ -325,15 +324,15 @@ To update the parameter table, the `tidy()` method is once again used:
 
 ```r
 tidy(bayes_fit, conf.int = TRUE)
-#> # A tibble: 6 x 5
+#> # A tibble: 6 × 5
 #>   term                            estimate std.error  conf.low conf.high
 #>   <chr>                              <dbl>     <dbl>     <dbl>     <dbl>
-#> 1 (Intercept)                     0.0328    0.00992   0.0168    0.0488  
-#> 2 initial_volume                  0.00157   0.000405  0.000893  0.00224 
-#> 3 food_regimeLow                  0.0199    0.0129   -0.00140   0.0420  
-#> 4 food_regimeHigh                 0.0214    0.0152   -0.00356   0.0464  
-#> 5 initial_volume:food_regimeLow  -0.00126   0.000516 -0.00210  -0.000407
-#> 6 initial_volume:food_regimeHigh  0.000517  0.000732 -0.000691  0.00171
+#> 1 (Intercept)                     0.0337    0.00963   0.0166    0.0497  
+#> 2 initial_volume                  0.00153   0.000396  0.000896  0.00221 
+#> 3 food_regimeLow                  0.0192    0.0129   -0.00255   0.0413  
+#> 4 food_regimeHigh                 0.0209    0.0148   -0.00403   0.0457  
+#> 5 initial_volume:food_regimeLow  -0.00124   0.000506 -0.00210  -0.000411
+#> 6 initial_volume:food_regimeHigh  0.000535  0.000717 -0.000652  0.00174
 ```
 
 A goal of the tidymodels packages is that the **interfaces to common tasks are standardized** (as seen in the `tidy()` results above). The same is true for getting predictions; we can use the same code even though the underlying packages use very different syntax:
@@ -371,8 +370,7 @@ If you are familiar with the tidyverse, you may have noticed that our modeling c
 urchins %>% 
   group_by(food_regime) %>% 
   summarize(med_vol = median(initial_volume))
-#> `summarise()` ungrouping output (override with `.groups` argument)
-#> # A tibble: 3 x 2
+#> # A tibble: 3 × 2
 #>   food_regime med_vol
 #>   <fct>         <dbl>
 #> 1 Initial        20.5
@@ -404,39 +402,42 @@ ggplot(urchins,
 
 
 ```
-#> ─ Session info ───────────────────────────────────────────────────────────────
-#>  setting  value                       
-#>  version  R version 4.0.3 (2020-10-10)
-#>  os       macOS Mojave 10.14.6        
-#>  system   x86_64, darwin17.0          
-#>  ui       X11                         
-#>  language (EN)                        
-#>  collate  en_US.UTF-8                 
-#>  ctype    en_US.UTF-8                 
-#>  tz       America/Denver              
-#>  date     2020-12-08                  
+#> ─ Session info ─────────────────────────────────────────────────────
+#>  setting  value
+#>  version  R version 4.1.1 (2021-08-10)
+#>  os       macOS Monterey 12.2.1
+#>  system   aarch64, darwin20
+#>  ui       X11
+#>  language (EN)
+#>  collate  en_US.UTF-8
+#>  ctype    en_US.UTF-8
+#>  tz       America/Denver
+#>  date     2022-03-23
+#>  pandoc   2.17.1.1 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/ (via rmarkdown)
 #> 
-#> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package     * version date       lib source        
-#>  broom       * 0.7.2   2020-10-20 [1] CRAN (R 4.0.2)
-#>  broom.mixed * 0.2.6   2020-05-17 [1] CRAN (R 4.0.0)
-#>  dials       * 0.0.9   2020-09-16 [1] CRAN (R 4.0.2)
-#>  dotwhisker  * 0.5.0   2018-06-27 [1] CRAN (R 4.0.2)
-#>  dplyr       * 1.0.2   2020-08-18 [1] CRAN (R 4.0.2)
-#>  ggplot2     * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
-#>  infer       * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
-#>  parsnip     * 0.1.4   2020-10-27 [1] CRAN (R 4.0.2)
-#>  purrr       * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
-#>  readr       * 1.4.0   2020-10-05 [1] CRAN (R 4.0.2)
-#>  recipes     * 0.1.15  2020-11-11 [1] CRAN (R 4.0.2)
-#>  rlang         0.4.9   2020-11-26 [1] CRAN (R 4.0.2)
-#>  rsample     * 0.0.8   2020-09-23 [1] CRAN (R 4.0.2)
-#>  rstanarm    * 2.21.1  2020-07-20 [1] CRAN (R 4.0.2)
-#>  tibble      * 3.0.4   2020-10-12 [1] CRAN (R 4.0.2)
-#>  tidymodels  * 0.1.2   2020-11-22 [1] CRAN (R 4.0.2)
-#>  tune        * 0.1.2   2020-11-17 [1] CRAN (R 4.0.3)
-#>  workflows   * 0.2.1   2020-10-08 [1] CRAN (R 4.0.2)
-#>  yardstick   * 0.0.7   2020-07-13 [1] CRAN (R 4.0.2)
+#> ─ Packages ─────────────────────────────────────────────────────────
+#>  package     * version date (UTC) lib source
+#>  broom       * 0.7.12  2022-01-28 [1] CRAN (R 4.1.1)
+#>  broom.mixed * 0.2.7   2021-07-07 [1] CRAN (R 4.1.0)
+#>  dials       * 0.1.0   2022-01-31 [1] CRAN (R 4.1.1)
+#>  dotwhisker  * 0.7.4   2021-09-02 [1] CRAN (R 4.1.1)
+#>  dplyr       * 1.0.8   2022-02-08 [1] CRAN (R 4.1.1)
+#>  ggplot2     * 3.3.5   2021-06-25 [1] CRAN (R 4.1.0)
+#>  infer       * 1.0.0   2021-08-13 [1] CRAN (R 4.1.1)
+#>  parsnip     * 0.2.1   2022-03-17 [1] CRAN (R 4.1.1)
+#>  purrr       * 0.3.4   2020-04-17 [1] CRAN (R 4.1.0)
+#>  readr       * 2.1.2   2022-01-30 [1] CRAN (R 4.1.1)
+#>  recipes     * 0.2.0   2022-02-18 [1] CRAN (R 4.1.1)
+#>  rlang         1.0.2   2022-03-04 [1] CRAN (R 4.1.1)
+#>  rsample     * 0.1.1   2021-11-08 [1] CRAN (R 4.1.1)
+#>  rstanarm    * 2.21.1  2020-07-20 [1] CRAN (R 4.1.0)
+#>  tibble      * 3.1.6   2021-11-07 [1] CRAN (R 4.1.1)
+#>  tidymodels  * 0.2.0   2022-03-19 [1] CRAN (R 4.1.1)
+#>  tune        * 0.2.0   2022-03-19 [1] CRAN (R 4.1.1)
+#>  workflows   * 0.2.6   2022-03-18 [1] CRAN (R 4.1.1)
+#>  yardstick   * 0.0.9   2021-11-22 [1] CRAN (R 4.1.1)
 #> 
-#> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
+#>  [1] /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/library
+#> 
+#> ────────────────────────────────────────────────────────────────────
 ```
