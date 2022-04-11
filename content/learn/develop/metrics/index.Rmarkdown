@@ -24,7 +24,7 @@ pkgs <- c("tidymodels", "rlang")
 
 `r req_pkgs(pkgs)`
 
-The [yardstick](https://tidymodels.github.io/yardstick/) package already includes a large number of metrics, but there's obviously a chance that you might have a custom metric that hasn't been implemented yet. In that case, you can use a few of the tools yardstick exposes to create custom metrics.
+The [yardstick](https://yardstick.tidymodels.org/) package already includes a large number of metrics, but there's obviously a chance that you might have a custom metric that hasn't been implemented yet. In that case, you can use a few of the tools yardstick exposes to create custom metrics.
 
 Why create custom metrics? With the infrastructure yardstick provides, you get:
 
