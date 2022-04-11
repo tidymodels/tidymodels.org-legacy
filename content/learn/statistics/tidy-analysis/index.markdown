@@ -30,7 +30,7 @@ data(Orange)
 
 Orange <- as_tibble(Orange)
 Orange
-#> # A tibble: 35 x 3
+#> # A tibble: 35 × 3
 #>    Tree    age circumference
 #>    <ord> <dbl>         <dbl>
 #>  1 1       118            30
@@ -68,7 +68,7 @@ Suppose you want to test for correlations individually *within* each tree. You c
 Orange %>% 
   group_by(Tree) %>%
   summarize(correlation = cor(age, circumference))
-#> # A tibble: 5 x 2
+#> # A tibble: 5 × 2
 #>   Tree  correlation
 #>   <ord>       <dbl>
 #> 1 3           0.988
@@ -104,7 +104,7 @@ This test output contains multiple values we may be interested in. Some are vect
 
 ```r
 tidy(ct)
-#> # A tibble: 1 x 8
+#> # A tibble: 1 × 8
 #>   estimate statistic  p.value parameter conf.low conf.high method    alternative
 #>      <dbl>     <dbl>    <dbl>     <int>    <dbl>     <dbl> <chr>     <chr>      
 #> 1    0.914      12.9 1.93e-14        33    0.834     0.956 Pearson'… two.sided
@@ -125,7 +125,7 @@ Then we perform a correlation test for each nested tibble using `purrr::map()`:
 ```r
 nested %>% 
   mutate(test = map(data, ~ cor.test(.x$age, .x$circumference)))
-#> # A tibble: 5 x 3
+#> # A tibble: 5 × 3
 #>   Tree  data             test   
 #>   <ord> <list>           <list> 
 #> 1 1     <tibble [7 × 2]> <htest>
@@ -144,7 +144,7 @@ nested %>%
     test = map(data, ~ cor.test(.x$age, .x$circumference)), # S3 list-col
     tidied = map(test, tidy)
   ) 
-#> # A tibble: 5 x 4
+#> # A tibble: 5 × 4
 #>   Tree  data             test    tidied          
 #>   <ord> <list>           <list>  <list>          
 #> 1 1     <tibble [7 × 2]> <htest> <tibble [1 × 8]>
@@ -166,14 +166,14 @@ Orange %>%
   ) %>% 
   unnest(cols = tidied) %>% 
   select(-data, -test)
-#> # A tibble: 5 x 9
-#>   Tree  estimate statistic p.value parameter conf.low conf.high method
-#>   <ord>    <dbl>     <dbl>   <dbl>     <int>    <dbl>     <dbl> <chr> 
-#> 1 1        0.985      13.0 4.85e-5         5    0.901     0.998 Pears…
-#> 2 2        0.987      13.9 3.43e-5         5    0.914     0.998 Pears…
-#> 3 3        0.988      14.4 2.90e-5         5    0.919     0.998 Pears…
-#> 4 4        0.984      12.5 5.73e-5         5    0.895     0.998 Pears…
-#> 5 5        0.988      14.1 3.18e-5         5    0.916     0.998 Pears…
+#> # A tibble: 5 × 9
+#>   Tree  estimate statistic   p.value parameter conf.low conf.high method        
+#>   <ord>    <dbl>     <dbl>     <dbl>     <int>    <dbl>     <dbl> <chr>         
+#> 1 1        0.985      13.0 0.0000485         5    0.901     0.998 Pearson's pro…
+#> 2 2        0.987      13.9 0.0000343         5    0.914     0.998 Pearson's pro…
+#> 3 3        0.988      14.4 0.0000290         5    0.919     0.998 Pearson's pro…
+#> 4 4        0.984      12.5 0.0000573         5    0.895     0.998 Pearson's pro…
+#> 5 5        0.988      14.1 0.0000318         5    0.916     0.998 Pearson's pro…
 #> # … with 1 more variable: alternative <chr>
 ```
 
@@ -210,7 +210,7 @@ When we tidy these results, we get multiple rows of output for each model:
 
 ```r
 tidy(lm_fit)
-#> # A tibble: 2 x 5
+#> # A tibble: 2 × 5
 #>   term          estimate std.error statistic  p.value
 #>   <chr>            <dbl>     <dbl>     <dbl>    <dbl>
 #> 1 (Intercept)      16.6     78.1       0.212 8.33e- 1
@@ -229,7 +229,7 @@ Orange %>%
   ) %>% 
   unnest(tidied) %>% 
   select(-data, -fit)
-#> # A tibble: 10 x 6
+#> # A tibble: 10 × 6
 #>    Tree  term          estimate std.error statistic   p.value
 #>    <ord> <chr>            <dbl>     <dbl>     <dbl>     <dbl>
 #>  1 1     (Intercept)    -265.      98.6      -2.68  0.0436   
@@ -251,7 +251,7 @@ You can just as easily use multiple predictors in the regressions, as shown here
 data(mtcars)
 mtcars <- as_tibble(mtcars)  # to play nicely with list-cols
 mtcars
-#> # A tibble: 32 x 11
+#> # A tibble: 32 × 11
 #>      mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
 #>    <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
 #>  1  21       6  160    110  3.9   2.62  16.5     0     1     4     4
@@ -274,7 +274,7 @@ mtcars %>%
   ) %>% 
   unnest(tidied) %>% 
   select(-data, -fit)
-#> # A tibble: 8 x 6
+#> # A tibble: 8 × 6
 #>      am term        estimate std.error statistic  p.value
 #>   <dbl> <chr>          <dbl>     <dbl>     <dbl>    <dbl>
 #> 1     1 (Intercept)   4.28      3.46      1.24   0.247   
@@ -304,7 +304,7 @@ regressions <-
 regressions %>% 
   select(tidied) %>% 
   unnest(tidied)
-#> # A tibble: 8 x 5
+#> # A tibble: 8 × 5
 #>   term        estimate std.error statistic  p.value
 #>   <chr>          <dbl>     <dbl>     <dbl>    <dbl>
 #> 1 (Intercept)   4.28      3.46      1.24   0.247   
@@ -319,29 +319,29 @@ regressions %>%
 regressions %>% 
   select(glanced) %>% 
   unnest(glanced)
-#> # A tibble: 2 x 12
-#>   r.squared adj.r.squared sigma statistic p.value    df   logLik   AIC   BIC
-#>       <dbl>         <dbl> <dbl>     <dbl>   <dbl> <dbl>    <dbl> <dbl> <dbl>
-#> 1     0.833         0.778 0.291     15.0  7.59e-4     3 -5.80e-3  10.0  12.8
-#> 2     0.625         0.550 0.522      8.32 1.70e-3     3 -1.24e+1  34.7  39.4
+#> # A tibble: 2 × 12
+#>   r.squared adj.r.squared sigma statistic  p.value    df    logLik   AIC   BIC
+#>       <dbl>         <dbl> <dbl>     <dbl>    <dbl> <dbl>     <dbl> <dbl> <dbl>
+#> 1     0.833         0.778 0.291     15.0  0.000759     3  -0.00580  10.0  12.8
+#> 2     0.625         0.550 0.522      8.32 0.00170      3 -12.4      34.7  39.4
 #> # … with 3 more variables: deviance <dbl>, df.residual <int>, nobs <int>
 
 regressions %>% 
   select(augmented) %>% 
   unnest(augmented)
-#> # A tibble: 32 x 10
-#>       wt   mpg  qsec  gear .fitted  .resid .std.resid  .hat .sigma  .cooksd
-#>    <dbl> <dbl> <dbl> <dbl>   <dbl>   <dbl>      <dbl> <dbl>  <dbl>    <dbl>
-#>  1  2.62  21    16.5     4    2.73 -0.107     -0.527  0.517  0.304 0.0744  
-#>  2  2.88  21    17.0     4    2.75  0.126      0.509  0.273  0.304 0.0243  
-#>  3  2.32  22.8  18.6     4    2.63 -0.310     -1.29   0.312  0.279 0.188   
-#>  4  2.2   32.4  19.5     4    1.70  0.505      1.97   0.223  0.233 0.278   
-#>  5  1.62  30.4  18.5     4    1.86 -0.244     -0.982  0.269  0.292 0.0889  
-#>  6  1.84  33.9  19.9     4    1.56  0.274      1.12   0.286  0.286 0.125   
-#>  7  1.94  27.3  18.9     4    2.19 -0.253     -0.942  0.151  0.293 0.0394  
-#>  8  2.14  26    16.7     5    2.21 -0.0683    -0.276  0.277  0.307 0.00732 
-#>  9  1.51  30.4  16.9     5    1.77 -0.259     -1.18   0.430  0.284 0.263   
-#> 10  3.17  15.8  14.5     5    3.15  0.0193     0.0789 0.292  0.308 0.000644
+#> # A tibble: 32 × 10
+#>       wt   mpg  qsec  gear .fitted  .resid  .hat .sigma  .cooksd .std.resid
+#>    <dbl> <dbl> <dbl> <dbl>   <dbl>   <dbl> <dbl>  <dbl>    <dbl>      <dbl>
+#>  1  2.62  21    16.5     4    2.73 -0.107  0.517  0.304 0.0744      -0.527 
+#>  2  2.88  21    17.0     4    2.75  0.126  0.273  0.304 0.0243       0.509 
+#>  3  2.32  22.8  18.6     4    2.63 -0.310  0.312  0.279 0.188       -1.29  
+#>  4  2.2   32.4  19.5     4    1.70  0.505  0.223  0.233 0.278        1.97  
+#>  5  1.62  30.4  18.5     4    1.86 -0.244  0.269  0.292 0.0889      -0.982 
+#>  6  1.84  33.9  19.9     4    1.56  0.274  0.286  0.286 0.125        1.12  
+#>  7  1.94  27.3  18.9     4    2.19 -0.253  0.151  0.293 0.0394      -0.942 
+#>  8  2.14  26    16.7     5    2.21 -0.0683 0.277  0.307 0.00732     -0.276 
+#>  9  1.51  30.4  16.9     5    1.77 -0.259  0.430  0.284 0.263       -1.18  
+#> 10  3.17  15.8  14.5     5    3.15  0.0193 0.292  0.308 0.000644     0.0789
 #> # … with 22 more rows
 ```
 
@@ -358,36 +358,39 @@ In each of these cases, we can easily filter, facet, or distinguish based on the
 
 
 ```
-#> ─ Session info ───────────────────────────────────────────────────────────────
-#>  setting  value                       
-#>  version  R version 4.0.3 (2020-10-10)
-#>  os       macOS Mojave 10.14.6        
-#>  system   x86_64, darwin17.0          
-#>  ui       X11                         
-#>  language (EN)                        
-#>  collate  en_US.UTF-8                 
-#>  ctype    en_US.UTF-8                 
-#>  tz       America/Denver              
-#>  date     2020-12-07                  
+#> ─ Session info ─────────────────────────────────────────────────────
+#>  setting  value
+#>  version  R version 4.1.2 (2021-11-01)
+#>  os       macOS Monterey 12.3
+#>  system   aarch64, darwin20
+#>  ui       X11
+#>  language (EN)
+#>  collate  en_GB.UTF-8
+#>  ctype    en_GB.UTF-8
+#>  tz       Europe/London
+#>  date     2022-04-11
+#>  pandoc   2.14.0.3 @ /Applications/RStudio.app/Contents/MacOS/pandoc/ (via rmarkdown)
 #> 
-#> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version date       lib source        
-#>  broom      * 0.7.2   2020-10-20 [1] CRAN (R 4.0.2)
-#>  dials      * 0.0.9   2020-09-16 [1] CRAN (R 4.0.2)
-#>  dplyr      * 1.0.2   2020-08-18 [1] CRAN (R 4.0.2)
-#>  ggplot2    * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
-#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
-#>  parsnip    * 0.1.4   2020-10-27 [1] CRAN (R 4.0.2)
-#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
-#>  recipes    * 0.1.15  2020-11-11 [1] CRAN (R 4.0.2)
-#>  rlang        0.4.9   2020-11-26 [1] CRAN (R 4.0.2)
-#>  rsample    * 0.0.8   2020-09-23 [1] CRAN (R 4.0.2)
-#>  tibble     * 3.0.4   2020-10-12 [1] CRAN (R 4.0.2)
-#>  tidymodels * 0.1.2   2020-11-22 [1] CRAN (R 4.0.2)
-#>  tune       * 0.1.2   2020-11-17 [1] CRAN (R 4.0.3)
-#>  workflows  * 0.2.1   2020-10-08 [1] CRAN (R 4.0.2)
-#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.2)
+#> ─ Packages ─────────────────────────────────────────────────────────
+#>  package    * version date (UTC) lib source
+#>  broom      * 0.7.12  2022-01-28 [1] CRAN (R 4.1.1)
+#>  dials      * 0.1.1   2022-04-06 [1] CRAN (R 4.1.2)
+#>  dplyr      * 1.0.8   2022-02-08 [1] CRAN (R 4.1.2)
+#>  ggplot2    * 3.3.5   2021-06-25 [1] CRAN (R 4.1.1)
+#>  infer      * 1.0.0   2021-08-13 [1] CRAN (R 4.1.1)
+#>  parsnip    * 0.2.1   2022-03-17 [1] CRAN (R 4.1.1)
+#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.1.0)
+#>  recipes    * 0.2.0   2022-02-18 [1] CRAN (R 4.1.1)
+#>  rlang        1.0.2   2022-03-04 [1] CRAN (R 4.1.1)
+#>  rsample    * 0.1.1   2021-11-08 [1] CRAN (R 4.1.2)
+#>  tibble     * 3.1.6   2021-11-07 [1] CRAN (R 4.1.1)
+#>  tidymodels * 0.2.0   2022-03-19 [1] CRAN (R 4.1.1)
+#>  tune       * 0.2.0   2022-03-19 [1] CRAN (R 4.1.2)
+#>  workflows  * 0.2.6   2022-03-18 [1] CRAN (R 4.1.2)
+#>  yardstick  * 0.0.9   2021-11-22 [1] CRAN (R 4.1.1)
 #> 
-#> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
+#>  [1] /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/library
+#> 
+#> ────────────────────────────────────────────────────────────────────
 ```
 

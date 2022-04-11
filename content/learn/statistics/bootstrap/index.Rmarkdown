@@ -104,7 +104,7 @@ ggplot(boot_coefs, aes(estimate)) +
   geom_vline(aes(xintercept = .upper), data = percentile_intervals, col = "blue")
 ```
 
-The rsample package also has functions for [other types of confidence intervals](https://tidymodels.github.io/rsample/reference/int_pctl.html). 
+The rsample package also has functions for [other types of confidence intervals](https://rsample.tidymodels.org/reference/int_pctl.html). 
 
 ## Possible model fits
 
