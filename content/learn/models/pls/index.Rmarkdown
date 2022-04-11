@@ -71,7 +71,7 @@ Before we can finalize the PLS model, the number of PLS components to retain mus
 
 Since the data set isn't large, let's use resampling to measure these proportions. With ten repeats of 10-fold cross-validation, we build the PLS model on 90% of the data and evaluate on the heldout 10%. For each of the 100 models, we extract and save the proportions. 
 
-The folds can be created using the [rsample](https://tidymodels.github.io/rsample/) package and the recipe can be estimated for each resample using the [`prepper()`](https://tidymodels.github.io/rsample/reference/prepper.html) function: 
+The folds can be created using the [rsample](https://rsample.tidymodels.org/) package and the recipe can be estimated for each resample using the [`prepper()`](https://rsample.tidymodels.org/reference/prepper.html) function: 
 
 ```{r cv}
 set.seed(57343)
