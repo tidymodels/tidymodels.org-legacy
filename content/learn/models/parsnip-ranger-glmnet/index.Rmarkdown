@@ -31,7 +31,7 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 
 `r req_pkgs(pkgs)`
 
-We can create regression models with the tidymodels package [parsnip](https://tidymodels.github.io/parsnip/) to predict continuous or numeric quantities. Here, let's first fit a random forest model, which does _not_ require all numeric input (see discussion [here](https://bookdown.org/max/FES/categorical-trees.html)) and discuss how to use `fit()` and `fit_xy()`, as well as _data descriptors_. 
+We can create regression models with the tidymodels package [parsnip](https://parsnip.tidymodels.org/) to predict continuous or numeric quantities. Here, let's first fit a random forest model, which does _not_ require all numeric input (see discussion [here](https://bookdown.org/max/FES/categorical-trees.html)) and discuss how to use `fit()` and `fit_xy()`, as well as _data descriptors_. 
 
 Second, let's fit a regularized linear regression model to demonstrate how to move between different types of models using parsnip. 
 
@@ -136,7 +136,7 @@ Look at the formula code that was printed out; one function uses the argument na
 
 Now suppose that we want to modify the value of `mtry` based on the number of predictors in the data. Usually, a good default value is `floor(sqrt(num_predictors))` but a pure bagging model requires an `mtry` value equal to the total number of parameters. There may be cases where you may not know how many predictors are going to be present when the model will be fit (perhaps due to the generation of indicator variables or a variable filter) so this might be difficult to know exactly ahead of time when you write your code. 
 
-When the model it being fit by parsnip, [_data descriptors_](https://tidymodels.github.io/parsnip/reference/descriptors.html) are made available. These attempt to let you know what you will have available when the model is fit. When a model object is created (say using `rand_forest()`), the values of the arguments that you give it are _immediately evaluated_ unless you delay them. To delay the evaluation of any argument, you can used `rlang::expr()` to make an expression. 
+When the model it being fit by parsnip, [_data descriptors_](https://parsnip.tidymodels.org/reference/descriptors.html) are made available. These attempt to let you know what you will have available when the model is fit. When a model object is created (say using `rand_forest()`), the values of the arguments that you give it are _immediately evaluated_ unless you delay them. To delay the evaluation of any argument, you can used `rlang::expr()` to make an expression. 
 
 Two relevant data descriptors for our example model are:
 
@@ -161,7 +161,7 @@ rand_forest(mode = "regression", mtry = .preds(), trees = 1000) %>%
 
 A linear model might work for this data set as well. We can use the `linear_reg()` parsnip model. There are two engines that can perform regularization/penalization, the glmnet and sparklyr packages. Let's use the former here. The glmnet package only implements a non-formula method, but parsnip will allow either one to be used. 
 
-When regularization is used, the predictors should first be centered and scaled before being passed to the model. The formula method won't do that automatically so we will need to do this ourselves. We'll use the [recipes](https://tidymodels.github.io/recipes/) package for these steps. 
+When regularization is used, the predictors should first be centered and scaled before being passed to the model. The formula method won't do that automatically so we will need to do this ourselves. We'll use the [recipes](https://recipes.tidymodels.org/) package for these steps. 
 
 ```{r glmn-form}
 norm_recipe <- 

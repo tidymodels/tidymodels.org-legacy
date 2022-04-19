@@ -23,7 +23,7 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 
 This article only requires the tidymodels package. 
 
-The tidymodels package [infer](https://tidymodels.github.io/infer/) implements an expressive grammar to perform statistical inference that coheres with the `tidyverse` design framework. Rather than providing methods for specific statistical tests, this package consolidates the principles that are shared among common hypothesis tests into a set of 4 main verbs (functions), supplemented with many utilities to visualize and extract information from their outputs.
+The tidymodels package [infer](https://infer.tidymodels.org/) implements an expressive grammar to perform statistical inference that coheres with the `tidyverse` design framework. Rather than providing methods for specific statistical tests, this package consolidates the principles that are shared among common hypothesis tests into a set of 4 main verbs (functions), supplemented with many utilities to visualize and extract information from their outputs.
 
 Regardless of which hypothesis test we're using, we're still asking the same kind of question: 
 

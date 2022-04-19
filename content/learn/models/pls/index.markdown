@@ -65,7 +65,7 @@ Before we can finalize the PLS model, the number of PLS components to retain mus
 
 Since the data set isn't large, let's use resampling to measure these proportions. With ten repeats of 10-fold cross-validation, we build the PLS model on 90% of the data and evaluate on the heldout 10%. For each of the 100 models, we extract and save the proportions. 
 
-The folds can be created using the [rsample](https://tidymodels.github.io/rsample/) package and the recipe can be estimated for each resample using the [`prepper()`](https://tidymodels.github.io/rsample/reference/prepper.html) function: 
+The folds can be created using the [rsample](https://rsample.tidymodels.org/) package and the recipe can be estimated for each resample using the [`prepper()`](https://rsample.tidymodels.org/reference/prepper.html) function: 
 
 
 ```r
@@ -174,38 +174,41 @@ ggplot(variance_data, aes(x = components, y = proportion, col = source)) +
 
 
 ```
-#> ─ Session info ───────────────────────────────────────────────────────────────
-#>  setting  value                       
-#>  version  R version 4.1.1 (2021-08-10)
-#>  os       macOS Big Sur 11.5.2        
-#>  system   aarch64, darwin20           
-#>  ui       X11                         
-#>  language (EN)                        
-#>  collate  en_US.UTF-8                 
-#>  ctype    en_US.UTF-8                 
-#>  tz       America/Denver              
-#>  date     2021-09-13                  
+#> ─ Session info ─────────────────────────────────────────────────────
+#>  setting  value
+#>  version  R version 4.1.2 (2021-11-01)
+#>  os       macOS Monterey 12.3
+#>  system   aarch64, darwin20
+#>  ui       X11
+#>  language (EN)
+#>  collate  en_GB.UTF-8
+#>  ctype    en_GB.UTF-8
+#>  tz       Europe/London
+#>  date     2022-04-11
+#>  pandoc   2.14.0.3 @ /Applications/RStudio.app/Contents/MacOS/pandoc/ (via rmarkdown)
 #> 
-#> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version date       lib source        
-#>  broom      * 0.7.9   2021-07-27 [1] CRAN (R 4.1.0)
-#>  dials      * 0.0.10  2021-09-10 [1] CRAN (R 4.1.1)
-#>  dplyr      * 1.0.7   2021-06-18 [1] CRAN (R 4.1.0)
-#>  ggplot2    * 3.3.5   2021-06-25 [1] CRAN (R 4.1.0)
+#> ─ Packages ─────────────────────────────────────────────────────────
+#>  package    * version date (UTC) lib source
+#>  broom      * 0.7.12  2022-01-28 [1] CRAN (R 4.1.1)
+#>  dials      * 0.1.1   2022-04-06 [1] CRAN (R 4.1.2)
+#>  dplyr      * 1.0.8   2022-02-08 [1] CRAN (R 4.1.2)
+#>  ggplot2    * 3.3.5   2021-06-25 [1] CRAN (R 4.1.1)
 #>  infer      * 1.0.0   2021-08-13 [1] CRAN (R 4.1.1)
-#>  modeldata  * 0.1.1   2021-07-14 [1] CRAN (R 4.1.0)
-#>  parsnip    * 0.1.7   2021-07-21 [1] CRAN (R 4.1.0)
-#>  pls        * 2.8-0   2021-09-03 [1] CRAN (R 4.1.1)
+#>  modeldata  * 0.1.1   2021-07-14 [1] CRAN (R 4.1.2)
+#>  parsnip    * 0.2.1   2022-03-17 [1] CRAN (R 4.1.1)
+#>  pls        * 2.8-0   2021-09-03 [1] CRAN (R 4.1.2)
 #>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.1.0)
-#>  recipes    * 0.1.16  2021-04-16 [1] CRAN (R 4.1.0)
-#>  rlang        0.4.11  2021-04-30 [1] CRAN (R 4.1.0)
-#>  rsample    * 0.1.0   2021-05-08 [1] CRAN (R 4.1.1)
-#>  tibble     * 3.1.4   2021-08-25 [1] CRAN (R 4.1.1)
-#>  tidymodels * 0.1.3   2021-04-19 [1] CRAN (R 4.1.0)
-#>  tune       * 0.1.6   2021-07-21 [1] CRAN (R 4.1.0)
-#>  workflows  * 0.2.3   2021-07-16 [1] CRAN (R 4.1.0)
-#>  yardstick  * 0.0.8   2021-03-28 [1] CRAN (R 4.1.0)
+#>  recipes    * 0.2.0   2022-02-18 [1] CRAN (R 4.1.1)
+#>  rlang        1.0.2   2022-03-04 [1] CRAN (R 4.1.1)
+#>  rsample    * 0.1.1   2021-11-08 [1] CRAN (R 4.1.2)
+#>  tibble     * 3.1.6   2021-11-07 [1] CRAN (R 4.1.1)
+#>  tidymodels * 0.2.0   2022-03-19 [1] CRAN (R 4.1.1)
+#>  tune       * 0.2.0   2022-03-19 [1] CRAN (R 4.1.2)
+#>  workflows  * 0.2.6   2022-03-18 [1] CRAN (R 4.1.2)
+#>  yardstick  * 0.0.9   2021-11-22 [1] CRAN (R 4.1.1)
 #> 
-#> [1] /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/library
+#>  [1] /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/library
+#> 
+#> ────────────────────────────────────────────────────────────────────
 ```
  

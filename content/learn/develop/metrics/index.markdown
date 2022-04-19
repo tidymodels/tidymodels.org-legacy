@@ -17,7 +17,7 @@ description: |
 
 To use the code in this article, you will need to install the following packages: rlang and tidymodels.
 
-The [yardstick](https://tidymodels.github.io/yardstick/) package already includes a large number of metrics, but there's obviously a chance that you might have a custom metric that hasn't been implemented yet. In that case, you can use a few of the tools yardstick exposes to create custom metrics.
+The [yardstick](https://yardstick.tidymodels.org/) package already includes a large number of metrics, but there's obviously a chance that you might have a custom metric that hasn't been implemented yet. In that case, you can use a few of the tools yardstick exposes to create custom metrics.
 
 Why create custom metrics? With the infrastructure yardstick provides, you get:
 
@@ -91,10 +91,12 @@ Intelligent error handling is immediately available.
 
 ```r
 mse_vec(truth = "apple", estimate = 1)
-#> Error: `truth` should be a numeric but a character was supplied.
+#> Error in `validate_class()`:
+#> ! `truth` should be a numeric but a character was supplied.
 
 mse_vec(truth = 1, estimate = factor("xyz"))
-#> Error: `estimate` should be a numeric but a factor was supplied.
+#> Error in `validate_class()`:
+#> ! `estimate` should be a numeric but a factor was supplied.
 ```
 
 `NA` values are removed if `na_rm = TRUE` (the default). If `na_rm = FALSE` and any `NA` values are detected, then the metric automatically returns `NA`.
@@ -144,16 +146,18 @@ And that's it. The yardstick package handles the rest with an internal call to `
 
 ```r
 mse(solubility_test, truth = solubility, estimate = prediction)
-#> # A tibble: 1 x 3
+#> # A tibble: 1 × 3
 #>   .metric .estimator .estimate
 #>   <chr>   <chr>          <dbl>
 #> 1 mse     standard       0.521
 
 # Error handling
 mse(solubility_test, truth = solubility, estimate = factor("xyz"))
-#> Error: Problem with `summarise()` input `.estimate`.
-#> x `estimate` should be a numeric but a factor was supplied.
-#> ℹ Input `.estimate` is `metric_fn(truth = solubility, estimate = factor("xyz"), na_rm = na_rm)`.
+#> Error in `dplyr::summarise()`:
+#> ! Problem while computing `.estimate = metric_fn(truth =
+#>   solubility, estimate = factor("xyz"), na_rm = na_rm)`.
+#> Caused by error in `validate_class()`:
+#> ! `estimate` should be a numeric but a factor was supplied.
 ```
 
 Let's test it out on a grouped data frame.
@@ -179,7 +183,7 @@ solubility_resampled <- bind_rows(
 solubility_resampled %>%
   group_by(resample) %>%
   mse(solubility, prediction)
-#> # A tibble: 10 x 4
+#> # A tibble: 10 × 4
 #>    resample .metric .estimator .estimate
 #>    <chr>    <chr>   <chr>          <dbl>
 #>  1 1        mse     standard       0.512
@@ -334,7 +338,8 @@ miss_rate_vec(fold1$obs, fold1$pred)
 
 # Error thrown by validate_estimator()
 miss_rate_vec(fold1$obs, fold1$pred, estimator = "macro")
-#> Error: `estimator` must be one of: "binary". Not "macro".
+#> Error in `validate_estimator()`:
+#> ! `estimator` must be one of: "binary". Not "macro".
 ```
 
 ### Supporting multiclass miss rate
@@ -486,7 +491,7 @@ miss_rate.data.frame <- function(data,
 # Macro weighted automatically selected
 fold1 %>%
   miss_rate(obs, pred)
-#> # A tibble: 1 x 3
+#> # A tibble: 1 × 3
 #>   .metric   .estimator .estimate
 #>   <chr>     <chr>          <dbl>
 #> 1 miss_rate macro          0.548
@@ -494,7 +499,7 @@ fold1 %>%
 # Switch to micro
 fold1 %>%
   miss_rate(obs, pred, estimator = "micro")
-#> # A tibble: 1 x 3
+#> # A tibble: 1 × 3
 #>   .metric   .estimator .estimate
 #>   <chr>     <chr>          <dbl>
 #> 1 miss_rate micro          0.726
@@ -503,7 +508,7 @@ fold1 %>%
 hpc_cv %>%
   group_by(Resample) %>%
   miss_rate(obs, pred, estimator = "macro_weighted")
-#> # A tibble: 10 x 4
+#> # A tibble: 10 × 4
 #>    Resample .metric   .estimator     .estimate
 #>    <chr>    <chr>     <chr>              <dbl>
 #>  1 Fold01   miss_rate macro_weighted     0.726
@@ -519,9 +524,11 @@ hpc_cv %>%
 
 # Error handling
 miss_rate(hpc_cv, obs, VF)
-#> Error: Problem with `summarise()` input `.estimate`.
-#> x `estimate` should be a factor but a numeric was supplied.
-#> ℹ Input `.estimate` is `metric_fn(truth = obs, estimate = VF, na_rm = na_rm, event_level = "first")`.
+#> Error in `dplyr::summarise()`:
+#> ! Problem while computing `.estimate = metric_fn(truth = obs,
+#>   estimate = VF, na_rm = na_rm, event_level = "first")`.
+#> Caused by error in `validate_class()`:
+#> ! `estimate` should be a factor but a numeric was supplied.
 ```
 
 ## Using custom metrics
@@ -533,7 +540,7 @@ The `metric_set()` function validates that all metric functions are of the same 
 numeric_mets <- metric_set(mse, rmse)
 
 numeric_mets(solubility_test, solubility, prediction)
-#> # A tibble: 2 x 3
+#> # A tibble: 2 × 3
 #>   .metric .estimator .estimate
 #>   <chr>   <chr>          <dbl>
 #> 1 mse     standard       0.521
@@ -545,35 +552,38 @@ numeric_mets(solubility_test, solubility, prediction)
 
 
 ```
-#> ─ Session info ───────────────────────────────────────────────────────────────
-#>  setting  value                       
-#>  version  R version 4.0.3 (2020-10-10)
-#>  os       macOS Mojave 10.14.6        
-#>  system   x86_64, darwin17.0          
-#>  ui       X11                         
-#>  language (EN)                        
-#>  collate  en_US.UTF-8                 
-#>  ctype    en_US.UTF-8                 
-#>  tz       America/Denver              
-#>  date     2020-12-07                  
+#> ─ Session info ─────────────────────────────────────────────────────
+#>  setting  value
+#>  version  R version 4.1.2 (2021-11-01)
+#>  os       macOS Monterey 12.3
+#>  system   aarch64, darwin20
+#>  ui       X11
+#>  language (EN)
+#>  collate  en_GB.UTF-8
+#>  ctype    en_GB.UTF-8
+#>  tz       Europe/London
+#>  date     2022-04-11
+#>  pandoc   2.14.0.3 @ /Applications/RStudio.app/Contents/MacOS/pandoc/ (via rmarkdown)
 #> 
-#> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version date       lib source        
-#>  broom      * 0.7.2   2020-10-20 [1] CRAN (R 4.0.2)
-#>  dials      * 0.0.9   2020-09-16 [1] CRAN (R 4.0.2)
-#>  dplyr      * 1.0.2   2020-08-18 [1] CRAN (R 4.0.2)
-#>  ggplot2    * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
-#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
-#>  parsnip    * 0.1.4   2020-10-27 [1] CRAN (R 4.0.2)
-#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
-#>  recipes    * 0.1.15  2020-11-11 [1] CRAN (R 4.0.2)
-#>  rlang      * 0.4.9   2020-11-26 [1] CRAN (R 4.0.2)
-#>  rsample    * 0.0.8   2020-09-23 [1] CRAN (R 4.0.2)
-#>  tibble     * 3.0.4   2020-10-12 [1] CRAN (R 4.0.2)
-#>  tidymodels * 0.1.2   2020-11-22 [1] CRAN (R 4.0.2)
-#>  tune       * 0.1.2   2020-11-17 [1] CRAN (R 4.0.3)
-#>  workflows  * 0.2.1   2020-10-08 [1] CRAN (R 4.0.2)
-#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.2)
+#> ─ Packages ─────────────────────────────────────────────────────────
+#>  package    * version date (UTC) lib source
+#>  broom      * 0.7.12  2022-01-28 [1] CRAN (R 4.1.1)
+#>  dials      * 0.1.1   2022-04-06 [1] CRAN (R 4.1.2)
+#>  dplyr      * 1.0.8   2022-02-08 [1] CRAN (R 4.1.2)
+#>  ggplot2    * 3.3.5   2021-06-25 [1] CRAN (R 4.1.1)
+#>  infer      * 1.0.0   2021-08-13 [1] CRAN (R 4.1.1)
+#>  parsnip    * 0.2.1   2022-03-17 [1] CRAN (R 4.1.1)
+#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.1.0)
+#>  recipes    * 0.2.0   2022-02-18 [1] CRAN (R 4.1.1)
+#>  rlang      * 1.0.2   2022-03-04 [1] CRAN (R 4.1.1)
+#>  rsample    * 0.1.1   2021-11-08 [1] CRAN (R 4.1.2)
+#>  tibble     * 3.1.6   2021-11-07 [1] CRAN (R 4.1.1)
+#>  tidymodels * 0.2.0   2022-03-19 [1] CRAN (R 4.1.1)
+#>  tune       * 0.2.0   2022-03-19 [1] CRAN (R 4.1.2)
+#>  workflows  * 0.2.6   2022-03-18 [1] CRAN (R 4.1.2)
+#>  yardstick  * 0.0.9   2021-11-22 [1] CRAN (R 4.1.1)
 #> 
-#> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
+#>  [1] /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/library
+#> 
+#> ────────────────────────────────────────────────────────────────────
 ```

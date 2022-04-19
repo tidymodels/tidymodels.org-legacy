@@ -24,7 +24,7 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 
 `r req_pkgs(pkgs)` You will also need the python keras library installed (see `?keras::install_keras()`).
 
-We can create classification models with the tidymodels package [parsnip](https://tidymodels.github.io/parsnip/) to predict categorical quantities or class labels. Here, let's fit a single classification model using a neural network and evaluate using a validation set. While the [tune](https://tidymodels.github.io/tune/) package has functionality to also do this, the parsnip package is the center of attention in this article so that we can better understand its usage. 
+We can create classification models with the tidymodels package [parsnip](https://parsnip.tidymodels.org/) to predict categorical quantities or class labels. Here, let's fit a single classification model using a neural network and evaluate using a validation set. While the [tune](https://tune.tidymodels.org/) package has functionality to also do this, the parsnip package is the center of attention in this article so that we can better understand its usage. 
 
 ## Fitting a neural network
 
@@ -45,7 +45,7 @@ ggplot(bivariate_train, aes(x = A, y = B, col = Class)) +
   geom_point(alpha = .2)
 ```
 
-Let's use a single hidden layer neural network to predict the outcome. To do this, we transform the predictor columns to be more symmetric (via the `step_BoxCox()` function) and on a common scale (using `step_normalize()`). We can use [recipes](https://tidymodels.github.io/recipes/) to do so:
+Let's use a single hidden layer neural network to predict the outcome. To do this, we transform the predictor columns to be more symmetric (via the `step_BoxCox()` function) and on a common scale (using `step_normalize()`). We can use [recipes](https://recipes.tidymodels.org/) to do so:
 
 ```{r biv--proc}
 biv_rec <- 
