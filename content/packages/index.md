@@ -112,11 +112,11 @@ The tidymodels framework also includes many other packages designed for speciali
 
 ### [Tune, compare, and work with your models](/learn/work/)
 
-* To try out different workflows (i.e. bundles of pre-processor and model), [workflowsets](https://workflowsets.tidymodels.org/) lets you create sets of workflow objects for tuning and resampling.
+* To try out multiple different workflows (i.e. bundles of pre-processor and model) at once, [workflowsets](https://workflowsets.tidymodels.org/) lets you create sets of workflow objects for tuning and resampling.
 
 * To integrate predictions from many models, the [stacks](https://stacks.tidymodels.org/) package provides tools for stacked ensemble modeling.
 
-* The [finetune](https://finetune.tidymodels.org/) package contains some extra functions for model tuning that extend what is currently in the tune package.
+* The [finetune](https://finetune.tidymodels.org/) package extends the tune package with more approaches such as racing and simulated annealing.
 
 * The [usemodels](https://usemodels.tidymodels.org/) package creates templates and automatically generates code to fit and tune models.
 
