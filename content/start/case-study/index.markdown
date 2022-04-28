@@ -14,7 +14,7 @@ description: |
 
 ## Introduction {#intro}
 
-Each of the four previous [_Get Started_](/start/) articles has focused on a single task related to modeling. Along the way, we also introduced core packages in the tidymodels ecosystem and some of the key functions you'll need to start working with models. In this final case study, we will use all of the previous articles as a foundation to build a predictive model from beginning to end with data on hotel stays. 
+Each of the four previous [_Get Started_](/start/) articles has focused on a single task related to modeling. Along the way, we also introduced core packages in the tidymodels ecosystem and some of the key functions you'll need to start working with models. In this final case study, we will use all of the previous articles as a foundation to build a predictive model from beginning to end with data on hotel stays.
 
 <img src="img/hotel.jpg" width="90%" />
 
@@ -45,7 +45,7 @@ library(readr)
 
 hotels <- 
   read_csv('https://tidymodels.org/start/case-study/hotels.csv') %>%
-  mutate_if(is.character, as.factor) 
+  mutate(across(where(is.character), as.factor))
 
 dim(hotels)
 #> [1] 50000    23
@@ -207,7 +207,7 @@ lr_recipe <-
   step_date(arrival_date) %>% 
   step_holiday(arrival_date, holidays = holidays) %>% 
   step_rm(arrival_date) %>% 
-  step_dummy(all_nominal(), -all_outcomes()) %>% 
+  step_dummy(all_nominal_predictors()) %>% 
   step_zv(all_predictors()) %>% 
   step_normalize(all_predictors())
 ```
@@ -371,10 +371,10 @@ But, here we are using a single validation set, so parallelization isn't an opti
 ```r
 cores <- parallel::detectCores()
 cores
-#> [1] 8
+#> [1] 10
 ```
 
-We have 8 cores to work with. We can pass this information to the ranger engine when we set up our parsnip `rand_forest()` model. To enable parallel processing, we can pass engine-specific arguments like `num.threads` to ranger when we set the engine: 
+We have 10 cores to work with. We can pass this information to the ranger engine when we set up our parsnip `rand_forest()` model. To enable parallel processing, we can pass engine-specific arguments like `num.threads` to ranger when we set the engine: 
 
 
 ```r
@@ -645,36 +645,36 @@ Here are some more ideas for where to go next:
 ```
 #> ─ Session info ─────────────────────────────────────────────────────
 #>  setting  value
-#>  version  R version 4.1.1 (2021-08-10)
-#>  os       macOS Monterey 12.2.1
+#>  version  R version 4.1.2 (2021-11-01)
+#>  os       macOS Monterey 12.3.1
 #>  system   aarch64, darwin20
 #>  ui       X11
 #>  language (EN)
-#>  collate  en_US.UTF-8
-#>  ctype    en_US.UTF-8
-#>  tz       America/Denver
-#>  date     2022-03-23
-#>  pandoc   2.17.1.1 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/ (via rmarkdown)
+#>  collate  en_GB.UTF-8
+#>  ctype    en_GB.UTF-8
+#>  tz       Europe/London
+#>  date     2022-04-28
+#>  pandoc   2.18 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/tools/ (via rmarkdown)
 #> 
 #> ─ Packages ─────────────────────────────────────────────────────────
 #>  package    * version date (UTC) lib source
-#>  broom      * 0.7.12  2022-01-28 [1] CRAN (R 4.1.1)
-#>  dials      * 0.1.0   2022-01-31 [1] CRAN (R 4.1.1)
-#>  dplyr      * 1.0.8   2022-02-08 [1] CRAN (R 4.1.1)
-#>  ggplot2    * 3.3.5   2021-06-25 [1] CRAN (R 4.1.0)
+#>  broom      * 0.8.0   2022-04-13 [1] CRAN (R 4.1.1)
+#>  dials      * 0.1.1   2022-04-06 [1] CRAN (R 4.1.2)
+#>  dplyr      * 1.0.8   2022-02-08 [1] CRAN (R 4.1.2)
+#>  ggplot2    * 3.3.5   2021-06-25 [1] CRAN (R 4.1.1)
 #>  infer      * 1.0.0   2021-08-13 [1] CRAN (R 4.1.1)
 #>  parsnip    * 0.2.1   2022-03-17 [1] CRAN (R 4.1.1)
 #>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.1.0)
-#>  ranger       0.13.1  2021-07-14 [1] CRAN (R 4.1.0)
+#>  ranger       0.13.1  2021-07-14 [1] CRAN (R 4.1.2)
 #>  readr      * 2.1.2   2022-01-30 [1] CRAN (R 4.1.1)
 #>  recipes    * 0.2.0   2022-02-18 [1] CRAN (R 4.1.1)
 #>  rlang        1.0.2   2022-03-04 [1] CRAN (R 4.1.1)
-#>  rsample    * 0.1.1   2021-11-08 [1] CRAN (R 4.1.1)
+#>  rsample    * 0.1.1   2021-11-08 [1] CRAN (R 4.1.2)
 #>  tibble     * 3.1.6   2021-11-07 [1] CRAN (R 4.1.1)
 #>  tidymodels * 0.2.0   2022-03-19 [1] CRAN (R 4.1.1)
-#>  tune       * 0.2.0   2022-03-19 [1] CRAN (R 4.1.1)
-#>  vip        * 0.3.2   2020-12-17 [1] CRAN (R 4.1.0)
-#>  workflows  * 0.2.6   2022-03-18 [1] CRAN (R 4.1.1)
+#>  tune       * 0.2.0   2022-03-19 [1] CRAN (R 4.1.2)
+#>  vip        * 0.3.2   2020-12-17 [1] CRAN (R 4.1.2)
+#>  workflows  * 0.2.6   2022-03-18 [1] CRAN (R 4.1.2)
 #>  yardstick  * 0.0.9   2021-11-22 [1] CRAN (R 4.1.1)
 #> 
 #>  [1] /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/library
