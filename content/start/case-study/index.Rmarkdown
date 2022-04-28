@@ -22,7 +22,7 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 
 ## Introduction {#intro}
 
-Each of the four previous [_Get Started_](/start/) articles has focused on a single task related to modeling. Along the way, we also introduced core packages in the tidymodels ecosystem and some of the key functions you'll need to start working with models. In this final case study, we will use all of the previous articles as a foundation to build a predictive model from beginning to end with data on hotel stays. 
+Each of the four previous [_Get Started_](/start/) articles has focused on a single task related to modeling. Along the way, we also introduced core packages in the tidymodels ecosystem and some of the key functions you'll need to start working with models. In this final case study, we will use all of the previous articles as a foundation to build a predictive model from beginning to end with data on hotel stays.
 
 ```{r echo=FALSE, out.width="90%"}
 knitr::include_graphics("img/hotel.jpg")
@@ -53,7 +53,7 @@ library(readr)
 
 hotels <- 
   read_csv('https://tidymodels.org/start/case-study/hotels.csv') %>%
-  mutate_if(is.character, as.factor) 
+  mutate(across(where(is.character), as.factor))
 
 dim(hotels)
 ```
@@ -165,7 +165,7 @@ lr_recipe <-
   step_date(arrival_date) %>% 
   step_holiday(arrival_date, holidays = holidays) %>% 
   step_rm(arrival_date) %>% 
-  step_dummy(all_nominal(), -all_outcomes()) %>% 
+  step_dummy(all_nominal_predictors()) %>% 
   step_zv(all_predictors()) %>% 
   step_normalize(all_predictors())
 ```
