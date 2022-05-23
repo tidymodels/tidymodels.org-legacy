@@ -96,7 +96,7 @@ The tidymodels framework also includes many other packages designed for speciali
 
 ### [Perform statistical analysis](/learn/statistics/)
 
-* [infer](https://infer.netlify.com/) is a high-level API for tidyverse-friendly statistical inference.
+* [infer](https://infer.tidymodels.org/) is a high-level API for tidyverse-friendly statistical inference.
 
 * The [corrr](https://corrr.tidymodels.org/) package has tidy interfaces for working with correlation matrices.
 
