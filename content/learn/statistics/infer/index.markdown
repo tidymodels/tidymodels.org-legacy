@@ -247,16 +247,16 @@ gss %>%
 #> # Groups:   replicate [5,000]
 #>    replicate hours
 #>        <int> <dbl>
-#>  1         1  38.6
-#>  2         1  53.6
-#>  3         1  28.6
-#>  4         1  48.6
-#>  5         1  58.6
-#>  6         1  41.6
-#>  7         1  18.6
-#>  8         1  38.6
-#>  9         1  68.6
-#> 10         1  58.6
+#>  1         1 38.6 
+#>  2         1 40.6 
+#>  3         1 54.6 
+#>  4         1 23.6 
+#>  5         1  8.62
+#>  6         1  6.62
+#>  7         1 54.6 
+#>  8         1 28.6 
+#>  9         1 28.6 
+#> 10         1 38.6 
 #> # … with 2,499,990 more rows
 ```
 
@@ -277,16 +277,16 @@ gss %>%
 #> # Groups:   replicate [5,000]
 #>    partyid   age replicate
 #>    <fct>   <dbl>     <int>
-#>  1 ind        36         1
-#>  2 rep        34         1
+#>  1 dem        36         1
+#>  2 ind        34         1
 #>  3 dem        24         1
 #>  4 dem        42         1
-#>  5 dem        31         1
-#>  6 rep        32         1
+#>  5 ind        31         1
+#>  6 dem        32         1
 #>  7 dem        48         1
-#>  8 rep        36         1
+#>  8 ind        36         1
 #>  9 ind        30         1
-#> 10 ind        33         1
+#> 10 dem        33         1
 #> # … with 2,499,990 more rows
 ```
 
@@ -306,20 +306,20 @@ gss %>%
 #> # A tibble: 5,000 × 2
 #>    replicate  stat
 #>        <int> <dbl>
-#>  1         1  41.0
-#>  2         2  40.0
-#>  3         3  40.3
-#>  4         4  40.7
-#>  5         5  39.9
-#>  6         6  41.3
-#>  7         7  41.1
-#>  8         8  41.2
-#>  9         9  38.7
-#> 10        10  41.2
+#>  1         1  39.3
+#>  2         2  40.5
+#>  3         3  40.5
+#>  4         4  40.3
+#>  5         5  40.5
+#>  6         6  39.7
+#>  7         7  40.1
+#>  8         8  39.4
+#>  9         9  40.2
+#> 10        10  40.6
 #> # … with 4,990 more rows
 ```
 
-The output of `calculate()` here shows us the sample statistic (in this case, the mean) for each of our 1000 replicates. If you're carrying out inference on differences in means, medians, or proportions, or `\(t\)` and `\(z\)` statistics, you will need to supply an `order` argument, giving the order in which the explanatory variables should be subtracted. For instance, to find the difference in mean age of those that have a college degree and those that don't, we might write:
+The output of `calculate()` here shows us the sample statistic (in this case, the mean) for each of our 1000 replicates. If you're carrying out inference on differences in means, medians, or proportions, or `"t"` and `\(z\)` statistics, you will need to supply an `order` argument, giving the order in which the explanatory variables should be subtracted. For instance, to find the difference in mean age of those that have a college degree and those that don't, we might write:
 
 
 ```r
@@ -332,18 +332,18 @@ gss %>%
 #> Explanatory: college (factor)
 #> Null Hypothesis: independence
 #> # A tibble: 5,000 × 2
-#>    replicate    stat
-#>        <int>   <dbl>
-#>  1         1 -0.196 
-#>  2         2 -0.805 
-#>  3         3  1.48  
-#>  4         4 -1.20  
-#>  5         5 -0.214 
-#>  6         6  0.853 
-#>  7         7 -1.18  
-#>  8         8  1.52  
-#>  9         9 -0.0201
-#> 10        10  2.02  
+#>    replicate   stat
+#>        <int>  <dbl>
+#>  1         1  2.37 
+#>  2         2  1.26 
+#>  3         3 -0.461
+#>  4         4 -0.135
+#>  5         5  0.332
+#>  6         6 -0.584
+#>  7         7  1.12 
+#>  8         8  0.923
+#>  9         9  0.623
+#> 10        10  1.75 
 #> # … with 4,990 more rows
 ```
 
@@ -405,10 +405,10 @@ p_value
 #> # A tibble: 1 × 1
 #>   p_value
 #>     <dbl>
-#> 1  0.0344
+#> 1  0.0416
 ```
 
-It looks like the p-value is 0.034, which is pretty small---if the true mean number of hours worked per week was actually 40, the probability of our sample mean being this far (1.382 hours) from 40 would be 0.034. This may or may not be statistically significantly different, depending on the significance level `\(\alpha\)` you decided on *before* you ran this analysis. If you had set `\(\alpha = .05\)`, then this difference would be statistically significant, but if you had set `\(\alpha = .01\)`, then it would not be.
+It looks like the p-value is 0.042, which is pretty small---if the true mean number of hours worked per week was actually 40, the probability of our sample mean being this far (1.382 hours) from 40 would be 0.042. This may or may not be statistically significantly different, depending on the significance level `\(\alpha\)` you decided on *before* you ran this analysis. If you had set `\(\alpha = .05\)`, then this difference would be statistically significant, but if you had set `\(\alpha = .01\)`, then it would not be.
 
 To get a confidence interval around our estimate, we can write:
 
@@ -434,7 +434,7 @@ As you can see, 40 hours per week is not contained in this interval, which align
 
 {infer} also provides functionality to use theoretical methods for `"Chisq"`, `"F"`, `"t"` and `"z"` distributions. 
 
-Generally, to find a null distribution using theory-based methods, use the same code that you would use to find the observed statistic elsewhere, replacing calls to `calculate()` with `assume()`. For example, to calculate the observed `\(t\)` statistic (a standardized mean):
+Generally, to find a null distribution using theory-based methods, use the same code that you would use to find the observed statistic elsewhere, replacing calls to `calculate()` with `assume()`. For example, to calculate the observed `"t"` statistic (a standardized mean):
 
 
 ```r
@@ -445,11 +445,11 @@ obs_t <- gss %>%
   calculate(stat = "t")
 ```
 
-Then, to define a theoretical `\(t\)` distribution, we could write:
+Then, to define a theoretical `"t"` distribution, we could write:
 
 
 ```r
-# switch out calculate with assume to define a distribution
+# switch out `calculate()` with `assume()` to define a distribution
 t_dist <- gss %>%
   specify(response = hours) %>%
   assume(distribution = "t")
@@ -464,7 +464,7 @@ visualize(t_dist) +
   shade_p_value(obs_stat = obs_t, direction = "greater")
 ```
 
-<img src="figs/unnamed-chunk-3-1.svg" width="672" />
+<img src="figs/viz_t_dist-1.svg" width="672" />
 
 ```r
 
@@ -500,7 +500,7 @@ theor_ci
 #> 1     40.1     42.7
 ```
 
-When visualized, the `\(t\)` distribution will be recentered and rescaled to align with the scale of the observed data.
+When visualized, the `"t"` distribution will be recentered and rescaled to align with the scale of the observed data.
 
 
 ```r
@@ -509,7 +509,7 @@ visualize(t_dist) +
   shade_confidence_interval(theor_ci)
 ```
 
-<img src="figs/unnamed-chunk-5-1.svg" width="672" />
+<img src="figs/viz_t_ci-1.svg" width="672" />
 
 ## Multiple regression
 
@@ -524,7 +524,7 @@ observed_fit <- gss %>%
   fit()
 ```
 
-Now, to generate null distributions for each of these terms, we can fit 1000 models to resamples of the `gss` dataset, where the response `hours` is permuted in each. Note that this code is the same as the above except for the addition of the `hypothesize` and `generate` step.
+Now, to generate null distributions for each of these terms, we can fit 1000 models to resamples of the `gss` dataset, where the response `hours` is permuted in each. Note that this code is the same as the above except for the addition of the `hypothesize()` and `generate()` step.
 
 
 ```r
@@ -539,16 +539,16 @@ null_fits
 #> # Groups:   replicate [1,000]
 #>    replicate term          estimate
 #>        <int> <chr>            <dbl>
-#>  1         1 intercept      42.4   
-#>  2         1 age            -0.0250
-#>  3         1 collegedegree  -0.0776
-#>  4         2 intercept      42.9   
-#>  5         2 age            -0.0356
-#>  6         2 collegedegree  -0.156 
-#>  7         3 intercept      44.4   
-#>  8         3 age            -0.0702
-#>  9         3 collegedegree  -0.441 
-#> 10         4 intercept      37.5   
+#>  1         1 intercept     41.5    
+#>  2         1 age            0.00892
+#>  3         1 collegedegree -1.37   
+#>  4         2 intercept     36.5    
+#>  5         2 age            0.108  
+#>  6         2 collegedegree  1.68   
+#>  7         3 intercept     39.7    
+#>  8         3 age            0.0444 
+#>  9         3 collegedegree -0.284  
+#> 10         4 intercept     40.9    
 #> # … with 2,990 more rows
 ```
 
@@ -566,9 +566,9 @@ get_confidence_interval(
 #> # A tibble: 3 × 3
 #>   term          lower_ci upper_ci
 #>   <chr>            <dbl>    <dbl>
-#> 1 age            -0.0964   0.0928
-#> 2 collegedegree  -2.69     2.55  
-#> 3 intercept      37.6     45.5
+#> 1 age            -0.0937   0.0947
+#> 2 collegedegree  -2.76     2.73  
+#> 3 intercept      37.6     45.1
 ```
 
 Or, we can shade p-values for each of these observed regression coefficients from the observed data.
@@ -579,7 +579,7 @@ visualize(null_fits) +
   shade_p_value(observed_fit, direction = "both")
 ```
 
-<img src="figs/unnamed-chunk-9-1.svg" width="672" />
+<img src="figs/viz_null_fits-1.svg" width="672" />
 
 That's it! This vignette covers most all of the key functionality of infer. See `help(package = "infer")` for a full list of functions and vignettes.
 
@@ -598,7 +598,7 @@ That's it! This vignette covers most all of the key functionality of infer. See 
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       America/New_York
-#>  date     2022-05-12
+#>  date     2022-05-23
 #>  pandoc   2.17.1.1 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/ (via rmarkdown)
 #> 
 #> ─ Packages ─────────────────────────────────────────────────────────

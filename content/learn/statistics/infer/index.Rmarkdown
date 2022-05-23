@@ -156,7 +156,7 @@ gss %>%
   calculate(stat = "mean")
 ```
 
-The output of `calculate()` here shows us the sample statistic (in this case, the mean) for each of our 1000 replicates. If you're carrying out inference on differences in means, medians, or proportions, or $t$ and $z$ statistics, you will need to supply an `order` argument, giving the order in which the explanatory variables should be subtracted. For instance, to find the difference in mean age of those that have a college degree and those that don't, we might write:
+The output of `calculate()` here shows us the sample statistic (in this case, the mean) for each of our 1000 replicates. If you're carrying out inference on differences in means, medians, or proportions, or `"t"` and $z$ statistics, you will need to supply an `order` argument, giving the order in which the explanatory variables should be subtracted. For instance, to find the difference in mean age of those that have a college degree and those that don't, we might write:
 
 ```{r specify-diff-in-means, warning = FALSE, message = FALSE}
 gss %>%
@@ -236,9 +236,9 @@ As you can see, 40 hours per week is not contained in this interval, which align
 
 {infer} also provides functionality to use theoretical methods for `"Chisq"`, `"F"`, `"t"` and `"z"` distributions. 
 
-Generally, to find a null distribution using theory-based methods, use the same code that you would use to find the observed statistic elsewhere, replacing calls to `calculate()` with `assume()`. For example, to calculate the observed $t$ statistic (a standardized mean):
+Generally, to find a null distribution using theory-based methods, use the same code that you would use to find the observed statistic elsewhere, replacing calls to `calculate()` with `assume()`. For example, to calculate the observed `"t"` statistic (a standardized mean):
 
-```{r, message = FALSE, warning = FALSE}
+```{r obs_t, message = FALSE, warning = FALSE}
 # calculate an observed t statistic
 obs_t <- gss %>%
   specify(response = hours) %>%
@@ -246,10 +246,10 @@ obs_t <- gss %>%
   calculate(stat = "t")
 ```
 
-Then, to define a theoretical $t$ distribution, we could write:
+Then, to define a theoretical `"t"` distribution, we could write:
 
-```{r, message = FALSE, warning = FALSE}
-# switch out calculate with assume to define a distribution
+```{r t_dist, message = FALSE, warning = FALSE}
+# switch out `calculate()` with `assume()` to define a distribution
 t_dist <- gss %>%
   specify(response = hours) %>%
   assume(distribution = "t")
@@ -257,7 +257,7 @@ t_dist <- gss %>%
 
 From here, the theoretical distribution interfaces in the same way that simulation-based null distributions do. For example, to interface with p-values:
 
-```{r, message = FALSE, warning = FALSE}
+```{r viz_t_dist, message = FALSE, warning = FALSE}
 # visualize the theoretical null distribution
 visualize(t_dist) +
   shade_p_value(obs_stat = obs_t, direction = "greater")
@@ -268,7 +268,7 @@ get_p_value(t_dist, obs_t, "greater")
 
 Confidence intervals lie on the scale of the data rather than on the standardized scale of the theoretical distribution, so be sure to use the unstandardized observed statistic when working with confidence intervals.
 
-```{r, message = FALSE, warning = FALSE}
+```{r theor_obs_mean, message = FALSE, warning = FALSE}
 # calculate the point estimate
 obs_mean <- gss %>%
   specify(response = hours) %>%
@@ -285,9 +285,9 @@ theor_ci <-
 theor_ci
 ```
 
-When visualized, the $t$ distribution will be recentered and rescaled to align with the scale of the observed data.
+When visualized, the `"t"` distribution will be recentered and rescaled to align with the scale of the observed data.
 
-```{r}
+```{r viz_t_ci}
 # visualize the theoretical sampling distribution
 visualize(t_dist) +
   shade_confidence_interval(theor_ci)
@@ -299,15 +299,15 @@ To accommodate randomization-based inference with multiple explanatory variables
 
 As an example, suppose that we want to fit `hours` worked per week using the respondent `age` and `college` completion status. We could first begin by fitting a linear model to the observed data.
 
-```{r}
+```{r mult_fit}
 observed_fit <- gss %>%
   specify(hours ~ age + college) %>%
   fit()
 ```
 
-Now, to generate null distributions for each of these terms, we can fit 1000 models to resamples of the `gss` dataset, where the response `hours` is permuted in each. Note that this code is the same as the above except for the addition of the `hypothesize` and `generate` step.
+Now, to generate null distributions for each of these terms, we can fit 1000 models to resamples of the `gss` dataset, where the response `hours` is permuted in each. Note that this code is the same as the above except for the addition of the `hypothesize()` and `generate()` step.
 
-```{r}
+```{r null_fits}
 null_fits <- gss %>%
   specify(hours ~ age + college) %>%
   hypothesize(null = "independence") %>%
@@ -321,7 +321,7 @@ To permute variables other than the response variable, the `variables` argument 
 
 Beyond this point, observed fits and distributions from null fits interface exactly like analogous outputs from `calculate()`. For instance, we can use the following code to calculate a 95% confidence interval from these objects.
 
-```{r}
+```{r null_cis}
 get_confidence_interval(
   null_fits, 
   point_estimate = observed_fit, 
@@ -331,7 +331,7 @@ get_confidence_interval(
 
 Or, we can shade p-values for each of these observed regression coefficients from the observed data.
 
-```{r}
+```{r viz_null_fits}
 visualize(null_fits) + 
   shade_p_value(observed_fit, direction = "both")
 ```
