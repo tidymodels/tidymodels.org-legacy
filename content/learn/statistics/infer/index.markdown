@@ -247,15 +247,15 @@ gss %>%
 #> # Groups:   replicate [5,000]
 #>    replicate hours
 #>        <int> <dbl>
-#>  1         1 38.6 
-#>  2         1 40.6 
-#>  3         1 54.6 
-#>  4         1 23.6 
-#>  5         1  8.62
-#>  6         1  6.62
-#>  7         1 54.6 
-#>  8         1 28.6 
-#>  9         1 28.6 
+#>  1         1 53.6 
+#>  2         1 34.6 
+#>  3         1 42.6 
+#>  4         1 40.6 
+#>  5         1 38.6 
+#>  6         1 38.6 
+#>  7         1 78.6 
+#>  8         1 33.6 
+#>  9         1  8.62
 #> 10         1 38.6 
 #> # … with 2,499,990 more rows
 ```
@@ -277,15 +277,15 @@ gss %>%
 #> # Groups:   replicate [5,000]
 #>    partyid   age replicate
 #>    <fct>   <dbl>     <int>
-#>  1 dem        36         1
-#>  2 ind        34         1
-#>  3 dem        24         1
-#>  4 dem        42         1
+#>  1 ind        36         1
+#>  2 rep        34         1
+#>  3 ind        24         1
+#>  4 ind        42         1
 #>  5 ind        31         1
-#>  6 dem        32         1
+#>  6 ind        32         1
 #>  7 dem        48         1
-#>  8 ind        36         1
-#>  9 ind        30         1
+#>  8 rep        36         1
+#>  9 rep        30         1
 #> 10 dem        33         1
 #> # … with 2,499,990 more rows
 ```
@@ -306,16 +306,16 @@ gss %>%
 #> # A tibble: 5,000 × 2
 #>    replicate  stat
 #>        <int> <dbl>
-#>  1         1  39.3
-#>  2         2  40.5
-#>  3         3  40.5
-#>  4         4  40.3
-#>  5         5  40.5
-#>  6         6  39.7
-#>  7         7  40.1
-#>  8         8  39.4
-#>  9         9  40.2
-#> 10        10  40.6
+#>  1         1  40.0
+#>  2         2  39.9
+#>  3         3  40.1
+#>  4         4  40.8
+#>  5         5  40.3
+#>  6         6  39.2
+#>  7         7  40.9
+#>  8         8  40.6
+#>  9         9  40.6
+#> 10        10  39.7
 #> # … with 4,990 more rows
 ```
 
@@ -334,16 +334,16 @@ gss %>%
 #> # A tibble: 5,000 × 2
 #>    replicate   stat
 #>        <int>  <dbl>
-#>  1         1  2.37 
-#>  2         2  1.26 
-#>  3         3 -0.461
-#>  4         4 -0.135
-#>  5         5  0.332
-#>  6         6 -0.584
-#>  7         7  1.12 
-#>  8         8  0.923
-#>  9         9  0.623
-#> 10        10  1.75 
+#>  1         1  1.22 
+#>  2         2  0.738
+#>  3         3 -0.496
+#>  4         4  0.147
+#>  5         5 -1.62 
+#>  6         6 -0.478
+#>  7         7 -1.02 
+#>  8         8  1.53 
+#>  9         9  0.958
+#> 10        10 -0.752
 #> # … with 4,990 more rows
 ```
 
@@ -405,10 +405,10 @@ p_value
 #> # A tibble: 1 × 1
 #>   p_value
 #>     <dbl>
-#> 1  0.0416
+#> 1   0.038
 ```
 
-It looks like the p-value is 0.042, which is pretty small---if the true mean number of hours worked per week was actually 40, the probability of our sample mean being this far (1.382 hours) from 40 would be 0.042. This may or may not be statistically significantly different, depending on the significance level `\(\alpha\)` you decided on *before* you ran this analysis. If you had set `\(\alpha = .05\)`, then this difference would be statistically significant, but if you had set `\(\alpha = .01\)`, then it would not be.
+It looks like the p-value is 0.038, which is pretty small---if the true mean number of hours worked per week was actually 40, the probability of our sample mean being this far (1.382 hours) from 40 would be 0.038. This may or may not be statistically significantly different, depending on the significance level `\(\alpha\)` you decided on *before* you ran this analysis. If you had set `\(\alpha = .05\)`, then this difference would be statistically significant, but if you had set `\(\alpha = .01\)`, then it would not be.
 
 To get a confidence interval around our estimate, we can write:
 
@@ -430,9 +430,9 @@ null_dist %>%
 
 As you can see, 40 hours per week is not contained in this interval, which aligns with our previous conclusion that this finding is significant at the confidence level `\(\alpha = .05\)`.
 
-## Theoretical Methods
+## Theoretical methods
 
-{infer} also provides functionality to use theoretical methods for `"Chisq"`, `"F"`, `"t"` and `"z"` distributions. 
+The infer package also provides functionality to use theoretical methods for `"Chisq"`, `"F"`, `"t"` and `"z"` distributions. 
 
 Generally, to find a null distribution using theory-based methods, use the same code that you would use to find the observed statistic elsewhere, replacing calls to `calculate()` with `assume()`. For example, to calculate the observed `"t"` statistic (a standardized mean):
 
@@ -539,16 +539,16 @@ null_fits
 #> # Groups:   replicate [1,000]
 #>    replicate term          estimate
 #>        <int> <chr>            <dbl>
-#>  1         1 intercept     41.5    
-#>  2         1 age            0.00892
-#>  3         1 collegedegree -1.37   
-#>  4         2 intercept     36.5    
-#>  5         2 age            0.108  
-#>  6         2 collegedegree  1.68   
-#>  7         3 intercept     39.7    
-#>  8         3 age            0.0444 
-#>  9         3 collegedegree -0.284  
-#> 10         4 intercept     40.9    
+#>  1         1 intercept     43.7    
+#>  2         1 age           -0.0395 
+#>  3         1 collegedegree -2.09   
+#>  4         2 intercept     43.8    
+#>  5         2 age           -0.0552 
+#>  6         2 collegedegree -0.437  
+#>  7         3 intercept     40.8    
+#>  8         3 age            0.00115
+#>  9         3 collegedegree  1.49   
+#> 10         4 intercept     39.9    
 #> # … with 2,990 more rows
 ```
 
@@ -566,9 +566,9 @@ get_confidence_interval(
 #> # A tibble: 3 × 3
 #>   term          lower_ci upper_ci
 #>   <chr>            <dbl>    <dbl>
-#> 1 age            -0.0937   0.0947
-#> 2 collegedegree  -2.76     2.73  
-#> 3 intercept      37.6     45.1
+#> 1 age            -0.0974   0.0919
+#> 2 collegedegree  -2.76     2.72  
+#> 3 intercept      37.5     45.2
 ```
 
 Or, we can shade p-values for each of these observed regression coefficients from the observed data.
