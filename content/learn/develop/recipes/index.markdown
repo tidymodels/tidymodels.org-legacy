@@ -258,7 +258,7 @@ Remember that the `prep()` function does not _apply_ the step to the data; it on
 function(object, new_data, ...)
 ```
 
-where `object` is the updated step function that has been through the corresponding `prep()` code and `new_data` is a tibble of data to be processed. 
+where `object` is the updated step function that has been through the corresponding `prep()` code and `new_data` is a tibble of data to be processed. The output of this function needs to be a tibble of the modified version of `new_data`.
 
 Here is the code to convert the new data to percentiles. The input data (`x` below) comes in as a numeric vector and the output is a vector of approximate percentiles: 
 
@@ -284,10 +284,11 @@ bake.step_percentile <- function(object, new_data, ...) {
   new_data[, vars] <-
     purrr::map2_dfc(new_data[, vars], object$ref_dist, pctl_by_approx)
   
-  ## Always convert to tibbles on the way out
-  tibble::as_tibble(new_data)
+  new_data
 }
 ```
+
+`tibble::as_tibble()` can be used at the end of the function to turn `new_data` back into a tibble if needed. We didn't use `tibble::as_tibble()` above since `new_data` stayed as a tibble throughout the whole function.
 
 {{% note %}} You need to import `recipes::prep()` and `recipes::bake()` to create your own step function in a package. {{%/ note %}}
 
@@ -508,16 +509,16 @@ tidy(rec_obj, number = 1)
 #> # A tibble: 274 × 4
 #>    term     value percentile id              
 #>    <chr>    <dbl>      <dbl> <chr>           
-#>  1 hydrogen 0.03           0 percentile_aIu1M
-#>  2 hydrogen 0.934          1 percentile_aIu1M
-#>  3 hydrogen 1.60           2 percentile_aIu1M
-#>  4 hydrogen 2.07           3 percentile_aIu1M
-#>  5 hydrogen 2.45           4 percentile_aIu1M
-#>  6 hydrogen 2.74           5 percentile_aIu1M
-#>  7 hydrogen 3.15           6 percentile_aIu1M
-#>  8 hydrogen 3.49           7 percentile_aIu1M
-#>  9 hydrogen 3.71           8 percentile_aIu1M
-#> 10 hydrogen 3.99           9 percentile_aIu1M
+#>  1 hydrogen 0.03           0 percentile_tevUA
+#>  2 hydrogen 0.934          1 percentile_tevUA
+#>  3 hydrogen 1.60           2 percentile_tevUA
+#>  4 hydrogen 2.07           3 percentile_tevUA
+#>  5 hydrogen 2.45           4 percentile_tevUA
+#>  6 hydrogen 2.74           5 percentile_tevUA
+#>  7 hydrogen 3.15           6 percentile_tevUA
+#>  8 hydrogen 3.49           7 percentile_tevUA
+#>  9 hydrogen 3.71           8 percentile_tevUA
+#> 10 hydrogen 3.99           9 percentile_tevUA
 #> # … with 264 more rows
 ```
 
@@ -598,37 +599,37 @@ tunable.step_poly <- function (x, ...) {
 ```
 #> ─ Session info ─────────────────────────────────────────────────────
 #>  setting  value
-#>  version  R version 4.1.2 (2021-11-01)
-#>  os       macOS Monterey 12.3
+#>  version  R version 4.2.0 (2022-04-22)
+#>  os       macOS Monterey 12.2.1
 #>  system   aarch64, darwin20
 #>  ui       X11
 #>  language (EN)
-#>  collate  en_GB.UTF-8
-#>  ctype    en_GB.UTF-8
-#>  tz       Europe/London
-#>  date     2022-04-11
-#>  pandoc   2.14.0.3 @ /Applications/RStudio.app/Contents/MacOS/pandoc/ (via rmarkdown)
+#>  collate  en_US.UTF-8
+#>  ctype    en_US.UTF-8
+#>  tz       America/Los_Angeles
+#>  date     2022-05-31
+#>  pandoc   2.17.1.1 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/ (via rmarkdown)
 #> 
 #> ─ Packages ─────────────────────────────────────────────────────────
-#>  package    * version date (UTC) lib source
-#>  broom      * 0.7.12  2022-01-28 [1] CRAN (R 4.1.1)
-#>  dials      * 0.1.1   2022-04-06 [1] CRAN (R 4.1.2)
-#>  dplyr      * 1.0.8   2022-02-08 [1] CRAN (R 4.1.2)
-#>  ggplot2    * 3.3.5   2021-06-25 [1] CRAN (R 4.1.1)
-#>  infer      * 1.0.0   2021-08-13 [1] CRAN (R 4.1.1)
-#>  modeldata  * 0.1.1   2021-07-14 [1] CRAN (R 4.1.2)
-#>  parsnip    * 0.2.1   2022-03-17 [1] CRAN (R 4.1.1)
-#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.1.0)
-#>  recipes    * 0.2.0   2022-02-18 [1] CRAN (R 4.1.1)
-#>  rlang        1.0.2   2022-03-04 [1] CRAN (R 4.1.1)
-#>  rsample    * 0.1.1   2021-11-08 [1] CRAN (R 4.1.2)
-#>  tibble     * 3.1.6   2021-11-07 [1] CRAN (R 4.1.1)
-#>  tidymodels * 0.2.0   2022-03-19 [1] CRAN (R 4.1.1)
-#>  tune       * 0.2.0   2022-03-19 [1] CRAN (R 4.1.2)
-#>  workflows  * 0.2.6   2022-03-18 [1] CRAN (R 4.1.2)
-#>  yardstick  * 0.0.9   2021-11-22 [1] CRAN (R 4.1.1)
+#>  package    * version    date (UTC) lib source
+#>  broom      * 0.8.0      2022-04-13 [1] CRAN (R 4.2.0)
+#>  dials      * 0.1.1      2022-04-06 [1] CRAN (R 4.2.0)
+#>  dplyr      * 1.0.9      2022-04-28 [1] CRAN (R 4.2.0)
+#>  ggplot2    * 3.3.6      2022-05-03 [1] CRAN (R 4.2.0)
+#>  infer      * 1.0.0      2021-08-13 [1] CRAN (R 4.2.0)
+#>  modeldata  * 0.1.1      2021-07-14 [1] CRAN (R 4.2.0)
+#>  parsnip    * 0.2.1.9002 2022-05-31 [1] local
+#>  purrr      * 0.3.4      2020-04-17 [1] CRAN (R 4.2.0)
+#>  recipes    * 0.2.0      2022-02-18 [1] CRAN (R 4.2.0)
+#>  rlang        1.0.2      2022-03-04 [1] CRAN (R 4.2.0)
+#>  rsample    * 0.1.1      2021-11-08 [1] CRAN (R 4.2.0)
+#>  tibble     * 3.1.7      2022-05-03 [1] CRAN (R 4.2.0)
+#>  tidymodels * 0.2.0      2022-03-19 [1] CRAN (R 4.2.0)
+#>  tune       * 0.2.0.9002 2022-05-31 [1] Github (tidymodels/tune@08d6ae3)
+#>  workflows  * 0.2.6.9001 2022-05-31 [1] Github (tidymodels/workflows@9a9e231)
+#>  yardstick  * 0.0.9.9000 2022-05-31 [1] Github (tidymodels/yardstick@e56b69f)
 #> 
-#>  [1] /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/library
+#>  [1] /Library/Frameworks/R.framework/Versions/4.2-arm64/Resources/library
 #> 
 #> ────────────────────────────────────────────────────────────────────
 ```
