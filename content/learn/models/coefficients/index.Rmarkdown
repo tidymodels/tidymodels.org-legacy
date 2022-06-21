@@ -124,7 +124,7 @@ There is _another_ column in this element called `.extracts` that has the result
 lm_res$.extracts[[1]]$.extracts[[1]]
 ```
 
-These nested columns can be flattened via the purrr `unnest()` function: 
+These nested columns can be flattened via the tidyr `unnest()` function: 
 
 ```{r lm-extract-almost}
 lm_res %>% 
