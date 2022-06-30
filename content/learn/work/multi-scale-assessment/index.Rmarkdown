@@ -248,7 +248,7 @@ riemann_metrics <- riemann_resamples %>%
 head(riemann_metrics)
 ```
 
-And just like that, we've got a multi-scale assessment of our model's accuracy! We can then use this to investigate and report how well our model does at different levels of aggregation. For instance, by plotting RMSE against MAE at various scales, it appears that our RMSE increases with aggregation while MAE decreases. This hints that, as we aggregate our predictions to larger hexagons, more of our model's overall error is driven by large outliers:
+And just like that, we've got a multi-scale assessment of our model's accuracy! To repeat a point from earlier, we aren't using this as a way to tune our model. Instead, we can use our results to investigate and report how well our model does at different levels of aggregation. For instance, by plotting RMSE against MAE at various scales, it appears that our RMSE increases with aggregation while MAE decreases. This hints that, as we aggregate our predictions to larger hexagons, more of our model's overall error is driven by large outliers:
 
 ```{r}
 library(ggplot2)

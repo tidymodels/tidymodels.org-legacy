@@ -249,7 +249,7 @@ head(riemann_metrics)
 #> 6    30000 rmse    standard   7725.   205   218.  Preprocessor1_Model1
 ```
 
-And just like that, we've got a multi-scale assessment of our model's accuracy! We can then use this to investigate and report how well our model does at different levels of aggregation. For instance, by plotting RMSE against MAE at various scales, it appears that our RMSE increases with aggregation while MAE decreases. This hints that, as we aggregate our predictions to larger hexagons, more of our model's overall error is driven by large outliers:
+And just like that, we've got a multi-scale assessment of our model's accuracy! To repeat a point from earlier, we aren't using this as a way to tune our model. Instead, we can use our results to investigate and report how well our model does at different levels of aggregation. For instance, by plotting RMSE against MAE at various scales, it appears that our RMSE increases with aggregation while MAE decreases. This hints that, as we aggregate our predictions to larger hexagons, more of our model's overall error is driven by large outliers:
 
 
 ```r
@@ -297,12 +297,12 @@ Riemann, R., Wilston, B. T., Lister, A., and Parks, S. 2010. An effective assess
 #>  rlang           1.0.3      2022-06-27 [1] CRAN (R 4.2.1)
 #>  rsample       * 1.0.0      2022-06-24 [1] CRAN (R 4.2.1)
 #>  sf            * 1.0-7      2022-03-07 [1] CRAN (R 4.2.0)
-#>  spatialsample * 0.2.0.9000 2022-06-30 [1] local
+#>  spatialsample * 0.2.0.9000 2022-06-30 [1] Github (tidymodels/spatialsample@2075fb7)
 #>  tibble        * 3.1.7      2022-05-03 [1] CRAN (R 4.2.0)
 #>  tidymodels    * 0.2.0      2022-03-19 [1] CRAN (R 4.2.1)
 #>  tune          * 0.2.0      2022-03-19 [1] CRAN (R 4.2.1)
-#>  workflows     * 0.2.6.9001 2022-06-16 [1] Github (tidymodels/workflows@4f9c323)
-#>  yardstick     * 1.0.0.9000 2022-06-16 [1] Github (tidymodels/yardstick@90ab794)
+#>  workflows     * 0.2.6      2022-03-18 [1] CRAN (R 4.2.1)
+#>  yardstick     * 1.0.0      2022-06-06 [1] CRAN (R 4.2.1)
 #> 
 #>  [1] /home/mikemahoney218/R/x86_64-pc-linux-gnu-library/4.2
 #>  [2] /usr/local/lib/R/site-library
