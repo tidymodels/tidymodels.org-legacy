@@ -8,30 +8,13 @@ description: |
   Assess how accurate a model is when aggregating predictions to different spatial scales.
 ---
 
-```{r setup, include = FALSE, message = FALSE, warning = FALSE}
-source(here::here("content/learn/common.R"))
-```
 
-```{r load, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
 
-library(tidymodels)
-library(spatialsample)
-library(sf)
-library(dplyr)
-library(ggplot2)
 
-pkgs <- c("tidymodels", "spatialsample", "sf", "dplyr", "ggplot2")
-
-theme_set(theme_bw() + theme(legend.position = "top"))
-```
 
 ## Introduction
 
-`r req_pkgs(pkgs)`
+To use the code in this article, you will need to install the following packages: spatialsample and tidymodels.
 
 Modeling spatially structured data is complicated. In addition to the usual difficulty of statistical modeling, models of spatially structured data may have spatial structure in their errors, with different regions being more or less well-described by a given model. This also means that accuracy metrics for these models might change depending on what spatial scale is being assessed. Only investigating model accuracy at larger aggregation scales, such as when accuracy is only assessed for the entire study area as a whole, might "smooth out" these local differences and present an inaccurate picture of model performance.
 
@@ -46,7 +29,8 @@ Because we're mostly interested in assessing our models, let's not focus on how 
 <details>
 <summary>Pre-processing code</summary>
 
-```{r, eval=FALSE}
+
+```r
 library(dplyr)
 
 # Download the FIA database for New York over the internet,
@@ -119,23 +103,16 @@ readr::write_csv(plot_measurements, "plot_measurements.csv")
 
 With that pre-processing done, it's time to load our data and turn it into an sf object. We're going to reproject our data to use a coordinate reference system that the US government tends to use for national data products, like the FIA:
 
-```{r echo=FALSE, message=FALSE}
-library(sf)
 
-invisible(sf_proj_network(TRUE))
 
-plot_measurements <- readr::read_csv("./plot_measurements.csv") %>% 
-  st_as_sf(coords = c("long", "lat"), crs = 4326) %>% 
-  st_transform(5070)
-```
 
-```{r message=FALSE, eval=FALSE}
+```r
 library(sf)
 
 invisible(sf_proj_network(TRUE))
 
 plot_measurements <- 
-  readr::read_csv("https://www.tidymodels.org/learn/work/multi-scale-assessment/plot_measurements.csv") %>% 
+  readr::read_csv("https://www.tidymodels.org/learn/work/multi-scale/plots.csv") %>% 
   st_as_sf(coords = c("long", "lat"), crs = 4326) %>% 
   st_transform(5070)
 ```
@@ -148,7 +125,8 @@ This is what we're going to resample. We want to assess our model's performance 
 
 So to get started, we need to block our study area. We can do this using the `spatial_block_cv()` function from spatialsample. We'll generate ten different sets of hexagon tiles, using `cellsize` arguments of between 10,000 and 100,000 meters. The code to do that, and to store all of our resamples in a single tibble, looks like this:
 
-```{r, message=FALSE, warning=FALSE}
+
+```r
 set.seed(123)
 library(dplyr)
 library(spatialsample)
@@ -175,25 +153,34 @@ Two things to highlight about this code:
 
 If we want, we can visualize a few of our resamples, to get a sense of what our tiling looks like:
 
-```{r}
+
+```r
 autoplot(riemann_resamples$resamples[[9]])
 ```
 
-```{r}
+<img src="figs/unnamed-chunk-5-1.svg" width="672" />
+
+
+```r
 autoplot(riemann_resamples$resamples[[10]])
 ```
 
+<img src="figs/unnamed-chunk-6-1.svg" width="672" />
+
 And that's step 1 of the process completed! Now we need to move on to step 2, and actually fit models to each of these resamples. As a heads-up, this is a _lot_ of models, and so is going to take a while:
 
-```{r}
+
+```r
 riemann_resamples$resamples %>% purrr::map_dbl(nrow) %>% sum()
+#> [1] 2600
 ```
 
-Linear regression was invented around 1805, long before the Analytical Engine was a twinkle in Babbage's eye. Whenever you get frustrated at how long it takes to fit many models, it's nice to take a step back and recognize that we're asking our poor, overworked computers to fit roughly as many models as were used in the first ~100 years of the technique's life. 
+Linear regression was invented invented around 1805, long before the Analytical Engine was a twinkle in Babbage's eye. Whenever you get frustrated at how long it takes to fit many models, it's nice to take a step back and recognize that we're asking our poor, overworked computers to fit roughly as many models as were used in the first ~100 years of the technique's life. 
 
-Fitting those few thousand models is a two part process. First, we're going to load the rest of the tidymodels packages and use them to define a workflow (from the workflows package), specifying the formula and model that we want to fit to each resample:
+Now let's load the rest of the tidymodels packages, then use them to define a workflow (from the workflows package), specifying the formula and model that we want to fit to each resample:
 
-```{r message=FALSE}
+
+```r
 library(tidymodels)
 
 lm_workflow <- workflow(agb ~ n_trees, linear_reg())
@@ -201,7 +188,8 @@ lm_workflow <- workflow(agb ~ n_trees, linear_reg())
 
 Next, we'll actually apply that workflow a few thousand times! We'll calculate two metrics for each run of the model: the root-mean-squared error (RMSE) and the mean absolute error (MAE). We can add these metrics as a new column to our resamples using the following:
 
-```{r message=FALSE}
+
+```r
 riemann_resamples <- riemann_resamples %>% 
   mutate(
     resampled_outputs = purrr::map(
@@ -217,7 +205,8 @@ The `riemann_resamples` object now includes both our original resamples as well 
 
 For instance, if we wanted to plot block-level RMSE for our largest assessment scale, we could use the following code to "unnest" our nested metric and resample columns:
 
-```{r}
+
+```r
 riemann_resamples$resampled_outputs[[10]] %>% 
   mutate(splits = purrr::map(splits, assessment)) %>% 
   unnest(.metrics) %>% 
@@ -225,12 +214,17 @@ riemann_resamples$resampled_outputs[[10]] %>%
   unnest(splits) %>% 
   st_as_sf() %>% 
   ggplot(aes(color = .estimate)) + 
-  geom_sf()
+  geom_sf() + 
+  scale_color_continuous("RMSE") + 
+  theme(legend.key.width = unit(1, "cm"))
 ```
+
+<img src="figs/unnamed-chunk-10-1.svg" width="672" />
 
 We can also go on to the third step of our assessment process, and get our model accuracy metrics for each aggregation scale we investigated. We'll create a new data frame with only our cellsize variable and the associated model metrics:
 
-```{r}
+
+```r
 riemann_metrics <- riemann_resamples %>% 
   transmute(
     cellsize = cellsize,
@@ -239,11 +233,21 @@ riemann_metrics <- riemann_resamples %>%
   unnest(resampled_metrics)
 
 head(riemann_metrics)
+#> # A tibble: 6 × 7
+#>   cellsize .metric .estimator  mean     n std_err .config             
+#>      <dbl> <chr>   <chr>      <dbl> <int>   <dbl> <chr>               
+#> 1    10000 mae     standard   5787.  1541    99.9 Preprocessor1_Model1
+#> 2    10000 rmse    standard   6980.  1541   121.  Preprocessor1_Model1
+#> 3    20000 mae     standard   5722.   424   130.  Preprocessor1_Model1
+#> 4    20000 rmse    standard   7644.   424   169.  Preprocessor1_Model1
+#> 5    30000 mae     standard   5637.   205   161.  Preprocessor1_Model1
+#> 6    30000 rmse    standard   7725.   205   218.  Preprocessor1_Model1
 ```
 
 And just like that, we've got a multi-scale assessment of our model's accuracy! To repeat a point from earlier, we aren't using this as a way to tune our model. Instead, we can use our results to investigate and report how well our model does at different levels of aggregation. For instance, by plotting RMSE against MAE at various scales, it appears that our RMSE increases with aggregation while MAE decreases. This hints that, as we aggregate our predictions to larger hexagons, more of our model's overall error is driven by large outliers:
 
-```{r}
+
+```r
 library(ggplot2)
 
 ggplot(riemann_metrics, aes(cellsize, mean, color = .metric)) + 
@@ -252,12 +256,52 @@ ggplot(riemann_metrics, aes(cellsize, mean, color = .metric)) +
   theme_minimal()
 ```
 
+<img src="figs/unnamed-chunk-12-1.svg" width="672" />
+
 ## References
 
 Riemann, R., Wilston, B. T., Lister, A., and Parks, S. 2010. An effective assessment protocol for continuous geospatial datasets of forest characteristics using USFS Forest Inventory and Analysis (FIA) data. Remote Sensing of Environment, 114, pp. 2337-2353. doi: 10.1016/j.rse.2010.05.010.
 
 ## Session information
 
-```{r si, echo = FALSE}
-small_session(pkgs)
+
+```
+#> ─ Session info ─────────────────────────────────────────────────────
+#>  setting  value
+#>  version  R version 4.2.1 (2022-06-23)
+#>  os       Ubuntu 20.04.4 LTS
+#>  system   x86_64, linux-gnu
+#>  ui       X11
+#>  language (EN)
+#>  collate  en_US.UTF-8
+#>  ctype    en_US.UTF-8
+#>  tz       America/New_York
+#>  date     2022-07-01
+#>  pandoc   2.17.1.1 @ /usr/lib/rstudio/bin/quarto/bin/ (via rmarkdown)
+#> 
+#> ─ Packages ─────────────────────────────────────────────────────────
+#>  package       * version    date (UTC) lib source
+#>  broom         * 0.8.0      2022-04-13 [1] CRAN (R 4.2.0)
+#>  dials         * 1.0.0      2022-06-14 [1] CRAN (R 4.2.1)
+#>  dplyr         * 1.0.9      2022-04-28 [1] CRAN (R 4.2.0)
+#>  ggplot2       * 3.3.6      2022-05-03 [1] CRAN (R 4.2.0)
+#>  infer         * 1.0.2      2022-06-10 [1] CRAN (R 4.2.0)
+#>  parsnip       * 1.0.0      2022-06-16 [1] CRAN (R 4.2.1)
+#>  purrr         * 0.3.4      2020-04-17 [1] CRAN (R 4.2.0)
+#>  recipes       * 0.2.0      2022-02-18 [1] CRAN (R 4.2.0)
+#>  rlang           1.0.3      2022-06-27 [1] CRAN (R 4.2.1)
+#>  rsample       * 1.0.0.9000 2022-07-01 [1] local
+#>  spatialsample * 0.2.0      2022-06-17 [1] CRAN (R 4.2.1)
+#>  tibble        * 3.1.7      2022-05-03 [1] CRAN (R 4.2.0)
+#>  tidymodels    * 0.2.0      2022-03-19 [1] CRAN (R 4.2.1)
+#>  tune          * 0.2.0      2022-03-19 [1] CRAN (R 4.2.1)
+#>  workflows     * 0.2.6      2022-03-18 [1] CRAN (R 4.2.1)
+#>  yardstick     * 1.0.0      2022-06-06 [1] CRAN (R 4.2.1)
+#> 
+#>  [1] /home/mikemahoney218/R/x86_64-pc-linux-gnu-library/4.2
+#>  [2] /usr/local/lib/R/site-library
+#>  [3] /usr/lib/R/site-library
+#>  [4] /usr/lib/R/library
+#> 
+#> ────────────────────────────────────────────────────────────────────
 ```
