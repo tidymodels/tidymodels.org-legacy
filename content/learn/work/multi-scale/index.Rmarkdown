@@ -218,7 +218,7 @@ The `riemann_resamples` object now includes both our original resamples as well 
 For instance, if we wanted to plot block-level RMSE for our largest assessment scale, we could use the following code to "unnest" our nested metric and resample columns:
 
 ```{r}
-riemann_resamples$resampled_outputs[[10]] %>% 
+riemann_resamples$resampled_outputs[[10]] %>%
   mutate(splits = purrr::map(splits, assessment)) %>% 
   unnest(.metrics) %>% 
   filter(.metric == "rmse") %>% 
