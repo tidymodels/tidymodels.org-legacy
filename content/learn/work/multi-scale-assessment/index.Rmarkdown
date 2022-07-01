@@ -143,7 +143,7 @@ plot_measurements <-
 This is what we're going to resample. We want to assess our model's performance at multiple scales, following the approach in Riemann et al. That means we need to do the following:
 
 1. Block our study area using multiple sets of regular hexagons of different sizes, and assign our data to the hexagon it falls into within each set.
-2. Perform leave-one-block-out cross-validation with each of those sets, fitting our model to n - 1 of the n hexagons we've created and assessing it on the hold-out hexagon.
+2. Perform leave-one-block-out cross-validation with each of those sets, fitting our model to `n - 1` of the `n` hexagons we've created and assessing it on the hold-out hexagon.
 3. Calculate model accuracy for each size based on those held-out hexes.
 
 So to get started, we need to block our study area. We can do this using the `spatial_block_cv()` function from spatialsample. We'll generate ten different sets of hexagon tiles, using `cellsize` arguments of between 10,000 and 100,000 meters. The code to do that, and to store all of our resamples in a single tibble, looks like this:
@@ -164,10 +164,7 @@ create_resample <- function(cellsize) {
 }
 
 riemann_resamples <- tibble(
-  resamples = purrr::map(
-    cellsize, 
-    create_resample
-  ),
+  resamples = purrr::map(cellsize, create_resample)
 )
 ```
 
@@ -189,14 +186,10 @@ autoplot(riemann_resamples$resamples[[10]])
 And that's step 1 of the process completed! Now we need to move on to step 2, and actually fit models to each of these resamples. As a heads-up, this is a _lot_ of models, and so is going to take a while:
 
 ```{r}
-purrr::map_dbl(
-  riemann_resamples$resamples,
-  nrow
-) %>% 
-  sum()
+riemann_resamples$resamples %>% purrr::map_dbl(nrow) %>% sum()
 ```
 
-Linear regression was invented in 1805, ish, long before the Analytical Engine was a twinkle in Babbage's eye. Whenever you get frustrated at how long it takes to fit many models, it's nice to take a step back and recognize that we're asking our poor, overworked computers to fit roughly as many models as were used in the first ~100 years of the technique's life. 
+Linear regression was invented around 1805, long before the Analytical Engine was a twinkle in Babbage's eye. Whenever you get frustrated at how long it takes to fit many models, it's nice to take a step back and recognize that we're asking our poor, overworked computers to fit roughly as many models as were used in the first ~100 years of the technique's life. 
 
 Fitting those few thousand models is a two part process. First, we're going to load the rest of the tidymodels packages and use them to define a workflow (from the workflows package), specifying the formula and model that we want to fit to each resample:
 
