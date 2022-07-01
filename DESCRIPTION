@@ -52,6 +52,7 @@ Imports:
     scales,
     sessioninfo,
     skimr,
+    spatialsample,
     stringr,
     sweep,
     textfeatures,
