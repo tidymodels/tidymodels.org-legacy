@@ -33,7 +33,7 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 
 `r req_pkgs(pkgs)`
 
-Modeling spatially structured data is complicated. In addition to the usual difficulty of statistical modeling, models of spatially structured data may have spatial structure in their errors, with different regions being more or less well-described by a given model. This also means that accuracy metrics for these models might change depending on what spatial scale is being assessed. Only investigating model accuracy at larger aggregation scales, such as when accuracy is only assessed for the entire study area as a whole, might "smooth out" these local differences and present an inaccurate picture of model performance.
+Modeling spatially structured data is complicated. In addition to the usual difficulty of statistical modeling, models of spatially structured data may have spatial structure in their errors, with different regions being more or less well-described by a given model. This also means that it can be hard to tell how well your model performs when its predictions are aggregated to different scales, which is common when models fit to data from point measurements (for instance, the sale prices of individual homes) are used to try and estimate quantities over an entire area (the average value of all homes in a city or state). If model accuracy is only investigated at individual aggregation scales, such as when accuracy is only assessed for the original point measurements or across the entire study area as a whole, then local differences in accuracy might be "smoothed out" accidentally resulting in an inaccurate picture of model performance.
 
 For this reason, researchers (most notably, [Riemann et al. (2010)](https://www.nrs.fs.fed.us/pubs/jrnl/2010/nrs_2010_riemann_001.pdf)) have suggested assessing models at multiple scales of spatial aggregation to ensure cross-scale differences in model accuracy are identified and reported. This is not the same thing as [tuning a model](https://www.tidymodels.org/start/tuning/), where we're looking to select the best hyperparameters for our final model fit; instead, we want to assess how that final model performs when its predictions are aggregated to multiple scales. This post walks through how to do that using the [spatialsample](https://spatialsample.tidymodels.org/) package.
 
@@ -77,7 +77,7 @@ plots <- tbl(con, "PLOT")
 # plots which might not be remeasured anymore with a call to filter()
 plots <- plots %>% 
   group_by(PLOT) %>% 
-  filter(INVYR == max(INVYR, na.rm = TRUE)) %>% 
+  filter(INVYR == max(INVYR, na.rm = TRUE)) %>%
   ungroup() %>% 
   filter(INVYR > 2009) %>% 
   collect()
@@ -112,24 +112,14 @@ plot_measurements <- trees %>%
 
 DBI::dbDisconnect(con)
 
-readr::write_csv(plot_measurements, "plot_measurements.csv")
+readr::write_csv(plot_measurements, "plots.csv")
 ```
 
 </details>
 
 With that pre-processing done, it's time to load our data and turn it into an sf object. We're going to reproject our data to use a coordinate reference system that the US government tends to use for national data products, like the FIA:
 
-```{r echo=FALSE, message=FALSE}
-library(sf)
-
-invisible(sf_proj_network(TRUE))
-
-plot_measurements <- readr::read_csv("./plots.csv") %>% 
-  st_as_sf(coords = c("long", "lat"), crs = 4326) %>% 
-  st_transform(5070)
-```
-
-```{r message=FALSE, eval=FALSE}
+```{r message=FALSE}
 library(sf)
 
 invisible(sf_proj_network(TRUE))
@@ -144,7 +134,7 @@ This is what we're going to resample. We want to assess our model's performance 
 
 1. Block our study area using multiple sets of regular hexagons of different sizes, and assign our data to the hexagon it falls into within each set.
 2. Perform leave-one-block-out cross-validation with each of those sets, fitting our model to `n - 1` of the `n` hexagons we've created and assessing it on the hold-out hexagon.
-3. Calculate model accuracy for each size based on those held-out hexes.
+3. Calculate model accuracy for each size based on the aggregated predictions for each of those held-out hexes.
 
 So to get started, we need to block our study area. We can do this using the `spatial_block_cv()` function from spatialsample. We'll generate ten different sets of hexagon tiles, using `cellsize` arguments of between 10,000 and 100,000 meters. The code to do that, and to store all of our resamples in a single tibble, looks like this:
 
@@ -164,13 +154,14 @@ create_resample <- function(cellsize) {
 }
 
 riemann_resamples <- tibble(
+  cellsize = cellsize,
   resamples = purrr::map(cellsize, create_resample)
 )
 ```
 
 Two things to highlight about this code:
 
-+ `cellsize` is in meters because our coordinate reference system is in meters. This argument represents the length of the [apothem](https://en.wikipedia.org/wiki/Apothem), from the center of each polygon to the middle of the side
++ `cellsize` is in meters because our coordinate reference system is in meters. This argument represents the length of the [apothem](https://en.wikipedia.org/wiki/Apothem), from the center of each polygon to the middle of the side.
 +  `v` is `Inf` because we want to perform leave-one-block-out cross-validation, but we don't know how many blocks there will be before they're created. This is the supported way to do leave-one-X-out cross-validation in spatialsample > 0.2.0 (another option is to set `v = NULL`).
 
 If we want, we can visualize a few of our resamples, to get a sense of what our tiling looks like:
@@ -199,56 +190,53 @@ library(tidymodels)
 lm_workflow <- workflow(agb ~ n_trees, linear_reg())
 ```
 
-Next, we'll actually apply that workflow a few thousand times! We'll calculate two metrics for each run of the model: the root-mean-squared error (RMSE) and the mean absolute error (MAE). We can add these metrics as a new column to our resamples using the following:
+Next, we'll actually apply that workflow a few thousand times! Now as we said at the start, we aren't looking to tune our models using these resamples. Instead, we're looking to see how well our point predictions do at estimating AGB across larger areas. As such, we don't really care about calculating model metrics for each hexagon, and we'll set our code to only calculate a single metric (root-mean-squared error, or RMSE) to save a little bit of time. We'll also use the `control_resamples()` function with `save_pred = TRUE` to make sure we keep the predictions we're making across each resample. We can add these predictions as a new column to our resamples using the following:
 
 ```{r message=FALSE}
-riemann_resamples <- riemann_resamples %>% 
+riemann_resamples <- riemann_resamples %>%
   mutate(
     resampled_outputs = purrr::map(
       resamples, 
       fit_resamples,
       object = lm_workflow,
-      metrics = metric_set(rmse, mae)
+      metrics = metric_set(rmse),
+      control = control_resamples(save_pred = TRUE)
     )
   )
 ```
 
-The `riemann_resamples` object now includes both our original resamples as well as the accuracy metrics associated with each run of the model. A very cool thing about this approach is that we can now visualize our block-level accuracy metrics with a few lines of code. 
-
-For instance, if we wanted to plot block-level RMSE for our largest assessment scale, we could use the following code to "unnest" our nested metric and resample columns:
-
-```{r}
-riemann_resamples$resampled_outputs[[10]] %>%
-  mutate(splits = purrr::map(splits, assessment)) %>% 
-  unnest(.metrics) %>% 
-  filter(.metric == "rmse") %>% 
-  unnest(splits) %>% 
-  st_as_sf() %>% 
-  ggplot(aes(color = .estimate)) + 
-  geom_sf() + 
-  scale_color_continuous("RMSE") + 
-  theme(legend.key.width = unit(1, "cm"))
-```
-
-We can also go on to the third step of our assessment process, and get our model accuracy metrics for each aggregation scale we investigated. We'll create a new data frame with only our cellsize variable and the associated model metrics:
+The `riemann_resamples` object now includes both our original resamples as well as the predictions generated from each run of the model. We can use the following code to "unnest" our predictions and estimate both the average "true" AGB and our average prediction at each hexagon:
 
 ```{r}
 riemann_metrics <- riemann_resamples %>% 
+  select(cellsize, resampled_outputs) %>% 
+  unnest(resampled_outputs) %>%
   transmute(
     cellsize = cellsize,
-    resampled_metrics = purrr::map(resampled_outputs, collect_metrics)
-  ) %>% 
-  unnest(resampled_metrics)
+    mean_agb  = purrr::map_dbl(.predictions, function(x) mean(x$agb)),
+    mean_pred = purrr::map_dbl(.predictions, function(x) mean(x$.pred))
+  ) 
 
 head(riemann_metrics)
 ```
 
-And just like that, we've got a multi-scale assessment of our model's accuracy! To repeat a point from earlier, we aren't using this as a way to tune our model. Instead, we can use our results to investigate and report how well our model does at different levels of aggregation. For instance, by plotting RMSE against MAE at various scales, it appears that our RMSE increases with aggregation while MAE decreases. This hints that, as we aggregate our predictions to larger hexagons, more of our model's overall error is driven by large outliers:
+Now that we've got our "true" and estimated AGB for each hexagon, all that's left is for us to calculate our model accuracy metrics for each aggregation scale we investigated. We can use functions from yardstick to quickly calculate our root-mean-squared error (RMSE) and mean absolute error (MAE) for each cell size we investigated:
+
+```{r}
+riemann_metrics <- riemann_metrics %>%
+  group_by(cellsize) %>%
+  summarize(rmse = rmse_vec(mean_agb, mean_pred),
+            mae  =  mae_vec(mean_agb, mean_pred))
+```
+
+And just like that, we've got a multi-scale assessment of our model's accuracy! To repeat a point from earlier, we aren't using this as a way to tune our model. Instead, we can use our results to investigate and report how well our model does at different levels of aggregation. For instance, while it appears that both RMSE and MAE improve as we aggregate our predictions to larger and larger hexagons, some scales have a much larger difference between the two metrics than others. This hints that, at those specific scales, a few individual hexagons are large outliers driving RMSE higher, which might indicate that our model isn't performing well in a few specific locations:
 
 ```{r}
 library(ggplot2)
 
-ggplot(riemann_metrics, aes(cellsize, mean, color = .metric)) + 
+riemann_metrics %>%
+  pivot_longer(-cellsize) %>%
+  ggplot(aes(cellsize, value, color = name)) + 
   geom_line() +
   geom_point() + 
   theme_minimal()
