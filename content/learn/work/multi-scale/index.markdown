@@ -174,7 +174,7 @@ riemann_resamples$resamples %>% purrr::map_dbl(nrow) %>% sum()
 #> [1] 2600
 ```
 
-Linear regression was invented invented around 1805, long before the Analytical Engine was a twinkle in Babbage's eye. Whenever you get frustrated at how long it takes to fit many models, it's nice to take a step back and recognize that we're asking our poor, overworked computers to fit roughly as many models as were used in the first ~100 years of the technique's life. 
+Linear regression was invented around 1805, long before the Analytical Engine was a twinkle in Babbage's eye. Whenever you get frustrated at how long it takes to fit many models, it's nice to take a step back and recognize that we're asking our poor, overworked computers to fit roughly as many models as were used in the first ~100 years of the technique's life. 
 
 Now let's load the rest of the tidymodels packages, then use them to define a workflow (from the workflows package), specifying the formula and model that we want to fit to each resample:
 
@@ -270,7 +270,7 @@ Riemann, R., Wilston, B. T., Lister, A., and Parks, S. 2010. An effective assess
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       America/New_York
-#>  date     2022-07-02
+#>  date     2022-07-06
 #>  pandoc   2.17.1.1 @ /usr/lib/rstudio/bin/quarto/bin/ (via rmarkdown)
 #> 
 #> ─ Packages ─────────────────────────────────────────────────────────
