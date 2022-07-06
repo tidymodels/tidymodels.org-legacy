@@ -174,7 +174,7 @@ riemann_resamples$resamples %>% purrr::map_dbl(nrow) %>% sum()
 #> [1] 2600
 ```
 
-Linear regression was invented invented around 1805, long before the Analytical Engine was a twinkle in Babbage's eye. Whenever you get frustrated at how long it takes to fit many models, it's nice to take a step back and recognize that we're asking our poor, overworked computers to fit roughly as many models as were used in the first ~100 years of the technique's life. 
+Linear regression was invented around 1805, long before the Analytical Engine was a twinkle in Babbage's eye. Whenever you get frustrated at how long it takes to fit many models, it's nice to take a step back and recognize that we're asking our poor, overworked computers to fit roughly as many models as were used in the first ~100 years of the technique's life. 
 
 Now let's load the rest of the tidymodels packages, then use them to define a workflow (from the workflows package), specifying the formula and model that we want to fit to each resample:
 
@@ -270,27 +270,27 @@ Riemann, R., Wilston, B. T., Lister, A., and Parks, S. 2010. An effective assess
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       America/New_York
-#>  date     2022-07-02
+#>  date     2022-07-06
 #>  pandoc   2.17.1.1 @ /usr/lib/rstudio/bin/quarto/bin/ (via rmarkdown)
 #> 
 #> ─ Packages ─────────────────────────────────────────────────────────
-#>  package       * version date (UTC) lib source
-#>  broom         * 0.8.0   2022-04-13 [1] CRAN (R 4.2.0)
-#>  dials         * 1.0.0   2022-06-14 [1] CRAN (R 4.2.1)
-#>  dplyr         * 1.0.9   2022-04-28 [1] CRAN (R 4.2.0)
-#>  ggplot2       * 3.3.6   2022-05-03 [1] CRAN (R 4.2.0)
-#>  infer         * 1.0.2   2022-06-10 [1] CRAN (R 4.2.0)
-#>  parsnip       * 1.0.0   2022-06-16 [1] CRAN (R 4.2.1)
-#>  purrr         * 0.3.4   2020-04-17 [1] CRAN (R 4.2.0)
-#>  recipes       * 0.2.0   2022-02-18 [1] CRAN (R 4.2.0)
-#>  rlang           1.0.3   2022-06-27 [1] CRAN (R 4.2.1)
-#>  rsample       * 1.0.0   2022-06-24 [1] CRAN (R 4.2.1)
-#>  spatialsample * 0.2.0   2022-06-17 [1] CRAN (R 4.2.1)
-#>  tibble        * 3.1.7   2022-05-03 [1] CRAN (R 4.2.0)
-#>  tidymodels    * 0.2.0   2022-03-19 [1] CRAN (R 4.2.1)
-#>  tune          * 0.2.0   2022-03-19 [1] CRAN (R 4.2.1)
-#>  workflows     * 0.2.6   2022-03-18 [1] CRAN (R 4.2.1)
-#>  yardstick     * 1.0.0   2022-06-06 [1] CRAN (R 4.2.1)
+#>  package       * version    date (UTC) lib source
+#>  broom         * 0.8.0      2022-04-13 [1] CRAN (R 4.2.0)
+#>  dials         * 1.0.0      2022-06-14 [1] CRAN (R 4.2.1)
+#>  dplyr         * 1.0.9      2022-04-28 [1] CRAN (R 4.2.0)
+#>  ggplot2       * 3.3.6      2022-05-03 [1] CRAN (R 4.2.0)
+#>  infer         * 1.0.2      2022-06-10 [1] CRAN (R 4.2.0)
+#>  parsnip       * 1.0.0      2022-06-16 [1] CRAN (R 4.2.1)
+#>  purrr         * 0.3.4      2020-04-17 [1] CRAN (R 4.2.0)
+#>  recipes       * 0.2.0      2022-02-18 [1] CRAN (R 4.2.0)
+#>  rlang           1.0.3      2022-06-27 [1] CRAN (R 4.2.1)
+#>  rsample       * 1.0.0.9000 2022-07-06 [1] local
+#>  spatialsample * 0.2.0.9000 2022-07-06 [1] local
+#>  tibble        * 3.1.7      2022-05-03 [1] CRAN (R 4.2.0)
+#>  tidymodels    * 0.2.0      2022-03-19 [1] CRAN (R 4.2.1)
+#>  tune          * 0.2.0      2022-03-19 [1] CRAN (R 4.2.1)
+#>  workflows     * 0.2.6      2022-03-18 [1] CRAN (R 4.2.1)
+#>  yardstick     * 1.0.0      2022-06-06 [1] CRAN (R 4.2.1)
 #> 
 #>  [1] /home/mikemahoney218/R/x86_64-pc-linux-gnu-library/4.2
 #>  [2] /usr/local/lib/R/site-library
