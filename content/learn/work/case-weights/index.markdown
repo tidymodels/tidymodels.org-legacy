@@ -244,7 +244,7 @@ lm_fit
 #>  ggplot2    * 3.3.6   2022-05-03 [1] CRAN (R 4.2.0)
 #>  infer      * 1.0.2   2022-06-10 [1] CRAN (R 4.2.0)
 #>  parsnip    * 1.0.0   2022-06-16 [1] CRAN (R 4.2.0)
-#>  purrr      * 0.3.4   2022-06-24 [1] Github (tidyverse/purrr@b04866a)
+#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.2.0)
 #>  recipes    * 1.0.1   2022-07-07 [1] CRAN (R 4.2.0)
 #>  rlang        1.0.3   2022-06-27 [1] CRAN (R 4.2.0)
 #>  rsample    * 1.0.0   2022-06-24 [1] CRAN (R 4.2.0)
