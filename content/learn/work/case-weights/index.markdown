@@ -49,7 +49,7 @@ We need to decide on a way to calculate the case weights. The main thing constra
 
 $$ weight = base ^ x $$
 
-where `base` is some constant and `x` is the number of days. To make sure that we select `base` we need to do some manual testing, starting with looking at how old the oldest observation is.
+where `base` is some constant and `x` is the number of days. To make sure that we select a reasonable `base`, we need to do some manual testing, starting with looking at how old the oldest observation is.
 
 
 ```r
