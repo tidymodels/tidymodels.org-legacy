@@ -47,11 +47,11 @@ For simplicity, we have limited our view to the date and station variables.
 
 ## Creating weights
 
-This data set contains daily information from `r `min(Chicago$date)` to `r max(Chicago$date)`, we will pretend that it is January 1st, 2016 and we want to predict the ridership for the remainder of 2016 using the date variable and station variables as predictors. Without any weighting, all the previous observations would have the same influence on the model, which may or may not be ideal since some observations appear a long time ago and not be as representative of the future as more recent observations. 
+This data set contains daily information from `r min(Chicago$date)` to `r max(Chicago$date)`. We will pretend that it is January 1st, 2016 and we want to predict the ridership for the remainder of 2016 using the date and station variables as predictors. Without any weighting, all the previous observations would have the same influence on the model. This may not be ideal since some observations appear a long time ago and not be as representative of the future as more recent observations. 
 
-One way to deal with this is to only use recent observations to fit the model, ensuring that the training data stays as close to the testing data as possible. While a tempting idea, it would throw out a lot of informative data. Instead let us assign a weight to each observation, related to how long ago the observation was taken. This way we are not throwing away any observation completely.
+We could just use recent observations to fit the model, ensuring that the training data stays as close to the testing data as possible. While a tempting idea, it would throw out a lot of informative data. Instead let us assign a weight to each observation, related to how long ago the observation was taken. This way we are not completely throwing away any observation; we are only giving less weight to data farther in the past. 
 
-We need to decide on a way to calculate these weights. The main thing constraint is that the weight cannot be negative, and it would be nice if today was weighted as 1. So we need a function that is 1 when `x=0` and decreasing otherwise. There are many kinds of functions like that, and we will be using this exponential decay function
+We need to decide on a way to calculate the case weights. The main thing constraint is that the weight cannot be negative, and it would be nice if today was weighted as 1. So we need a function that is 1 when `x = 0` and decreasing otherwise. There are many kinds of functions like that, and we will be using this exponential decay function
 
 $$ weight = base ^ x $$
 
@@ -104,7 +104,7 @@ Chicago <- Chicago %>%
          weight = importance_weights(weight))
 ```
 
-This approach to creating importance weights from dates is not limited to cases where we have daily observations as we do in this data set. You are free to create weights like this if you have gaps or repeated observations within the same day. Likewise, you don't need to use days as the unit. seconds, weeks, or years could be used as well.
+This approach to creating importance weights from dates is not limited to cases where we have daily observations. You are free to create similar weights if you have gaps or repeated observations within the same day. Likewise, you don't need to use days as the unit. Seconds, weeks, or years could be used as well.
 
 ## Modeling
 
@@ -139,7 +139,7 @@ lm_spec <-
   set_engine("lm")
 ```
 
-and we add these together in the workflow. To activate the case weights we use the `add_case_weights()` function to specify the name of the case weights being used.
+and we add these together in the workflow. To activate the case weights, we use the `add_case_weights()` function to specify the name of the case weights being used.
 
 ```{r}
 lm_wflow <-
@@ -151,7 +151,7 @@ lm_wflow <-
 lm_wflow
 ```
 
-With all that done we can fit the workflow like normal
+With all that done we can fit the workflow with the usual syntax: 
 
 ```{r}
 lm_fit <- fit(lm_wflow, data = Chicago_train)
