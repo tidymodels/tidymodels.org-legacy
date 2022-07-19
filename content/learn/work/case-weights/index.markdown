@@ -86,14 +86,14 @@ map_dfr(
 
 <img src="figs/unnamed-chunk-4-1.svg" width="672" />
 
-And from this, we would pick something around 0.999 maybe a little less since it gives a better balance. Creating a small function to help us encode this weight. Notice that I'm setting any future weight to 1.
+From this, we could pick something around 0.999 since it gives a better balance. Let's create a small function to help us encode this weight. 
 
 
 ```r
 weights_from_dates <- function(x, ref) {
   if_else(
     condition = x >= ref,
-    true = 1,
+    true = 1,     # <- Notice that I'm setting any future weight to 1.
     false = 0.999 ^ as.numeric(difftime(ref, x, units = "days"))
   )
 }
