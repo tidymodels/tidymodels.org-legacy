@@ -247,16 +247,16 @@ gss %>%
 #> # Groups:   replicate [5,000]
 #>    replicate hours
 #>        <int> <dbl>
-#>  1         1  46.6
-#>  2         1  38.6
+#>  1         1  14.6
+#>  2         1  58.6
 #>  3         1  38.6
-#>  4         1  38.6
-#>  5         1  68.6
-#>  6         1  38.6
-#>  7         1  55.6
-#>  8         1  37.6
-#>  9         1  43.6
-#> 10         1  58.6
+#>  4         1  58.6
+#>  5         1  53.6
+#>  6         1  54.6
+#>  7         1  38.6
+#>  8         1  38.6
+#>  9         1  38.6
+#> 10         1  38.6
 #> # … with 2,499,990 more rows
 ```
 
@@ -277,16 +277,16 @@ gss %>%
 #> # Groups:   replicate [5,000]
 #>    partyid   age replicate
 #>    <fct>   <dbl>     <int>
-#>  1 dem        36         1
-#>  2 ind        34         1
+#>  1 ind        36         1
+#>  2 dem        34         1
 #>  3 ind        24         1
-#>  4 other      42         1
+#>  4 ind        42         1
 #>  5 rep        31         1
-#>  6 dem        32         1
-#>  7 rep        48         1
+#>  6 ind        32         1
+#>  7 dem        48         1
 #>  8 rep        36         1
-#>  9 dem        30         1
-#> 10 other      33         1
+#>  9 rep        30         1
+#> 10 ind        33         1
 #> # … with 2,499,990 more rows
 ```
 
@@ -306,16 +306,16 @@ gss %>%
 #> # A tibble: 5,000 × 2
 #>    replicate  stat
 #>        <int> <dbl>
-#>  1         1  39.3
-#>  2         2  40.3
-#>  3         3  40.2
-#>  4         4  40.1
-#>  5         5  40.2
-#>  6         6  40.4
-#>  7         7  39.8
-#>  8         8  40.3
-#>  9         9  38.7
-#> 10        10  39.7
+#>  1         1  40.1
+#>  2         2  41.1
+#>  3         3  39.8
+#>  4         4  40.0
+#>  5         5  40.5
+#>  6         6  39.9
+#>  7         7  39.7
+#>  8         8  39.3
+#>  9         9  38.8
+#> 10        10  41.0
 #> # … with 4,990 more rows
 ```
 
@@ -332,18 +332,18 @@ gss %>%
 #> Explanatory: college (factor)
 #> Null Hypothesis: independence
 #> # A tibble: 5,000 × 2
-#>    replicate    stat
-#>        <int>   <dbl>
-#>  1         1  0.174 
-#>  2         2  0.0239
-#>  3         3  0.932 
-#>  4         4 -0.461 
-#>  5         5 -2.30  
-#>  6         6  0.200 
-#>  7         7 -1.02  
-#>  8         8 -0.884 
-#>  9         9 -0.999 
-#> 10        10 -0.523 
+#>    replicate   stat
+#>        <int>  <dbl>
+#>  1         1 -0.399
+#>  2         2  0.526
+#>  3         3  1.13 
+#>  4         4 -0.646
+#>  5         5  0.403
+#>  6         6  1.93 
+#>  7         7  0.553
+#>  8         8  1.87 
+#>  9         9  1.79 
+#> 10        10  0.562
 #> # … with 4,990 more rows
 ```
 
@@ -405,10 +405,10 @@ p_value
 #> # A tibble: 1 × 1
 #>   p_value
 #>     <dbl>
-#> 1  0.0384
+#> 1  0.0368
 ```
 
-It looks like the p-value is 0.038, which is pretty small---if the true mean number of hours worked per week was actually 40, the probability of our sample mean being this far (1.382 hours) from 40 would be 0.038. This may or may not be statistically significantly different, depending on the significance level `alpha` you decided on *before* you ran this analysis. If you had set `alpha = .05`, then this difference would be statistically significant, but if you had set `alpha = .01`, then it would not be.
+It looks like the p-value is 0.037, which is pretty small---if the true mean number of hours worked per week was actually 40, the probability of our sample mean being this far (1.382 hours) from 40 would be 0.037. This may or may not be statistically significantly different, depending on the significance level `alpha` you decided on *before* you ran this analysis. If you had set `alpha = .05`, then this difference would be statistically significant, but if you had set `alpha = .01`, then it would not be.
 
 To get a confidence interval around our estimate, we can write:
 
@@ -539,16 +539,16 @@ null_fits
 #> # Groups:   replicate [1,000]
 #>    replicate term          estimate
 #>        <int> <chr>            <dbl>
-#>  1         1 intercept      41.6   
-#>  2         1 age            -0.0122
-#>  3         1 collegedegree   0.880 
-#>  4         2 intercept      37.6   
-#>  5         2 age             0.0976
-#>  6         2 collegedegree  -0.501 
-#>  7         3 intercept      41.3   
-#>  8         3 age             0.0187
-#>  9         3 collegedegree  -2.00  
-#> 10         4 intercept      39.3   
+#>  1         1 intercept      39.8   
+#>  2         1 age             0.0595
+#>  3         1 collegedegree  -2.41  
+#>  4         2 intercept      43.3   
+#>  5         2 age            -0.0477
+#>  6         2 collegedegree   0.0231
+#>  7         3 intercept      47.2   
+#>  8         3 age            -0.146 
+#>  9         3 collegedegree   0.142 
+#> 10         4 intercept      40.8   
 #> # … with 2,990 more rows
 ```
 
@@ -566,9 +566,9 @@ get_confidence_interval(
 #> # A tibble: 3 × 3
 #>   term          lower_ci upper_ci
 #>   <chr>            <dbl>    <dbl>
-#> 1 age            -0.0932   0.0982
-#> 2 collegedegree  -2.59     2.65  
-#> 3 intercept      37.3     45.4
+#> 1 age            -0.0989    0.101
+#> 2 collegedegree  -2.78      2.82 
+#> 3 intercept      37.2      45.6
 ```
 
 Or, we can shade p-values for each of these observed regression coefficients from the observed data.
@@ -590,36 +590,36 @@ That's it! This vignette covers most all of the key functionality of infer. See 
 ```
 #> ─ Session info ─────────────────────────────────────────────────────
 #>  setting  value
-#>  version  R version 4.2.0 (2022-04-22)
-#>  os       macOS Monterey 12.3.1
-#>  system   aarch64, darwin20
+#>  version  R version 4.2.1 (2022-06-23)
+#>  os       macOS Big Sur ... 10.16
+#>  system   x86_64, darwin17.0
 #>  ui       X11
 #>  language (EN)
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
-#>  tz       America/New_York
-#>  date     2022-05-23
+#>  tz       America/Los_Angeles
+#>  date     2022-09-16
 #>  pandoc   2.17.1.1 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/ (via rmarkdown)
 #> 
 #> ─ Packages ─────────────────────────────────────────────────────────
 #>  package    * version date (UTC) lib source
-#>  broom      * 0.8.0   2022-04-13 [1] CRAN (R 4.2.0)
-#>  dials      * 0.1.1   2022-04-06 [1] CRAN (R 4.2.0)
-#>  dplyr      * 1.0.9   2022-04-28 [1] CRAN (R 4.2.0)
+#>  broom      * 1.0.1   2022-08-29 [1] CRAN (R 4.2.0)
+#>  dials      * 1.0.0   2022-06-14 [1] CRAN (R 4.2.0)
+#>  dplyr      * 1.0.10  2022-09-01 [1] CRAN (R 4.2.0)
 #>  ggplot2    * 3.3.6   2022-05-03 [1] CRAN (R 4.2.0)
-#>  infer      * 1.0.0   2021-08-13 [1] CRAN (R 4.2.0)
-#>  parsnip    * 0.2.1   2022-03-17 [1] CRAN (R 4.2.0)
+#>  infer      * 1.0.3   2022-08-22 [1] CRAN (R 4.2.0)
+#>  parsnip    * 1.0.1   2022-08-18 [1] CRAN (R 4.2.0)
 #>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.2.0)
-#>  recipes    * 0.2.0   2022-02-18 [1] CRAN (R 4.2.0)
-#>  rlang        1.0.2   2022-03-04 [1] CRAN (R 4.2.0)
-#>  rsample    * 0.1.1   2021-11-08 [1] CRAN (R 4.2.0)
-#>  tibble     * 3.1.7   2022-05-03 [1] CRAN (R 4.2.0)
-#>  tidymodels * 0.2.0   2022-03-19 [1] CRAN (R 4.2.0)
-#>  tune       * 0.2.0   2022-03-19 [1] CRAN (R 4.2.0)
-#>  workflows  * 0.2.6   2022-03-18 [1] CRAN (R 4.2.0)
-#>  yardstick  * 0.0.9   2021-11-22 [1] CRAN (R 4.2.0)
+#>  recipes    * 1.0.1   2022-07-07 [1] CRAN (R 4.2.0)
+#>  rlang        1.0.5   2022-08-31 [1] CRAN (R 4.2.0)
+#>  rsample    * 1.1.0   2022-08-08 [1] CRAN (R 4.2.0)
+#>  tibble     * 3.1.8   2022-07-22 [1] CRAN (R 4.2.0)
+#>  tidymodels * 1.0.0   2022-07-13 [1] CRAN (R 4.2.0)
+#>  tune       * 1.0.0   2022-07-07 [1] CRAN (R 4.2.0)
+#>  workflows  * 1.0.0   2022-07-05 [1] CRAN (R 4.2.0)
+#>  yardstick  * 1.1.0   2022-09-07 [1] CRAN (R 4.2.0)
 #> 
-#>  [1] /Library/Frameworks/R.framework/Versions/4.2-arm64/Resources/library
+#>  [1] /Library/Frameworks/R.framework/Versions/4.2/Resources/library
 #> 
 #> ────────────────────────────────────────────────────────────────────
 ```

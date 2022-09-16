@@ -38,16 +38,19 @@ In our previous [*Evaluate your model with resampling*](/start/resampling/) arti
 data(cells, package = "modeldata")
 cells
 #> # A tibble: 2,019 × 58
-#>   case  class angle_ch_1 area_ch_1 avg_inten_ch_1 avg_inten_ch_2 avg_inten_ch_3
-#>   <fct> <fct>      <dbl>     <int>          <dbl>          <dbl>          <dbl>
-#> 1 Test  PS        143.         185           15.7           4.95           9.55
-#> 2 Train PS        134.         819           31.9         207.            69.9 
-#> 3 Train WS        107.         431           28.0         116.            63.9 
-#> 4 Train PS         69.2        298           19.5         102.            28.2 
-#> 5 Test  PS          2.89       285           24.3         112.            20.5 
-#> # … with 2,014 more rows, and 51 more variables: avg_inten_ch_4 <dbl>,
-#> #   convex_hull_area_ratio_ch_1 <dbl>, convex_hull_perim_ratio_ch_1 <dbl>,
-#> #   diff_inten_density_ch_1 <dbl>, diff_inten_density_ch_3 <dbl>, …
+#>   case  class angle_ch_1 area_…¹ avg_i…² avg_i…³ avg_i…⁴ avg_i…⁵ conve…⁶ conve…⁷
+#>   <fct> <fct>      <dbl>   <int>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>
+#> 1 Test  PS        143.       185    15.7    4.95    9.55    2.21    1.12   0.920
+#> 2 Train PS        134.       819    31.9  207.     69.9   164.      1.26   0.797
+#> 3 Train WS        107.       431    28.0  116.     63.9   107.      1.05   0.935
+#> 4 Train PS         69.2      298    19.5  102.     28.2    31.0     1.20   0.866
+#> 5 Test  PS          2.89     285    24.3  112.     20.5    40.6     1.11   0.957
+#> # … with 2,014 more rows, 48 more variables: diff_inten_density_ch_1 <dbl>,
+#> #   diff_inten_density_ch_3 <dbl>, diff_inten_density_ch_4 <dbl>,
+#> #   entropy_inten_ch_1 <dbl>, entropy_inten_ch_3 <dbl>, …, and abbreviated
+#> #   variable names ¹​area_ch_1, ²​avg_inten_ch_1, ³​avg_inten_ch_2,
+#> #   ⁴​avg_inten_ch_3, ⁵​avg_inten_ch_4, ⁶​convex_hull_area_ratio_ch_1,
+#> #   ⁷​convex_hull_perim_ratio_ch_1
 ```
 
 ## Predicting image segmentation, but better {#why-tune}
@@ -413,39 +416,39 @@ You could tune the other hyperparameter we didn't use here, `min_n`, which sets 
 ```
 #> ─ Session info ─────────────────────────────────────────────────────
 #>  setting  value
-#>  version  R version 4.1.1 (2021-08-10)
-#>  os       macOS Monterey 12.2.1
-#>  system   aarch64, darwin20
+#>  version  R version 4.2.1 (2022-06-23)
+#>  os       macOS Big Sur ... 10.16
+#>  system   x86_64, darwin17.0
 #>  ui       X11
 #>  language (EN)
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
-#>  tz       America/Denver
-#>  date     2022-03-23
+#>  tz       America/Los_Angeles
+#>  date     2022-09-16
 #>  pandoc   2.17.1.1 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/ (via rmarkdown)
 #> 
 #> ─ Packages ─────────────────────────────────────────────────────────
 #>  package    * version date (UTC) lib source
-#>  broom      * 0.7.12  2022-01-28 [1] CRAN (R 4.1.1)
-#>  dials      * 0.1.0   2022-01-31 [1] CRAN (R 4.1.1)
-#>  dplyr      * 1.0.8   2022-02-08 [1] CRAN (R 4.1.1)
-#>  ggplot2    * 3.3.5   2021-06-25 [1] CRAN (R 4.1.0)
-#>  infer      * 1.0.0   2021-08-13 [1] CRAN (R 4.1.1)
-#>  parsnip    * 0.2.1   2022-03-17 [1] CRAN (R 4.1.1)
-#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.1.0)
-#>  recipes    * 0.2.0   2022-02-18 [1] CRAN (R 4.1.1)
-#>  rlang        1.0.2   2022-03-04 [1] CRAN (R 4.1.1)
-#>  rpart      * 4.1.16  2022-01-24 [1] CRAN (R 4.1.1)
-#>  rpart.plot * 3.1.0   2021-07-24 [1] CRAN (R 4.1.0)
-#>  rsample    * 0.1.1   2021-11-08 [1] CRAN (R 4.1.1)
-#>  tibble     * 3.1.6   2021-11-07 [1] CRAN (R 4.1.1)
-#>  tidymodels * 0.2.0   2022-03-19 [1] CRAN (R 4.1.1)
-#>  tune       * 0.2.0   2022-03-19 [1] CRAN (R 4.1.1)
-#>  vip        * 0.3.2   2020-12-17 [1] CRAN (R 4.1.0)
-#>  workflows  * 0.2.6   2022-03-18 [1] CRAN (R 4.1.1)
-#>  yardstick  * 0.0.9   2021-11-22 [1] CRAN (R 4.1.1)
+#>  broom      * 1.0.1   2022-08-29 [1] CRAN (R 4.2.0)
+#>  dials      * 1.0.0   2022-06-14 [1] CRAN (R 4.2.0)
+#>  dplyr      * 1.0.10  2022-09-01 [1] CRAN (R 4.2.0)
+#>  ggplot2    * 3.3.6   2022-05-03 [1] CRAN (R 4.2.0)
+#>  infer      * 1.0.3   2022-08-22 [1] CRAN (R 4.2.0)
+#>  parsnip    * 1.0.1   2022-08-18 [1] CRAN (R 4.2.0)
+#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.2.0)
+#>  recipes    * 1.0.1   2022-07-07 [1] CRAN (R 4.2.0)
+#>  rlang        1.0.5   2022-08-31 [1] CRAN (R 4.2.0)
+#>  rpart      * 4.1.16  2022-01-24 [1] CRAN (R 4.2.1)
+#>  rpart.plot * 3.1.1   2022-05-21 [1] CRAN (R 4.2.0)
+#>  rsample    * 1.1.0   2022-08-08 [1] CRAN (R 4.2.0)
+#>  tibble     * 3.1.8   2022-07-22 [1] CRAN (R 4.2.0)
+#>  tidymodels * 1.0.0   2022-07-13 [1] CRAN (R 4.2.0)
+#>  tune       * 1.0.0   2022-07-07 [1] CRAN (R 4.2.0)
+#>  vip        * 0.3.2   2020-12-17 [1] CRAN (R 4.2.0)
+#>  workflows  * 1.0.0   2022-07-05 [1] CRAN (R 4.2.0)
+#>  yardstick  * 1.1.0   2022-09-07 [1] CRAN (R 4.2.0)
 #> 
-#>  [1] /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/library
+#>  [1] /Library/Frameworks/R.framework/Versions/4.2/Resources/library
 #> 
 #> ────────────────────────────────────────────────────────────────────
 ```
