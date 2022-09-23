@@ -262,10 +262,10 @@ results <-
 
 summary(results$RMSE)
 #>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-#>    1.57    2.09    2.68    2.70    3.26    4.25
+#>    1.57    2.10    2.69    2.69    3.26    4.27
 ```
 
-The estimated RMSE for the model tuning process is 2.7. 
+The estimated RMSE for the model tuning process is 2.69. 
 
 What is the RMSE estimate for the non-nested procedure when only the outer resampling method is used? For each cost value in the tuning grid, 50 SVM models are fit and their RMSE values are averaged. The table of cost values and mean RMSE estimates is used to determine the best cost value. The associated RMSE is the biased estimate. 
 
@@ -333,7 +333,7 @@ The nested procedure produces a closer estimate to the approximate truth but the
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       America/Los_Angeles
-#>  date     2022-09-16
+#>  date     2022-09-23
 #>  pandoc   2.17.1.1 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/ (via rmarkdown)
 #> 
 #> ─ Packages ─────────────────────────────────────────────────────────

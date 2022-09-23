@@ -115,19 +115,19 @@ The unnested coefficient information contains a summary of each replication comb
 ```r
 boot_coefs
 #> # A tibble: 4,002 × 8
-#>    splits          id            model  term  estimate std.er…¹ stati…²  p.value
-#>    <list>          <chr>         <list> <chr>    <dbl>    <dbl>   <dbl>    <dbl>
-#>  1 <split [32/13]> Bootstrap0001 <nls>  k        42.1      4.05   10.4  1.91e-11
-#>  2 <split [32/13]> Bootstrap0001 <nls>  b         5.39     1.43    3.78 6.93e- 4
-#>  3 <split [32/10]> Bootstrap0002 <nls>  k        49.9      5.66    8.82 7.82e-10
-#>  4 <split [32/10]> Bootstrap0002 <nls>  b         3.73     1.92    1.94 6.13e- 2
-#>  5 <split [32/13]> Bootstrap0003 <nls>  k        37.8      2.68   14.1  9.01e-15
-#>  6 <split [32/13]> Bootstrap0003 <nls>  b         6.73     1.17    5.75 2.78e- 6
-#>  7 <split [32/11]> Bootstrap0004 <nls>  k        45.6      4.45   10.2  2.70e-11
-#>  8 <split [32/11]> Bootstrap0004 <nls>  b         4.75     1.62    2.93 6.38e- 3
-#>  9 <split [32/9]>  Bootstrap0005 <nls>  k        43.6      4.63    9.41 1.85e-10
-#> 10 <split [32/9]>  Bootstrap0005 <nls>  b         5.89     1.68    3.51 1.44e- 3
-#> # … with 3,992 more rows, and abbreviated variable names ¹​std.error, ²​statistic
+#>    splits          id          model term  estimate std.error statistic  p.value
+#>    <list>          <chr>       <lis> <chr>    <dbl>     <dbl>     <dbl>    <dbl>
+#>  1 <split [32/13]> Bootstrap0… <nls> k        42.1       4.05     10.4  1.91e-11
+#>  2 <split [32/13]> Bootstrap0… <nls> b         5.39      1.43      3.78 6.93e- 4
+#>  3 <split [32/10]> Bootstrap0… <nls> k        49.9       5.66      8.82 7.82e-10
+#>  4 <split [32/10]> Bootstrap0… <nls> b         3.73      1.92      1.94 6.13e- 2
+#>  5 <split [32/13]> Bootstrap0… <nls> k        37.8       2.68     14.1  9.01e-15
+#>  6 <split [32/13]> Bootstrap0… <nls> b         6.73      1.17      5.75 2.78e- 6
+#>  7 <split [32/11]> Bootstrap0… <nls> k        45.6       4.45     10.2  2.70e-11
+#>  8 <split [32/11]> Bootstrap0… <nls> b         4.75      1.62      2.93 6.38e- 3
+#>  9 <split [32/9]>  Bootstrap0… <nls> k        43.6       4.63      9.41 1.85e-10
+#> 10 <split [32/9]>  Bootstrap0… <nls> b         5.89      1.68      3.51 1.44e- 3
+#> # … with 3,992 more rows
 ```
 
 ## Confidence intervals
@@ -240,7 +240,7 @@ ggplot(splines_aug, aes(x, y)) +
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       America/Los_Angeles
-#>  date     2022-09-16
+#>  date     2022-09-23
 #>  pandoc   2.17.1.1 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/ (via rmarkdown)
 #> 
 #> ─ Packages ─────────────────────────────────────────────────────────

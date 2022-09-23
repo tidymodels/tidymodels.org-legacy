@@ -23,6 +23,7 @@ library(furrr)
 pkgs <- c("tidymodels", "scales", "mlbench", "kernlab", "furrr")
 
 theme_set(theme_bw() + theme(legend.position = "top"))
+set.seed(1234)
 ```
 
 ## Introduction
@@ -164,7 +165,11 @@ Alternatively, since these computations can be run in parallel, we can use the f
 library(furrr)
 plan(multisession)
 
-tuning_results <- future_map(results$inner_resamples, summarize_tune_results) 
+tuning_results <- future_map(
+  results$inner_resamples,
+  summarize_tune_results, 
+  .options = furrr_options(seed = 1234)
+) 
 ```
 
 The object `tuning_results` is a list of data frames for each of the 50 outer resamples. 

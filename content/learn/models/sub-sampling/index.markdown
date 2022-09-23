@@ -61,7 +61,7 @@ library(tidymodels)
 library(themis)
 imbal_rec <- 
   recipe(Class ~ ., data = imbal_data) %>%
-  step_rose(Class)
+  step_rose(Class, seed = 1234)
 ```
 
 For a model, let's use a [quadratic discriminant analysis](https://en.wikipedia.org/wiki/Quadratic_classifier#Quadratic_discriminant_analysis) (QDA) model. From the discrim package, this model can be specified using:
@@ -139,8 +139,8 @@ collect_metrics(qda_rose_res)
 #> # A tibble: 2 × 6
 #>   .metric .estimator  mean     n std_err .config             
 #>   <chr>   <chr>      <dbl> <int>   <dbl> <chr>               
-#> 1 j_index binary     0.802    50 0.0193  Preprocessor1_Model1
-#> 2 roc_auc binary     0.954    50 0.00514 Preprocessor1_Model1
+#> 1 j_index binary     0.768    50 0.0214  Preprocessor1_Model1
+#> 2 roc_auc binary     0.951    50 0.00509 Preprocessor1_Model1
 ```
 
 What do the results look like without using ROSE? We can create another workflow and fit the QDA model along the same resamples:
@@ -205,7 +205,7 @@ This visually demonstrates that the subsampling mostly affects metrics that use 
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       America/Los_Angeles
-#>  date     2022-09-16
+#>  date     2022-09-23
 #>  pandoc   2.17.1.1 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/ (via rmarkdown)
 #> 
 #> ─ Packages ─────────────────────────────────────────────────────────

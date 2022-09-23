@@ -38,19 +38,16 @@ In our previous [*Evaluate your model with resampling*](/start/resampling/) arti
 data(cells, package = "modeldata")
 cells
 #> # A tibble: 2,019 × 58
-#>   case  class angle_ch_1 area_…¹ avg_i…² avg_i…³ avg_i…⁴ avg_i…⁵ conve…⁶ conve…⁷
-#>   <fct> <fct>      <dbl>   <int>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>
-#> 1 Test  PS        143.       185    15.7    4.95    9.55    2.21    1.12   0.920
-#> 2 Train PS        134.       819    31.9  207.     69.9   164.      1.26   0.797
-#> 3 Train WS        107.       431    28.0  116.     63.9   107.      1.05   0.935
-#> 4 Train PS         69.2      298    19.5  102.     28.2    31.0     1.20   0.866
-#> 5 Test  PS          2.89     285    24.3  112.     20.5    40.6     1.11   0.957
-#> # … with 2,014 more rows, 48 more variables: diff_inten_density_ch_1 <dbl>,
-#> #   diff_inten_density_ch_3 <dbl>, diff_inten_density_ch_4 <dbl>,
-#> #   entropy_inten_ch_1 <dbl>, entropy_inten_ch_3 <dbl>, …, and abbreviated
-#> #   variable names ¹​area_ch_1, ²​avg_inten_ch_1, ³​avg_inten_ch_2,
-#> #   ⁴​avg_inten_ch_3, ⁵​avg_inten_ch_4, ⁶​convex_hull_area_ratio_ch_1,
-#> #   ⁷​convex_hull_perim_ratio_ch_1
+#>   case  class angle_ch_1 area_ch_1 avg_inten_ch_1 avg_inten_ch_2 avg_inten_ch_3
+#>   <fct> <fct>      <dbl>     <int>          <dbl>          <dbl>          <dbl>
+#> 1 Test  PS        143.         185           15.7           4.95           9.55
+#> 2 Train PS        134.         819           31.9         207.            69.9 
+#> 3 Train WS        107.         431           28.0         116.            63.9 
+#> 4 Train PS         69.2        298           19.5         102.            28.2 
+#> 5 Test  PS          2.89       285           24.3         112.            20.5 
+#> # … with 2,014 more rows, and 51 more variables: avg_inten_ch_4 <dbl>,
+#> #   convex_hull_area_ratio_ch_1 <dbl>, convex_hull_perim_ratio_ch_1 <dbl>,
+#> #   diff_inten_density_ch_1 <dbl>, diff_inten_density_ch_3 <dbl>, …
 ```
 
 ## Predicting image segmentation, but better {#why-tune}
@@ -424,7 +421,7 @@ You could tune the other hyperparameter we didn't use here, `min_n`, which sets 
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       America/Los_Angeles
-#>  date     2022-09-16
+#>  date     2022-09-23
 #>  pandoc   2.17.1.1 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/ (via rmarkdown)
 #> 
 #> ─ Packages ─────────────────────────────────────────────────────────

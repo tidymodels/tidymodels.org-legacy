@@ -73,7 +73,6 @@ nnet_fit <-
   # Also set engine-specific `verbose` argument to prevent logging the results: 
   set_engine("keras", verbose = 0) %>%
   fit(Class ~ ., data = bake(biv_rec, new_data = NULL))
-#> Loaded Tensorflow version 2.9.2
 
 nnet_fit
 #> parsnip model object
@@ -109,11 +108,11 @@ val_results %>% slice(1:5)
 #> # A tibble: 5 × 6
 #>       A     B Class .pred_class .pred_One .pred_Two
 #>   <dbl> <dbl> <fct> <fct>           <dbl>     <dbl>
-#> 1 1061.  74.5 One   Two             0.417    0.583 
-#> 2 1241.  83.4 One   Two             0.434    0.566 
-#> 3  939.  71.9 One   One             0.776    0.224 
-#> 4  813.  77.1 One   One             0.983    0.0173
-#> 5 1706.  92.8 Two   Two             0.215    0.785
+#> 1 1061.  74.5 One   Two             0.478    0.522 
+#> 2 1241.  83.4 One   Two             0.499    0.501 
+#> 3  939.  71.9 One   One             0.828    0.172 
+#> 4  813.  77.1 One   One             0.986    0.0142
+#> 5 1706.  92.8 Two   Two             0.214    0.786
 
 val_results %>% roc_auc(truth = Class, .pred_One)
 #> # A tibble: 1 × 3
@@ -125,13 +124,13 @@ val_results %>% accuracy(truth = Class, .pred_class)
 #> # A tibble: 1 × 3
 #>   .metric  .estimator .estimate
 #>   <chr>    <chr>          <dbl>
-#> 1 accuracy binary         0.733
+#> 1 accuracy binary          0.74
 
 val_results %>% conf_mat(truth = Class, .pred_class)
 #>           Truth
 #> Prediction One Two
-#>        One 149  27
-#>        Two  53  71
+#>        One 151  27
+#>        Two  51  71
 ```
 
 Let's also create a grid to get a visual sense of the class boundary for the validation set.
@@ -174,7 +173,7 @@ ggplot(x_grid, aes(x = A, y = B)) +
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       America/Los_Angeles
-#>  date     2022-09-16
+#>  date     2022-09-23
 #>  pandoc   2.17.1.1 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/ (via rmarkdown)
 #> 
 #> ─ Packages ─────────────────────────────────────────────────────────

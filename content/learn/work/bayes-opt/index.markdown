@@ -778,19 +778,19 @@ estimates <-
 
 estimates
 #> # A tibble: 55 × 10
-#>        cost  rbf_sigma num_c…¹ .metric .esti…²  mean     n std_err .config .iter
-#>       <dbl>      <dbl>   <int> <chr>   <chr>   <dbl> <int>   <dbl> <chr>   <int>
-#>  1  0.00207    1.56e-5      10 roc_auc binary  0.344    10 0.114   Prepro…     0
-#>  2  0.348      4.43e-2       1 roc_auc binary  0.773    10 0.0106  Prepro…     0
-#>  3 15.5        1.28e-7      20 roc_auc binary  0.346    10 0.115   Prepro…     0
-#>  4  1.45       2.04e-3      15 roc_auc binary  0.876    10 0.0122  Prepro…     0
-#>  5  0.0304     6.41e-9       5 roc_auc binary  0.344    10 0.114   Prepro…     0
-#>  6  0.00386    5.13e-3      19 roc_auc binary  0.879    10 0.0109  Iter1       1
-#>  7  0.0338     3.32e-3      13 roc_auc binary  0.874    10 0.0127  Iter2       2
-#>  8  0.275      3.04e-3      20 roc_auc binary  0.879    10 0.0118  Iter3       3
-#>  9  9.56       4.26e-3      20 roc_auc binary  0.887    10 0.00942 Iter4       4
-#> 10 26.0        6.17e-3      19 roc_auc binary  0.889    10 0.00914 Iter5       5
-#> # … with 45 more rows, and abbreviated variable names ¹​num_comp, ²​.estimator
+#>        cost    rbf_sigma num_comp .metric .estimator  mean     n std_err .config
+#>       <dbl>        <dbl>    <int> <chr>   <chr>      <dbl> <int>   <dbl> <chr>  
+#>  1  0.00207      1.56e-5       10 roc_auc binary     0.344    10 0.114   Prepro…
+#>  2  0.348        4.43e-2        1 roc_auc binary     0.773    10 0.0106  Prepro…
+#>  3 15.5          1.28e-7       20 roc_auc binary     0.346    10 0.115   Prepro…
+#>  4  1.45         2.04e-3       15 roc_auc binary     0.876    10 0.0122  Prepro…
+#>  5  0.0304       6.41e-9        5 roc_auc binary     0.344    10 0.114   Prepro…
+#>  6  0.00386      5.13e-3       19 roc_auc binary     0.879    10 0.0109  Iter1  
+#>  7  0.0338       3.32e-3       13 roc_auc binary     0.874    10 0.0127  Iter2  
+#>  8  0.275        3.04e-3       20 roc_auc binary     0.879    10 0.0118  Iter3  
+#>  9  9.56         4.26e-3       20 roc_auc binary     0.887    10 0.00942 Iter4  
+#> 10 26.0          6.17e-3       19 roc_auc binary     0.889    10 0.00914 Iter5  
+#> # … with 45 more rows, and 1 more variable: .iter <int>
 ```
 
 
@@ -848,7 +848,7 @@ autoplot(search_res, type = "parameters") +
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       America/Los_Angeles
-#>  date     2022-09-16
+#>  date     2022-09-23
 #>  pandoc   2.17.1.1 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/ (via rmarkdown)
 #> 
 #> ─ Packages ─────────────────────────────────────────────────────────
