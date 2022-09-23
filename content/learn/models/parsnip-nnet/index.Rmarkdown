@@ -17,6 +17,8 @@ library(tidymodels)
 pkgs <- c("tidymodels", "keras")
 
 theme_set(theme_bw() + theme(legend.position = "top"))
+set.seed(1234)
+parsnip::set_tf_seed(1234)
 ```
 
 
