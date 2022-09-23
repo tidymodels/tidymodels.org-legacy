@@ -68,7 +68,7 @@ library(tidymodels)
 library(themis)
 imbal_rec <- 
   recipe(Class ~ ., data = imbal_data) %>%
-  step_rose(Class)
+  step_rose(Class, seed = 1234)
 ```
 
 For a model, let's use a [quadratic discriminant analysis](https://en.wikipedia.org/wiki/Quadratic_classifier#Quadratic_discriminant_analysis) (QDA) model. From the discrim package, this model can be specified using:

@@ -196,7 +196,11 @@ Alternatively, since these computations can be run in parallel, we can use the f
 library(furrr)
 plan(multisession)
 
-tuning_results <- future_map(results$inner_resamples, summarize_tune_results) 
+tuning_results <- future_map(
+  results$inner_resamples,
+  summarize_tune_results, 
+  .options = furrr_options(seed = 1234)
+) 
 ```
 
 The object `tuning_results` is a list of data frames for each of the 50 outer resamples. 
@@ -262,7 +266,7 @@ results <-
 
 summary(results$RMSE)
 #>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-#>    1.57    2.10    2.69    2.69    3.26    4.27
+#>    1.59    2.09    2.67    2.69    3.27    4.35
 ```
 
 The estimated RMSE for the model tuning process is 2.69. 
@@ -293,7 +297,7 @@ outer_summary
 #>  8  32          2.82    50
 #>  9  64          2.83    50
 #> 10 128          2.83    50
-#> 11 256          2.82    50
+#> 11 256          2.83    50
 
 ggplot(outer_summary, aes(x = cost, y = outer_RMSE)) + 
   geom_point() + 
