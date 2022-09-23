@@ -7,7 +7,11 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   cache.path = "cache/"
 )
-options(width = 80, cli.width = 70)
+options(
+  width = 80,
+  cli.width = 70,
+  pillar.min_title_chars = Inf
+)
 
 article_req_pkgs <- function(x, what = "To use code in this article, ") {
   x <- sort(x)

@@ -7,7 +7,13 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   cache.path = "cache/"
 )
-options(width = 80, digits = 3, cli.width = 70, dplyr.summarise.inform = FALSE)
+options(
+  width = 80,
+  digits = 3,
+  cli.width = 70, 
+  dplyr.summarise.inform = FALSE,
+  pillar.min_title_chars = Inf
+)
 
 
 req_pkgs <- function(x, what = "To use the code in this article,") {
