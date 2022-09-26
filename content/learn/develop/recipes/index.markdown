@@ -396,7 +396,7 @@ recipe(HHV ~ ., data = biomass_tr) %>%
 #> 
 #> Operations:
 #> 
-#> Percentile transformation on <none>
+#> Percentile transformation on ends_with("gen")
 
 # Results after `prep()`: 
 rec_obj
@@ -412,7 +412,7 @@ rec_obj
 #> 
 #> Operations:
 #> 
-#> Percentile transformation on ~ends_with("gen") [trained]
+#> Percentile transformation on hydrogen, oxygen, nitrogen [trained]
 ```
  
 ### Methods for declaring required packages
@@ -509,16 +509,16 @@ tidy(rec_obj, number = 1)
 #> # A tibble: 274 × 4
 #>    term     value percentile id              
 #>    <chr>    <dbl>      <dbl> <chr>           
-#>  1 hydrogen 0.03           0 percentile_tevUA
-#>  2 hydrogen 0.934          1 percentile_tevUA
-#>  3 hydrogen 1.60           2 percentile_tevUA
-#>  4 hydrogen 2.07           3 percentile_tevUA
-#>  5 hydrogen 2.45           4 percentile_tevUA
-#>  6 hydrogen 2.74           5 percentile_tevUA
-#>  7 hydrogen 3.15           6 percentile_tevUA
-#>  8 hydrogen 3.49           7 percentile_tevUA
-#>  9 hydrogen 3.71           8 percentile_tevUA
-#> 10 hydrogen 3.99           9 percentile_tevUA
+#>  1 hydrogen 0.03           0 percentile_Bp5vK
+#>  2 hydrogen 0.934          1 percentile_Bp5vK
+#>  3 hydrogen 1.60           2 percentile_Bp5vK
+#>  4 hydrogen 2.07           3 percentile_Bp5vK
+#>  5 hydrogen 2.45           4 percentile_Bp5vK
+#>  6 hydrogen 2.74           5 percentile_Bp5vK
+#>  7 hydrogen 3.15           6 percentile_Bp5vK
+#>  8 hydrogen 3.49           7 percentile_Bp5vK
+#>  9 hydrogen 3.71           8 percentile_Bp5vK
+#> 10 hydrogen 3.99           9 percentile_Bp5vK
 #> # … with 264 more rows
 ```
 
@@ -599,37 +599,37 @@ tunable.step_poly <- function (x, ...) {
 ```
 #> ─ Session info ─────────────────────────────────────────────────────
 #>  setting  value
-#>  version  R version 4.2.0 (2022-04-22)
-#>  os       macOS Monterey 12.2.1
-#>  system   aarch64, darwin20
+#>  version  R version 4.2.1 (2022-06-23)
+#>  os       macOS Big Sur ... 10.16
+#>  system   x86_64, darwin17.0
 #>  ui       X11
 #>  language (EN)
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       America/Los_Angeles
-#>  date     2022-05-31
+#>  date     2022-09-23
 #>  pandoc   2.17.1.1 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/ (via rmarkdown)
 #> 
 #> ─ Packages ─────────────────────────────────────────────────────────
-#>  package    * version    date (UTC) lib source
-#>  broom      * 0.8.0      2022-04-13 [1] CRAN (R 4.2.0)
-#>  dials      * 0.1.1      2022-04-06 [1] CRAN (R 4.2.0)
-#>  dplyr      * 1.0.9      2022-04-28 [1] CRAN (R 4.2.0)
-#>  ggplot2    * 3.3.6      2022-05-03 [1] CRAN (R 4.2.0)
-#>  infer      * 1.0.0      2021-08-13 [1] CRAN (R 4.2.0)
-#>  modeldata  * 0.1.1      2021-07-14 [1] CRAN (R 4.2.0)
-#>  parsnip    * 0.2.1.9002 2022-05-31 [1] local
-#>  purrr      * 0.3.4      2020-04-17 [1] CRAN (R 4.2.0)
-#>  recipes    * 0.2.0      2022-02-18 [1] CRAN (R 4.2.0)
-#>  rlang        1.0.2      2022-03-04 [1] CRAN (R 4.2.0)
-#>  rsample    * 0.1.1      2021-11-08 [1] CRAN (R 4.2.0)
-#>  tibble     * 3.1.7      2022-05-03 [1] CRAN (R 4.2.0)
-#>  tidymodels * 0.2.0      2022-03-19 [1] CRAN (R 4.2.0)
-#>  tune       * 0.2.0.9002 2022-05-31 [1] Github (tidymodels/tune@08d6ae3)
-#>  workflows  * 0.2.6.9001 2022-05-31 [1] Github (tidymodels/workflows@9a9e231)
-#>  yardstick  * 0.0.9.9000 2022-05-31 [1] Github (tidymodels/yardstick@e56b69f)
+#>  package    * version date (UTC) lib source
+#>  broom      * 1.0.1   2022-08-29 [1] CRAN (R 4.2.0)
+#>  dials      * 1.0.0   2022-06-14 [1] CRAN (R 4.2.0)
+#>  dplyr      * 1.0.10  2022-09-01 [1] CRAN (R 4.2.0)
+#>  ggplot2    * 3.3.6   2022-05-03 [1] CRAN (R 4.2.0)
+#>  infer      * 1.0.3   2022-08-22 [1] CRAN (R 4.2.0)
+#>  modeldata  * 1.0.1   2022-09-06 [1] CRAN (R 4.2.0)
+#>  parsnip    * 1.0.1   2022-08-18 [1] CRAN (R 4.2.0)
+#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.2.0)
+#>  recipes    * 1.0.1   2022-07-07 [1] CRAN (R 4.2.0)
+#>  rlang        1.0.5   2022-08-31 [1] CRAN (R 4.2.0)
+#>  rsample    * 1.1.0   2022-08-08 [1] CRAN (R 4.2.0)
+#>  tibble     * 3.1.8   2022-07-22 [1] CRAN (R 4.2.0)
+#>  tidymodels * 1.0.0   2022-07-13 [1] CRAN (R 4.2.0)
+#>  tune       * 1.0.0   2022-07-07 [1] CRAN (R 4.2.0)
+#>  workflows  * 1.0.0   2022-07-05 [1] CRAN (R 4.2.0)
+#>  yardstick  * 1.1.0   2022-09-07 [1] CRAN (R 4.2.0)
 #> 
-#>  [1] /Library/Frameworks/R.framework/Versions/4.2-arm64/Resources/library
+#>  [1] /Library/Frameworks/R.framework/Versions/4.2/Resources/library
 #> 
 #> ────────────────────────────────────────────────────────────────────
 ```

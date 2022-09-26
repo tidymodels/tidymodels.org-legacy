@@ -225,34 +225,34 @@ lm_fit
 ```
 #> ─ Session info ─────────────────────────────────────────────────────
 #>  setting  value
-#>  version  R version 4.2.0 (2022-04-22)
-#>  os       macOS Big Sur/Monterey 10.16
+#>  version  R version 4.2.1 (2022-06-23)
+#>  os       macOS Big Sur ... 10.16
 #>  system   x86_64, darwin17.0
 #>  ui       X11
 #>  language (EN)
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
-#>  tz       America/New_York
-#>  date     2022-07-19
-#>  pandoc   2.18 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/tools/ (via rmarkdown)
+#>  tz       America/Los_Angeles
+#>  date     2022-09-23
+#>  pandoc   2.17.1.1 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/ (via rmarkdown)
 #> 
 #> ─ Packages ─────────────────────────────────────────────────────────
 #>  package    * version date (UTC) lib source
-#>  broom      * 1.0.0   2022-07-01 [1] CRAN (R 4.2.0)
+#>  broom      * 1.0.1   2022-08-29 [1] CRAN (R 4.2.0)
 #>  dials      * 1.0.0   2022-06-14 [1] CRAN (R 4.2.0)
-#>  dplyr      * 1.0.9   2022-04-28 [1] CRAN (R 4.2.0)
+#>  dplyr      * 1.0.10  2022-09-01 [1] CRAN (R 4.2.0)
 #>  ggplot2    * 3.3.6   2022-05-03 [1] CRAN (R 4.2.0)
-#>  infer      * 1.0.2   2022-06-10 [1] CRAN (R 4.2.0)
-#>  parsnip    * 1.0.0   2022-06-16 [1] CRAN (R 4.2.0)
+#>  infer      * 1.0.3   2022-08-22 [1] CRAN (R 4.2.0)
+#>  parsnip    * 1.0.1   2022-08-18 [1] CRAN (R 4.2.0)
 #>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.2.0)
 #>  recipes    * 1.0.1   2022-07-07 [1] CRAN (R 4.2.0)
-#>  rlang        1.0.3   2022-06-27 [1] CRAN (R 4.2.0)
-#>  rsample    * 1.0.0   2022-06-24 [1] CRAN (R 4.2.0)
-#>  tibble     * 3.1.7   2022-05-03 [1] CRAN (R 4.2.0)
+#>  rlang        1.0.5   2022-08-31 [1] CRAN (R 4.2.0)
+#>  rsample    * 1.1.0   2022-08-08 [1] CRAN (R 4.2.0)
+#>  tibble     * 3.1.8   2022-07-22 [1] CRAN (R 4.2.0)
 #>  tidymodels * 1.0.0   2022-07-13 [1] CRAN (R 4.2.0)
 #>  tune       * 1.0.0   2022-07-07 [1] CRAN (R 4.2.0)
 #>  workflows  * 1.0.0   2022-07-05 [1] CRAN (R 4.2.0)
-#>  yardstick  * 1.0.0   2022-06-06 [1] CRAN (R 4.2.0)
+#>  yardstick  * 1.1.0   2022-09-07 [1] CRAN (R 4.2.0)
 #> 
 #>  [1] /Library/Frameworks/R.framework/Versions/4.2/Resources/library
 #> 

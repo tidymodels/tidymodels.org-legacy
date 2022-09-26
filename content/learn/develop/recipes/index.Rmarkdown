@@ -17,6 +17,7 @@ library(tidymodels)
 library(modeldata)
 pkgs <- c("tidymodels", "modeldata")
 theme_set(theme_bw() + theme(legend.position = "top"))
+set.seed(1234) # for recipe step ID
 ```
 
 ## Introduction

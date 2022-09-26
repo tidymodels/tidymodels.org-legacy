@@ -176,7 +176,7 @@ Let's save information on the number of predictors by penalty value for each glm
 ```{r extract}
 glmnet_vars <- function(x) {
   # `x` will be a workflow object
-  mod <- extract_model(x)
+  mod <- extract_fit_engine(x)
   # `df` is the number of model terms for each penalty value
   tibble(penalty = mod$lambda, num_vars = mod$df)
 }

@@ -113,7 +113,7 @@ tree_grid %>%
 
 Armed with our grid filled with 25 candidate decision tree models, let's create [cross-validation folds](/start/resampling/) for tuning:
 
-```{r cell-folds, dependson="cell-split"}
+```{r cell-folds}
 set.seed(234)
 cell_folds <- vfold_cv(cell_train)
 ```
@@ -130,7 +130,7 @@ We are ready to tune! Let's use [`tune_grid()`](https://tune.tidymodels.org/refe
 
 Here we use a `workflow()` with a straightforward formula; if this model required more involved data preprocessing, we could use `add_recipe()` instead of `add_formula()`.
 
-```{r tree-res, dependson=c("tune-spec", "cell-folds", "tree-grid"), message=FALSE}
+```{r tree-res, message=FALSE}
 set.seed(345)
 
 tree_wf <- workflow() %>%
@@ -149,14 +149,14 @@ tree_res
 
 Once we have our tuning results, we can both explore them through visualization and then select the best result. The function `collect_metrics()` gives us a tidy tibble with all the results. We had 25 candidate models and two metrics, `accuracy` and `roc_auc`, and we get a row for each `.metric` and model. 
 
-```{r collect-trees, dependson="tree-res"}
+```{r collect-trees}
 tree_res %>% 
   collect_metrics()
 ```
 
 We might get more out of plotting these results:
 
-```{r best-tree, dependson="tree-res", fig.width=8, fig.height=7}
+```{r best-tree, fig.width=8, fig.height=7}
 tree_res %>%
   collect_metrics() %>%
   mutate(tree_depth = factor(tree_depth)) %>%
@@ -170,14 +170,14 @@ tree_res %>%
 
 We can see that our "stubbiest" tree, with a depth of `r min(tree_grid$tree_depth)`, is the worst model according to both metrics and across all candidate values of `cost_complexity`. Our deepest tree, with a depth of `r max(tree_grid$tree_depth)`, did better. However, the best tree seems to be between these values with a tree depth of 4. The [`show_best()`](https://tune.tidymodels.org/reference/show_best.html) function shows us the top 5 candidate models by default:
 
-```{r show-best-tree, dependson="tree-res"}
+```{r show-best-tree}
 tree_res %>%
   show_best("accuracy")
 ```
 
 We can also use the [`select_best()`](https://tune.tidymodels.org/reference/show_best.html) function to pull out the single set of hyperparameter values for our best decision tree model:
 
-```{r select-best-tree, dependson="tree-res"}
+```{r select-best-tree}
 best_tree <- tree_res %>%
   select_best("accuracy")
 
@@ -191,7 +191,7 @@ These are the values for `tree_depth` and `cost_complexity` that maximize accura
 
 We can update (or "finalize") our workflow object `tree_wf` with the values from `select_best()`. 
 
-```{r final-wf, dependson="best-tree"}
+```{r final-wf}
 final_wf <- 
   tree_wf %>% 
   finalize_workflow(best_tree)
@@ -205,7 +205,7 @@ Our tuning is done!
 
 Finally, let's fit this final model to the training data and use our test data to estimate the model performance we expect to see with new data. We can use the function [`last_fit()`](https://tune.tidymodels.org/reference/last_fit.html) with our finalized model; this function _fits_ the finalized model on the full training data set and _evaluates_ the finalized model on the testing data.
 
-```{r last-fit, dependson=c("final-wf", "cell-split")}
+```{r last-fit}
 final_fit <- 
   final_wf %>%
   last_fit(cell_split) 
@@ -223,14 +223,14 @@ The performance metrics from the test set indicate that we did not overfit durin
 
 The `final_fit` object contains a finalized, fitted workflow that you can use for predicting on new data or further understanding the results. You may want to extract this object, using [one of the `extract_` helper functions](https://tune.tidymodels.org/reference/extract-tune.html).
 
-```{r last-fit-wf, dependson="last-fit"}
+```{r last-fit-wf}
 final_tree <- extract_workflow(final_fit)
 final_tree
 ```
 
 We can create a visualization of the decision tree using another helper function to extract the underlying engine-specific fit.
 
-```{r rpart-plot, dependson="last-fit-wf", fig.width=8, fig.height=5}
+```{r rpart-plot, fig.width=8, fig.height=5}
 final_tree %>%
   extract_fit_engine() %>%
   rpart.plot(roundint = FALSE)
@@ -238,7 +238,7 @@ final_tree %>%
 
 Perhaps we would also like to understand what variables are important in this final model. We can use the [vip](https://koalaverse.github.io/vip/) package to estimate variable importance [based on the model's structure](https://koalaverse.github.io/vip/reference/vi_model.html#details). 
 
-```{r vip, dependson="final-tree", fig.width=6, fig.height=5}
+```{r vip, fig.width=6, fig.height=5}
 library(vip)
 
 final_tree %>% 
