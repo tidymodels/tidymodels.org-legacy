@@ -337,14 +337,12 @@ Then we can extract and manipulate the corresponding parameter set:
 ```r
 five_star_set <-
   five_star_wflow %>%
-  parameters() %>%
+  extract_parameter_set_dials() %>%
   update(
     num_terms = hash_range, 
     penalty = penalty(c(-3, 0)),
     mixture = mixture(c(0.05, 1.00))
   )
-#> Warning: `parameters.workflow()` was deprecated in tune 0.1.6.9003.
-#> Please use `hardhat::extract_parameter_set_dials()` instead.
 ```
 
 This is passed to the search function via the `param_info` argument. 
@@ -378,313 +376,376 @@ five_star_search <-
 #> ❯  Generating a set of 5 initial parameter results
 #> ✓ Initialization complete
 #> 
-#> Optimizing roc_auc using the expected improvement with variable trade-off
-#> values.
 #> 
 #> ── Iteration 1 ───────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.7534 (@iter 0)
+#> i Current best:		roc_auc=0.7624 (@iter 0)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.01
-#> i penalty=0.00336, mixture=0.992, num_terms=256
+#> i penalty=0.319, mixture=0.248, num_terms=345
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.7476 (+/-0.0128)
+#> ⓧ Newest results:	roc_auc=0.5632 (+/-0.0116)
 #> 
 #> ── Iteration 2 ───────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.7534 (@iter 0)
+#> i Current best:		roc_auc=0.7624 (@iter 0)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.007788
-#> i penalty=0.00464, mixture=0.489, num_terms=503
+#> i penalty=0.00542, mixture=0.614, num_terms=1231
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ♥ Newest results:	roc_auc=0.7709 (+/-0.00616)
+#> ♥ Newest results:	roc_auc=0.7763 (+/-0.00963)
 #> 
 #> ── Iteration 3 ───────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.7709 (@iter 2)
+#> i Current best:		roc_auc=0.7763 (@iter 2)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.006065
-#> i penalty=0.00109, mixture=1, num_terms=448
+#> i penalty=0.001, mixture=0.13, num_terms=1522
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.7519 (+/-0.00799)
+#> ⓧ Newest results:	roc_auc=0.7049 (+/-0.00759)
 #> 
 #> ── Iteration 4 ───────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.7709 (@iter 2)
+#> i Current best:		roc_auc=0.7763 (@iter 2)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.004724
-#> i penalty=0.00291, mixture=0.847, num_terms=533
+#> i penalty=0.00699, mixture=0.849, num_terms=2123
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.7552 (+/-0.00794)
+#> ♥ Newest results:	roc_auc=0.7978 (+/-0.00779)
 #> 
 #> ── Iteration 5 ───────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.7709 (@iter 2)
+#> i Current best:		roc_auc=0.7978 (@iter 4)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.003679
-#> i penalty=0.00154, mixture=0.0918, num_terms=442
+#> i penalty=0.008, mixture=0.72, num_terms=4022
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.7362 (+/-0.00717)
+#> ♥ Newest results:	roc_auc=0.8083 (+/-0.00486)
 #> 
 #> ── Iteration 6 ───────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.7709 (@iter 2)
+#> i Current best:		roc_auc=0.8083 (@iter 5)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.002865
-#> i penalty=0.00641, mixture=0.424, num_terms=270
+#> i penalty=0.0131, mixture=0.842, num_terms=3976
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.7451 (+/-0.0108)
+#> ♥ Newest results:	roc_auc=0.8113 (+/-0.00723)
 #> 
 #> ── Iteration 7 ───────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.7709 (@iter 2)
+#> i Current best:		roc_auc=0.8113 (@iter 6)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.002231
-#> i penalty=0.00502, mixture=0.233, num_terms=4044
+#> i penalty=0.0122, mixture=0.871, num_terms=4042
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.7708 (+/-0.00802)
+#> ⓧ Newest results:	roc_auc=0.8084 (+/-0.00724)
 #> 
 #> ── Iteration 8 ───────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.7709 (@iter 2)
+#> i Current best:		roc_auc=0.8113 (@iter 6)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.001738
-#> i penalty=0.00468, mixture=0.189, num_terms=1337
+#> i penalty=0.0154, mixture=0.944, num_terms=4070
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.7548 (+/-0.00222)
+#> ⓧ Newest results:	roc_auc=0.8055 (+/-0.0109)
 #> 
 #> ── Iteration 9 ───────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.7709 (@iter 2)
+#> i Current best:		roc_auc=0.8113 (@iter 6)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.001353
-#> i penalty=0.00103, mixture=0.976, num_terms=3782
+#> i penalty=0.0101, mixture=0.236, num_terms=4048
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.7574 (+/-0.00651)
+#> ⓧ Newest results:	roc_auc=0.7839 (+/-0.00584)
 #> 
 #> ── Iteration 10 ──────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.7709 (@iter 2)
+#> i Current best:		roc_auc=0.8113 (@iter 6)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.001054
-#> i penalty=0.00442, mixture=0.889, num_terms=4048
+#> i penalty=0.016, mixture=0.564, num_terms=3731
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ♥ Newest results:	roc_auc=0.7979 (+/-0.00592)
+#> ⓧ Newest results:	roc_auc=0.803 (+/-0.00692)
 #> 
 #> ── Iteration 11 ──────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.7979 (@iter 10)
+#> i Current best:		roc_auc=0.8113 (@iter 6)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.0008208
-#> i penalty=0.0108, mixture=0.98, num_terms=4035
+#> i penalty=0.00909, mixture=0.811, num_terms=4094
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ♥ Newest results:	roc_auc=0.8037 (+/-0.00905)
+#> ⓧ Newest results:	roc_auc=0.8047 (+/-0.00858)
 #> 
 #> ── Iteration 12 ──────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.8037 (@iter 11)
+#> i Current best:		roc_auc=0.8113 (@iter 6)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.0006393
-#> i penalty=0.00781, mixture=0.943, num_terms=3170
+#> i penalty=0.00115, mixture=0.984, num_terms=3124
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.8009 (+/-0.00721)
+#> ⓧ Newest results:	roc_auc=0.756 (+/-0.00491)
 #> 
 #> ── Iteration 13 ──────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.8037 (@iter 11)
+#> i Current best:		roc_auc=0.8113 (@iter 6)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.0004979
-#> i penalty=0.00764, mixture=0.97, num_terms=3751
+#> i penalty=0.0137, mixture=0.69, num_terms=3265
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ♥ Newest results:	roc_auc=0.8155 (+/-0.00606)
+#> ⓧ Newest results:	roc_auc=0.8044 (+/-0.00782)
 #> 
 #> ── Iteration 14 ──────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.8155 (@iter 13)
+#> i Current best:		roc_auc=0.8113 (@iter 6)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.0003877
-#> i penalty=0.00792, mixture=0.999, num_terms=3972
+#> i penalty=0.00797, mixture=0.985, num_terms=4013
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.8049 (+/-0.00923)
+#> ♥ Newest results:	roc_auc=0.8116 (+/-0.00704)
 #> 
 #> ── Iteration 15 ──────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.8155 (@iter 13)
+#> i Current best:		roc_auc=0.8116 (@iter 14)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.000302
-#> i penalty=0.00106, mixture=0.876, num_terms=1729
+#> i penalty=0.0129, mixture=0.948, num_terms=4004
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.7578 (+/-0.00789)
+#> ♥ Newest results:	roc_auc=0.8132 (+/-0.00848)
 #> 
 #> ── Iteration 16 ──────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.8155 (@iter 13)
+#> i Current best:		roc_auc=0.8132 (@iter 15)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.0002352
-#> i penalty=0.0155, mixture=0.0535, num_terms=1680
+#> i penalty=0.02, mixture=0.674, num_terms=4037
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.7672 (+/-0.00479)
+#> ⓧ Newest results:	roc_auc=0.8047 (+/-0.00716)
 #> 
 #> ── Iteration 17 ──────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.8155 (@iter 13)
+#> i Current best:		roc_auc=0.8132 (@iter 15)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.0001832
-#> i penalty=0.00565, mixture=0.954, num_terms=3098
+#> i penalty=0.0171, mixture=0.844, num_terms=3935
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.7997 (+/-0.00872)
+#> ⓧ Newest results:	roc_auc=0.807 (+/-0.0074)
 #> 
 #> ── Iteration 18 ──────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.8155 (@iter 13)
+#> i Current best:		roc_auc=0.8132 (@iter 15)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.0001426
-#> i penalty=0.0283, mixture=0.969, num_terms=3760
+#> i penalty=0.0132, mixture=0.964, num_terms=3947
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.7667 (+/-0.00802)
+#> ♥ Newest results:	roc_auc=0.8144 (+/-0.00835)
 #> 
 #> ── Iteration 19 ──────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.8155 (@iter 13)
+#> i Current best:		roc_auc=0.8144 (@iter 18)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 0.0001111
-#> i penalty=0.00252, mixture=0.0589, num_terms=2134
+#> i penalty=0.0247, mixture=0.124, num_terms=3689
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.7234 (+/-0.00547)
+#> ⓧ Newest results:	roc_auc=0.7923 (+/-0.00754)
 #> 
 #> ── Iteration 20 ──────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.8155 (@iter 13)
+#> i Current best:		roc_auc=0.8144 (@iter 18)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 8.652e-05
-#> i penalty=0.0172, mixture=0.961, num_terms=574
+#> i penalty=0.021, mixture=0.515, num_terms=295
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.7586 (+/-0.00904)
+#> ⓧ Newest results:	roc_auc=0.76 (+/-0.00747)
 #> 
 #> ── Iteration 21 ──────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.8155 (@iter 13)
+#> i Current best:		roc_auc=0.8144 (@iter 18)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 6.738e-05
-#> i penalty=0.996, mixture=0.644, num_terms=278
+#> i penalty=0.0678, mixture=0.0725, num_terms=3618
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.5
+#> ⓧ Newest results:	roc_auc=0.806 (+/-0.00771)
 #> 
 #> ── Iteration 22 ──────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.8155 (@iter 13)
+#> i Current best:		roc_auc=0.8144 (@iter 18)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 5.248e-05
-#> i penalty=0.00731, mixture=0.973, num_terms=3644
+#> i penalty=0.0449, mixture=0.122, num_terms=3982
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.8061 (+/-0.00688)
+#> ⓧ Newest results:	roc_auc=0.8075 (+/-0.0048)
 #> 
 #> ── Iteration 23 ──────────────────────────────────────────────────────
 #> 
-#> i Current best:		roc_auc=0.8155 (@iter 13)
+#> i Current best:		roc_auc=0.8144 (@iter 18)
 #> i Gaussian process model
 #> ✓ Gaussian process model
 #> i Generating 5000 candidates
 #> i Predicted candidates
 #> i Trade-off value: 4.087e-05
-#> i penalty=0.0132, mixture=0.996, num_terms=3473
+#> i penalty=0.0571, mixture=0.0852, num_terms=4000
 #> i Estimating performance
 #> ✓ Estimating performance
-#> ⓧ Newest results:	roc_auc=0.802 (+/-0.00805)
+#> ⓧ Newest results:	roc_auc=0.8074 (+/-0.00664)
+#> 
+#> ── Iteration 24 ──────────────────────────────────────────────────────
+#> 
+#> i Current best:		roc_auc=0.8144 (@iter 18)
+#> i Gaussian process model
+#> ✓ Gaussian process model
+#> i Generating 5000 candidates
+#> i Predicted candidates
+#> i Trade-off value: 3.183e-05
+#> i penalty=0.00176, mixture=0.969, num_terms=261
+#> i Estimating performance
+#> ✓ Estimating performance
+#> ⓧ Newest results:	roc_auc=0.741 (+/-0.00955)
+#> 
+#> ── Iteration 25 ──────────────────────────────────────────────────────
+#> 
+#> i Current best:		roc_auc=0.8144 (@iter 18)
+#> i Gaussian process model
+#> ✓ Gaussian process model
+#> i Generating 5000 candidates
+#> i Predicted candidates
+#> i Trade-off value: 2.479e-05
+#> i penalty=0.0315, mixture=0.307, num_terms=4072
+#> i Estimating performance
+#> ✓ Estimating performance
+#> ⓧ Newest results:	roc_auc=0.813 (+/-0.00624)
+#> 
+#> ── Iteration 26 ──────────────────────────────────────────────────────
+#> 
+#> i Current best:		roc_auc=0.8144 (@iter 18)
+#> i Gaussian process model
+#> ✓ Gaussian process model
+#> i Generating 5000 candidates
+#> i Predicted candidates
+#> i Trade-off value: 1.93e-05
+#> i penalty=0.0303, mixture=0.483, num_terms=3876
+#> i Estimating performance
+#> ✓ Estimating performance
+#> ⓧ Newest results:	roc_auc=0.7989 (+/-0.00839)
+#> 
+#> ── Iteration 27 ──────────────────────────────────────────────────────
+#> 
+#> i Current best:		roc_auc=0.8144 (@iter 18)
+#> i Gaussian process model
+#> ✓ Gaussian process model
+#> i Generating 5000 candidates
+#> i Predicted candidates
+#> i Trade-off value: 1.503e-05
+#> i penalty=0.0386, mixture=0.264, num_terms=3888
+#> i Estimating performance
+#> ✓ Estimating performance
+#> ⓧ Newest results:	roc_auc=0.8122 (+/-0.00748)
+#> 
+#> ── Iteration 28 ──────────────────────────────────────────────────────
+#> 
+#> i Current best:		roc_auc=0.8144 (@iter 18)
+#> i Gaussian process model
+#> ✓ Gaussian process model
+#> i Generating 5000 candidates
+#> i Predicted candidates
+#> i Trade-off value: 1.171e-05
+#> i penalty=0.0588, mixture=0.335, num_terms=3814
+#> i Estimating performance
+#> ✓ Estimating performance
+#> ⓧ Newest results:	roc_auc=0.8007 (+/-0.0102)
 #> ! No improvement for 10 iterations; returning current results.
 
 five_star_search
 #> # Tuning results
 #> # 10-fold cross-validation 
-#> # A tibble: 240 × 5
+#> # A tibble: 290 × 5
 #>    splits             id     .metrics         .notes           .iter
 #>    <list>             <chr>  <list>           <list>           <int>
 #>  1 <split [3600/400]> Fold01 <tibble [5 × 7]> <tibble [0 × 3]>     0
@@ -697,7 +758,7 @@ five_star_search
 #>  8 <split [3600/400]> Fold08 <tibble [5 × 7]> <tibble [0 × 3]>     0
 #>  9 <split [3600/400]> Fold09 <tibble [5 × 7]> <tibble [0 × 3]>     0
 #> 10 <split [3600/400]> Fold10 <tibble [5 × 7]> <tibble [0 × 3]>     0
-#> # … with 230 more rows
+#> # … with 280 more rows
 ```
 
 These results show some improvement over the initial set. One issue is that so many settings are sub-optimal (as shown in the plot above for grid search) so there are poor results periodically. There are regions where the penalty parameter becomes too large and all of the predictors are removed from the model. These regions are also dependent on the number of terms. There is a fairly narrow ridge (sorry, pun intended!) where good performance can be achieved. Using more iterations would probably result in the search finding better results. 
@@ -855,7 +916,7 @@ These results might help guide the choice of the `penalty` range if more optimiz
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       America/Los_Angeles
-#>  date     2022-09-23
+#>  date     2022-10-17
 #>  pandoc   2.17.1.1 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/ (via rmarkdown)
 #> 
 #> ─ Packages ─────────────────────────────────────────────────────────
@@ -865,18 +926,18 @@ These results might help guide the choice of the `penalty` range if more optimiz
 #>  dplyr        * 1.0.10  2022-09-01 [1] CRAN (R 4.2.0)
 #>  ggplot2      * 3.3.6   2022-05-03 [1] CRAN (R 4.2.0)
 #>  infer        * 1.0.3   2022-08-22 [1] CRAN (R 4.2.0)
-#>  parsnip      * 1.0.1   2022-08-18 [1] CRAN (R 4.2.0)
-#>  purrr        * 0.3.4   2020-04-17 [1] CRAN (R 4.2.0)
-#>  recipes      * 1.0.1   2022-07-07 [1] CRAN (R 4.2.0)
-#>  rlang          1.0.5   2022-08-31 [1] CRAN (R 4.2.0)
+#>  parsnip      * 1.0.2   2022-10-01 [1] CRAN (R 4.2.0)
+#>  purrr        * 0.3.5   2022-10-06 [1] CRAN (R 4.2.0)
+#>  recipes      * 1.0.2   2022-10-16 [1] CRAN (R 4.2.1)
+#>  rlang          1.0.6   2022-09-24 [1] CRAN (R 4.2.0)
 #>  rsample      * 1.1.0   2022-08-08 [1] CRAN (R 4.2.0)
 #>  stopwords    * 2.3     2021-10-28 [1] CRAN (R 4.2.0)
 #>  textfeatures * 0.3.3   2019-09-03 [1] CRAN (R 4.2.0)
-#>  textrecipes  * 1.0.0   2022-07-02 [1] CRAN (R 4.2.0)
+#>  textrecipes  * 1.0.1   2022-10-06 [1] CRAN (R 4.2.0)
 #>  tibble       * 3.1.8   2022-07-22 [1] CRAN (R 4.2.0)
 #>  tidymodels   * 1.0.0   2022-07-13 [1] CRAN (R 4.2.0)
-#>  tune         * 1.0.0   2022-07-07 [1] CRAN (R 4.2.0)
-#>  workflows    * 1.0.0   2022-07-05 [1] CRAN (R 4.2.0)
+#>  tune         * 1.0.1   2022-10-09 [1] CRAN (R 4.2.0)
+#>  workflows    * 1.1.0   2022-09-26 [1] CRAN (R 4.2.0)
 #>  yardstick    * 1.1.0   2022-09-07 [1] CRAN (R 4.2.0)
 #> 
 #>  [1] /Library/Frameworks/R.framework/Versions/4.2/Resources/library

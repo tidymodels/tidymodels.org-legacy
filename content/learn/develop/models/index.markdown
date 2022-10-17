@@ -768,7 +768,7 @@ If you have a suggestion, please add a [GitHub issue](https://github.com/tidymod
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       America/Los_Angeles
-#>  date     2022-09-23
+#>  date     2022-10-17
 #>  pandoc   2.17.1.1 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/ (via rmarkdown)
 #> 
 #> ─ Packages ─────────────────────────────────────────────────────────
@@ -780,15 +780,15 @@ If you have a suggestion, please add a [GitHub issue](https://github.com/tidymod
 #>  infer      * 1.0.3   2022-08-22 [1] CRAN (R 4.2.0)
 #>  mda        * 0.5-3   2022-05-05 [1] CRAN (R 4.2.0)
 #>  modeldata  * 1.0.1   2022-09-06 [1] CRAN (R 4.2.0)
-#>  parsnip    * 1.0.1   2022-08-18 [1] CRAN (R 4.2.0)
-#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.2.0)
-#>  recipes    * 1.0.1   2022-07-07 [1] CRAN (R 4.2.0)
-#>  rlang        1.0.5   2022-08-31 [1] CRAN (R 4.2.0)
+#>  parsnip    * 1.0.2   2022-10-01 [1] CRAN (R 4.2.0)
+#>  purrr      * 0.3.5   2022-10-06 [1] CRAN (R 4.2.0)
+#>  recipes    * 1.0.2   2022-10-16 [1] CRAN (R 4.2.1)
+#>  rlang        1.0.6   2022-09-24 [1] CRAN (R 4.2.0)
 #>  rsample    * 1.1.0   2022-08-08 [1] CRAN (R 4.2.0)
 #>  tibble     * 3.1.8   2022-07-22 [1] CRAN (R 4.2.0)
 #>  tidymodels * 1.0.0   2022-07-13 [1] CRAN (R 4.2.0)
-#>  tune       * 1.0.0   2022-07-07 [1] CRAN (R 4.2.0)
-#>  workflows  * 1.0.0   2022-07-05 [1] CRAN (R 4.2.0)
+#>  tune       * 1.0.1   2022-10-09 [1] CRAN (R 4.2.0)
+#>  workflows  * 1.1.0   2022-09-26 [1] CRAN (R 4.2.0)
 #>  yardstick  * 1.1.0   2022-09-07 [1] CRAN (R 4.2.0)
 #> 
 #>  [1] /Library/Frameworks/R.framework/Versions/4.2/Resources/library
