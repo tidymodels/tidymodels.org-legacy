@@ -280,28 +280,28 @@ mutate(
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       America/Los_Angeles
-#>  date     2022-10-17
-#>  pandoc   2.17.1.1 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/ (via rmarkdown)
+#>  date     2022-11-23
+#>  pandoc   2.19.2 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/tools/ (via rmarkdown)
 #> 
 #> ─ Packages ─────────────────────────────────────────────────────────
 #>  package    * version date (UTC) lib source
 #>  broom      * 1.0.1   2022-08-29 [1] CRAN (R 4.2.0)
-#>  dials      * 1.0.0   2022-06-14 [1] CRAN (R 4.2.0)
+#>  dials      * 1.1.0   2022-11-04 [1] CRAN (R 4.2.0)
 #>  dplyr      * 1.0.10  2022-09-01 [1] CRAN (R 4.2.0)
-#>  forecast   * 8.18    2022-10-02 [1] CRAN (R 4.2.0)
-#>  ggplot2    * 3.3.6   2022-05-03 [1] CRAN (R 4.2.0)
+#>  forecast   * 8.19    2022-11-20 [1] CRAN (R 4.2.0)
+#>  ggplot2    * 3.4.0   2022-11-04 [1] CRAN (R 4.2.0)
 #>  infer      * 1.0.3   2022-08-22 [1] CRAN (R 4.2.0)
-#>  parsnip    * 1.0.2   2022-10-01 [1] CRAN (R 4.2.0)
+#>  parsnip    * 1.0.3   2022-11-11 [1] CRAN (R 4.2.0)
 #>  purrr      * 0.3.5   2022-10-06 [1] CRAN (R 4.2.0)
-#>  recipes    * 1.0.2   2022-10-16 [1] CRAN (R 4.2.1)
+#>  recipes    * 1.0.3   2022-11-09 [1] CRAN (R 4.2.0)
 #>  rlang        1.0.6   2022-09-24 [1] CRAN (R 4.2.0)
 #>  rsample    * 1.1.0   2022-08-08 [1] CRAN (R 4.2.0)
 #>  sweep      * 0.2.3   2020-07-10 [1] CRAN (R 4.2.0)
 #>  tibble     * 3.1.8   2022-07-22 [1] CRAN (R 4.2.0)
 #>  tidymodels * 1.0.0   2022-07-13 [1] CRAN (R 4.2.0)
-#>  timetk     * 2.8.1   2022-05-31 [1] CRAN (R 4.2.0)
+#>  timetk     * 2.8.2   2022-11-17 [1] CRAN (R 4.2.0)
 #>  tune       * 1.0.1   2022-10-09 [1] CRAN (R 4.2.0)
-#>  workflows  * 1.1.0   2022-09-26 [1] CRAN (R 4.2.0)
+#>  workflows  * 1.1.2   2022-11-16 [1] CRAN (R 4.2.0)
 #>  yardstick  * 1.1.0   2022-09-07 [1] CRAN (R 4.2.0)
 #>  zoo        * 1.8-11  2022-09-17 [1] CRAN (R 4.2.0)
 #> 
