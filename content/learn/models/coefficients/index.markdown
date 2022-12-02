@@ -225,11 +225,9 @@ lm_coefs %>%
   filter(term != "(Intercept)") %>% 
   ggplot(aes(x = term, y = estimate, group = id, col = id)) +  
   geom_hline(yintercept = 0, lty = 3) + 
-  geom_line(alpha = 0.3, lwd = 1.2) + 
+  geom_line(alpha = 0.3, linewidth = 1.2) + 
   labs(y = "Coefficient", x = NULL) +
   theme(legend.position = "top")
-#> Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
-#> ℹ Please use `linewidth` instead.
 ```
 
 <img src="figs/lm-plot-1.svg" width="672" />
@@ -557,7 +555,7 @@ glmnet_coefs %>%
   mutate(mixture = format(mixture)) %>% 
   ggplot(aes(x = penalty, y = estimate, col = mixture, groups = id)) + 
   geom_hline(yintercept = 0, lty = 3) +
-  geom_line(alpha = 0.5, lwd = 1.2) + 
+  geom_line(alpha = 0.5, linewidth = 1.2) + 
   facet_wrap(~ term) + 
   scale_x_log10() +
   scale_color_brewer(palette = "Accent") +
@@ -587,7 +585,7 @@ Notice a couple of things:
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       America/Los_Angeles
-#>  date     2022-11-23
+#>  date     2022-12-02
 #>  pandoc   2.19.2 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/tools/ (via rmarkdown)
 #> 
 #> ─ Packages ─────────────────────────────────────────────────────────
@@ -596,8 +594,8 @@ Notice a couple of things:
 #>  dials      * 1.1.0   2022-11-04 [1] CRAN (R 4.2.0)
 #>  dplyr      * 1.0.10  2022-09-01 [1] CRAN (R 4.2.0)
 #>  ggplot2    * 3.4.0   2022-11-04 [1] CRAN (R 4.2.0)
-#>  glmnet     * 4.1-4   2022-04-15 [1] CRAN (R 4.2.0)
-#>  infer      * 1.0.3   2022-08-22 [1] CRAN (R 4.2.0)
+#>  glmnet     * 4.1-6   2022-11-27 [1] CRAN (R 4.2.0)
+#>  infer      * 1.0.4   2022-12-02 [1] CRAN (R 4.2.1)
 #>  parsnip    * 1.0.3   2022-11-11 [1] CRAN (R 4.2.0)
 #>  purrr      * 0.3.5   2022-10-06 [1] CRAN (R 4.2.0)
 #>  recipes    * 1.0.3   2022-11-09 [1] CRAN (R 4.2.0)

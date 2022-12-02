@@ -198,7 +198,7 @@ num_initial_terms() %>% finalize(x = mtcars[, -1])
 
 ## Qualitative parameters
 
-Now let's look at an example of a qualitative parameter. If a model includes a data aggregation step, we want to allow users to tune how our parameters are aggregated.  For example, in embedding methods, possible values might be `min`, `max`, `mean`, `sum`, or to not aggregate at all ("none"). Since these cannot be put on a numeric scale, they are possible values of a qualitative parameter. We'll take "character" input (not "logical"), and we must specify the allowed values. By default we won't aggregate.
+Now let's look at an example of a qualitative parameter. If a model includes a data aggregation step, we want to allow users to tune how our parameters are aggregated.  For example, in embedding methods, possible values might be `min`, `max`, `mean`, `sum`, or to not aggregate at all ("none"). Since these cannot be put on a numeric scale, they are possible values of a qualitative parameter. We'll take "character" input (not "logical"), and we must specify the allowed values. By default we won't aggregate, so we are putting `"none"` as the first value.
 
 
 ```r
@@ -206,9 +206,6 @@ aggregation <- function(values = c("none", "min", "max", "mean", "sum")) {
   new_qual_param(
     type = "character",
     values = values,
-    # By default, the first value is selected as default. We'll specify that to
-    # make it clear.
-    default = "none",
     label = c(aggregation = "Aggregation Method")
   )
 }
@@ -217,16 +214,12 @@ aggregation <- function(values = c("none", "min", "max", "mean", "sum")) {
 Within the dials package, the convention is to have the values contained in a separate vector whose name starts with `values_`. For example: 
 
 
-
 ```r
 values_aggregation <- c("none", "min", "max", "mean", "sum")
 aggregation <- function(values = values_aggregation) {
   new_qual_param(
     type = "character",
     values = values,
-    # By default, the first value is selected as default. We'll specify that to
-    # make it clear.
-    default = "none",
     label = c(aggregation = "Aggregation Method")
   )
 }
@@ -239,8 +232,6 @@ We can use our `aggregation` parameters with dials functions.
 
 ```r
 aggregation()
-#> Warning: The `default` argument of `new_qual_param()` is deprecated as of
-#> dials 1.0.1.
 #> Aggregation Method  (qualitative)
 #> 5 possible values include:
 #> 'none', 'min', 'max', 'mean' and 'sum'
@@ -262,7 +253,7 @@ aggregation() %>% value_sample(3)
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       America/Los_Angeles
-#>  date     2022-11-23
+#>  date     2022-12-02
 #>  pandoc   2.19.2 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/tools/ (via rmarkdown)
 #> 
 #> ─ Packages ─────────────────────────────────────────────────────────
@@ -271,7 +262,7 @@ aggregation() %>% value_sample(3)
 #>  dials      * 1.1.0   2022-11-04 [1] CRAN (R 4.2.0)
 #>  dplyr      * 1.0.10  2022-09-01 [1] CRAN (R 4.2.0)
 #>  ggplot2    * 3.4.0   2022-11-04 [1] CRAN (R 4.2.0)
-#>  infer      * 1.0.3   2022-08-22 [1] CRAN (R 4.2.0)
+#>  infer      * 1.0.4   2022-12-02 [1] CRAN (R 4.2.1)
 #>  parsnip    * 1.0.3   2022-11-11 [1] CRAN (R 4.2.0)
 #>  purrr      * 0.3.5   2022-10-06 [1] CRAN (R 4.2.0)
 #>  recipes    * 1.0.3   2022-11-09 [1] CRAN (R 4.2.0)

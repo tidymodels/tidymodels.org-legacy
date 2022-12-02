@@ -572,7 +572,7 @@ Not too bad! We leave it to the reader to test out this workflow [*without*](htt
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       America/Los_Angeles
-#>  date     2022-11-23
+#>  date     2022-12-02
 #>  pandoc   2.19.2 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/tools/ (via rmarkdown)
 #> 
 #> ─ Packages ─────────────────────────────────────────────────────────
@@ -581,7 +581,7 @@ Not too bad! We leave it to the reader to test out this workflow [*without*](htt
 #>  dials        * 1.1.0   2022-11-04 [1] CRAN (R 4.2.0)
 #>  dplyr        * 1.0.10  2022-09-01 [1] CRAN (R 4.2.0)
 #>  ggplot2      * 3.4.0   2022-11-04 [1] CRAN (R 4.2.0)
-#>  infer        * 1.0.3   2022-08-22 [1] CRAN (R 4.2.0)
+#>  infer        * 1.0.4   2022-12-02 [1] CRAN (R 4.2.1)
 #>  nycflights13 * 1.0.2   2021-04-12 [1] CRAN (R 4.2.0)
 #>  parsnip      * 1.0.3   2022-11-11 [1] CRAN (R 4.2.0)
 #>  purrr        * 0.3.5   2022-10-06 [1] CRAN (R 4.2.0)

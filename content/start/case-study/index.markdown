@@ -537,12 +537,10 @@ Now, we can compare the validation set ROC curves for our top penalized logistic
 ```r
 bind_rows(rf_auc, lr_auc) %>% 
   ggplot(aes(x = 1 - specificity, y = sensitivity, col = model)) + 
-  geom_path(lwd = 1.5, alpha = 0.8) +
+  geom_path(linewidth = 1.5, alpha = 0.8) +
   geom_abline(lty = 3) + 
   coord_equal() + 
   scale_color_viridis_d(option = "plasma", end = .6)
-#> Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
-#> ℹ Please use `linewidth` instead.
 ```
 
 <img src="figs/rf-lr-roc-curve-1.svg" width="672" />
@@ -656,7 +654,7 @@ Here are some more ideas for where to go next:
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       America/Los_Angeles
-#>  date     2022-11-23
+#>  date     2022-12-02
 #>  pandoc   2.19.2 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/tools/ (via rmarkdown)
 #> 
 #> ─ Packages ─────────────────────────────────────────────────────────
@@ -665,7 +663,7 @@ Here are some more ideas for where to go next:
 #>  dials      * 1.1.0   2022-11-04 [1] CRAN (R 4.2.0)
 #>  dplyr      * 1.0.10  2022-09-01 [1] CRAN (R 4.2.0)
 #>  ggplot2    * 3.4.0   2022-11-04 [1] CRAN (R 4.2.0)
-#>  infer      * 1.0.3   2022-08-22 [1] CRAN (R 4.2.0)
+#>  infer      * 1.0.4   2022-12-02 [1] CRAN (R 4.2.1)
 #>  parsnip    * 1.0.3   2022-11-11 [1] CRAN (R 4.2.0)
 #>  purrr      * 0.3.5   2022-10-06 [1] CRAN (R 4.2.0)
 #>  ranger       0.14.1  2022-06-18 [1] CRAN (R 4.2.0)
