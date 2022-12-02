@@ -225,7 +225,7 @@ lm_coefs %>%
   filter(term != "(Intercept)") %>% 
   ggplot(aes(x = term, y = estimate, group = id, col = id)) +  
   geom_hline(yintercept = 0, lty = 3) + 
-  geom_line(alpha = 0.3, lwd = 1.2) + 
+  geom_line(alpha = 0.3, linewidth = 1.2) + 
   labs(y = "Coefficient", x = NULL) +
   theme(legend.position = "top")
 ```
@@ -555,7 +555,7 @@ glmnet_coefs %>%
   mutate(mixture = format(mixture)) %>% 
   ggplot(aes(x = penalty, y = estimate, col = mixture, groups = id)) + 
   geom_hline(yintercept = 0, lty = 3) +
-  geom_line(alpha = 0.5, lwd = 1.2) + 
+  geom_line(alpha = 0.5, linewidth = 1.2) + 
   facet_wrap(~ term) + 
   scale_x_log10() +
   scale_color_brewer(palette = "Accent") +
@@ -585,26 +585,26 @@ Notice a couple of things:
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       America/Los_Angeles
-#>  date     2022-10-17
-#>  pandoc   2.17.1.1 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/ (via rmarkdown)
+#>  date     2022-12-02
+#>  pandoc   2.19.2 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/tools/ (via rmarkdown)
 #> 
 #> ─ Packages ─────────────────────────────────────────────────────────
 #>  package    * version date (UTC) lib source
 #>  broom      * 1.0.1   2022-08-29 [1] CRAN (R 4.2.0)
-#>  dials      * 1.0.0   2022-06-14 [1] CRAN (R 4.2.0)
+#>  dials      * 1.1.0   2022-11-04 [1] CRAN (R 4.2.0)
 #>  dplyr      * 1.0.10  2022-09-01 [1] CRAN (R 4.2.0)
-#>  ggplot2    * 3.3.6   2022-05-03 [1] CRAN (R 4.2.0)
-#>  glmnet     * 4.1-4   2022-04-15 [1] CRAN (R 4.2.0)
-#>  infer      * 1.0.3   2022-08-22 [1] CRAN (R 4.2.0)
-#>  parsnip    * 1.0.2   2022-10-01 [1] CRAN (R 4.2.0)
+#>  ggplot2    * 3.4.0   2022-11-04 [1] CRAN (R 4.2.0)
+#>  glmnet     * 4.1-6   2022-11-27 [1] CRAN (R 4.2.0)
+#>  infer      * 1.0.4   2022-12-02 [1] CRAN (R 4.2.1)
+#>  parsnip    * 1.0.3   2022-11-11 [1] CRAN (R 4.2.0)
 #>  purrr      * 0.3.5   2022-10-06 [1] CRAN (R 4.2.0)
-#>  recipes    * 1.0.2   2022-10-16 [1] CRAN (R 4.2.1)
+#>  recipes    * 1.0.3   2022-11-09 [1] CRAN (R 4.2.0)
 #>  rlang        1.0.6   2022-09-24 [1] CRAN (R 4.2.0)
 #>  rsample    * 1.1.0   2022-08-08 [1] CRAN (R 4.2.0)
 #>  tibble     * 3.1.8   2022-07-22 [1] CRAN (R 4.2.0)
 #>  tidymodels * 1.0.0   2022-07-13 [1] CRAN (R 4.2.0)
 #>  tune       * 1.0.1   2022-10-09 [1] CRAN (R 4.2.0)
-#>  workflows  * 1.1.0   2022-09-26 [1] CRAN (R 4.2.0)
+#>  workflows  * 1.1.2   2022-11-16 [1] CRAN (R 4.2.0)
 #>  yardstick  * 1.1.0   2022-09-07 [1] CRAN (R 4.2.0)
 #> 
 #>  [1] /Library/Frameworks/R.framework/Versions/4.2/Resources/library

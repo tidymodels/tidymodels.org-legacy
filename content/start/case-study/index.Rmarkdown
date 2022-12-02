@@ -266,7 +266,7 @@ Every candidate model in this tibble likely includes more predictor variables th
 
 ```{r lr-plot-lines, echo=FALSE, fig.height = 4.25, fig.width = 6}
 lr_plot  +
-  geom_vline(color = "#CA225E", lty = 3, xintercept = top_pen) +
+  geom_vline(color = "#CA225E", linewidth = 3, xintercept = top_pen) +
   geom_vline(color = "#CA225E", xintercept = select_pen) 
 ```
 
@@ -417,7 +417,7 @@ Now, we can compare the validation set ROC curves for our top penalized logistic
 ```{r rf-lr-roc-curve}
 bind_rows(rf_auc, lr_auc) %>% 
   ggplot(aes(x = 1 - specificity, y = sensitivity, col = model)) + 
-  geom_path(lwd = 1.5, alpha = 0.8) +
+  geom_path(linewidth = 1.5, alpha = 0.8) +
   geom_abline(lty = 3) + 
   coord_equal() + 
   scale_color_viridis_d(option = "plasma", end = .6)

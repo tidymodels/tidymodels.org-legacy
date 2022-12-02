@@ -68,18 +68,18 @@ results
 #> #  outer: 10-fold cross-validation repeated 5 times
 #> #  inner: Bootstrap sampling
 #> # A tibble: 50 × 4
-#>    splits          id      id2    inner_resamples      
-#>    <list>          <chr>   <chr>  <list>               
-#>  1 <split [90/10]> Repeat1 Fold01 <bootstraps [25 × 2]>
-#>  2 <split [90/10]> Repeat1 Fold02 <bootstraps [25 × 2]>
-#>  3 <split [90/10]> Repeat1 Fold03 <bootstraps [25 × 2]>
-#>  4 <split [90/10]> Repeat1 Fold04 <bootstraps [25 × 2]>
-#>  5 <split [90/10]> Repeat1 Fold05 <bootstraps [25 × 2]>
-#>  6 <split [90/10]> Repeat1 Fold06 <bootstraps [25 × 2]>
-#>  7 <split [90/10]> Repeat1 Fold07 <bootstraps [25 × 2]>
-#>  8 <split [90/10]> Repeat1 Fold08 <bootstraps [25 × 2]>
-#>  9 <split [90/10]> Repeat1 Fold09 <bootstraps [25 × 2]>
-#> 10 <split [90/10]> Repeat1 Fold10 <bootstraps [25 × 2]>
+#>    splits          id      id2    inner_resamples    
+#>    <list>          <chr>   <chr>  <list>             
+#>  1 <split [90/10]> Repeat1 Fold01 <botstrps [25 × 2]>
+#>  2 <split [90/10]> Repeat1 Fold02 <botstrps [25 × 2]>
+#>  3 <split [90/10]> Repeat1 Fold03 <botstrps [25 × 2]>
+#>  4 <split [90/10]> Repeat1 Fold04 <botstrps [25 × 2]>
+#>  5 <split [90/10]> Repeat1 Fold05 <botstrps [25 × 2]>
+#>  6 <split [90/10]> Repeat1 Fold06 <botstrps [25 × 2]>
+#>  7 <split [90/10]> Repeat1 Fold07 <botstrps [25 × 2]>
+#>  8 <split [90/10]> Repeat1 Fold08 <botstrps [25 × 2]>
+#>  9 <split [90/10]> Repeat1 Fold09 <botstrps [25 × 2]>
+#> 10 <split [90/10]> Repeat1 Fold10 <botstrps [25 × 2]>
 #> # … with 40 more rows
 ```
 
@@ -337,29 +337,29 @@ The nested procedure produces a closer estimate to the approximate truth but the
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       America/Los_Angeles
-#>  date     2022-10-17
-#>  pandoc   2.17.1.1 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/ (via rmarkdown)
+#>  date     2022-12-02
+#>  pandoc   2.19.2 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/tools/ (via rmarkdown)
 #> 
 #> ─ Packages ─────────────────────────────────────────────────────────
 #>  package    * version date (UTC) lib source
 #>  broom      * 1.0.1   2022-08-29 [1] CRAN (R 4.2.0)
-#>  dials      * 1.0.0   2022-06-14 [1] CRAN (R 4.2.0)
+#>  dials      * 1.1.0   2022-11-04 [1] CRAN (R 4.2.0)
 #>  dplyr      * 1.0.10  2022-09-01 [1] CRAN (R 4.2.0)
 #>  furrr      * 0.3.1   2022-08-15 [1] CRAN (R 4.2.0)
-#>  ggplot2    * 3.3.6   2022-05-03 [1] CRAN (R 4.2.0)
-#>  infer      * 1.0.3   2022-08-22 [1] CRAN (R 4.2.0)
+#>  ggplot2    * 3.4.0   2022-11-04 [1] CRAN (R 4.2.0)
+#>  infer      * 1.0.4   2022-12-02 [1] CRAN (R 4.2.1)
 #>  kernlab    * 0.9-31  2022-06-09 [1] CRAN (R 4.2.0)
 #>  mlbench    * 2.1-3   2021-01-29 [1] CRAN (R 4.2.0)
-#>  parsnip    * 1.0.2   2022-10-01 [1] CRAN (R 4.2.0)
+#>  parsnip    * 1.0.3   2022-11-11 [1] CRAN (R 4.2.0)
 #>  purrr      * 0.3.5   2022-10-06 [1] CRAN (R 4.2.0)
-#>  recipes    * 1.0.2   2022-10-16 [1] CRAN (R 4.2.1)
+#>  recipes    * 1.0.3   2022-11-09 [1] CRAN (R 4.2.0)
 #>  rlang        1.0.6   2022-09-24 [1] CRAN (R 4.2.0)
 #>  rsample    * 1.1.0   2022-08-08 [1] CRAN (R 4.2.0)
 #>  scales     * 1.2.1   2022-08-20 [1] CRAN (R 4.2.0)
 #>  tibble     * 3.1.8   2022-07-22 [1] CRAN (R 4.2.0)
 #>  tidymodels * 1.0.0   2022-07-13 [1] CRAN (R 4.2.0)
 #>  tune       * 1.0.1   2022-10-09 [1] CRAN (R 4.2.0)
-#>  workflows  * 1.1.0   2022-09-26 [1] CRAN (R 4.2.0)
+#>  workflows  * 1.1.2   2022-11-16 [1] CRAN (R 4.2.0)
 #>  yardstick  * 1.1.0   2022-09-07 [1] CRAN (R 4.2.0)
 #> 
 #>  [1] /Library/Frameworks/R.framework/Versions/4.2/Resources/library

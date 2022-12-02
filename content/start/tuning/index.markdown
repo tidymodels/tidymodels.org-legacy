@@ -230,7 +230,7 @@ tree_res %>%
   collect_metrics() %>%
   mutate(tree_depth = factor(tree_depth)) %>%
   ggplot(aes(cost_complexity, mean, color = tree_depth)) +
-  geom_line(size = 1.5, alpha = 0.6) +
+  geom_line(linewidth = 1.5, alpha = 0.6) +
   geom_point(size = 2) +
   facet_wrap(~ .metric, scales = "free", nrow = 2) +
   scale_x_log10(labels = scales::label_number()) +
@@ -421,28 +421,28 @@ You could tune the other hyperparameter we didn't use here, `min_n`, which sets 
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       America/Los_Angeles
-#>  date     2022-10-17
-#>  pandoc   2.17.1.1 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/ (via rmarkdown)
+#>  date     2022-12-02
+#>  pandoc   2.19.2 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/tools/ (via rmarkdown)
 #> 
 #> ─ Packages ─────────────────────────────────────────────────────────
 #>  package    * version date (UTC) lib source
 #>  broom      * 1.0.1   2022-08-29 [1] CRAN (R 4.2.0)
-#>  dials      * 1.0.0   2022-06-14 [1] CRAN (R 4.2.0)
+#>  dials      * 1.1.0   2022-11-04 [1] CRAN (R 4.2.0)
 #>  dplyr      * 1.0.10  2022-09-01 [1] CRAN (R 4.2.0)
-#>  ggplot2    * 3.3.6   2022-05-03 [1] CRAN (R 4.2.0)
-#>  infer      * 1.0.3   2022-08-22 [1] CRAN (R 4.2.0)
-#>  parsnip    * 1.0.2   2022-10-01 [1] CRAN (R 4.2.0)
+#>  ggplot2    * 3.4.0   2022-11-04 [1] CRAN (R 4.2.0)
+#>  infer      * 1.0.4   2022-12-02 [1] CRAN (R 4.2.1)
+#>  parsnip    * 1.0.3   2022-11-11 [1] CRAN (R 4.2.0)
 #>  purrr      * 0.3.5   2022-10-06 [1] CRAN (R 4.2.0)
-#>  recipes    * 1.0.2   2022-10-16 [1] CRAN (R 4.2.1)
+#>  recipes    * 1.0.3   2022-11-09 [1] CRAN (R 4.2.0)
 #>  rlang        1.0.6   2022-09-24 [1] CRAN (R 4.2.0)
-#>  rpart      * 4.1.16  2022-01-24 [1] CRAN (R 4.2.1)
+#>  rpart      * 4.1.19  2022-10-21 [1] CRAN (R 4.2.0)
 #>  rpart.plot * 3.1.1   2022-05-21 [1] CRAN (R 4.2.0)
 #>  rsample    * 1.1.0   2022-08-08 [1] CRAN (R 4.2.0)
 #>  tibble     * 3.1.8   2022-07-22 [1] CRAN (R 4.2.0)
 #>  tidymodels * 1.0.0   2022-07-13 [1] CRAN (R 4.2.0)
 #>  tune       * 1.0.1   2022-10-09 [1] CRAN (R 4.2.0)
 #>  vip        * 0.3.2   2020-12-17 [1] CRAN (R 4.2.0)
-#>  workflows  * 1.1.0   2022-09-26 [1] CRAN (R 4.2.0)
+#>  workflows  * 1.1.2   2022-11-16 [1] CRAN (R 4.2.0)
 #>  yardstick  * 1.1.0   2022-09-07 [1] CRAN (R 4.2.0)
 #> 
 #>  [1] /Library/Frameworks/R.framework/Versions/4.2/Resources/library
