@@ -151,7 +151,7 @@ lm_coefs %>%
   filter(term != "(Intercept)") %>% 
   ggplot(aes(x = term, y = estimate, group = id, col = id)) +  
   geom_hline(yintercept = 0, lty = 3) + 
-  geom_line(alpha = 0.3, lwd = 1.2) + 
+  geom_line(alpha = 0.3, linewidth = 1.2) + 
   labs(y = "Coefficient", x = NULL) +
   theme(legend.position = "top")
 ```
@@ -334,7 +334,7 @@ glmnet_coefs %>%
   mutate(mixture = format(mixture)) %>% 
   ggplot(aes(x = penalty, y = estimate, col = mixture, groups = id)) + 
   geom_hline(yintercept = 0, lty = 3) +
-  geom_line(alpha = 0.5, lwd = 1.2) + 
+  geom_line(alpha = 0.5, linewidth = 1.2) + 
   facet_wrap(~ term) + 
   scale_x_log10() +
   scale_color_brewer(palette = "Accent") +

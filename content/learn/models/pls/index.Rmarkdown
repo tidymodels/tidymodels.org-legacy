@@ -164,7 +164,7 @@ The plot below shows that, if the protein measurement is important, you might re
 
 ```{r plot, fig.width=6, fig.height=4.25,  out.width = '100%'}
 ggplot(variance_data, aes(x = components, y = proportion, col = source)) + 
-  geom_line(alpha = 0.5, size = 1.2) + 
+  geom_line(alpha = 0.5, linewidth = 1.2) + 
   geom_point() 
 ```
 
