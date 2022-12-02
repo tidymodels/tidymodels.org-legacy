@@ -436,6 +436,8 @@ required_pkgs.step_hypothetical <- function(x, ...) {
 
 In this example, `myrecipespkg` is the package where the step resides (if it is in a package).
 
+{{% note %}} If you are writing steps for an extension package, then every step should have a `required_pkgs()` method. It must return the package name, in addition to the optional additional dependency. {{%/ note %}}
+
 The reason to declare what packages should be loaded is parallel processing. When parallel worker processes are created, there is heterogeneity across technologies regarding which packages are loaded. Multicore methods on macOS and Linux load all of the packages that were loaded in the main R process. However, parallel processing using psock clusters have no additional packages loaded. If the home package for a recipe step is not loaded in the worker processes, the `prep()` methods cannot be found and an error occurs. 
 
 If this S3 method is used for your step, you can rely on this for checking the installation: 
