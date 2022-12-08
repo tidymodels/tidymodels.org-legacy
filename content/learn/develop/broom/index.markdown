@@ -1795,7 +1795,7 @@ The [alexpghayes/modeltests](https://github.com/alexpghayes/modeltests) package 
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       America/Los_Angeles
-#>  date     2022-12-02
+#>  date     2022-12-07
 #>  pandoc   2.19.2 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/tools/ (via rmarkdown)
 #> 
 #> ─ Packages ─────────────────────────────────────────────────────────
@@ -1810,7 +1810,7 @@ The [alexpghayes/modeltests](https://github.com/alexpghayes/modeltests) package 
 #>  purrr      * 0.3.5   2022-10-06 [1] CRAN (R 4.2.0)
 #>  recipes    * 1.0.3   2022-11-09 [1] CRAN (R 4.2.0)
 #>  rlang        1.0.6   2022-09-24 [1] CRAN (R 4.2.0)
-#>  rsample    * 1.1.0   2022-08-08 [1] CRAN (R 4.2.0)
+#>  rsample    * 1.1.1   2022-12-07 [1] CRAN (R 4.2.1)
 #>  tibble     * 3.1.8   2022-07-22 [1] CRAN (R 4.2.0)
 #>  tidymodels * 1.0.0   2022-07-13 [1] CRAN (R 4.2.0)
 #>  tidyverse  * 1.3.2   2022-07-18 [1] CRAN (R 4.2.0)

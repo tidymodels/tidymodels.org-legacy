@@ -916,7 +916,7 @@ These results might help guide the choice of the `penalty` range if more optimiz
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       America/Los_Angeles
-#>  date     2022-12-02
+#>  date     2022-12-07
 #>  pandoc   2.19.2 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/tools/ (via rmarkdown)
 #> 
 #> ─ Packages ─────────────────────────────────────────────────────────
@@ -930,7 +930,7 @@ These results might help guide the choice of the `penalty` range if more optimiz
 #>  purrr        * 0.3.5   2022-10-06 [1] CRAN (R 4.2.0)
 #>  recipes      * 1.0.3   2022-11-09 [1] CRAN (R 4.2.0)
 #>  rlang          1.0.6   2022-09-24 [1] CRAN (R 4.2.0)
-#>  rsample      * 1.1.0   2022-08-08 [1] CRAN (R 4.2.0)
+#>  rsample      * 1.1.1   2022-12-07 [1] CRAN (R 4.2.1)
 #>  stopwords    * 2.3     2021-10-28 [1] CRAN (R 4.2.0)
 #>  textfeatures * 0.3.3   2019-09-03 [1] CRAN (R 4.2.0)
 #>  textrecipes  * 1.0.1   2022-10-06 [1] CRAN (R 4.2.0)
