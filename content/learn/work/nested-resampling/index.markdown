@@ -68,18 +68,18 @@ results
 #> #  outer: 10-fold cross-validation repeated 5 times
 #> #  inner: Bootstrap sampling
 #> # A tibble: 50 × 4
-#>    splits          id      id2    inner_resamples    
-#>    <list>          <chr>   <chr>  <list>             
-#>  1 <split [90/10]> Repeat1 Fold01 <botstrps [25 × 2]>
-#>  2 <split [90/10]> Repeat1 Fold02 <botstrps [25 × 2]>
-#>  3 <split [90/10]> Repeat1 Fold03 <botstrps [25 × 2]>
-#>  4 <split [90/10]> Repeat1 Fold04 <botstrps [25 × 2]>
-#>  5 <split [90/10]> Repeat1 Fold05 <botstrps [25 × 2]>
-#>  6 <split [90/10]> Repeat1 Fold06 <botstrps [25 × 2]>
-#>  7 <split [90/10]> Repeat1 Fold07 <botstrps [25 × 2]>
-#>  8 <split [90/10]> Repeat1 Fold08 <botstrps [25 × 2]>
-#>  9 <split [90/10]> Repeat1 Fold09 <botstrps [25 × 2]>
-#> 10 <split [90/10]> Repeat1 Fold10 <botstrps [25 × 2]>
+#>    splits          id      id2    inner_resamples
+#>    <list>          <chr>   <chr>  <list>         
+#>  1 <split [90/10]> Repeat1 Fold01 <boot [25 × 2]>
+#>  2 <split [90/10]> Repeat1 Fold02 <boot [25 × 2]>
+#>  3 <split [90/10]> Repeat1 Fold03 <boot [25 × 2]>
+#>  4 <split [90/10]> Repeat1 Fold04 <boot [25 × 2]>
+#>  5 <split [90/10]> Repeat1 Fold05 <boot [25 × 2]>
+#>  6 <split [90/10]> Repeat1 Fold06 <boot [25 × 2]>
+#>  7 <split [90/10]> Repeat1 Fold07 <boot [25 × 2]>
+#>  8 <split [90/10]> Repeat1 Fold08 <boot [25 × 2]>
+#>  9 <split [90/10]> Repeat1 Fold09 <boot [25 × 2]>
+#> 10 <split [90/10]> Repeat1 Fold10 <boot [25 × 2]>
 #> # … with 40 more rows
 ```
 
@@ -337,7 +337,7 @@ The nested procedure produces a closer estimate to the approximate truth but the
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       America/Los_Angeles
-#>  date     2022-12-02
+#>  date     2022-12-07
 #>  pandoc   2.19.2 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/tools/ (via rmarkdown)
 #> 
 #> ─ Packages ─────────────────────────────────────────────────────────
@@ -354,7 +354,7 @@ The nested procedure produces a closer estimate to the approximate truth but the
 #>  purrr      * 0.3.5   2022-10-06 [1] CRAN (R 4.2.0)
 #>  recipes    * 1.0.3   2022-11-09 [1] CRAN (R 4.2.0)
 #>  rlang        1.0.6   2022-09-24 [1] CRAN (R 4.2.0)
-#>  rsample    * 1.1.0   2022-08-08 [1] CRAN (R 4.2.0)
+#>  rsample    * 1.1.1   2022-12-07 [1] CRAN (R 4.2.1)
 #>  scales     * 1.2.1   2022-08-20 [1] CRAN (R 4.2.0)
 #>  tibble     * 3.1.8   2022-07-22 [1] CRAN (R 4.2.0)
 #>  tidymodels * 1.0.0   2022-07-13 [1] CRAN (R 4.2.0)
