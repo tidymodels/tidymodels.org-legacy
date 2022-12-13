@@ -22,8 +22,8 @@ library(DT)
 library(tibble)
 pkgs <- 
   tibble(
-    pkg = c("parsnip", "discrim", "poissonreg", "plsmod", "baguette", "rules", 
-            "modeltime", "multilevelmod", "censored", "bonsai", "agua"), 
+    pkg = c("agua", "baguette", "bonsai", "censored", "discrim", "modeltime", 
+            "multilevelmod", "parsnip", "plsmod", "poissonreg", "rules"), 
     base_url = case_when(pkg == "modeltime" ~ "https://business-science.github.io/modeltime/",
                          TRUE ~ paste0("https://", pkg, ".tidymodels.org/"))
   )
