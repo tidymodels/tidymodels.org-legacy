@@ -22,8 +22,8 @@ library(DT)
 library(tibble)
 pkgs <- 
   tibble(
-    pkg = c("parsnip", "discrim", "poissonreg", "plsmod", "baguette", 
-            "rules", "modeltime", "multilevelmod"), 
+    pkg = c("agua", "baguette", "bonsai", "censored", "discrim", "modeltime", 
+            "multilevelmod", "parsnip", "plsmod", "poissonreg", "rules"), 
     base_url = case_when(pkg == "modeltime" ~ "https://business-science.github.io/modeltime/",
                          TRUE ~ paste0("https://", pkg, ".tidymodels.org/"))
   )
@@ -34,9 +34,11 @@ library(plsmod)
 library(baguette)
 library(rules)
 library(modeltime)
+library(multilevelmod)
+library(censored)
+library(bonsai)
+library(agua)
 ```
-
-
 
 ## Explore models {#models}
 
@@ -67,7 +69,6 @@ pkg_urls <-
   dplyr::select(-alias) %>% 
   select(title, topic, package, mode, engine)
 ```
-
 
 ```{r table-display, echo = FALSE, results = "asis"}
 pkg_urls %>% 
@@ -117,5 +118,3 @@ DT::datatable(
   options = list(pageLength = 5)
   )
 ```
-
-
