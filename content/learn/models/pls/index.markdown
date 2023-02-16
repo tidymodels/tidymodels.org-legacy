@@ -121,7 +121,10 @@ get_var_explained <- function(recipe, ...) {
   # To do the same for the outcome, it is more complex. This code 
   # was extracted from pls:::summary.mvr. 
   explained <- 
-    drop(pls::R2(mod, estimate = "train", intercept = FALSE)$val) %>% 
+    pls::R2(mod, estimate = "train", intercept = FALSE)$val %>%
+    # subset array to matrix. abind::adrop() prevents turning it into a
+    # vector if dim()[2] == 1
+    abind::adrop(drop = 1) %>%
     # transpose so that components are in rows
     t() %>% 
     as_tibble() %>%
@@ -177,37 +180,38 @@ ggplot(variance_data, aes(x = components, y = proportion, col = source)) +
 #> ─ Session info ─────────────────────────────────────────────────────
 #>  setting  value
 #>  version  R version 4.2.1 (2022-06-23)
-#>  os       macOS Big Sur ... 10.16
-#>  system   x86_64, darwin17.0
+#>  os       macOS Monterey 12.6
+#>  system   aarch64, darwin20
 #>  ui       X11
 #>  language (EN)
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       America/Los_Angeles
-#>  date     2022-12-07
-#>  pandoc   2.19.2 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/tools/ (via rmarkdown)
+#>  date     2023-02-16
+#>  pandoc   2.19.2 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/ (via rmarkdown)
 #> 
 #> ─ Packages ─────────────────────────────────────────────────────────
-#>  package    * version date (UTC) lib source
-#>  broom      * 1.0.1   2022-08-29 [1] CRAN (R 4.2.0)
-#>  dials      * 1.1.0   2022-11-04 [1] CRAN (R 4.2.0)
-#>  dplyr      * 1.0.10  2022-09-01 [1] CRAN (R 4.2.0)
-#>  ggplot2    * 3.4.0   2022-11-04 [1] CRAN (R 4.2.0)
-#>  infer      * 1.0.4   2022-12-02 [1] CRAN (R 4.2.1)
-#>  modeldata  * 1.0.1   2022-09-06 [1] CRAN (R 4.2.0)
-#>  parsnip    * 1.0.3   2022-11-11 [1] CRAN (R 4.2.0)
-#>  pls        * 2.8-1   2022-07-16 [1] CRAN (R 4.2.0)
-#>  purrr      * 0.3.5   2022-10-06 [1] CRAN (R 4.2.0)
-#>  recipes    * 1.0.3   2022-11-09 [1] CRAN (R 4.2.0)
-#>  rlang        1.0.6   2022-09-24 [1] CRAN (R 4.2.0)
-#>  rsample    * 1.1.1   2022-12-07 [1] CRAN (R 4.2.1)
-#>  tibble     * 3.1.8   2022-07-22 [1] CRAN (R 4.2.0)
-#>  tidymodels * 1.0.0   2022-07-13 [1] CRAN (R 4.2.0)
-#>  tune       * 1.0.1   2022-10-09 [1] CRAN (R 4.2.0)
-#>  workflows  * 1.1.2   2022-11-16 [1] CRAN (R 4.2.0)
-#>  yardstick  * 1.1.0   2022-09-07 [1] CRAN (R 4.2.0)
+#>  package    * version    date (UTC) lib source
+#>  broom      * 1.0.3      2023-01-25 [1] CRAN (R 4.2.0)
+#>  dials      * 1.1.0      2022-11-04 [1] CRAN (R 4.2.1)
+#>  dplyr      * 1.1.0      2023-01-29 [1] CRAN (R 4.2.0)
+#>  ggplot2    * 3.4.1      2023-02-10 [1] CRAN (R 4.2.0)
+#>  infer      * 1.0.4      2022-12-02 [1] CRAN (R 4.2.1)
+#>  modeldata  * 1.1.0      2023-01-25 [1] CRAN (R 4.2.0)
+#>  parsnip    * 1.0.3.9003 2023-02-16 [1] Github (tidymodels/parsnip@9060711)
+#>  pls        * 2.8-1      2022-07-16 [1] CRAN (R 4.2.0)
+#>  purrr      * 1.0.1      2023-01-10 [1] CRAN (R 4.2.0)
+#>  recipes    * 1.0.4.9000 2023-02-16 [1] local
+#>  rlang        1.0.6      2022-09-24 [1] CRAN (R 4.2.0)
+#>  rsample    * 1.1.1.9000 2023-02-08 [1] local
+#>  tibble     * 3.1.8      2022-07-22 [1] CRAN (R 4.2.0)
+#>  tidymodels * 1.0.0      2022-07-13 [1] CRAN (R 4.2.0)
+#>  tune       * 1.0.1      2022-10-09 [1] CRAN (R 4.2.0)
+#>  workflows  * 1.1.2      2022-11-16 [1] CRAN (R 4.2.0)
+#>  yardstick  * 1.1.0.9000 2023-02-16 [1] local
 #> 
-#>  [1] /Library/Frameworks/R.framework/Versions/4.2/Resources/library
+#>  [1] /Users/emilhvitfeldt/Library/R/arm64/4.2/library
+#>  [2] /Library/Frameworks/R.framework/Versions/4.2-arm64/Resources/library
 #> 
 #> ────────────────────────────────────────────────────────────────────
 ```
