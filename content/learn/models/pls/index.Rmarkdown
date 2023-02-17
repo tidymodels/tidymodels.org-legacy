@@ -125,7 +125,10 @@ get_var_explained <- function(recipe, ...) {
   # To do the same for the outcome, it is more complex. This code 
   # was extracted from pls:::summary.mvr. 
   explained <- 
-    drop(pls::R2(mod, estimate = "train", intercept = FALSE)$val) %>% 
+    pls::R2(mod, estimate = "train", intercept = FALSE)$val %>%
+    # subset array to matrix. abind::adrop() prevents turning it into a
+    # vector if dim()[2] == 1
+    abind::adrop(drop = 1) %>%
     # transpose so that components are in rows
     t() %>% 
     as_tibble() %>%
