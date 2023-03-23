@@ -89,15 +89,10 @@ step_percentile <- function(
   id = rand_id("percentile")
   ) {
 
-  ## The variable selectors are not immediately evaluated by using
-  ##  the `quos()` function in `rlang`. `ellipse_check()` captures 
-  ##  the values and also checks to make sure that they are not empty.  
-  terms <- ellipse_check(...) 
-
   add_step(
     recipe, 
     step_percentile_new(
-      terms = terms, 
+      terms = enquos(...), 
       trained = trained,
       role = role, 
       ref_dist = ref_dist,
