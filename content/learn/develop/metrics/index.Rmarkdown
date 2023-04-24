@@ -128,8 +128,8 @@ mse <- new_numeric_metric(mse, direction = "minimize")
 mse.data.frame <- function(data, truth, estimate, na_rm = TRUE, case_weights = NULL, ...) {
   
   numeric_metric_summarizer(
-    name = "rmse",
-    fn = rmse_vec,
+    name = "mse",
+    fn = mse_vec,
     data = data,
     truth = !!enquo(truth),
     estimate = !!enquo(estimate),

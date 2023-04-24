@@ -133,8 +133,8 @@ mse <- new_numeric_metric(mse, direction = "minimize")
 mse.data.frame <- function(data, truth, estimate, na_rm = TRUE, case_weights = NULL, ...) {
   
   numeric_metric_summarizer(
-    name = "rmse",
-    fn = rmse_vec,
+    name = "mse",
+    fn = mse_vec,
     data = data,
     truth = !!enquo(truth),
     estimate = !!enquo(estimate),
@@ -152,7 +152,7 @@ mse(solubility_test, truth = solubility, estimate = prediction)
 #> # A tibble: 1 × 3
 #>   .metric .estimator .estimate
 #>   <chr>   <chr>          <dbl>
-#> 1 rmse    standard       0.722
+#> 1 mse     standard       0.521
 
 # Error handling
 mse(solubility_test, truth = solubility, estimate = factor("xyz"))
@@ -187,16 +187,16 @@ solubility_resampled %>%
 #> # A tibble: 10 × 4
 #>    resample .metric .estimator .estimate
 #>    <chr>    <chr>   <chr>          <dbl>
-#>  1 1        rmse    standard       0.715
-#>  2 10       rmse    standard       0.673
-#>  3 2        rmse    standard       0.716
-#>  4 3        rmse    standard       0.644
-#>  5 4        rmse    standard       0.737
-#>  6 5        rmse    standard       0.675
-#>  7 6        rmse    standard       0.807
-#>  8 7        rmse    standard       0.801
-#>  9 8        rmse    standard       0.635
-#> 10 9        rmse    standard       0.692
+#>  1 1        mse     standard       0.512
+#>  2 10       mse     standard       0.454
+#>  3 2        mse     standard       0.513
+#>  4 3        mse     standard       0.414
+#>  5 4        mse     standard       0.543
+#>  6 5        mse     standard       0.456
+#>  7 6        mse     standard       0.652
+#>  8 7        mse     standard       0.642
+#>  9 8        mse     standard       0.404
+#> 10 9        mse     standard       0.479
 ```
 
 ## Class example: miss rate
@@ -542,7 +542,7 @@ numeric_mets(solubility_test, solubility, prediction)
 #> # A tibble: 2 × 3
 #>   .metric .estimator .estimate
 #>   <chr>   <chr>          <dbl>
-#> 1 rmse    standard       0.722
+#> 1 mse     standard       0.521
 #> 2 rmse    standard       0.722
 ```
 
