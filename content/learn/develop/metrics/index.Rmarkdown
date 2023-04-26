@@ -55,9 +55,11 @@ To start, create the vector version. Generally, all metrics have the  same argum
 
 Below, `mse_impl()` contains the actual implementation of the metric, and takes `truth` and `estimate` as arguments along with any metric specific arguments. Optionally `case_weights` if the calculations supports it.
 
-The yardstick function `check_numeric_metric()` takes `truth`, `estimate` and `case_weights`, and validates that they are the right type, and are the same length. `case_weights` is allowed to be `NULL` for when case weights aren't used, or the metric doesn't support them.
+The yardstick function `check_numeric_metric()` takes `truth`, `estimate` and `case_weights`, and validates that they are the right type, and are the same length.
 
 The `yardstick_remove_missing()` and `yardstick_any_missing()` yardstick functions are used to handle missing values in a consistent way, similarly to how the other metrics handle them. The code below is typically copy pasted from function to function, but certain types of metrics might want to deviate from this pattern.
+
+You are required to supply a `case_weights` argument to `mse_vec()` for the functions to work with yardstick. If your metric in question doesn't support case weights, you can error if they are passed, or simply ignore it.
 
 ```{r}
 library(tidymodels)
