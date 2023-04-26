@@ -48,9 +48,11 @@ To start, create the vector version. Generally, all metrics have the  same argum
 
 Below, `mse_impl()` contains the actual implementation of the metric, and takes `truth` and `estimate` as arguments along with any metric specific arguments. Optionally `case_weights` if the calculations supports it.
 
-The yardstick function `check_numeric_metric()` takes `truth`, `estimate` and `case_weights`, and validates that they are the right type, and are the same length. `case_weights` is allowed to be `NULL` for when case weights aren't used, or the metric doesn't support them.
+The yardstick function `check_numeric_metric()` takes `truth`, `estimate` and `case_weights`, and validates that they are the right type, and are the same length.
 
 The `yardstick_remove_missing()` and `yardstick_any_missing()` yardstick functions are used to handle missing values in a consistent way, similarly to how the other metrics handle them. The code below is typically copy pasted from function to function, but certain types of metrics might want to deviate from this pattern.
+
+You are required to supply a `case_weights` argument to `mse_vec()` for the functions to work with yardstick. If your metric in question doesn't support case weights, you can error if they are passed, or simply ignore it.
 
 
 ```r
@@ -211,7 +213,7 @@ Classification metrics are more complicated than numeric ones because you have t
 
 ### Vector implementation
 
-The vector implementation for classification metrics initially has a very similar setup as the numeric metrics. It used `check_class_metric()` instead of `check_numeric_metrics()`. It has an additional argument, `estimator` that determines the type of estimator to use (binary or some kind of multiclass implementation or averaging). This argument is auto-selected for the user, so default it to  `NULL`. Additionally, pass it along to `check_class_metric()` so that it can check the provided `estimator` against the classes of `truth` and `estimate` to see if they are allowed.
+The vector implementation for classification metrics initially has a very similar setup as the numeric metrics. It used `check_class_metric()` instead of `check_numeric_metric()`. It has an additional argument, `estimator` that determines the type of estimator to use (binary or some kind of multiclass implementation or averaging). This argument is auto-selected for the user, so default it to  `NULL`. Additionally, pass it along to `check_class_metric()` so that it can check the provided `estimator` against the classes of `truth` and `estimate` to see if they are allowed.
 
 
 ```r
@@ -561,26 +563,26 @@ numeric_mets(solubility_test, solubility, prediction)
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       America/Los_Angeles
-#>  date     2023-04-24
+#>  date     2023-04-26
 #>  pandoc   3.1.1 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/ (via rmarkdown)
 #> 
 #> ─ Packages ─────────────────────────────────────────────────────────
-#>  package    * version date (UTC) lib source
-#>  broom      * 1.0.4   2023-03-11 [1] CRAN (R 4.2.0)
-#>  dials      * 1.2.0   2023-04-03 [1] CRAN (R 4.2.0)
-#>  dplyr      * 1.1.2   2023-04-20 [1] CRAN (R 4.2.0)
-#>  ggplot2    * 3.4.2   2023-04-03 [1] CRAN (R 4.2.1)
-#>  infer      * 1.0.4   2022-12-02 [1] CRAN (R 4.2.1)
-#>  parsnip    * 1.1.0   2023-04-12 [1] CRAN (R 4.2.0)
-#>  purrr      * 1.0.1   2023-01-10 [1] CRAN (R 4.2.0)
-#>  recipes    * 1.0.5   2023-02-20 [1] CRAN (R 4.2.0)
-#>  rlang      * 1.1.0   2023-03-14 [1] CRAN (R 4.2.0)
-#>  rsample    * 1.1.1   2022-12-07 [1] CRAN (R 4.2.0)
-#>  tibble     * 3.2.1   2023-03-20 [1] CRAN (R 4.2.1)
-#>  tidymodels * 1.0.0   2022-07-13 [1] CRAN (R 4.2.0)
-#>  tune       * 1.1.1   2023-04-11 [1] CRAN (R 4.2.0)
-#>  workflows  * 1.1.3   2023-02-22 [1] CRAN (R 4.2.0)
-#>  yardstick  * 1.2.0   2023-04-21 [1] CRAN (R 4.2.0)
+#>  package    * version    date (UTC) lib source
+#>  broom      * 1.0.4      2023-03-11 [1] CRAN (R 4.2.0)
+#>  dials      * 1.2.0      2023-04-03 [1] CRAN (R 4.2.0)
+#>  dplyr      * 1.1.2      2023-04-20 [1] CRAN (R 4.2.0)
+#>  ggplot2    * 3.4.2      2023-04-03 [1] CRAN (R 4.2.1)
+#>  infer      * 1.0.4      2022-12-02 [1] CRAN (R 4.2.1)
+#>  parsnip    * 1.1.0      2023-04-12 [1] CRAN (R 4.2.0)
+#>  purrr      * 1.0.1      2023-01-10 [1] CRAN (R 4.2.0)
+#>  recipes    * 1.0.6.9000 2023-04-25 [1] local
+#>  rlang      * 1.1.0      2023-03-14 [1] CRAN (R 4.2.0)
+#>  rsample    * 1.1.1      2022-12-07 [1] CRAN (R 4.2.0)
+#>  tibble     * 3.2.1      2023-03-20 [1] CRAN (R 4.2.1)
+#>  tidymodels * 1.0.0      2022-07-13 [1] CRAN (R 4.2.0)
+#>  tune       * 1.1.1      2023-04-11 [1] CRAN (R 4.2.0)
+#>  workflows  * 1.1.3      2023-02-22 [1] CRAN (R 4.2.0)
+#>  yardstick  * 1.2.0      2023-04-21 [1] CRAN (R 4.2.0)
 #> 
 #>  [1] /Users/emilhvitfeldt/Library/R/arm64/4.2/library
 #>  [2] /Library/Frameworks/R.framework/Versions/4.2-arm64/Resources/library
