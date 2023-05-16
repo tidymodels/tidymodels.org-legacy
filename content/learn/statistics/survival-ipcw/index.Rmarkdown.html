@@ -1,0 +1,273 @@
+---
+title: "Understanding Inverse Probability of Censoring Weights (IPCW)"
+tags: [survival,censored,parsnip]
+categories: [statistical analysis]
+type: learn-subsection
+weight: 9
+description: | 
+  Learn how tidymodels uses causal inference tools to measure performance of 
+  survival models.
+---
+
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>One trend in modern survival analysis is to compute time-dependent measures of performance. These are primarily driven by an increased focus on predictions for the probability of survival at a given time (as opposed to the predictions of event times or linear predictors). Since these are conditional on the time of evaluation, we call the dynamic performance metrics.</p>
+<p>Many dynamic metrics are similar to, if not the same, as those used in binary classification models. Examples include the Brier score and ROC curves (that’s another article though). In other words, at a given time for model evaluation, we try to encode the observed event time data into a binary “was there an event at time <code>t</code>?” version. We also convert the predicted survival probabilities into predicted events/non-events based on a threshold (default is 0.50).</p>
+<p>The section below discusses the practical aspects of moving to a binary outcome and the statistical implications. Before we start, though, let’s define the various types of times that will be mentioned:</p>
+<ul>
+<li>Observed time: time recorded in the data</li>
+<li>Event time: observed times for actual events</li>
+<li>Evaluation time: the time, specified by the analyst, that the model is evaluated.</li>
+</ul>
+<p>For example, we’ll simulate some data using the methods of <a href="https://scholar.google.com/scholar?hl=en&amp;as_sdt=0%2C7&amp;q=%22Generating+survival+times+to+simulate+Cox+proportional+hazards+models.%22&amp;btnG=">Bender <em>et al</em> (2005)</a> using the prodlim package. A training and validation set are simulated. We’ll also load the censored package so that we can fit a model to these time-to-event data:</p>
+<pre class="r"><code>library(tidymodels)
+library(censored)
+#&gt; Loading required package: survival
+library(prodlim)
+
+set.seed(5882)
+sim_dat &lt;- SimSurv(1000) %&gt;%
+  mutate(event_time = Surv(time, event)) %&gt;%
+  select(event_time, X1, X2)
+
+set.seed(2)
+split   &lt;- initial_split(sim_dat)
+sim_tr  &lt;- training(split)
+sim_val &lt;- testing(split)</code></pre>
+<p>We’ll need a model to illustrate the code and concepts. Let’s fit a bagged survival tree model to the training set:</p>
+<pre class="r"><code>set.seed(17)
+bag_tree_fit &lt;- 
+  bag_tree() %&gt;% 
+  set_mode(&quot;censored regression&quot;) %&gt;% 
+  set_engine(&quot;rpart&quot;) %&gt;% 
+  fit(event_time ~ ., data = sim_tr)
+bag_tree_fit
+#&gt; parsnip model object
+#&gt; 
+#&gt; 
+#&gt; Bagging survival trees with 25 bootstrap replications 
+#&gt; 
+#&gt; Call: bagging.data.frame(formula = event_time ~ ., data = data)</code></pre>
+<p>Using this model, we’ll be able to make predictions of different types.</p>
+</div>
+<div id="survival-probability-prediction" class="section level2">
+<h2>Survival Probability Prediction</h2>
+<p>This type of censored regression model can make static predictions via the predicted event time using <code>predict(object, type = "time")</code>. It can also make dynamic predictions regarding the probability of survival for each data point at specific times. The syntax for this is</p>
+<pre class="r"><code>predict(object, new_data, type = &quot;survival&quot;, eval_time = numeric())</code></pre>
+<p>where <code>eval_time</code> is a vector of time points at which we want the corresponding estimates of the survivor function. Alternately, we can use the <code>augment()</code> function to get both types of prediction and automatically attach them to the data being predicted.</p>
+<p>The largest event time in the training set is 18.1 so we will use a set of evaluation times between zero and 18. From there, we use <code>augment()</code>:</p>
+<pre class="r"><code>time_points &lt;- seq(0, 18, by = 0.25)
+
+val_pred &lt;- augment(bag_tree_fit, sim_val, eval_time = time_points)
+val_pred
+#&gt; # A tibble: 250 × 5
+#&gt;    .pred             .pred_time event_time    X1      X2
+#&gt;    &lt;list&gt;                 &lt;dbl&gt;     &lt;Surv&gt; &lt;dbl&gt;   &lt;dbl&gt;
+#&gt;  1 &lt;tibble [73 × 5]&gt;       9.48      5.78      1 -0.630 
+#&gt;  2 &lt;tibble [73 × 5]&gt;       6.67      3.26+     0  0.792 
+#&gt;  3 &lt;tibble [73 × 5]&gt;       3.82      2.34      1  0.811 
+#&gt;  4 &lt;tibble [73 × 5]&gt;       8.53      7.45+     1 -0.271 
+#&gt;  5 &lt;tibble [73 × 5]&gt;       7.07      8.05      0  0.315 
+#&gt;  6 &lt;tibble [73 × 5]&gt;       7.24     14.09      0  0.264 
+#&gt;  7 &lt;tibble [73 × 5]&gt;      10.6       5.23+     0 -0.532 
+#&gt;  8 &lt;tibble [73 × 5]&gt;      12.3       3.18+     0 -1.41  
+#&gt;  9 &lt;tibble [73 × 5]&gt;      11.0       1.86      1 -0.851 
+#&gt; 10 &lt;tibble [73 × 5]&gt;       6.03      7.20      1 -0.0937
+#&gt; # ℹ 240 more rows</code></pre>
+<p>The <code>.pred</code> column contains the dynamic predictions in a list column. Since <code>length(time_points)</code> is 73, each data frame in the list column has that many rows:</p>
+<pre class="r"><code>val_pred$.pred[[1]]
+#&gt; # A tibble: 73 × 5
+#&gt;    .eval_time .pred_survival .weight_time .pred_censored .weight_censored
+#&gt;         &lt;dbl&gt;          &lt;dbl&gt;        &lt;dbl&gt;          &lt;dbl&gt;            &lt;dbl&gt;
+#&gt;  1       0             1            0              1                 1   
+#&gt;  2       0.25          0.996        0.250          1                 1   
+#&gt;  3       0.5           0.993        0.500          0.997             1.00
+#&gt;  4       0.75          0.993        0.750          0.995             1.01
+#&gt;  5       1             0.989        1.00           0.992             1.01
+#&gt;  6       1.25          0.984        1.25           0.985             1.02
+#&gt;  7       1.5           0.975        1.50           0.978             1.02
+#&gt;  8       1.75          0.974        1.75           0.969             1.03
+#&gt;  9       2             0.964        2.00           0.956             1.05
+#&gt; 10       2.25          0.949        2.25           0.944             1.06
+#&gt; # ℹ 63 more rows</code></pre>
+<p>The <code>.pred_survival</code> column has the predictions. We’ll see what the other columns represent in the next few sections.</p>
+<p>Let’s plot the estimated survivor curves for the first 10 data points in the validation set:</p>
+<pre class="r"><code># Unnest the list columns: 
+dyn_val_pred &lt;- 
+  val_pred %&gt;% 
+  select(.pred, event_time) %&gt;% 
+  add_rowindex() %&gt;% 
+  unnest(.pred) 
+
+dyn_val_pred %&gt;% 
+  filter(.row &lt;= 10) %&gt;% 
+  ggplot(aes(.eval_time, .pred_survival, group = .row, col = factor(.row))) + 
+  geom_step(direction = &quot;vh&quot;, linewidth = 1, alpha = 1 / 2, show.legend = FALSE) +
+  labs(x = &quot;time&quot;, y = &quot;survival probability&quot;)</code></pre>
+<p><img src="figs/surv-plot-1.svg" width="672" /></p>
+</div>
+<div id="converting-censored-data-to-binary-data" class="section level2">
+<h2>Converting censored data to binary data</h2>
+<p>We follow the process described by <a href="https://scholar.google.com/scholar?hl=en&amp;as_sdt=0%2C7&amp;q=%22Assessment+and+Comparison+of+Prognostic+Classification+Schemes+for+Survival+Data.%22&amp;btnG=">Graf <em>et al</em> (1999)</a> where observations at evaluation time <code>t</code> are categorized into three groups.</p>
+<ul>
+<li><strong>Definitive non-events</strong>: event times are less than the evaluation time (“it hasn’t happened yet”)</li>
+<li><strong>Definitive events</strong>: Observed times (censored or not) are greater than the evaluation time (“it happens sometime after now”).</li>
+<li><strong>Ambiguous outcomes</strong>: Observed censored time is less than the evaluation time (“maybe it happens, maybe not”).</li>
+</ul>
+<p>We can use the first two sets of data to compute binary performance metrics, but the third set cannot be used. Note that the size of the third group is likely to grow as the evaluation time increases. This means we’ll have fewer data points to evaluate with late evaluation times. This implies that the variation in the metrics will be considerable as time goes on. For our simulated training set:</p>
+<pre class="r"><code>dyn_val_pred %&gt;% 
+  summarize(num_usable = sum(!is.na(.weight_censored)), .by = c(.eval_time)) %&gt;% 
+  ggplot() + 
+  geom_step(aes(.eval_time, num_usable)) +
+  labs(x = &quot;time&quot;, y = &quot;Number of Usable Samples&quot;) +
+  lims(y = c(0, nrow(sim_val)))</code></pre>
+<p><img src="figs/usable-data-1.svg" width="672" /></p>
+<p>Unfortunately, the categorization scheme shown above is not sufficient to compute metrics. Graf took a page from the causal inference literature and added a propensity-type score based on the likelihood that each data point would be censored (regardless of the observed event status).</p>
+<p>How do we compute this probability? It appears that the standard approach is to compute a “reverse Kaplan-Meier” (RKM) curve. Ordinarily, the Kaplan-Meier (KM) curve models the probability of an event (e.g., survival). The reverse curve models the probability of censoring (e.g., modeling non-events). This should give us a fairly reliable non-parametric model for estimating the probability of being censored at a given time.</p>
+<p>Every time a censored regression model is created using tidymodels, the RKM is estimated on the same data being used to fit the model and attached to the parsnip object.</p>
+<p>For our simulated data, here is what the RKM curve looks like:</p>
+<p><img src="figs/RKM-1.svg" width="672" /></p>
+<p>The red rug on the bottom shows the training point event times and the blue values at the top represent the times for the censored training set observations.</p>
+<p>For any dynamic computations, we multiply the contributions of the case by the inverse of the probability of being censored. This is called the inverse probability of censoring weights (IPCW). This should theoretically balance the exposure/effect/influence that the definitive observations have on performance calculations.</p>
+<div id="some-computational-details" class="section level3">
+<h3>Some computational details</h3>
+<p>First, when do we evaluate the probability of censoring? There are different approaches used in the literature, and we follow what Graf suggests (as it seems most appropriate):</p>
+<ul>
+<li>If the observed time corresponds to an actual event, and that time is before the evaluation time, the probability of being censored is predicted at the observed time.</li>
+<li>If the observed time is after the evaluation time, regardless of the status, the probability of being censored is predicted at the evaluation time.</li>
+</ul>
+<p>Here’s an example using the first data point in the validation set:</p>
+<pre class="r"><code>dyn_val_pred %&gt;% 
+  filter(.row == 1 &amp; .eval_time %in% c(1, 5, 5.75, 10, 15)) %&gt;% 
+  select(event_time, .eval_time, .weight_time, .pred_censored, .weight_censored)
+#&gt; # A tibble: 5 × 5
+#&gt;   event_time .eval_time .weight_time .pred_censored .weight_censored
+#&gt;       &lt;Surv&gt;      &lt;dbl&gt;        &lt;dbl&gt;          &lt;dbl&gt;            &lt;dbl&gt;
+#&gt; 1       5.78       1            1.00          0.992             1.01
+#&gt; 2       5.78       5            5.00          0.779             1.28
+#&gt; 3       5.78       5.75         5.75          0.714             1.40
+#&gt; 4       5.78      10            5.78          0.710             1.41
+#&gt; 5       5.78      15            5.78          0.710             1.41</code></pre>
+<p>The observed event time was 5.779. Up until that evaluation time, the probability of being censored is computed at the evaluation time. After that, it is based on the event time.</p>
+<p>We also slightly modify the time that the censoring probability is computed. If our evaluation time is today, we don’t have today’s data yet. In tidymodels, we calculate the probability of censoring is computed just before the requested evaluation time. We are basically subtracting a small numerical value from the evaluation time used in the RKM model. You’ll only really see a difference if there is a bulk of censored observations at the original evaluation time.</p>
+<p>Finally, we use a simple RKM curve (i.e., no covariates or strata). This implies that there is non-informative censoring. Other applications of IPCW try to mitigate the effects of informative censoring. In the future, we may allow the model to include covariates (as well as models beyond the RKM).</p>
+<pre class="r"><code>time_as_binary_event &lt;- function(surv, eval_time) {
+  event_time &lt;- parsnip:::.extract_surv_time(surv)
+  status &lt;- parsnip:::.extract_surv_status(surv)
+  is_event_before_t &lt;- event_time &lt;= eval_time &amp; status == 1
+  
+  # Three possible contributions to the statistic from Graf 1999
+  # Censoring time before eval_time, no contribution (Graf category 3)
+  binary_res &lt;- rep(NA_character_, length(event_time))
+  
+  # A real event prior to eval_time (Graf category 1)
+  binary_res &lt;- ifelse(is_event_before_t, &quot;event&quot;, binary_res)
+  
+  # Observed time greater than eval_time (Graf category 2)
+  binary_res &lt;- ifelse(event_time &gt; eval_time, &quot;non-event&quot;, binary_res)
+  factor(binary_res, levels = c(&quot;event&quot;, &quot;non-event&quot;))
+}
+
+binary_encoding &lt;- 
+  dyn_val_pred %&gt;% 
+  mutate(
+    obs_class = time_as_binary_event(event_time, .eval_time),
+    pred_class = if_else(.pred_survival &gt;= 1 / 2, &quot;non-event&quot;, &quot;event&quot;),
+    pred_class = factor(pred_class, levels = c(&quot;event&quot;, &quot;non-event&quot;)),
+  )</code></pre>
+<p>While another article delves into the details of performance metrics for censored data, we’ll look at the 2x2 confusion matrices at a few time points.</p>
+<p>Let’s start with an evaluation time of 1.00. Ordinarily, we would simply use:</p>
+<pre class="r"><code>binary_encoding %&gt;% 
+  filter(.eval_time == 1.00) %&gt;% 
+  conf_mat(truth = obs_class, estimate = pred_class)</code></pre>
+<p>to compute the metric. This would ignore the censoring weights so we’ll add the <code>case_weights</code> argument to <code>conf_mat()</code>:</p>
+<pre class="r"><code>#: label: conf-mat-01
+binary_encoding %&gt;%
+  filter(.eval_time == 1.00) %&gt;%
+  conf_mat(truth = obs_class,
+           estimate = pred_class,
+           case_weights = .weight_censored)
+#&gt;            Truth
+#&gt; Prediction   event non-event
+#&gt;   event       0.00      0.00
+#&gt;   non-event   6.03    244.99</code></pre>
+<p>The values in the cells are the sum of the censoring weights, There are 6 actual events (out of 249 usable values) before this evaluation time, so there are empty cells. Also note that the cell values are close to the actual counts. This early, the predicted censoring probabilities are very close to one so there inverse values are also.</p>
+<p>This early, performance looks very good but that is mostly since there are few events and they are all predicted well (at least with the default 50% cutoff).</p>
+<p>Let’s shift to an evaluation time of 5.0.</p>
+<pre class="r"><code>#: label: conf-mat-05
+binary_encoding %&gt;%
+  filter(.eval_time == 5.00) %&gt;%
+  conf_mat(truth = obs_class,
+           estimate = pred_class,
+           case_weights = .weight_censored)
+#&gt;            Truth
+#&gt; Prediction  event non-event
+#&gt;   event      72.6      24.4
+#&gt;   non-event  30.7     119.4</code></pre>
+<p>Now we have fewer total observations to consider (205 instead of 249 usable values) and more events (93 this time). Performance is fairly good; the sensitivity is 70.3% and the specificty is 83%.</p>
+<p>What happends when the evaluation time is 17?</p>
+<pre class="r"><code>#: label: conf-mat-17
+binary_encoding %&gt;%
+  filter(.eval_time == 17.00) %&gt;%
+  conf_mat(truth = obs_class,
+           estimate = pred_class,
+           case_weights = .weight_censored)
+#&gt;            Truth
+#&gt; Prediction  event non-event
+#&gt;   event     245.4      24.7
+#&gt;   non-event   0.0       0.0</code></pre>
+<p>The data are overwhelmingly events: 148 out of 149 observations. Also, the censoring weights are larger now since the probability of being censored is very low. The mean censoring weight is 1.81.</p>
+<p>There’s more on dynamic performance metrics in another article.</p>
+</div>
+</div>
+<div id="summary" class="section level2">
+<h2>Summary</h2>
+<p>When converting censored event time data to a binary format, the main point to remember are:</p>
+<ul>
+<li>Some data points cannot be used in the calculations.</li>
+<li>To properly estimate statistical quantities, we weight the computations by the inverse of the probability of being censored.</li>
+<li>tidymodels currently assumes non-informative censoring.</li>
+</ul>
+</div>
+<div id="session-information" class="section level2">
+<h2>Session information</h2>
+<pre><code>#&gt; ─ Session info ─────────────────────────────────────────────────────
+#&gt;  setting  value
+#&gt;  version  R version 4.2.3 (2023-03-15)
+#&gt;  os       macOS Big Sur ... 10.16
+#&gt;  system   x86_64, darwin17.0
+#&gt;  ui       X11
+#&gt;  language (EN)
+#&gt;  collate  en_US.UTF-8
+#&gt;  ctype    en_US.UTF-8
+#&gt;  tz       America/New_York
+#&gt;  date     2023-05-15
+#&gt;  pandoc   3.1.1 @ /usr/local/bin/ (via rmarkdown)
+#&gt; 
+#&gt; ─ Packages ─────────────────────────────────────────────────────────
+#&gt;  package    * version    date (UTC) lib source
+#&gt;  broom      * 1.0.4      2023-03-11 [1] CRAN (R 4.2.0)
+#&gt;  censored   * 0.1.1.9003 2023-04-07 [1] Github (tidymodels/censored@b78d6a9)
+#&gt;  dials      * 1.2.0      2023-04-03 [1] CRAN (R 4.2.0)
+#&gt;  dplyr      * 1.1.2      2023-04-20 [1] CRAN (R 4.2.0)
+#&gt;  ggplot2    * 3.4.2      2023-04-03 [1] CRAN (R 4.2.0)
+#&gt;  infer      * 1.0.4      2022-12-02 [1] CRAN (R 4.2.0)
+#&gt;  parsnip    * 1.1.0.9001 2023-05-15 [1] Github (tidymodels/parsnip@ab42409)
+#&gt;  prodlim    * 2023.03.31 2023-04-02 [1] CRAN (R 4.2.0)
+#&gt;  purrr      * 1.0.1      2023-01-10 [1] CRAN (R 4.2.0)
+#&gt;  recipes    * 1.0.6      2023-04-25 [1] CRAN (R 4.2.0)
+#&gt;  rlang        1.1.1      2023-04-28 [1] CRAN (R 4.2.0)
+#&gt;  rsample    * 1.1.1      2022-12-07 [1] CRAN (R 4.2.0)
+#&gt;  tibble     * 3.2.1      2023-03-20 [1] CRAN (R 4.2.0)
+#&gt;  tidymodels * 1.0.0      2022-07-13 [1] CRAN (R 4.2.0)
+#&gt;  tune       * 1.1.1.9001 2023-05-15 [1] Github (tidymodels/tune@fdc0016)
+#&gt;  workflows  * 1.1.3      2023-02-22 [1] CRAN (R 4.2.0)
+#&gt;  yardstick  * 1.2.0      2023-04-21 [1] CRAN (R 4.2.0)
+#&gt; 
+#&gt;  [1] /Users/max/Library/R/x86_64/4.2/library
+#&gt;  [2] /Library/Frameworks/R.framework/Versions/4.2/Resources/library
+#&gt; 
+#&gt; ────────────────────────────────────────────────────────────────────</code></pre>
+</div>
