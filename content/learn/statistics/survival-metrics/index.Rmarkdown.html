@@ -1,0 +1,322 @@
+---
+title: "Dynamic Performance Metrics for Event Time Data"
+tags: [survival,censored,parsnip,yardstick]
+categories: [statistical analysis]
+type: learn-subsection
+weight: 9
+description: | 
+  Let's discuss how to compute modern performance metrics for time-to-event models.
+---
+
+
+
+<p>To use the code in this article, you will need to install the following packages: censored, prodlim, and tidymodels. You’ll need the development versions of censored and parsnip. To install these, use</p>
+<pre class="r"><code>library(pak)
+
+pak::pak(c(&quot;tidymodels/censored&quot;, &quot;tidymodels/parsnip&quot;))</code></pre>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>One trend in modern survival analysis is to compute time-dependent measures of performance. These are primarily driven by an increased focus on predictions for the probability of survival at a given time (as opposed to the predictions of event times or linear predictors). Since these are conditional on the time of evaluation, we call the dynamic performance metrics.</p>
+<p>Before we delve into the details, it is important to understand the inverse probability of censoring weights (IPCW) scheme and computations. This is described in <a href="https://www.tidymodels.org/learn/statistics/survival-ipcw/">another article</a>.</p>
+<p>The section below discusses the practical aspects of moving to a binary outcome and the statistical implications. Before we start, though, let’s define the various types of times that will be mentioned:</p>
+<ul>
+<li>Observed time: time recorded in the data</li>
+<li>Event time: observed times for actual events</li>
+<li>Evaluation time: the time, specified by the analyst, that the model is evaluated.</li>
+</ul>
+<p>For example, we’ll simulate some data using the methods of <a href="https://scholar.google.com/scholar?hl=en&amp;as_sdt=0%2C7&amp;q=%22Generating+survival+times+to+simulate+Cox+proportional+hazards+models.%22&amp;btnG=">Bender <em>et al</em> (2005)</a> using the prodlim package. Training and validation sets are simulated. We’ll also load the censored package so that we can fit a model to these time-to-event data:</p>
+<pre class="r"><code>library(tidymodels)
+library(censored)
+#&gt; Loading required package: survival
+library(prodlim)
+
+set.seed(5882)
+sim_dat &lt;- SimSurv(1000) %&gt;%
+  mutate(event_time = Surv(time, event)) %&gt;%
+  select(event_time, X1, X2)
+
+set.seed(2)
+split   &lt;- initial_split(sim_dat)
+sim_tr  &lt;- training(split)
+sim_val &lt;- testing(split)
+
+## Resampling object
+sim_rs &lt;- vfold_cv(sim_tr)</code></pre>
+<p>We’ll need a model to illustrate the code and concepts. Let’s fit a bagged survival tree model to the training set:</p>
+<pre class="r"><code>bag_tree_spec &lt;- 
+  bag_tree() %&gt;% 
+  set_mode(&quot;censored regression&quot;) %&gt;% 
+  set_engine(&quot;rpart&quot;)
+
+set.seed(17)
+bag_tree_fit &lt;- 
+  bag_tree_spec %&gt;% 
+  fit(event_time ~ ., data = sim_tr)
+
+bag_tree_fit
+#&gt; parsnip model object
+#&gt; 
+#&gt; 
+#&gt; Bagging survival trees with 25 bootstrap replications 
+#&gt; 
+#&gt; Call: bagging.data.frame(formula = event_time ~ ., data = data)</code></pre>
+<p>Using this model, we’ll make predictions of different types.</p>
+</div>
+<div id="survival-probability-prediction" class="section level2">
+<h2>Survival Probability Prediction</h2>
+<p>This censored regression model can make static predictions via the predicted event time using <code>predict(object, type = "time")</code>. It can also create dynamic predictions regarding the probability of survival for each data point at specific times. The syntax for this is</p>
+<pre class="r"><code>predict(object, new_data, type = &quot;survival&quot;, eval_time = numeric())</code></pre>
+<p>where <code>eval_time</code> is a vector of time points at which we want the corresponding survivor function estimates. Alternatively, we can use the <code>augment()</code> function to get both types of prediction and automatically attach them to the data.</p>
+<p>The largest event time in the training set is 18.1 so we will use a set of evaluation times between zero and 18. From there, we use <code>augment()</code>:</p>
+<pre class="r"><code>time_points &lt;- seq(0, 18, by = 0.25)
+
+val_pred &lt;- augment(bag_tree_fit, sim_val, eval_time = time_points)
+val_pred
+#&gt; # A tibble: 250 × 5
+#&gt;    .pred             .pred_time event_time    X1      X2
+#&gt;    &lt;list&gt;                 &lt;dbl&gt;     &lt;Surv&gt; &lt;dbl&gt;   &lt;dbl&gt;
+#&gt;  1 &lt;tibble [73 × 5]&gt;       9.48      5.78      1 -0.630 
+#&gt;  2 &lt;tibble [73 × 5]&gt;       6.67      3.26+     0  0.792 
+#&gt;  3 &lt;tibble [73 × 5]&gt;       3.82      2.34      1  0.811 
+#&gt;  4 &lt;tibble [73 × 5]&gt;       8.53      7.45+     1 -0.271 
+#&gt;  5 &lt;tibble [73 × 5]&gt;       7.07      8.05      0  0.315 
+#&gt;  6 &lt;tibble [73 × 5]&gt;       7.24     14.09      0  0.264 
+#&gt;  7 &lt;tibble [73 × 5]&gt;      10.6       5.23+     0 -0.532 
+#&gt;  8 &lt;tibble [73 × 5]&gt;      12.3       3.18+     0 -1.41  
+#&gt;  9 &lt;tibble [73 × 5]&gt;      11.0       1.86      1 -0.851 
+#&gt; 10 &lt;tibble [73 × 5]&gt;       6.03      7.20      1 -0.0937
+#&gt; # ℹ 240 more rows</code></pre>
+<p>The <code>.pred</code> column contains the dynamic predictions in a list column. Since <code>length(time_points)</code> is 73, each data frame in the list column has that many rows:</p>
+<pre class="r"><code>val_pred$.pred[[1]]
+#&gt; # A tibble: 73 × 5
+#&gt;    .eval_time .pred_survival .weight_time .pred_censored .weight_censored
+#&gt;         &lt;dbl&gt;          &lt;dbl&gt;        &lt;dbl&gt;          &lt;dbl&gt;            &lt;dbl&gt;
+#&gt;  1       0             1            0              1                 1   
+#&gt;  2       0.25          0.996        0.250          1                 1   
+#&gt;  3       0.5           0.993        0.500          0.997             1.00
+#&gt;  4       0.75          0.993        0.750          0.995             1.01
+#&gt;  5       1             0.989        1.00           0.992             1.01
+#&gt;  6       1.25          0.984        1.25           0.985             1.02
+#&gt;  7       1.5           0.975        1.50           0.978             1.02
+#&gt;  8       1.75          0.974        1.75           0.969             1.03
+#&gt;  9       2             0.964        2.00           0.956             1.05
+#&gt; 10       2.25          0.949        2.25           0.944             1.06
+#&gt; # ℹ 63 more rows</code></pre>
+<p>The yardstick package currently has two dynamic metrics. Each is described below.</p>
+</div>
+<div id="brier-score" class="section level2">
+<h2>Brier Score</h2>
+<p>The Brier score is a metric that can be used with both classification and event-time models. For classification models, it computes the squared error between the observed outcome (encoded as 0/1) and the corresponding predicted probability for the class.</p>
+<p>A little math: suppose that the value <span class="math inline">\(y_{ik}\)</span> is a 0/1 indicator for whether the observed outcome <span class="math inline">\(i\)</span> corresponds to class <span class="math inline">\(k\)</span>, and <span class="math inline">\(\hat{p}_{ik}\)</span> is the estimated class probability. The score is then:</p>
+<p><span class="math display">\[
+Brier_{class} = \frac{1}{N}\sum_{i=1}^N\sum_{k=1}^C (y_{ik} - \hat{p}_{ik})^2
+\]</span>
+There are only two classes for survival models: events and non-events<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>. The survival function estimate is the probability that corresponds to non-events. For example, if were has not been an event at the current evaluation time, our best model should estimate the survival probability to be near one. For observations that are events, the probability estimate is just one minus the survivor estimate.</p>
+<p>As <a href="https://www.tidymodels.org/learn/statistics/survival-ipcw/">previously described</a>, we weight each observation using a technique similar to propensity weights in causal inference. We’ll denote these weights for evaluation time <code>t</code> as <span class="math inline">\(w_{it}\)</span>. Denoting the survival probability estimate as <span class="math inline">\(\hat{p}_{it}\)</span>, the <a href="https://scholar.google.com/scholar?hl=en&amp;as_sdt=0%2C7&amp;q=%22Assessment+and+Comparison+of+Prognostic+Classification+Schemes+for+Survival+Data.%22&amp;btnG=">time-dependent Brier score</a> is:</p>
+<p><span class="math display">\[
+Brier_{surv}(t) = \frac{1}{N}\sum_{i=1}^N w_{it}\left[\underbrace{I(y_{i} = 0)(y_{i} - \hat{p}_{it})^2}_\text{non-events} +  \underbrace{I(y_{i} = 1)(y_{i} - (1 - \hat{p}_{it}))^2}_\text{events}\right]
+\]</span></p>
+<p>For this score, a perfect model has a score of zero, while an uninformative model would have a score of around 1/4.</p>
+<p>How do we compute this using the yardstick package? The function <a href="https://yardstick.tidymodels.org/reference/brier_survival.html"><code>brier_survival()</code></a> follows the same convention as the other metric functions. The main arguments are:</p>
+<ul>
+<li><code>data</code>: the data frame with the predictions (structured as the output produced by <code>augment()</code>, as shown above).</li>
+<li><code>truth</code>: the name of the column with the <code>Surv</code> object.</li>
+<li><code>...</code>: the name of the column with the dynamic predictions. Within tidymodels, this column is always called <code>.pred</code>. In other words, <code>.pred</code> should be passed without an argument name.</li>
+</ul>
+<p>Since the evaluation times and the case weights are within the <code>.pred</code> column, there is no need to specify these. Here are the results of our validation set:</p>
+<pre class="r"><code>brier_scores &lt;-
+  val_pred %&gt;% 
+  brier_survival(truth = event_time, .pred)
+brier_scores
+#&gt; # A tibble: 73 × 4
+#&gt;    .metric        .estimator .eval_time .estimate
+#&gt;    &lt;chr&gt;          &lt;chr&gt;           &lt;dbl&gt;     &lt;dbl&gt;
+#&gt;  1 brier_survival standard         0    0        
+#&gt;  2 brier_survival standard         0.25 0.0000270
+#&gt;  3 brier_survival standard         0.5  0.00418  
+#&gt;  4 brier_survival standard         0.75 0.0121   
+#&gt;  5 brier_survival standard         1    0.0243   
+#&gt;  6 brier_survival standard         1.25 0.0431   
+#&gt;  7 brier_survival standard         1.5  0.0521   
+#&gt;  8 brier_survival standard         1.75 0.0677   
+#&gt;  9 brier_survival standard         2    0.0857   
+#&gt; 10 brier_survival standard         2.25 0.100    
+#&gt; # ℹ 63 more rows</code></pre>
+<p>Over time:</p>
+<pre class="r"><code>brier_scores %&gt;% 
+  ggplot(aes(.eval_time, .estimate)) + 
+  geom_hline(yintercept = 1 / 4, col = &quot;red&quot;, lty = 3) +
+  geom_line() +
+  geom_point() + 
+  labs(x = &quot;time&quot;, y = &quot;Brier score&quot;)</code></pre>
+<p><img src="figs/brier-scores-1.svg" width="672" /></p>
+<p>There is also an <em>integrated</em> Brier score. This required evaluation times as inputs but instead of returning each result, it takes the area under the plot shown above. The syntax is the same but the result has a single row:</p>
+<pre class="r"><code>val_pred %&gt;% brier_survival_integrated(truth = event_time, .pred)
+#&gt; # A tibble: 1 × 3
+#&gt;   .metric                   .estimator .estimate
+#&gt;   &lt;chr&gt;                     &lt;chr&gt;          &lt;dbl&gt;
+#&gt; 1 brier_survival_integrated standard       0.121</code></pre>
+<p>Again, smaller values are better.</p>
+</div>
+<div id="receiver-operating-characteristic-roc-curves" class="section level2">
+<h2>Receiver Operating Characteristic (ROC) Curves</h2>
+<p>Given that we can convert our event time data into a binary representation at time <code>t,</code> it is possible to compute any classification statistics of interest. Sensitivity and specificity are two interesting quantities:</p>
+<ul>
+<li>sensitivity: How well do we predict the events? This is analogous to the true positive rate.</li>
+<li>specificity: How well do we predict the non-events? One minus specificity is the false positive rate.</li>
+</ul>
+<p>As with classification, we don’t know what threshold to use for the survival estimate to convert the data to a binary format. The default of 50% may not be appropriate.</p>
+<p>To look a little closer, we’ll collect the dynamic predictions and convert them to binary factors.</p>
+<pre class="r"><code>time_as_binary_event &lt;- function(surv, eval_time) {
+  event_time &lt;- parsnip:::.extract_surv_time(surv) # TODO we should export these
+  status &lt;- parsnip:::.extract_surv_status(surv)
+  is_event_before_t &lt;- event_time &lt;= eval_time &amp; status == 1
+
+  # Three possible contributions to the statistic from Graf 1999
+  # Censoring time before eval_time, no contribution (Graf category 3)
+  binary_res &lt;- rep(NA_character_, length(event_time))
+
+  # A real event prior to eval_time (Graf category 1)
+  binary_res &lt;- if_else(is_event_before_t, &quot;event&quot;, binary_res)
+
+  # Observed time greater than eval_time (Graf category 2)
+  binary_res &lt;- if_else(event_time &gt; eval_time, &quot;non-event&quot;, binary_res)
+  factor(binary_res, levels = c(&quot;event&quot;, &quot;non-event&quot;))
+}
+
+
+# Unnest the list columns and convert the data to binary format 
+binary_encoding &lt;- 
+  val_pred %&gt;% 
+  select(.pred, event_time) %&gt;% 
+  add_rowindex() %&gt;% 
+  unnest(.pred) %&gt;% 
+  mutate(
+    obs_class = time_as_binary_event(event_time, .eval_time),
+    pred_class = if_else(.pred_survival &gt;= 1 / 2, &quot;non-event&quot;, &quot;event&quot;),
+    pred_class = factor(pred_class, levels = c(&quot;event&quot;, &quot;non-event&quot;)),
+  )</code></pre>
+<p>Let’s take an evaluation time of 5.00 as an example.</p>
+<pre class="r"><code>data_at_5 &lt;- 
+  binary_encoding %&gt;% 
+  filter(.eval_time == 5.00 &amp; !is.na(.weight_censored)) %&gt;% 
+  select(.eval_time, .pred_survival, .weight_censored, obs_class, pred_class, event_time)
+data_at_5
+#&gt; # A tibble: 205 × 6
+#&gt;    .eval_time .pred_survival .weight_censored obs_class pred_class event_time
+#&gt;         &lt;dbl&gt;          &lt;dbl&gt;            &lt;dbl&gt; &lt;fct&gt;     &lt;fct&gt;          &lt;Surv&gt;
+#&gt;  1          5         0.835              1.28 non-event non-event       5.78 
+#&gt;  2          5         0.327              1.06 event     event           2.34 
+#&gt;  3          5         0.812              1.28 non-event non-event       7.45+
+#&gt;  4          5         0.751              1.28 non-event non-event       8.05 
+#&gt;  5          5         0.755              1.28 non-event non-event      14.09 
+#&gt;  6          5         0.854              1.28 non-event non-event       5.23+
+#&gt;  7          5         0.868              1.04 event     non-event       1.86 
+#&gt;  8          5         0.664              1.28 non-event non-event       7.20 
+#&gt;  9          5         0.0436             1.19 event     event           3.95 
+#&gt; 10          5         0.375              1.28 non-event event           5.18+
+#&gt; # ℹ 195 more rows</code></pre>
+<p>What does the distribution of the survival probabilities for each of the actual classes look like?</p>
+<pre class="r"><code>data_at_5 %&gt;% 
+  ggplot(aes(x = .pred_survival, weight = .weight_censored)) + 
+  geom_vline(xintercept = 1 / 2, col = &quot;blue&quot;, lty = 2) +
+  geom_histogram(col = &quot;white&quot;, bins = 30) + 
+  facet_wrap(~obs_class, ncol = 1) +
+  lims(x = 0:1) +
+  labs(x = &quot;Probability of Survival&quot;, y = &quot;Sum of Weights&quot;)</code></pre>
+<p><img src="figs/surv-hist-05-1.svg" width="70%" /></p>
+<p>More probability values are to the right of the 50% cutoff for the true non-events. Conversely, true events tend to have smaller probabilities. Using this cutoff, the sensitivity would be 70.3% and the specificity would be 83%. There are other possible cutoffs for the survival probabilities. Maybe one of these would have better statistics.</p>
+<p>ROC curves were designed as a general method that, given a collection of continuous predictions, determines an effective threshold such that values above the threshold indicate a specific event. For our purposes, the ROC curve will compute the sensitivity and specificity for <em>all possible</em> probability thresholds. It then plots the true positive rate versus the false positive rate. Generally, we use the area under the ROC curve to quantify it with a single number. Values near one indicate a perfect model, while values near 1/2 occur with non-informative models.</p>
+<p><a href="https://scholar.google.com/scholar?hl=en&amp;as_sdt=0%2C7&amp;q=%22Review+and+comparison+of+ROC+curve+estimators+for+a+time-dependent+outcome+with+marker-dependent+censoring%22&amp;btnG=">Blanche <em>et al</em> (2013)</a> gives a good overview of ROC curves for survival analysis and their Section 4.3 is most relevant here.</p>
+<p>For our example at <code>t = 5.00</code>, the ROC curve is:</p>
+<p><img src="figs/roc-5-1.svg" width="672" /></p>
+<p>The area under this curve is 0.838.</p>
+<p>Since this is a dynamic metric, we compute the AUC for each evaluation time. The syntax is the same as the Brier code shown above:</p>
+<pre class="r"><code>roc_scores &lt;-
+  val_pred %&gt;% 
+  roc_auc_survival(truth = event_time, .pred)
+roc_scores
+#&gt; # A tibble: 73 × 4
+#&gt;    .metric          .estimator .eval_time .estimate
+#&gt;    &lt;chr&gt;            &lt;chr&gt;           &lt;dbl&gt;     &lt;dbl&gt;
+#&gt;  1 roc_auc_survival standard         0       0.5   
+#&gt;  2 roc_auc_survival standard         0.25    0.5   
+#&gt;  3 roc_auc_survival standard         0.5     0.0948
+#&gt;  4 roc_auc_survival standard         0.75    0.851 
+#&gt;  5 roc_auc_survival standard         1       0.697 
+#&gt;  6 roc_auc_survival standard         1.25    0.697 
+#&gt;  7 roc_auc_survival standard         1.5     0.719 
+#&gt;  8 roc_auc_survival standard         1.75    0.757 
+#&gt;  9 roc_auc_survival standard         2       0.745 
+#&gt; 10 roc_auc_survival standard         2.25    0.765 
+#&gt; # ℹ 63 more rows</code></pre>
+<p>Over time:</p>
+<pre class="r"><code>roc_scores %&gt;% 
+  ggplot(aes(.eval_time, .estimate)) + 
+  geom_hline(yintercept = 1 / 2, col = &quot;red&quot;, lty = 3) +
+  geom_line() +
+  geom_point() + 
+  labs(x = &quot;time&quot;, y = &quot;ROC AUC&quot;)</code></pre>
+<p><img src="figs/roc-scores-1.svg" width="672" /></p>
+<p>The initial variation is due to so few events at the early stages of analysis.</p>
+<p>We should maximize the AUC. This metric measures the separation between classes and the Brier score focuses more on accurate and well-calibrated predictions. It should not be surprising that each metric’s results over time differ.</p>
+</div>
+<div id="tuning-these-metrics" class="section level2">
+<h2>Tuning these metrics</h2>
+<p>Many of the event time models available in tidymodels have tuning parameters. The <code>tune_*()</code> functions and <code>fit_resamples()</code> have an <code>eval_time</code> argument used to pass the evaluation times. The statistics are computed for these time points using out-of-sample data.</p>
+<p>In some cases, such as <a href="https://www.tmwr.org/iterative-search.html">iterative search</a> or <a href="https://www.tmwr.org/grid-search.html#racing">racing methods</a>, the functions need a single value to optimize. If a dynamic metric is used to guide the optimization, <em>the first evaluation time given by the user</em> will be used.</p>
+<p>For example, if a model for these data was being optimized, and we wanted a time of 5.00 to guide the process, we would wish to use that value as the first element of <code>time_points</code>.</p>
+</div>
+<div id="summary" class="section level2">
+<h2>Summary</h2>
+<p>tidymodels has two time-dependent metrics for characterizing the performance of event-time models:</p>
+<ul>
+<li>The Brier score measures the distance between the observed class result and the predicted probabilities.</li>
+<li>ROC curves try to measure the separation between the two classes based on the survival probabilities.</li>
+</ul>
+</div>
+<div id="session-information" class="section level2">
+<h2>Session information</h2>
+<pre><code>#&gt; ─ Session info ─────────────────────────────────────────────────────
+#&gt;  setting  value
+#&gt;  version  R version 4.2.0 (2022-04-22)
+#&gt;  os       macOS Big Sur/Monterey 10.16
+#&gt;  system   x86_64, darwin17.0
+#&gt;  ui       X11
+#&gt;  language (EN)
+#&gt;  collate  en_US.UTF-8
+#&gt;  ctype    en_US.UTF-8
+#&gt;  tz       America/New_York
+#&gt;  date     2023-05-16
+#&gt;  pandoc   3.1.1 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/ (via rmarkdown)
+#&gt; 
+#&gt; ─ Packages ─────────────────────────────────────────────────────────
+#&gt;  package    * version    date (UTC) lib source
+#&gt;  broom      * 1.0.4      2023-03-11 [1] CRAN (R 4.2.0)
+#&gt;  censored   * 0.2.0.9000 2023-05-16 [1] Github (tidymodels/censored@f9eccb6)
+#&gt;  dials      * 1.2.0      2023-04-03 [1] CRAN (R 4.2.0)
+#&gt;  dplyr      * 1.1.2      2023-04-20 [1] CRAN (R 4.2.0)
+#&gt;  ggplot2    * 3.4.2      2023-04-03 [1] CRAN (R 4.2.0)
+#&gt;  infer      * 1.0.4      2022-12-02 [1] CRAN (R 4.2.0)
+#&gt;  parsnip    * 1.1.0.9001 2023-05-16 [1] Github (tidymodels/parsnip@ab42409)
+#&gt;  prodlim    * 2023.03.31 2023-04-02 [1] CRAN (R 4.2.0)
+#&gt;  purrr      * 1.0.1      2023-01-10 [1] CRAN (R 4.2.0)
+#&gt;  recipes    * 1.0.6      2023-04-25 [1] CRAN (R 4.2.0)
+#&gt;  rlang        1.1.1      2023-04-28 [1] CRAN (R 4.2.0)
+#&gt;  rsample    * 1.1.1      2022-12-07 [1] CRAN (R 4.2.0)
+#&gt;  tibble     * 3.2.1      2023-03-20 [1] CRAN (R 4.2.0)
+#&gt;  tidymodels * 1.1.0      2023-05-01 [1] CRAN (R 4.2.0)
+#&gt;  tune       * 1.1.1.9001 2023-05-16 [1] Github (tidymodels/tune@fdc0016)
+#&gt;  workflows  * 1.1.3      2023-02-22 [1] CRAN (R 4.2.0)
+#&gt;  yardstick  * 1.2.0      2023-04-21 [1] CRAN (R 4.2.0)
+#&gt; 
+#&gt;  [1] /Library/Frameworks/R.framework/Versions/4.2/Resources/library
+#&gt; 
+#&gt; ────────────────────────────────────────────────────────────────────</code></pre>
+</div>
+<div class="footnotes footnotes-end-of-document">
+<hr />
+<ol>
+<li id="fn1"><p>Again, see the previous article for more detail on this.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
