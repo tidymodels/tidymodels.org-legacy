@@ -31,11 +31,11 @@ pak::pak(c("tidymodels/censored", "tidymodels/parsnip"))
 ## Introduction
 
 
-One trend in modern survival analysis is to compute time-dependent measures of performance. These are primarily driven by an increased focus on predictions for the probability of survival at a given time (as opposed to the predictions of event times or linear predictors). Since these are conditional on the time of evaluation, we call the dynamic performance metrics. 
+One trend in modern survival analysis is to compute time-dependent measures of performance. These are primarily driven by an increased focus on predictions for the probability of survival at a given time (as opposed to the predictions of event times or linear predictors). Since these are conditional on the time of evaluation, we call them dynamic performance metrics. 
 
 Before we delve into the details, it is important to understand the inverse probability of censoring weights (IPCW) scheme and computations. This is described in [another article](https://www.tidymodels.org/learn/statistics/survival-ipcw/). 
 
-The section below discusses the practical aspects of moving to a binary outcome and the statistical implications. Before we start, though, let's define the various types of times that will be mentioned:
+The sections below discusses the practical aspects of moving to a binary outcome and the statistical implications. Before we start, though, let's define the various types of times that will be mentioned:
 
 - Observed time: time recorded in the data
 - Event time: observed times for actual events
