@@ -32,11 +32,11 @@ pak::pak(c("tidymodels/censored", "tidymodels/parsnip"))
 ## Introduction
 
 
-One trend in modern survival analysis is to compute time-dependent measures of performance. These are primarily driven by an increased focus on predictions for the probability of survival at a given time (as opposed to the predictions of event times or linear predictors). Since these are conditional on the time of evaluation, we call the dynamic performance metrics. 
+One trend in modern survival analysis is to compute time-dependent measures of performance. These are primarily driven by an increased focus on predictions for the probability of survival at a given time (as opposed to the predictions of event times or linear predictors). Since these are conditional on the time of evaluation, we call them dynamic performance metrics. 
 
 Many dynamic metrics are similar to, if not the same, as those used in binary classification models. Examples include the Brier score and ROC curves (that's [another article]() though). In other words, at a given time for model evaluation, we try to encode the observed event time data into a binary "was there an event at time `t`?" version. We also convert the predicted survival probabilities into predicted events/non-events based on a threshold (default is 0.50). 
 
-The section below discusses the practical aspects of moving to a binary outcome and the statistical implications. Before we start, though, let's define the various types of times that will be mentioned:
+The sections below discuss the practical aspects of moving to a binary outcome and the statistical implications. To start, let's define the various types of times that will be mentioned:
 
 - Observed time: time recorded in the data
 - Event time: observed times for actual events
@@ -75,7 +75,7 @@ bag_tree_fit <-
 bag_tree_fit
 ```
 
-Using this model, we'll can make predictions of different types. 
+Using this model, we can make predictions of different types. 
 
 ## Survival Probability Prediction
 
@@ -200,7 +200,7 @@ dyn_val_pred %>%
 
 The observed event time was `r round(parsnip:::.extract_surv_time(sim_val$event_time[1]), 3)`. Up until that evaluation time, the probability of being censored is computed at the evaluation time. After that, it is based on the event time. 
 
-We also slightly modify the time that the censoring probability is computed. If our evaluation time is today, we don't have today's data yet. In tidymodels, we calculate the probability of censoring is computed just before the requested evaluation time. We are basically subtracting a small numerical value from the evaluation time used in the RKM model. You'll only really see a difference if there is a bulk of censored observations at the original evaluation time. 
+We also slightly modify the time that the censoring probability is computed. If our evaluation time is today, we don't have today's data yet. In tidymodels, we calculate the probability of censoring just before the requested evaluation time. We are basically subtracting a small numerical value from the evaluation time used in the RKM model. You'll only really see a difference if there is a bulk of censored observations at the original evaluation time. 
 
 Finally, we use a simple RKM curve (i.e., no covariates or strata). This implies that there is non-informative censoring. Other applications of IPCW try to mitigate the effects of informative censoring. In the future, we may allow the model to include covariates (as well as models beyond the RKM). 
 
@@ -322,7 +322,7 @@ There's more on dynamic performance metrics in [another article]().
 
 ## Summary
 
-When converting censored event time data to a binary format, the main point to remember are:
+When converting censored event time data to a binary format, the main points to remember are:
 
 * Some data points cannot be used in the calculations. 
 * To properly estimate statistical quantities, we weight the computations by the inverse of the probability of being censored. 
