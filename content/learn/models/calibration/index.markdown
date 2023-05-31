@@ -125,10 +125,7 @@ collect_predictions(bayes_res) %>%
   labs(x = "Probability Estimate of PS")
 ```
 
-<div class="figure" style="text-align: center">
-<img src="figs/prob-hist-1.svg" alt="plot of chunk prob-hist" width="60%" />
-<p class="caption">plot of chunk prob-hist</p>
-</div>
+<img src="figs/prob-hist-1.svg" width="60%" style="display: block; margin: auto;" />
 
 There are almost no cells with moderate probability estimates. Furthermore, when the model is incorrect, it is "confidently incorrect". 
 
@@ -141,10 +138,7 @@ The most common plot is to break the predictions into about ten equally sized bu
 cal_plot_breaks(bayes_res)
 ```
 
-<div class="figure" style="text-align: center">
-<img src="figs/break-plot-1.svg" alt="plot of chunk break-plot" width="60%" />
-<p class="caption">plot of chunk break-plot</p>
-</div>
+<img src="figs/break-plot-1.svg" width="60%" style="display: block; margin: auto;" />
 
 The probabilities are not showing very good accuracy. 
 
@@ -155,10 +149,7 @@ There is also a similar function that can use moving windows with overlapping pa
 cal_plot_windowed(bayes_res, step_size = 0.025)
 ```
 
-<div class="figure" style="text-align: center">
-<img src="figs/break-windowed-1.svg" alt="plot of chunk break-windowed" width="60%" />
-<p class="caption">plot of chunk break-windowed</p>
-</div>
+<img src="figs/break-windowed-1.svg" width="60%" style="display: block; margin: auto;" />
 
 Bad. Still bad. 
 
@@ -169,10 +160,7 @@ Finally, for two class outcomes, we can fit a logistic regression model use a ge
 cal_plot_logistic(bayes_res)
 ```
 
-<div class="figure" style="text-align: center">
-<img src="figs/break-logistic-1.svg" alt="plot of chunk break-logistic" width="60%" />
-<p class="caption">plot of chunk break-logistic</p>
-</div>
+<img src="figs/break-logistic-1.svg" width="60%" style="display: block; margin: auto;" />
 
 Ooof. 
 
@@ -204,10 +192,7 @@ collect_predictions(logit_val) %>%
   ggtitle("Logistic calibration via GAM")
 ```
 
-<div class="figure" style="text-align: center">
-<img src="figs/logistic-cal-1.svg" alt="plot of chunk logistic-cal" width="60%" />
-<p class="caption">plot of chunk logistic-cal</p>
-</div>
+<img src="figs/logistic-cal-1.svg" width="60%" style="display: block; margin: auto;" />
 
 That's a lot better but it is problematic that the calibrated predictions to not reach zero or one. 
 
@@ -233,10 +218,7 @@ collect_predictions(iso_val) %>%
   ggtitle("Isotonic regression calibration")
 ```
 
-<div class="figure" style="text-align: center">
-<img src="figs/isoreg-cal-1.svg" alt="plot of chunk isoreg-cal" width="60%" />
-<p class="caption">plot of chunk isoreg-cal</p>
-</div>
+<img src="figs/isoreg-cal-1.svg" width="60%" style="display: block; margin: auto;" />
 
 Much better. There is a slight bias since the estimated points are consistently above the identity line on the 45 degree angle. 
 
@@ -260,10 +242,7 @@ collect_predictions(beta_val) %>%
   ggtitle("Beta calibration")
 ```
 
-<div class="figure" style="text-align: center">
-<img src="figs/beta-cal-1.svg" alt="plot of chunk beta-cal" width="60%" />
-<p class="caption">plot of chunk beta-cal</p>
-</div>
+<img src="figs/beta-cal-1.svg" width="60%" style="display: block; margin: auto;" />
 
 Also a big improvement but it does poorly at the lower end of the scale. 
 
@@ -334,10 +313,7 @@ cell_test_cal_pred %>%
   cal_plot_windowed(truth = class, estimate = .pred_PS, step_size = 0.025)
 ```
 
-<div class="figure" style="text-align: center">
-<img src="figs/calibrated-res-1.svg" alt="plot of chunk calibrated-res" width="60%" />
-<p class="caption">plot of chunk calibrated-res</p>
-</div>
+<img src="figs/calibrated-res-1.svg" width="60%" style="display: block; margin: auto;" />
 
 Much better. The test set results also agree with the results from `cal_validate_isotonic_boot().` 
 

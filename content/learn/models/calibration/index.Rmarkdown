@@ -126,10 +126,10 @@ The first clue is the extreme U-shaped distribution of the probability scores (f
 
 ```{r}
 #| label: prob-hist
-#| out-width: 60%
-#| fig-width: 5
-#| fig-height: 5
-#| fig-align: center
+#| out.width: 60%
+#| fig.width: 5
+#| fig.height: 5
+#| fig.align: center
 
 collect_predictions(bayes_res) %>%
   ggplot(aes(.pred_PS)) +
@@ -147,10 +147,10 @@ The most common plot is to break the predictions into about ten equally sized bu
 
 ```{r}
 #| label: break-plot
-#| out-width: 60%
-#| fig-width: 5
-#| fig-height: 5
-#| fig-align: center
+#| out.width: 60%
+#| fig.width: 5
+#| fig.height: 5
+#| fig.align: center
 
 cal_plot_breaks(bayes_res)
 ```
@@ -161,10 +161,10 @@ There is also a similar function that can use moving windows with overlapping pa
 
 ```{r}
 #| label: break-windowed
-#| out-width: 60%
-#| fig-width: 5
-#| fig-height: 5
-#| fig-align: center
+#| out.width: 60%
+#| fig.width: 5
+#| fig.height: 5
+#| fig.align: center
 
 cal_plot_windowed(bayes_res, step_size = 0.025)
 ```
@@ -175,10 +175,10 @@ Finally, for two class outcomes, we can fit a logistic regression model use a ge
 
 ```{r}
 #| label: break-logistic
-#| out-width: 60%
-#| fig-width: 5
-#| fig-height: 5
-#| fig-align: center
+#| out.width: 60%
+#| fig.width: 5
+#| fig.height: 5
+#| fig.align: center
 
 cal_plot_logistic(bayes_res)
 ```
@@ -197,10 +197,10 @@ How do we know if this works? There are a set of `validate` functions that can u
 
 ```{r}
 #| label: logistic-cal
-#| out-width: 60%
-#| fig-width: 5
-#| fig-height: 5
-#| fig-align: center
+#| out.width: 60%
+#| fig.width: 5
+#| fig.height: 5
+#| fig.align: center
 
 logit_val <- cal_validate_logistic(bayes_res, metrics = cls_met, save_pred = TRUE)
 collect_metrics(logit_val)
@@ -217,10 +217,10 @@ A different approach is to use isotonic regression. This method can result in ve
 
 ```{r}
 #| label: isoreg-cal
-#| out-width: 60%
-#| fig-width: 5
-#| fig-height: 5
-#| fig-align: center
+#| out.width: 60%
+#| fig.width: 5
+#| fig.height: 5
+#| fig.align: center
 
 set.seed(1212)
 iso_val <- cal_validate_isotonic_boot(bayes_res, metrics = cls_met, 
@@ -239,10 +239,10 @@ Finally, we can also test out [Beta calibration](https://scholar.google.com/scho
 
 ```{r}
 #| label: beta-cal
-#| out-width: 60%
-#| fig-width: 5
-#| fig-height: 5
-#| fig-align: center
+#| out.width: 60%
+#| fig.width: 5
+#| fig.height: 5
+#| fig.align: center
 
 beta_val <- cal_validate_beta(bayes_res, metrics = cls_met, save_pred = TRUE)
 collect_metrics(beta_val)
@@ -285,10 +285,10 @@ We can then use our `cell_cal` object with the `cal_apply()` function:
 
 ```{r}
 #| label: calibrated
-#| out-width: 60%
-#| fig-width: 5
-#| fig-height: 5
-#| fig-align: center
+#| out.width: 60%
+#| fig.width: 5
+#| fig.height: 5
+#| fig.align: center
 
 cell_test_cal_pred <-
   cell_test_pred %>%
@@ -302,10 +302,10 @@ What do the calibrated test set results show?
 
 ```{r}
 #| label: calibrated-res
-#| out-width: 60%
-#| fig-width: 5
-#| fig-height: 5
-#| fig-align: center
+#| out.width: 60%
+#| fig.width: 5
+#| fig.height: 5
+#| fig.align: center
 
 cell_test_cal_pred %>% cls_met(class, .pred_PS)
 cell_test_cal_pred %>%
