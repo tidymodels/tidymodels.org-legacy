@@ -255,7 +255,7 @@ collect_predictions(beta_val) %>%
 
 Also a big improvement but it does poorly at the lower end of the scale. 
 
-Isotonic regression appears to have the best results. We'll save a model that is trained using all of the out-of-sample predictions from the original naive Bayes resampling results. The `cell_cal` object can be used to enact the calibration for new predictions. 
+Beta calibration appears to have the best results. We'll save a model that is trained using all of the out-of-sample predictions from the original naive Bayes resampling results. The `cell_cal` object can be used to enact the calibration for new predictions. 
 
 We can also fit the final naive Bayes model to predict the test set: 
 
@@ -263,7 +263,7 @@ We can also fit the final naive Bayes model to predict the test set:
 #| label: finalize
 #| warning: false
 
-cell_cal <- cal_estimate_isotonic(bayes_res, times = 25)
+cell_cal <- cal_estimate_beta(bayes_res)
 bayes_fit <- bayes_wflow %>% fit(data = cells_tr)
 ```
 
@@ -312,7 +312,7 @@ cell_test_cal_pred %>%
   cal_plot_windowed(truth = class, estimate = .pred_PS, step_size = 0.025)
 ```
 
-Much better. The test set results also agree with the results from `cal_validate_isotonic_boot().` 
+Much better. The test set results also agree with the results from `cal_estimate_beta().` 
 
 ## Other model types
 

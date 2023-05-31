@@ -246,13 +246,13 @@ collect_predictions(beta_val) %>%
 
 Also a big improvement but it does poorly at the lower end of the scale. 
 
-Isotonic regression appears to have the best results. We'll save a model that is trained using all of the out-of-sample predictions from the original naive Bayes resampling results. The `cell_cal` object can be used to enact the calibration for new predictions. 
+Beta calibration appears to have the best results. We'll save a model that is trained using all of the out-of-sample predictions from the original naive Bayes resampling results. The `cell_cal` object can be used to enact the calibration for new predictions. 
 
 We can also fit the final naive Bayes model to predict the test set: 
 
 
 ```r
-cell_cal <- cal_estimate_isotonic(bayes_res, times = 25)
+cell_cal <- cal_estimate_beta(bayes_res)
 bayes_fit <- bayes_wflow %>% fit(data = cells_tr)
 ```
 
@@ -284,16 +284,16 @@ cell_test_cal_pred %>% dplyr::select(class, starts_with(".pred_"))
 #> # A tibble: 505 × 4
 #>    class .pred_class .pred_PS .pred_WS
 #>    <fct> <fct>          <dbl>    <dbl>
-#>  1 PS    PS            0.848    0.152 
-#>  2 WS    WS            0.137    0.863 
-#>  3 WS    WS            0.0290   0.971 
-#>  4 PS    PS            0.791    0.209 
-#>  5 PS    PS            0.921    0.0790
-#>  6 WS    WS            0.0883   0.912 
-#>  7 PS    PS            0.800    0.200 
-#>  8 PS    PS            0.673    0.327 
-#>  9 WS    WS            0.235    0.765 
-#> 10 WS    PS            0.516    0.484 
+#>  1 PS    PS            0.884    0.116 
+#>  2 WS    WS            0.212    0.788 
+#>  3 WS    WS            0.0742   0.926 
+#>  4 PS    PS            0.835    0.165 
+#>  5 PS    PS            0.948    0.0523
+#>  6 WS    WS            0.206    0.794 
+#>  7 PS    PS            0.854    0.146 
+#>  8 PS    PS            0.726    0.274 
+#>  9 WS    WS            0.339    0.661 
+#> 10 WS    PS            0.604    0.396 
 #> # ℹ 495 more rows
 ```
 
@@ -308,14 +308,14 @@ cell_test_cal_pred %>% cls_met(class, .pred_PS)
 #>   .metric     .estimator .estimate
 #>   <chr>       <chr>          <dbl>
 #> 1 roc_auc     binary         0.839
-#> 2 brier_class binary         0.160
+#> 2 brier_class binary         0.154
 cell_test_cal_pred %>%
   cal_plot_windowed(truth = class, estimate = .pred_PS, step_size = 0.025)
 ```
 
 <img src="figs/calibrated-res-1.svg" width="60%" style="display: block; margin: auto;" />
 
-Much better. The test set results also agree with the results from `cal_validate_isotonic_boot().` 
+Much better. The test set results also agree with the results from `cal_estimate_beta().` 
 
 ## Other model types
 
