@@ -312,7 +312,7 @@ cell_test_cal_pred %>%
   cal_plot_windowed(truth = class, estimate = .pred_PS, step_size = 0.025)
 ```
 
-Much better. The test set results also agree with the results from `cal_estimate_beta().` 
+Much better. The test set results also agree with the results from `cal_validate_beta().` 
 
 ## Other model types
 
@@ -323,3 +323,11 @@ For regression models, there is `cal_plot_regression()` and `cal_*_linear()`. Th
 ## Future plans
 
 The tidymodels group is currently working on adding post-processors to workflow objects. This will allow a model workflow to modify the predictions of a model. Calibration is an important feature for post-processing. 
+
+
+## Session information
+
+```{r si, echo = FALSE}
+small_session(pkgs)
+```
+
