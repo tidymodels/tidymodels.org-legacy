@@ -48,6 +48,7 @@ lsf.str("package:scales", pattern = "_trans$")
 #> asn_trans : function ()  
 #> atanh_trans : function ()  
 #> boxcox_trans : function (p, offset = 0)  
+#> compose_trans : function (...)  
 #> date_trans : function ()  
 #> exp_trans : function (base = exp(1))  
 #> hms_trans : function ()  
@@ -67,7 +68,7 @@ lsf.str("package:scales", pattern = "_trans$")
 #> time_trans : function (tz = NULL)  
 #> yj_trans : function (p)
 scales::log10_trans()
-#> Transformer:  log-10
+#> Transformer: log-10 [1e-100, Inf]
 ```
 
 A value of `NULL` means that no transformation should be used. 
@@ -78,8 +79,9 @@ A quantitative parameter function should have these two arguments and, in the fu
 ```r
 library(tidymodels)
 args(new_quant_param)
-#> function (type = c("double", "integer"), range, inclusive, default = unknown(), 
-#>     trans = NULL, values = NULL, label = NULL, finalize = NULL) 
+#> function (type = c("double", "integer"), range = NULL, inclusive = NULL, 
+#>     default = deprecated(), trans = NULL, values = NULL, label = NULL, 
+#>     finalize = NULL) 
 #> NULL
 ```
 
@@ -138,7 +140,8 @@ num_initial_terms()
 
 # Can we sample? 
 num_initial_terms() %>% value_sample(5)
-#> Error: Cannot validate ranges when they contains 1+ unknown values.
+#> Error in `range_validate()`:
+#> ! Cannot validate ranges when they contains 1+ unknown values.
 ```
 
 The `finalize` argument of `num_initial_terms()` can take a function that uses data to set the range. For example, the package already includes a few functions for finalization: 
@@ -195,7 +198,7 @@ num_initial_terms() %>% finalize(x = mtcars[, -1])
 
 ## Qualitative parameters
 
-Now let's look at an example of a qualitative parameter. If a model includes a data aggregation step, we want to allow users to tune how our parameters are aggregated.  For example, in embedding methods, possible values might be `min`, `max`, `mean`, `sum`, or to not aggregate at all ("none"). Since these cannot be put on a numeric scale, they are possible values of a qualitative parameter. We'll take "character" input (not "logical"), and we must specify the allowed values. By default we won't aggregate.
+Now let's look at an example of a qualitative parameter. If a model includes a data aggregation step, we want to allow users to tune how our parameters are aggregated.  For example, in embedding methods, possible values might be `min`, `max`, `mean`, `sum`, or to not aggregate at all ("none"). Since these cannot be put on a numeric scale, they are possible values of a qualitative parameter. We'll take "character" input (not "logical"), and we must specify the allowed values. By default we won't aggregate, so we are putting `"none"` as the first value.
 
 
 ```r
@@ -203,9 +206,6 @@ aggregation <- function(values = c("none", "min", "max", "mean", "sum")) {
   new_qual_param(
     type = "character",
     values = values,
-    # By default, the first value is selected as default. We'll specify that to
-    # make it clear.
-    default = "none",
     label = c(aggregation = "Aggregation Method")
   )
 }
@@ -214,16 +214,12 @@ aggregation <- function(values = c("none", "min", "max", "mean", "sum")) {
 Within the dials package, the convention is to have the values contained in a separate vector whose name starts with `values_`. For example: 
 
 
-
 ```r
 values_aggregation <- c("none", "min", "max", "mean", "sum")
 aggregation <- function(values = values_aggregation) {
   new_qual_param(
     type = "character",
     values = values,
-    # By default, the first value is selected as default. We'll specify that to
-    # make it clear.
-    default = "none",
     label = c(aggregation = "Aggregation Method")
   )
 }
@@ -237,7 +233,7 @@ We can use our `aggregation` parameters with dials functions.
 ```r
 aggregation()
 #> Aggregation Method  (qualitative)
-#> 5 possible value include:
+#> 5 possible values include:
 #> 'none', 'min', 'max', 'mean' and 'sum'
 aggregation() %>% value_sample(3)
 #> [1] "min"  "sum"  "mean"
@@ -247,38 +243,41 @@ aggregation() %>% value_sample(3)
 
 
 ```
-#> ─ Session info ───────────────────────────────────────────────────────────────
-#>  setting  value                       
-#>  version  R version 4.0.3 (2020-10-10)
-#>  os       macOS Mojave 10.14.6        
-#>  system   x86_64, darwin17.0          
-#>  ui       X11                         
-#>  language (EN)                        
-#>  collate  en_US.UTF-8                 
-#>  ctype    en_US.UTF-8                 
-#>  tz       America/Denver              
-#>  date     2020-12-07                  
+#> ─ Session info ─────────────────────────────────────────────────────
+#>  setting  value
+#>  version  R version 4.2.1 (2022-06-23)
+#>  os       macOS Big Sur ... 10.16
+#>  system   x86_64, darwin17.0
+#>  ui       X11
+#>  language (EN)
+#>  collate  en_US.UTF-8
+#>  ctype    en_US.UTF-8
+#>  tz       America/Los_Angeles
+#>  date     2022-12-07
+#>  pandoc   2.19.2 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/tools/ (via rmarkdown)
 #> 
-#> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version date       lib source        
-#>  broom      * 0.7.2   2020-10-20 [1] CRAN (R 4.0.2)
-#>  dials      * 0.0.9   2020-09-16 [1] CRAN (R 4.0.2)
-#>  dplyr      * 1.0.2   2020-08-18 [1] CRAN (R 4.0.2)
-#>  ggplot2    * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
-#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
-#>  parsnip    * 0.1.4   2020-10-27 [1] CRAN (R 4.0.2)
-#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
-#>  recipes    * 0.1.15  2020-11-11 [1] CRAN (R 4.0.2)
-#>  rlang        0.4.9   2020-11-26 [1] CRAN (R 4.0.2)
-#>  rsample    * 0.0.8   2020-09-23 [1] CRAN (R 4.0.2)
-#>  scales     * 1.1.1   2020-05-11 [1] CRAN (R 4.0.0)
-#>  tibble     * 3.0.4   2020-10-12 [1] CRAN (R 4.0.2)
-#>  tidymodels * 0.1.2   2020-11-22 [1] CRAN (R 4.0.2)
-#>  tune       * 0.1.2   2020-11-17 [1] CRAN (R 4.0.3)
-#>  workflows  * 0.2.1   2020-10-08 [1] CRAN (R 4.0.2)
-#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.2)
+#> ─ Packages ─────────────────────────────────────────────────────────
+#>  package    * version date (UTC) lib source
+#>  broom      * 1.0.1   2022-08-29 [1] CRAN (R 4.2.0)
+#>  dials      * 1.1.0   2022-11-04 [1] CRAN (R 4.2.0)
+#>  dplyr      * 1.0.10  2022-09-01 [1] CRAN (R 4.2.0)
+#>  ggplot2    * 3.4.0   2022-11-04 [1] CRAN (R 4.2.0)
+#>  infer      * 1.0.4   2022-12-02 [1] CRAN (R 4.2.1)
+#>  parsnip    * 1.0.3   2022-11-11 [1] CRAN (R 4.2.0)
+#>  purrr      * 0.3.5   2022-10-06 [1] CRAN (R 4.2.0)
+#>  recipes    * 1.0.3   2022-11-09 [1] CRAN (R 4.2.0)
+#>  rlang        1.0.6   2022-09-24 [1] CRAN (R 4.2.0)
+#>  rsample    * 1.1.1   2022-12-07 [1] CRAN (R 4.2.1)
+#>  scales     * 1.2.1   2022-08-20 [1] CRAN (R 4.2.0)
+#>  tibble     * 3.1.8   2022-07-22 [1] CRAN (R 4.2.0)
+#>  tidymodels * 1.0.0   2022-07-13 [1] CRAN (R 4.2.0)
+#>  tune       * 1.0.1   2022-10-09 [1] CRAN (R 4.2.0)
+#>  workflows  * 1.1.2   2022-11-16 [1] CRAN (R 4.2.0)
+#>  yardstick  * 1.1.0   2022-09-07 [1] CRAN (R 4.2.0)
 #> 
-#> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
+#>  [1] /Library/Frameworks/R.framework/Versions/4.2/Resources/library
+#> 
+#> ────────────────────────────────────────────────────────────────────
 ```
  
  

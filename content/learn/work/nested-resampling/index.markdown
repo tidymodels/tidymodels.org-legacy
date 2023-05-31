@@ -67,19 +67,19 @@ results
 #> # Nested resampling:
 #> #  outer: 10-fold cross-validation repeated 5 times
 #> #  inner: Bootstrap sampling
-#> # A tibble: 50 x 4
-#>    splits          id      id2    inner_resamples  
-#>    <list>          <chr>   <chr>  <list>           
-#>  1 <split [90/10]> Repeat1 Fold01 <tibble [25 × 2]>
-#>  2 <split [90/10]> Repeat1 Fold02 <tibble [25 × 2]>
-#>  3 <split [90/10]> Repeat1 Fold03 <tibble [25 × 2]>
-#>  4 <split [90/10]> Repeat1 Fold04 <tibble [25 × 2]>
-#>  5 <split [90/10]> Repeat1 Fold05 <tibble [25 × 2]>
-#>  6 <split [90/10]> Repeat1 Fold06 <tibble [25 × 2]>
-#>  7 <split [90/10]> Repeat1 Fold07 <tibble [25 × 2]>
-#>  8 <split [90/10]> Repeat1 Fold08 <tibble [25 × 2]>
-#>  9 <split [90/10]> Repeat1 Fold09 <tibble [25 × 2]>
-#> 10 <split [90/10]> Repeat1 Fold10 <tibble [25 × 2]>
+#> # A tibble: 50 × 4
+#>    splits          id      id2    inner_resamples
+#>    <list>          <chr>   <chr>  <list>         
+#>  1 <split [90/10]> Repeat1 Fold01 <boot [25 × 2]>
+#>  2 <split [90/10]> Repeat1 Fold02 <boot [25 × 2]>
+#>  3 <split [90/10]> Repeat1 Fold03 <boot [25 × 2]>
+#>  4 <split [90/10]> Repeat1 Fold04 <boot [25 × 2]>
+#>  5 <split [90/10]> Repeat1 Fold05 <boot [25 × 2]>
+#>  6 <split [90/10]> Repeat1 Fold06 <boot [25 × 2]>
+#>  7 <split [90/10]> Repeat1 Fold07 <boot [25 × 2]>
+#>  8 <split [90/10]> Repeat1 Fold08 <boot [25 × 2]>
+#>  9 <split [90/10]> Repeat1 Fold09 <boot [25 × 2]>
+#> 10 <split [90/10]> Repeat1 Fold10 <boot [25 × 2]>
 #> # … with 40 more rows
 ```
 
@@ -100,7 +100,7 @@ Each element of `inner_resamples` has its own tibble with the bootstrapping spli
 ```r
 results$inner_resamples[[5]]
 #> # Bootstrap sampling 
-#> # A tibble: 25 x 2
+#> # A tibble: 25 × 2
 #>    splits          id         
 #>    <list>          <chr>      
 #>  1 <split [90/31]> Bootstrap01
@@ -196,7 +196,11 @@ Alternatively, since these computations can be run in parallel, we can use the f
 library(furrr)
 plan(multisession)
 
-tuning_results <- future_map(results$inner_resamples, summarize_tune_results) 
+tuning_results <- future_map(
+  results$inner_resamples,
+  summarize_tune_results, 
+  .options = furrr_options(seed = 1234)
+) 
 ```
 
 The object `tuning_results` is a list of data frames for each of the 50 outer resamples. 
@@ -262,7 +266,7 @@ results <-
 
 summary(results$RMSE)
 #>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-#>    1.57    2.09    2.70    2.69    3.25    4.35
+#>    1.59    2.09    2.67    2.69    3.27    4.35
 ```
 
 The estimated RMSE for the model tuning process is 2.69. 
@@ -280,7 +284,7 @@ outer_summary <- not_nested %>%
   summarize(outer_RMSE = mean(RMSE), n = length(RMSE))
 
 outer_summary
-#> # A tibble: 11 x 3
+#> # A tibble: 11 × 3
 #>      cost outer_RMSE     n
 #>     <dbl>      <dbl> <int>
 #>  1   0.25       3.54    50
@@ -293,7 +297,7 @@ outer_summary
 #>  8  32          2.82    50
 #>  9  64          2.83    50
 #> 10 128          2.83    50
-#> 11 256          2.82    50
+#> 11 256          2.83    50
 
 ggplot(outer_summary, aes(x = cost, y = outer_RMSE)) + 
   geom_point() + 
@@ -323,39 +327,42 @@ The nested procedure produces a closer estimate to the approximate truth but the
 
 
 ```
-#> ─ Session info ───────────────────────────────────────────────────────────────
-#>  setting  value                       
-#>  version  R version 4.0.3 (2020-10-10)
-#>  os       macOS Mojave 10.14.6        
-#>  system   x86_64, darwin17.0          
-#>  ui       X11                         
-#>  language (EN)                        
-#>  collate  en_US.UTF-8                 
-#>  ctype    en_US.UTF-8                 
-#>  tz       America/Denver              
-#>  date     2020-12-07                  
+#> ─ Session info ─────────────────────────────────────────────────────
+#>  setting  value
+#>  version  R version 4.2.1 (2022-06-23)
+#>  os       macOS Big Sur ... 10.16
+#>  system   x86_64, darwin17.0
+#>  ui       X11
+#>  language (EN)
+#>  collate  en_US.UTF-8
+#>  ctype    en_US.UTF-8
+#>  tz       America/Los_Angeles
+#>  date     2022-12-07
+#>  pandoc   2.19.2 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/tools/ (via rmarkdown)
 #> 
-#> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version date       lib source        
-#>  broom      * 0.7.2   2020-10-20 [1] CRAN (R 4.0.2)
-#>  dials      * 0.0.9   2020-09-16 [1] CRAN (R 4.0.2)
-#>  dplyr      * 1.0.2   2020-08-18 [1] CRAN (R 4.0.2)
-#>  furrr      * 0.2.1   2020-10-21 [1] CRAN (R 4.0.2)
-#>  ggplot2    * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
-#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
-#>  kernlab    * 0.9-29  2019-11-12 [1] CRAN (R 4.0.0)
-#>  mlbench    * 2.1-1   2012-07-10 [1] CRAN (R 4.0.0)
-#>  parsnip    * 0.1.4   2020-10-27 [1] CRAN (R 4.0.2)
-#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
-#>  recipes    * 0.1.15  2020-11-11 [1] CRAN (R 4.0.2)
-#>  rlang        0.4.9   2020-11-26 [1] CRAN (R 4.0.2)
-#>  rsample    * 0.0.8   2020-09-23 [1] CRAN (R 4.0.2)
-#>  scales     * 1.1.1   2020-05-11 [1] CRAN (R 4.0.0)
-#>  tibble     * 3.0.4   2020-10-12 [1] CRAN (R 4.0.2)
-#>  tidymodels * 0.1.2   2020-11-22 [1] CRAN (R 4.0.2)
-#>  tune       * 0.1.2   2020-11-17 [1] CRAN (R 4.0.3)
-#>  workflows  * 0.2.1   2020-10-08 [1] CRAN (R 4.0.2)
-#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.2)
+#> ─ Packages ─────────────────────────────────────────────────────────
+#>  package    * version date (UTC) lib source
+#>  broom      * 1.0.1   2022-08-29 [1] CRAN (R 4.2.0)
+#>  dials      * 1.1.0   2022-11-04 [1] CRAN (R 4.2.0)
+#>  dplyr      * 1.0.10  2022-09-01 [1] CRAN (R 4.2.0)
+#>  furrr      * 0.3.1   2022-08-15 [1] CRAN (R 4.2.0)
+#>  ggplot2    * 3.4.0   2022-11-04 [1] CRAN (R 4.2.0)
+#>  infer      * 1.0.4   2022-12-02 [1] CRAN (R 4.2.1)
+#>  kernlab    * 0.9-31  2022-06-09 [1] CRAN (R 4.2.0)
+#>  mlbench    * 2.1-3   2021-01-29 [1] CRAN (R 4.2.0)
+#>  parsnip    * 1.0.3   2022-11-11 [1] CRAN (R 4.2.0)
+#>  purrr      * 0.3.5   2022-10-06 [1] CRAN (R 4.2.0)
+#>  recipes    * 1.0.3   2022-11-09 [1] CRAN (R 4.2.0)
+#>  rlang        1.0.6   2022-09-24 [1] CRAN (R 4.2.0)
+#>  rsample    * 1.1.1   2022-12-07 [1] CRAN (R 4.2.1)
+#>  scales     * 1.2.1   2022-08-20 [1] CRAN (R 4.2.0)
+#>  tibble     * 3.1.8   2022-07-22 [1] CRAN (R 4.2.0)
+#>  tidymodels * 1.0.0   2022-07-13 [1] CRAN (R 4.2.0)
+#>  tune       * 1.0.1   2022-10-09 [1] CRAN (R 4.2.0)
+#>  workflows  * 1.1.2   2022-11-16 [1] CRAN (R 4.2.0)
+#>  yardstick  * 1.1.0   2022-09-07 [1] CRAN (R 4.2.0)
 #> 
-#> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
+#>  [1] /Library/Frameworks/R.framework/Versions/4.2/Resources/library
+#> 
+#> ────────────────────────────────────────────────────────────────────
 ```

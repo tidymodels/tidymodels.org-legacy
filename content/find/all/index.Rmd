@@ -23,11 +23,14 @@ Here are all the functions available across all of the [tidymodels packages](/pa
 <br>
 
 ```{r table-compute, include = FALSE}
-pkgs <- c("baguette", "broom", "butcher", "corrr", "dials", "discrim", 
-          "embed", "hardhat", "infer", "modeldata", "modeldb", "parsnip", "plsmod",
-          "poissonreg", "probably", "recipes", "rsample", "spatialsample", 
-          "textrecipes", "tidyposterior", "tidypredict", "yardstick", 
-          "workflows")
+pkgs <- c("applicable", "baguette", "broom", "brulee", "butcher", 
+          "corrr", "dials", "discrim", 
+          "embed", "finetune", "hardhat", "infer", "modeldata", "modeldb", 
+          "multilevelmod", "parsnip", "plsmod",
+          "poissonreg", "probably", "recipes", "rsample", "rules", 
+          "shinymodels", "spatialsample", "stacks", 
+          "textrecipes", "themis", "tidypredict", "tune", "yardstick", 
+          "usemodels", "workflows", "workflowsets")
 pkgs <- tibble(pkg = pkgs, 
                base_url = paste0("https://", pkg, ".tidymodels.org/")) 
 

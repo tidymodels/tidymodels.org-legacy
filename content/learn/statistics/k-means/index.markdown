@@ -125,7 +125,7 @@ Which of these do we want to extract? There is no right answer; each of them may
 
 ```r
 augment(kclust, points)
-#> # A tibble: 300 x 3
+#> # A tibble: 300 × 3
 #>       x1     x2 .cluster
 #>    <dbl>  <dbl> <fct>   
 #>  1  6.91 -2.74  3       
@@ -146,7 +146,7 @@ The `tidy()` function summarizes on a per-cluster level:
 
 ```r
 tidy(kclust)
-#> # A tibble: 3 x 5
+#> # A tibble: 3 × 5
 #>        x1    x2  size withinss cluster
 #>     <dbl> <dbl> <int>    <dbl> <fct>  
 #> 1  0.0885  1.05   148     299. 1      
@@ -159,7 +159,7 @@ And as it always does, the `glance()` function extracts a single-row summary:
 
 ```r
 glance(kclust)
-#> # A tibble: 1 x 4
+#> # A tibble: 1 × 4
 #>   totss tot.withinss betweenss  iter
 #>   <dbl>        <dbl>     <dbl> <int>
 #> 1 3724.         651.     3073.     2
@@ -183,7 +183,7 @@ kclusts <-
   )
 
 kclusts
-#> # A tibble: 9 x 5
+#> # A tibble: 9 × 5
 #>       k kclust   tidied           glanced          augmented         
 #>   <int> <list>   <list>           <list>           <list>            
 #> 1     1 <kmeans> <tibble [1 × 5]> <tibble [1 × 4]> <tibble [300 × 3]>
@@ -254,36 +254,39 @@ This represents the variance within the clusters. It decreases as `k` increases,
 
 
 ```
-#> ─ Session info ───────────────────────────────────────────────────────────────
-#>  setting  value                       
-#>  version  R version 4.0.3 (2020-10-10)
-#>  os       macOS Mojave 10.14.6        
-#>  system   x86_64, darwin17.0          
-#>  ui       X11                         
-#>  language (EN)                        
-#>  collate  en_US.UTF-8                 
-#>  ctype    en_US.UTF-8                 
-#>  tz       America/Denver              
-#>  date     2020-12-07                  
+#> ─ Session info ─────────────────────────────────────────────────────
+#>  setting  value
+#>  version  R version 4.2.1 (2022-06-23)
+#>  os       macOS Big Sur ... 10.16
+#>  system   x86_64, darwin17.0
+#>  ui       X11
+#>  language (EN)
+#>  collate  en_US.UTF-8
+#>  ctype    en_US.UTF-8
+#>  tz       America/Los_Angeles
+#>  date     2022-12-07
+#>  pandoc   2.19.2 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/tools/ (via rmarkdown)
 #> 
-#> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version date       lib source        
-#>  broom      * 0.7.2   2020-10-20 [1] CRAN (R 4.0.2)
-#>  dials      * 0.0.9   2020-09-16 [1] CRAN (R 4.0.2)
-#>  dplyr      * 1.0.2   2020-08-18 [1] CRAN (R 4.0.2)
-#>  ggplot2    * 3.3.2   2020-06-19 [1] CRAN (R 4.0.0)
-#>  infer      * 0.5.3   2020-07-14 [1] CRAN (R 4.0.0)
-#>  parsnip    * 0.1.4   2020-10-27 [1] CRAN (R 4.0.2)
-#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.0.0)
-#>  recipes    * 0.1.15  2020-11-11 [1] CRAN (R 4.0.2)
-#>  rlang        0.4.9   2020-11-26 [1] CRAN (R 4.0.2)
-#>  rsample    * 0.0.8   2020-09-23 [1] CRAN (R 4.0.2)
-#>  tibble     * 3.0.4   2020-10-12 [1] CRAN (R 4.0.2)
-#>  tidymodels * 0.1.2   2020-11-22 [1] CRAN (R 4.0.2)
-#>  tune       * 0.1.2   2020-11-17 [1] CRAN (R 4.0.3)
-#>  workflows  * 0.2.1   2020-10-08 [1] CRAN (R 4.0.2)
-#>  yardstick  * 0.0.7   2020-07-13 [1] CRAN (R 4.0.2)
+#> ─ Packages ─────────────────────────────────────────────────────────
+#>  package    * version date (UTC) lib source
+#>  broom      * 1.0.1   2022-08-29 [1] CRAN (R 4.2.0)
+#>  dials      * 1.1.0   2022-11-04 [1] CRAN (R 4.2.0)
+#>  dplyr      * 1.0.10  2022-09-01 [1] CRAN (R 4.2.0)
+#>  ggplot2    * 3.4.0   2022-11-04 [1] CRAN (R 4.2.0)
+#>  infer      * 1.0.4   2022-12-02 [1] CRAN (R 4.2.1)
+#>  parsnip    * 1.0.3   2022-11-11 [1] CRAN (R 4.2.0)
+#>  purrr      * 0.3.5   2022-10-06 [1] CRAN (R 4.2.0)
+#>  recipes    * 1.0.3   2022-11-09 [1] CRAN (R 4.2.0)
+#>  rlang        1.0.6   2022-09-24 [1] CRAN (R 4.2.0)
+#>  rsample    * 1.1.1   2022-12-07 [1] CRAN (R 4.2.1)
+#>  tibble     * 3.1.8   2022-07-22 [1] CRAN (R 4.2.0)
+#>  tidymodels * 1.0.0   2022-07-13 [1] CRAN (R 4.2.0)
+#>  tune       * 1.0.1   2022-10-09 [1] CRAN (R 4.2.0)
+#>  workflows  * 1.1.2   2022-11-16 [1] CRAN (R 4.2.0)
+#>  yardstick  * 1.1.0   2022-09-07 [1] CRAN (R 4.2.0)
 #> 
-#> [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
+#>  [1] /Library/Frameworks/R.framework/Versions/4.2/Resources/library
+#> 
+#> ────────────────────────────────────────────────────────────────────
 ```
 

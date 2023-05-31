@@ -86,7 +86,7 @@ svm_mod <-
   set_engine("kernlab")
 ```
 
-These two objects (the recipe and model) will be combined into a single object via the `workflow()` function from the [workflows](https://tidymodels.github.io/workflows/) package; this object will be used in the optimization process. 
+These two objects (the recipe and model) will be combined into a single object via the `workflow()` function from the [workflows](https://workflows.tidymodels.org/) package; this object will be used in the optimization process. 
 
 ```{r workflow}
 svm_wflow <-
@@ -98,7 +98,7 @@ svm_wflow <-
 From this object, we can derive information about what parameters are slated to be tuned. A parameter set is derived by: 
 
 ```{r pset}
-svm_set <- parameters(svm_wflow)
+svm_set <- extract_parameter_set_dials(svm_wflow)
 svm_set
 ```
 
@@ -122,7 +122,7 @@ For example, one approach for scoring new candidates is to use a confidence boun
 
 The variance predicted by the Bayesian model is mostly spatial variation; the value will be large for candidate values that are not close to values that have already been evaluated. If the standard error multiplier is high, the search process will be more likely to avoid areas without candidate values in the vicinity. 
 
-We'll use another acquisition function, _expected improvement_, that determines which candidates are likely to be helpful relative to the current best results. This is the default acquisition function. More information on these functions can be found in the [package vignette for acquisition functions](https://tidymodels.github.io/tune/articles/acquisition_functions.html). 
+We'll use another acquisition function, _expected improvement_, that determines which candidates are likely to be helpful relative to the current best results. This is the default acquisition function. More information on these functions can be found in the [package vignette for acquisition functions](https://tune.tidymodels.org/articles/acquisition_functions.html). 
 
 ```{r search, cache = TRUE}
 set.seed(12)

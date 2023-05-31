@@ -176,7 +176,7 @@ Let's save information on the number of predictors by penalty value for each glm
 ```{r extract}
 glmnet_vars <- function(x) {
   # `x` will be a workflow object
-  mod <- extract_model(x)
+  mod <- extract_fit_engine(x)
   # `df` is the number of model terms for each penalty value
   tibble(penalty = mod$lambda, num_vars = mod$df)
 }
@@ -256,7 +256,7 @@ Then we can extract and manipulate the corresponding parameter set:
 ```{r search-set}
 five_star_set <-
   five_star_wflow %>%
-  parameters() %>%
+  extract_parameter_set_dials() %>%
   update(
     num_terms = hash_range, 
     penalty = penalty(c(-3, 0)),

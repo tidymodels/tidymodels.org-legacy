@@ -188,16 +188,16 @@ tree_res
 #> # A tibble: 10 × 4
 #>    splits             id     .metrics          .notes          
 #>    <list>             <chr>  <list>            <list>          
-#>  1 <split [1362/152]> Fold01 <tibble [50 × 6]> <tibble [0 × 1]>
-#>  2 <split [1362/152]> Fold02 <tibble [50 × 6]> <tibble [0 × 1]>
-#>  3 <split [1362/152]> Fold03 <tibble [50 × 6]> <tibble [0 × 1]>
-#>  4 <split [1362/152]> Fold04 <tibble [50 × 6]> <tibble [0 × 1]>
-#>  5 <split [1363/151]> Fold05 <tibble [50 × 6]> <tibble [0 × 1]>
-#>  6 <split [1363/151]> Fold06 <tibble [50 × 6]> <tibble [0 × 1]>
-#>  7 <split [1363/151]> Fold07 <tibble [50 × 6]> <tibble [0 × 1]>
-#>  8 <split [1363/151]> Fold08 <tibble [50 × 6]> <tibble [0 × 1]>
-#>  9 <split [1363/151]> Fold09 <tibble [50 × 6]> <tibble [0 × 1]>
-#> 10 <split [1363/151]> Fold10 <tibble [50 × 6]> <tibble [0 × 1]>
+#>  1 <split [1362/152]> Fold01 <tibble [50 × 6]> <tibble [0 × 3]>
+#>  2 <split [1362/152]> Fold02 <tibble [50 × 6]> <tibble [0 × 3]>
+#>  3 <split [1362/152]> Fold03 <tibble [50 × 6]> <tibble [0 × 3]>
+#>  4 <split [1362/152]> Fold04 <tibble [50 × 6]> <tibble [0 × 3]>
+#>  5 <split [1363/151]> Fold05 <tibble [50 × 6]> <tibble [0 × 3]>
+#>  6 <split [1363/151]> Fold06 <tibble [50 × 6]> <tibble [0 × 3]>
+#>  7 <split [1363/151]> Fold07 <tibble [50 × 6]> <tibble [0 × 3]>
+#>  8 <split [1363/151]> Fold08 <tibble [50 × 6]> <tibble [0 × 3]>
+#>  9 <split [1363/151]> Fold09 <tibble [50 × 6]> <tibble [0 × 3]>
+#> 10 <split [1363/151]> Fold10 <tibble [50 × 6]> <tibble [0 × 3]>
 ```
 
 Once we have our tuning results, we can both explore them through visualization and then select the best result. The function `collect_metrics()` gives us a tidy tibble with all the results. We had 25 candidate models and two metrics, `accuracy` and `roc_auc`, and we get a row for each `.metric` and model. 
@@ -230,7 +230,7 @@ tree_res %>%
   collect_metrics() %>%
   mutate(tree_depth = factor(tree_depth)) %>%
   ggplot(aes(cost_complexity, mean, color = tree_depth)) +
-  geom_line(size = 1.5, alpha = 0.6) +
+  geom_line(linewidth = 1.5, alpha = 0.6) +
   geom_point(size = 2) +
   facet_wrap(~ .metric, scales = "free", nrow = 2) +
   scale_x_log10(labels = scales::label_number()) +
@@ -411,38 +411,41 @@ You could tune the other hyperparameter we didn't use here, `min_n`, which sets 
 
 
 ```
-#> ─ Session info ───────────────────────────────────────────────────────────────
-#>  setting  value                       
-#>  version  R version 4.1.1 (2021-08-10)
-#>  os       macOS Big Sur 11.5.2        
-#>  system   aarch64, darwin20           
-#>  ui       X11                         
-#>  language (EN)                        
-#>  collate  en_US.UTF-8                 
-#>  ctype    en_US.UTF-8                 
-#>  tz       America/Denver              
-#>  date     2021-08-24                  
+#> ─ Session info ─────────────────────────────────────────────────────
+#>  setting  value
+#>  version  R version 4.2.1 (2022-06-23)
+#>  os       macOS Big Sur ... 10.16
+#>  system   x86_64, darwin17.0
+#>  ui       X11
+#>  language (EN)
+#>  collate  en_US.UTF-8
+#>  ctype    en_US.UTF-8
+#>  tz       America/Los_Angeles
+#>  date     2022-12-07
+#>  pandoc   2.19.2 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/tools/ (via rmarkdown)
 #> 
-#> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version date       lib source        
-#>  broom      * 0.7.9   2021-07-27 [1] CRAN (R 4.1.0)
-#>  dials      * 0.0.9   2020-09-16 [1] CRAN (R 4.1.0)
-#>  dplyr      * 1.0.7   2021-06-18 [1] CRAN (R 4.1.0)
-#>  ggplot2    * 3.3.5   2021-06-25 [1] CRAN (R 4.1.0)
-#>  infer      * 1.0.0   2021-08-13 [1] CRAN (R 4.1.1)
-#>  parsnip    * 0.1.7   2021-07-21 [1] CRAN (R 4.1.0)
-#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.1.0)
-#>  recipes    * 0.1.16  2021-04-16 [1] CRAN (R 4.1.0)
-#>  rlang      * 0.4.11  2021-04-30 [1] CRAN (R 4.1.0)
-#>  rpart      * 4.1-15  2019-04-12 [1] CRAN (R 4.1.1)
-#>  rpart.plot * 3.1.0   2021-07-24 [1] CRAN (R 4.1.0)
-#>  rsample    * 0.1.0   2021-05-08 [1] CRAN (R 4.1.1)
-#>  tibble     * 3.1.3   2021-07-23 [1] CRAN (R 4.1.0)
-#>  tidymodels * 0.1.3   2021-04-19 [1] CRAN (R 4.1.0)
-#>  tune       * 0.1.6   2021-07-21 [1] CRAN (R 4.1.0)
-#>  vip        * 0.3.2   2020-12-17 [1] CRAN (R 4.1.0)
-#>  workflows  * 0.2.3   2021-07-16 [1] CRAN (R 4.1.0)
-#>  yardstick  * 0.0.8   2021-03-28 [1] CRAN (R 4.1.0)
+#> ─ Packages ─────────────────────────────────────────────────────────
+#>  package    * version date (UTC) lib source
+#>  broom      * 1.0.1   2022-08-29 [1] CRAN (R 4.2.0)
+#>  dials      * 1.1.0   2022-11-04 [1] CRAN (R 4.2.0)
+#>  dplyr      * 1.0.10  2022-09-01 [1] CRAN (R 4.2.0)
+#>  ggplot2    * 3.4.0   2022-11-04 [1] CRAN (R 4.2.0)
+#>  infer      * 1.0.4   2022-12-02 [1] CRAN (R 4.2.1)
+#>  parsnip    * 1.0.3   2022-11-11 [1] CRAN (R 4.2.0)
+#>  purrr      * 0.3.5   2022-10-06 [1] CRAN (R 4.2.0)
+#>  recipes    * 1.0.3   2022-11-09 [1] CRAN (R 4.2.0)
+#>  rlang        1.0.6   2022-09-24 [1] CRAN (R 4.2.0)
+#>  rpart      * 4.1.19  2022-10-21 [1] CRAN (R 4.2.0)
+#>  rpart.plot * 3.1.1   2022-05-21 [1] CRAN (R 4.2.0)
+#>  rsample    * 1.1.1   2022-12-07 [1] CRAN (R 4.2.1)
+#>  tibble     * 3.1.8   2022-07-22 [1] CRAN (R 4.2.0)
+#>  tidymodels * 1.0.0   2022-07-13 [1] CRAN (R 4.2.0)
+#>  tune       * 1.0.1   2022-10-09 [1] CRAN (R 4.2.0)
+#>  vip        * 0.3.2   2020-12-17 [1] CRAN (R 4.2.0)
+#>  workflows  * 1.1.2   2022-11-16 [1] CRAN (R 4.2.0)
+#>  yardstick  * 1.1.0   2022-09-07 [1] CRAN (R 4.2.0)
 #> 
-#> [1] /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/library
+#>  [1] /Library/Frameworks/R.framework/Versions/4.2/Resources/library
+#> 
+#> ────────────────────────────────────────────────────────────────────
 ```

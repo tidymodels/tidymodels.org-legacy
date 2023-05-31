@@ -48,6 +48,7 @@ str(biomass)
 #>  $ nitrogen: num  0.41 0.2 0.11 3.3 1 2.04 2.68 1.7 0.8 1.2 ...
 #>  $ sulfur  : num  0 0 0.02 0.16 0.02 0.1 0.2 0.2 0 0.1 ...
 #>  $ HHV     : num  20 19.2 18.3 18.2 18.4 ...
+
 biomass_tr <- biomass[biomass$dataset == "Training",]
 biomass_te <- biomass[biomass$dataset == "Testing",]
 ```
@@ -88,15 +89,10 @@ step_percentile <- function(
   id = rand_id("percentile")
   ) {
 
-  ## The variable selectors are not immediately evaluated by using
-  ##  the `quos()` function in `rlang`. `ellipse_check()` captures 
-  ##  the values and also checks to make sure that they are not empty.  
-  terms <- ellipse_check(...) 
-
   add_step(
     recipe, 
     step_percentile_new(
-      terms = terms, 
+      terms = enquos(...), 
       trained = trained,
       role = role, 
       ref_dist = ref_dist,
@@ -180,6 +176,7 @@ The first thing that you might want to do in the `prep()` function is to transla
 
 {{% warning %}} The `recipes_eval_select()` function is not one you interact with as a typical recipes user, but it is helpful if you develop your own custom recipe steps. {{%/ warning %}}
 
+
 ```r
 prep.step_percentile <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info) 
@@ -256,7 +253,7 @@ Remember that the `prep()` function does not _apply_ the step to the data; it on
 function(object, new_data, ...)
 ```
 
-where `object` is the updated step function that has been through the corresponding `prep()` code and `new_data` is a tibble of data to be processed. 
+where `object` is the updated step function that has been through the corresponding `prep()` code and `new_data` is a tibble of data to be processed. The output of this function needs to be a tibble of the modified version of `new_data`.
 
 Here is the code to convert the new data to percentiles. The input data (`x` below) comes in as a numeric vector and the output is a vector of approximate percentiles: 
 
@@ -282,10 +279,11 @@ bake.step_percentile <- function(object, new_data, ...) {
   new_data[, vars] <-
     purrr::map2_dfc(new_data[, vars], object$ref_dist, pctl_by_approx)
   
-  ## Always convert to tibbles on the way out
-  tibble::as_tibble(new_data)
+  new_data
 }
 ```
+
+`tibble::as_tibble()` can be used at the end of the function to turn `new_data` back into a tibble if needed. We didn't use `tibble::as_tibble()` above since `new_data` stayed as a tibble throughout the whole function.
 
 {{% note %}} You need to import `recipes::prep()` and `recipes::bake()` to create your own step function in a package. {{%/ note %}}
 
@@ -310,6 +308,7 @@ bake(rec_obj, biomass_te %>% slice(1:2), ends_with("gen"))
 #>      <dbl>  <dbl>    <dbl>
 #> 1     0.45  0.903    0.21 
 #> 2     0.38  0.922    0.928
+
 # Checking to get approximate result: 
 mean(biomass_tr$hydrogen <= biomass_te$hydrogen[1])
 #> [1] 0.452
@@ -393,6 +392,7 @@ recipe(HHV ~ ., data = biomass_tr) %>%
 #> Operations:
 #> 
 #> Percentile transformation on ends_with("gen")
+
 # Results after `prep()`: 
 rec_obj
 #> Recipe
@@ -430,6 +430,8 @@ required_pkgs.step_hypothetical <- function(x, ...) {
 ```
 
 In this example, `myrecipespkg` is the package where the step resides (if it is in a package).
+
+{{% note %}} If you are writing steps for an extension package, then every step should have a `required_pkgs()` method. {{%/ note %}}
 
 The reason to declare what packages should be loaded is parallel processing. When parallel worker processes are created, there is heterogeneity across technologies regarding which packages are loaded. Multicore methods on macOS and Linux load all of the packages that were loaded in the main R process. However, parallel processing using psock clusters have no additional packages loaded. If the home package for a recipe step is not loaded in the worker processes, the `prep()` methods cannot be found and an error occurs. 
 
@@ -504,16 +506,16 @@ tidy(rec_obj, number = 1)
 #> # A tibble: 274 × 4
 #>    term     value percentile id              
 #>    <chr>    <dbl>      <dbl> <chr>           
-#>  1 hydrogen 0.03           0 percentile_Sp98p
-#>  2 hydrogen 0.934          1 percentile_Sp98p
-#>  3 hydrogen 1.60           2 percentile_Sp98p
-#>  4 hydrogen 2.07           3 percentile_Sp98p
-#>  5 hydrogen 2.45           4 percentile_Sp98p
-#>  6 hydrogen 2.74           5 percentile_Sp98p
-#>  7 hydrogen 3.15           6 percentile_Sp98p
-#>  8 hydrogen 3.49           7 percentile_Sp98p
-#>  9 hydrogen 3.71           8 percentile_Sp98p
-#> 10 hydrogen 3.99           9 percentile_Sp98p
+#>  1 hydrogen 0.03           0 percentile_Bp5vK
+#>  2 hydrogen 0.934          1 percentile_Bp5vK
+#>  3 hydrogen 1.60           2 percentile_Bp5vK
+#>  4 hydrogen 2.07           3 percentile_Bp5vK
+#>  5 hydrogen 2.45           4 percentile_Bp5vK
+#>  6 hydrogen 2.74           5 percentile_Bp5vK
+#>  7 hydrogen 3.15           6 percentile_Bp5vK
+#>  8 hydrogen 3.49           7 percentile_Bp5vK
+#>  9 hydrogen 3.71           8 percentile_Bp5vK
+#> 10 hydrogen 3.99           9 percentile_Bp5vK
 #> # … with 264 more rows
 ```
 
@@ -592,38 +594,41 @@ tunable.step_poly <- function (x, ...) {
 
 
 ```
-#> ─ Session info ───────────────────────────────────────────────────────────────
-#>  setting  value                       
-#>  version  R version 4.1.1 (2021-08-10)
-#>  os       macOS Big Sur 11.6          
-#>  system   aarch64, darwin20           
-#>  ui       X11                         
-#>  language (EN)                        
-#>  collate  en_US.UTF-8                 
-#>  ctype    en_US.UTF-8                 
-#>  tz       America/Denver              
-#>  date     2021-09-27                  
+#> ─ Session info ─────────────────────────────────────────────────────
+#>  setting  value
+#>  version  R version 4.2.1 (2022-06-23)
+#>  os       macOS Big Sur ... 10.16
+#>  system   x86_64, darwin17.0
+#>  ui       X11
+#>  language (EN)
+#>  collate  en_US.UTF-8
+#>  ctype    en_US.UTF-8
+#>  tz       America/Los_Angeles
+#>  date     2022-12-07
+#>  pandoc   2.19.2 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/tools/ (via rmarkdown)
 #> 
-#> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version date       lib source        
-#>  broom      * 0.7.9   2021-07-27 [1] CRAN (R 4.1.0)
-#>  dials      * 0.0.10  2021-09-10 [1] CRAN (R 4.1.1)
-#>  dplyr      * 1.0.7   2021-06-18 [1] CRAN (R 4.1.0)
-#>  ggplot2    * 3.3.5   2021-06-25 [1] CRAN (R 4.1.0)
-#>  infer      * 1.0.0   2021-08-13 [1] CRAN (R 4.1.1)
-#>  modeldata  * 0.1.1   2021-07-14 [1] CRAN (R 4.1.0)
-#>  parsnip    * 0.1.7   2021-07-21 [1] CRAN (R 4.1.0)
-#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.1.0)
-#>  recipes    * 0.1.17  2021-09-27 [1] CRAN (R 4.1.1)
-#>  rlang        0.4.11  2021-04-30 [1] CRAN (R 4.1.0)
-#>  rsample    * 0.1.0   2021-05-08 [1] CRAN (R 4.1.1)
-#>  tibble     * 3.1.4   2021-08-25 [1] CRAN (R 4.1.1)
-#>  tidymodels * 0.1.3   2021-04-19 [1] CRAN (R 4.1.0)
-#>  tune       * 0.1.6   2021-07-21 [1] CRAN (R 4.1.0)
-#>  workflows  * 0.2.3   2021-07-16 [1] CRAN (R 4.1.0)
-#>  yardstick  * 0.0.8   2021-03-28 [1] CRAN (R 4.1.0)
+#> ─ Packages ─────────────────────────────────────────────────────────
+#>  package    * version date (UTC) lib source
+#>  broom      * 1.0.1   2022-08-29 [1] CRAN (R 4.2.0)
+#>  dials      * 1.1.0   2022-11-04 [1] CRAN (R 4.2.0)
+#>  dplyr      * 1.0.10  2022-09-01 [1] CRAN (R 4.2.0)
+#>  ggplot2    * 3.4.0   2022-11-04 [1] CRAN (R 4.2.0)
+#>  infer      * 1.0.4   2022-12-02 [1] CRAN (R 4.2.1)
+#>  modeldata  * 1.0.1   2022-09-06 [1] CRAN (R 4.2.0)
+#>  parsnip    * 1.0.3   2022-11-11 [1] CRAN (R 4.2.0)
+#>  purrr      * 0.3.5   2022-10-06 [1] CRAN (R 4.2.0)
+#>  recipes    * 1.0.3   2022-11-09 [1] CRAN (R 4.2.0)
+#>  rlang        1.0.6   2022-09-24 [1] CRAN (R 4.2.0)
+#>  rsample    * 1.1.1   2022-12-07 [1] CRAN (R 4.2.1)
+#>  tibble     * 3.1.8   2022-07-22 [1] CRAN (R 4.2.0)
+#>  tidymodels * 1.0.0   2022-07-13 [1] CRAN (R 4.2.0)
+#>  tune       * 1.0.1   2022-10-09 [1] CRAN (R 4.2.0)
+#>  workflows  * 1.1.2   2022-11-16 [1] CRAN (R 4.2.0)
+#>  yardstick  * 1.1.0   2022-09-07 [1] CRAN (R 4.2.0)
 #> 
-#> [1] /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/library
+#>  [1] /Library/Frameworks/R.framework/Versions/4.2/Resources/library
+#> 
+#> ────────────────────────────────────────────────────────────────────
 ```
  
  

@@ -7,9 +7,13 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   cache.path = "cache/"
 )
-options(width = 80, cli.width = 70)
+options(
+  width = 80,
+  cli.width = 70,
+  pillar.min_title_chars = Inf
+)
 
-req_pkgs <- function(x, what = "To use code in this article, ") {
+article_req_pkgs <- function(x, what = "To use code in this article, ") {
   x <- sort(x)
   x <- knitr::combine_words(x, and = " and ")
   paste0(

@@ -19,14 +19,12 @@ source(script)
 library(DT)
 library(tibble)
 pkgs <- 
-  tibble(
-    pkg = c("recipes", "embed", "textrecipes", "themis"), 
-    base_url = "https://tidymodels.github.io/"
-  ) %>% 
+  tibble(pkg = c("recipes", "embed", "textrecipes", "themis")) %>%
+  mutate(base_url = glue::glue("https://{pkg}.tidymodels.org/")) %>%
   dplyr::bind_rows(
     tibble(
       pkg = "timetk", 
-      base_url = "https://business-science.github.io/"
+      base_url = "https://business-science.github.io/timetk/"
     )
   ) 
   # MachineShop has step functions but pkgdown reference pages 

@@ -7,3 +7,4 @@ public/
 index_cache
 content/start/case-study/cache
 content/learn/work/bayes-opt/cache
+.hugo_build.lock

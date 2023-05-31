@@ -17,19 +17,20 @@ library(tidymodels)
 library(sessioninfo)
 pkgs <- c("tidymodels")
 theme_set(theme_bw() + theme(legend.position = "top"))
+set.seed(1234)
 ```
 
 ## Introduction
 
 This article only requires the tidymodels package. 
 
-The tidymodels package [infer](https://tidymodels.github.io/infer/) implements an expressive grammar to perform statistical inference that coheres with the `tidyverse` design framework. Rather than providing methods for specific statistical tests, this package consolidates the principles that are shared among common hypothesis tests into a set of 4 main verbs (functions), supplemented with many utilities to visualize and extract information from their outputs.
+The tidymodels package [infer](https://infer.tidymodels.org/) implements an expressive grammar to perform statistical inference that coheres with the `tidyverse` design framework. Rather than providing methods for specific statistical tests, this package consolidates the principles that are shared among common hypothesis tests into a set of 4 main verbs (functions), supplemented with many utilities to visualize and extract information from their outputs.
 
 Regardless of which hypothesis test we're using, we're still asking the same kind of question: 
 
 >Is the effect or difference in our observed data real, or due to chance? 
 
-To answer this question, we start by assuming that the observed data came from some world where "nothing is going on" (i.e. the observed effect was simply due to random chance), and call this assumption our **null hypothesis**. (In reality, we might not believe in the null hypothesis at all; the null hypothesis is in opposition to the **alternate hypothesis**, which supposes that the effect present in the observed data is actually due to the fact that "something is going on.") We then calculate a **test statistic** from our data that describes the observed effect. We can use this test statistic to calculate a **p-value**, giving the probability that our observed data could come about if the null hypothesis was true. If this probability is below some pre-defined **significance level** $\alpha$, then we can reject our null hypothesis.
+To answer this question, we start by assuming that the observed data came from some world where "nothing is going on" (i.e. the observed effect was simply due to random chance), and call this assumption our **null hypothesis**. (In reality, we might not believe in the null hypothesis at all; the null hypothesis is in opposition to the **alternate hypothesis**, which supposes that the effect present in the observed data is actually due to the fact that "something is going on.") We then calculate a **test statistic** from our data that describes the observed effect. We can use this test statistic to calculate a **p-value**, giving the probability that our observed data could come about if the null hypothesis was true. If this probability is below some pre-defined **significance level** `alpha`, then we can reject our null hypothesis.
 
 If you are new to hypothesis testing, take a look at 
 
@@ -156,7 +157,7 @@ gss %>%
   calculate(stat = "mean")
 ```
 
-The output of `calculate()` here shows us the sample statistic (in this case, the mean) for each of our 1000 replicates. If you're carrying out inference on differences in means, medians, or proportions, or $t$ and $z$ statistics, you will need to supply an `order` argument, giving the order in which the explanatory variables should be subtracted. For instance, to find the difference in mean age of those that have a college degree and those that don't, we might write:
+The output of `calculate()` here shows us the sample statistic (in this case, the mean) for each of our 1000 replicates. If you're carrying out inference on differences in means, medians, or proportions, or `"t"` and `"z"` statistics, you will need to supply an `order` argument, giving the order in which the explanatory variables should be subtracted. For instance, to find the difference in mean age of those that have a college degree and those that don't, we might write:
 
 ```{r specify-diff-in-means, warning = FALSE, message = FALSE}
 gss %>%
@@ -215,7 +216,7 @@ p_value <- null_dist %>%
 p_value
 ```
 
-It looks like the p-value is `r p_value`, which is pretty small---if the true mean number of hours worked per week was actually 40, the probability of our sample mean being this far (`r abs(point_estimate-40)` hours) from 40 would be `r p_value`. This may or may not be statistically significantly different, depending on the significance level $\alpha$ you decided on *before* you ran this analysis. If you had set $\alpha = .05$, then this difference would be statistically significant, but if you had set $\alpha = .01$, then it would not be.
+It looks like the p-value is `r p_value`, which is pretty small---if the true mean number of hours worked per week was actually 40, the probability of our sample mean being this far (`r abs(point_estimate-40)` hours) from 40 would be `r p_value`. This may or may not be statistically significantly different, depending on the significance level `alpha` you decided on *before* you ran this analysis. If you had set `alpha = .05`, then this difference would be statistically significant, but if you had set `alpha = .01`, then it would not be.
 
 To get a confidence interval around our estimate, we can write:
 
@@ -230,51 +231,110 @@ null_dist %>%
                           type = "se")
 ```
 
-As you can see, 40 hours per week is not contained in this interval, which aligns with our previous conclusion that this finding is significant at the confidence level $\alpha = .05$.
+As you can see, 40 hours per week is not contained in this interval, which aligns with our previous conclusion that this finding is significant at the confidence level `alpha = .05`.
 
 ## Theoretical methods
 
-The infer package also provides functionality to use theoretical methods for `"Chisq"`, `"F"` and `"t"` test statistics. 
+The infer package also provides functionality to use theoretical methods for `"Chisq"`, `"F"`, `"t"` and `"z"` distributions. 
 
-Generally, to find a null distribution using theory-based methods, use the same code that you would use to find the null distribution using randomization-based methods, but skip the `generate()` step. For example, if we wanted to find a null distribution for the relationship between age (`age`) and party identification (`partyid`) using randomization, we could write:
+Generally, to find a null distribution using theory-based methods, use the same code that you would use to find the observed statistic elsewhere, replacing calls to `calculate()` with `assume()`. For example, to calculate the observed `"t"` statistic (a standardized mean):
 
-```{r, message = FALSE, warning = FALSE}
-null_f_distn <- gss %>%
-   specify(age ~ partyid) %>%
-   hypothesize(null = "independence") %>%
-   generate(reps = 5000, type = "permute") %>%
-   calculate(stat = "F")
+```{r obs_t, message = FALSE, warning = FALSE}
+# calculate an observed t statistic
+obs_t <- gss %>%
+  specify(response = hours) %>%
+  hypothesize(null = "point", mu = 40) %>%
+  calculate(stat = "t")
 ```
 
-To find the null distribution using theory-based methods, instead, skip the `generate()` step entirely:
+Then, to define a theoretical `"t"` distribution, we could write:
 
-```{r, message = FALSE, warning = FALSE}
-null_f_distn_theoretical <- gss %>%
-   specify(age ~ partyid) %>%
-   hypothesize(null = "independence") %>%
-   calculate(stat = "F")
+```{r t_dist, message = FALSE, warning = FALSE}
+# switch out `calculate()` with `assume()` to define a distribution
+t_dist <- gss %>%
+  specify(response = hours) %>%
+  assume(distribution = "t")
 ```
 
-We'll calculate the observed statistic to make use of in the following visualizations; this procedure is the same, regardless of the methods used to find the null distribution.
+From here, the theoretical distribution interfaces in the same way that simulation-based null distributions do. For example, to interface with p-values:
 
-```{r, message = FALSE, warning = FALSE}
-F_hat <- gss %>% 
-  specify(age ~ partyid) %>%
-  calculate(stat = "F")
+```{r viz_t_dist, message = FALSE, warning = FALSE}
+# visualize the theoretical null distribution
+visualize(t_dist) +
+  shade_p_value(obs_stat = obs_t, direction = "greater")
+
+# more exactly, calculate the p-value
+get_p_value(t_dist, obs_t, "greater")
 ```
 
-Now, instead of just piping the null distribution into `visualize()`, as we would do if we wanted to visualize the randomization-based null distribution, we also need to provide `method = "theoretical"` to `visualize()`.
+Confidence intervals lie on the scale of the data rather than on the standardized scale of the theoretical distribution, so be sure to use the unstandardized observed statistic when working with confidence intervals.
 
-```{r, message = FALSE, warning = FALSE}
-visualize(null_f_distn_theoretical, method = "theoretical") +
-  shade_p_value(obs_stat = F_hat, direction = "greater")
+```{r theor_obs_mean, message = FALSE, warning = FALSE}
+# calculate the point estimate
+obs_mean <- gss %>%
+  specify(response = hours) %>%
+  calculate(stat = "mean")
+
+# find the theory-based confidence interval
+theor_ci <- 
+  get_confidence_interval(
+    x = t_dist,
+    level = .95,
+    point_estimate = obs_mean
+  )
+
+theor_ci
 ```
 
-To get a sense of how the theory-based and randomization-based null distributions relate, we can pipe the randomization-based null distribution into `visualize()` and also specify `method = "both"`
+When visualized, the `"t"` distribution will be recentered and rescaled to align with the scale of the observed data.
 
-```{r, message = FALSE, warning = FALSE}
-visualize(null_f_distn, method = "both") +
-  shade_p_value(obs_stat = F_hat, direction = "greater")
+```{r viz_t_ci}
+# visualize the theoretical sampling distribution
+visualize(t_dist) +
+  shade_confidence_interval(theor_ci)
+```
+
+## Multiple regression
+
+To accommodate randomization-based inference with multiple explanatory variables, the package implements an alternative workflow based on model fitting. Rather than `calculate()`ing statistics from resampled data, this side of the package allows you to `fit()` linear models on data resampled according to the null hypothesis, supplying model coefficients for each explanatory variable. For the most part, you can just switch out `calculate()` for `fit()` in your `calculate()`-based workflows.
+
+As an example, suppose that we want to fit `hours` worked per week using the respondent `age` and `college` completion status. We could first begin by fitting a linear model to the observed data.
+
+```{r mult_fit}
+observed_fit <- gss %>%
+  specify(hours ~ age + college) %>%
+  fit()
+```
+
+Now, to generate null distributions for each of these terms, we can fit 1000 models to resamples of the `gss` dataset, where the response `hours` is permuted in each. Note that this code is the same as the above except for the addition of the `hypothesize()` and `generate()` step.
+
+```{r null_fits}
+null_fits <- gss %>%
+  specify(hours ~ age + college) %>%
+  hypothesize(null = "independence") %>%
+  generate(reps = 1000, type = "permute") %>%
+  fit()
+
+null_fits
+```
+
+To permute variables other than the response variable, the `variables` argument to `generate()` allows you to choose columns from the data to permute. Note that any derived effects that depend on these columns (e.g., interaction effects) will also be affected.
+
+Beyond this point, observed fits and distributions from null fits interface exactly like analogous outputs from `calculate()`. For instance, we can use the following code to calculate a 95% confidence interval from these objects.
+
+```{r null_cis}
+get_confidence_interval(
+  null_fits, 
+  point_estimate = observed_fit, 
+  level = .95
+)
+```
+
+Or, we can shade p-values for each of these observed regression coefficients from the observed data.
+
+```{r viz_null_fits}
+visualize(null_fits) + 
+  shade_p_value(observed_fit, direction = "both")
 ```
 
 That's it! This vignette covers most all of the key functionality of infer. See `help(package = "infer")` for a full list of functions and vignettes.

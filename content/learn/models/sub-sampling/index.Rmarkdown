@@ -68,7 +68,7 @@ library(tidymodels)
 library(themis)
 imbal_rec <- 
   recipe(Class ~ ., data = imbal_data) %>%
-  step_rose(Class)
+  step_rose(Class, seed = 1234)
 ```
 
 For a model, let's use a [quadratic discriminant analysis](https://en.wikipedia.org/wiki/Quadratic_classifier#Quadratic_discriminant_analysis) (QDA) model. From the discrim package, this model can be specified using:
@@ -80,7 +80,7 @@ qda_mod <-
   set_engine("klaR")
 ```
 
-To keep these objects bound together, they can be combined in a [workflow](https://tidymodels.github.io/workflows/):
+To keep these objects bound together, they can be combined in a [workflow](https://workflows.tidymodels.org/):
 
 ```{r wflw}
 qda_rose_wflw <- 

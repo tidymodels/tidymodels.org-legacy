@@ -33,9 +33,10 @@ As an example, we'll create a function for _mixture discriminant analysis_. Ther
 ```r
 str(mda::mda)
 #> function (formula = formula(data), data = sys.frame(sys.parent()), subclasses = 3, 
-#>     sub.df = NULL, tot.df = NULL, dimension = sum(subclasses) - 1, eps = .Machine$double.eps, 
-#>     iter = 5, weights = mda.start(x, g, subclasses, trace, ...), method = polyreg, 
-#>     keep.fitted = (n * dimension < 5000), trace = FALSE, ...)
+#>     sub.df = NULL, tot.df = NULL, dimension = sum(subclasses) - 1, eps = 100 * 
+#>         .Machine$double.eps, iter = 5, weights = mda.start(x, g, subclasses, 
+#>         trace, ...), method = polyreg, keep.fitted = (n * dimension < 5000), 
+#>     trace = FALSE, ...)
 ```
 
 The main hyperparameter is the number of subclasses. We'll name our function `discrim_mixture`. 
@@ -84,7 +85,9 @@ show_model_info("discrim_mixture")
 #>  modes: unknown, classification 
 #> 
 #>  engines: 
-#>    classification: mda
+#>    classification: mdaNA
+#> 
+#> ¹The model can use case weights.
 #> 
 #>  no registered arguments.
 #> 
@@ -120,7 +123,9 @@ show_model_info("discrim_mixture")
 #>  modes: unknown, classification 
 #> 
 #>  engines: 
-#>    classification: mda
+#>    classification: mdaNA
+#> 
+#> ¹The model can use case weights.
 #> 
 #>  arguments: 
 #>    mda: 
@@ -203,6 +208,8 @@ show_model_info("discrim_mixture")
 #> 
 #>  engines: 
 #>    classification: mda
+#> 
+#> ¹The model can use case weights.
 #> 
 #>  arguments: 
 #>    mda: 
@@ -317,6 +324,8 @@ show_model_info("discrim_mixture")
 #>  engines: 
 #>    classification: mda
 #> 
+#> ¹The model can use case weights.
+#> 
 #>  arguments: 
 #>    mda: 
 #>       sub_classes --> subclasses
@@ -345,7 +354,7 @@ For example:
 ```r
 discrim_mixture(sub_classes = 2) %>%
   translate(engine = "mda")
-#> Model Specification (classification)
+#> discrim mixture Model Specification (classification)
 #> 
 #> Main Arguments:
 #>   sub_classes = 2
@@ -374,7 +383,6 @@ mda_fit <- mda_spec %>%
 mda_fit
 #> parsnip model object
 #> 
-#> Fit time:  13ms 
 #> Call:
 #> mda::mda(formula = Class ~ ., data = data, subclasses = ~2)
 #> 
@@ -392,7 +400,7 @@ mda_fit
 
 predict(mda_fit, new_data = example_test, type = "prob") %>%
   bind_cols(example_test %>% select(Class))
-#> # A tibble: 8 x 3
+#> # A tibble: 8 × 3
 #>   .pred_Class1 .pred_Class2 Class 
 #>          <dbl>        <dbl> <fct> 
 #> 1       0.679         0.321 Class1
@@ -406,7 +414,7 @@ predict(mda_fit, new_data = example_test, type = "prob") %>%
 
 predict(mda_fit, new_data = example_test) %>% 
  bind_cols(example_test %>% select(Class))
-#> # A tibble: 8 x 2
+#> # A tibble: 8 × 2
 #>   .pred_class Class 
 #>   <fct>       <fct> 
 #> 1 Class1      Class1
@@ -477,7 +485,6 @@ linear_reg() %>%
   fit(mpg ~ ., data = mtcars)
 #> parsnip model object
 #> 
-#> Fit time:  3ms 
 #> Call:
 #> rlm(formula = mpg ~ ., data = data)
 #> Converged in 8 iterations
@@ -609,7 +616,7 @@ cv <- vfold_cv(example_train)
 mda_tune_res <- mda_spec %>%
   tune_grid(Class ~ ., cv, grid = 4)
 show_best(mda_tune_res, metric = "roc_auc")
-#> # A tibble: 4 x 7
+#> # A tibble: 4 × 7
 #>   sub_classes .metric .estimator  mean     n std_err .config             
 #>         <int> <chr>   <chr>      <dbl> <int>   <dbl> <chr>               
 #> 1           2 roc_auc binary     0.890    10  0.0143 Preprocessor1_Model3
@@ -751,39 +758,42 @@ If you have a suggestion, please add a [GitHub issue](https://github.com/tidymod
 
 
 ```
-#> ─ Session info ───────────────────────────────────────────────────────────────
-#>  setting  value                       
-#>  version  R version 4.1.0 (2021-05-18)
-#>  os       macOS Big Sur 11.4          
-#>  system   aarch64, darwin20           
-#>  ui       X11                         
-#>  language (EN)                        
-#>  collate  en_US.UTF-8                 
-#>  ctype    en_US.UTF-8                 
-#>  tz       America/Denver              
-#>  date     2021-06-29                  
+#> ─ Session info ─────────────────────────────────────────────────────
+#>  setting  value
+#>  version  R version 4.2.1 (2022-06-23)
+#>  os       macOS Big Sur ... 10.16
+#>  system   x86_64, darwin17.0
+#>  ui       X11
+#>  language (EN)
+#>  collate  en_US.UTF-8
+#>  ctype    en_US.UTF-8
+#>  tz       America/Los_Angeles
+#>  date     2022-12-07
+#>  pandoc   2.19.2 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/tools/ (via rmarkdown)
 #> 
-#> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version date       lib source        
-#>  broom      * 0.7.8   2021-06-24 [1] CRAN (R 4.1.0)
-#>  dials      * 0.0.9   2020-09-16 [1] CRAN (R 4.1.0)
-#>  dplyr      * 1.0.7   2021-06-18 [1] CRAN (R 4.1.0)
-#>  ggplot2    * 3.3.5   2021-06-25 [1] CRAN (R 4.1.0)
-#>  infer      * 0.5.4   2021-01-13 [1] CRAN (R 4.1.0)
-#>  mda        * 0.5-2   2020-06-29 [1] CRAN (R 4.1.0)
-#>  modeldata  * 0.1.0   2020-10-22 [1] CRAN (R 4.1.0)
-#>  parsnip    * 0.1.6   2021-05-27 [1] CRAN (R 4.1.0)
-#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.1.0)
-#>  recipes    * 0.1.16  2021-04-16 [1] CRAN (R 4.1.0)
-#>  rlang      * 0.4.11  2021-04-30 [1] CRAN (R 4.1.0)
-#>  rsample    * 0.1.0   2021-05-08 [1] CRAN (R 4.1.0)
-#>  tibble     * 3.1.2   2021-05-16 [1] CRAN (R 4.1.0)
-#>  tidymodels * 0.1.3   2021-04-19 [1] CRAN (R 4.1.0)
-#>  tune       * 0.1.5   2021-04-23 [1] CRAN (R 4.1.0)
-#>  workflows  * 0.2.2   2021-03-10 [1] CRAN (R 4.1.0)
-#>  yardstick  * 0.0.8   2021-03-28 [1] CRAN (R 4.1.0)
+#> ─ Packages ─────────────────────────────────────────────────────────
+#>  package    * version date (UTC) lib source
+#>  broom      * 1.0.1   2022-08-29 [1] CRAN (R 4.2.0)
+#>  dials      * 1.1.0   2022-11-04 [1] CRAN (R 4.2.0)
+#>  dplyr      * 1.0.10  2022-09-01 [1] CRAN (R 4.2.0)
+#>  ggplot2    * 3.4.0   2022-11-04 [1] CRAN (R 4.2.0)
+#>  infer      * 1.0.4   2022-12-02 [1] CRAN (R 4.2.1)
+#>  mda        * 0.5-3   2022-05-05 [1] CRAN (R 4.2.0)
+#>  modeldata  * 1.0.1   2022-09-06 [1] CRAN (R 4.2.0)
+#>  parsnip    * 1.0.3   2022-11-11 [1] CRAN (R 4.2.0)
+#>  purrr      * 0.3.5   2022-10-06 [1] CRAN (R 4.2.0)
+#>  recipes    * 1.0.3   2022-11-09 [1] CRAN (R 4.2.0)
+#>  rlang        1.0.6   2022-09-24 [1] CRAN (R 4.2.0)
+#>  rsample    * 1.1.1   2022-12-07 [1] CRAN (R 4.2.1)
+#>  tibble     * 3.1.8   2022-07-22 [1] CRAN (R 4.2.0)
+#>  tidymodels * 1.0.0   2022-07-13 [1] CRAN (R 4.2.0)
+#>  tune       * 1.0.1   2022-10-09 [1] CRAN (R 4.2.0)
+#>  workflows  * 1.1.2   2022-11-16 [1] CRAN (R 4.2.0)
+#>  yardstick  * 1.1.0   2022-09-07 [1] CRAN (R 4.2.0)
 #> 
-#> [1] /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/library
+#>  [1] /Library/Frameworks/R.framework/Versions/4.2/Resources/library
+#> 
+#> ────────────────────────────────────────────────────────────────────
 ```
 
 

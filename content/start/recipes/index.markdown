@@ -120,14 +120,8 @@ flight_data %>%
 
 
 <table style='width: auto;'
-        class='table table-condensed'>
+      class='table table-condensed'>
 <caption>Table 1: Data summary</caption>
- <thead>
-  <tr>
-   <th style="text-align:left;">   </th>
-   <th style="text-align:left;">   </th>
-  </tr>
- </thead>
 <tbody>
   <tr>
    <td style="text-align:left;"> Name </td>
@@ -256,18 +250,18 @@ To get the current set of variables and roles, use the `summary()` function:
 ```r
 summary(flights_rec)
 #> # A tibble: 10 × 4
-#>    variable  type    role      source  
-#>    <chr>     <chr>   <chr>     <chr>   
-#>  1 dep_time  numeric predictor original
-#>  2 flight    numeric ID        original
-#>  3 origin    nominal predictor original
-#>  4 dest      nominal predictor original
-#>  5 air_time  numeric predictor original
-#>  6 distance  numeric predictor original
-#>  7 carrier   nominal predictor original
-#>  8 date      date    predictor original
-#>  9 time_hour date    ID        original
-#> 10 arr_delay nominal outcome   original
+#>    variable  type      role      source  
+#>    <chr>     <list>    <chr>     <chr>   
+#>  1 dep_time  <chr [2]> predictor original
+#>  2 flight    <chr [2]> ID        original
+#>  3 origin    <chr [3]> predictor original
+#>  4 dest      <chr [3]> predictor original
+#>  5 air_time  <chr [2]> predictor original
+#>  6 distance  <chr [2]> predictor original
+#>  7 carrier   <chr [3]> predictor original
+#>  8 date      <chr [1]> predictor original
+#>  9 time_hour <chr [1]> ID        original
+#> 10 arr_delay <chr [3]> outcome   original
 ```
 
 
@@ -568,37 +562,40 @@ Not too bad! We leave it to the reader to test out this workflow [*without*](htt
 
 
 ```
-#> ─ Session info ───────────────────────────────────────────────────────────────
-#>  setting  value                       
-#>  version  R version 4.1.0 (2021-05-18)
-#>  os       macOS Big Sur 11.5.2        
-#>  system   aarch64, darwin20           
-#>  ui       X11                         
-#>  language (EN)                        
-#>  collate  en_US.UTF-8                 
-#>  ctype    en_US.UTF-8                 
-#>  tz       America/Denver              
-#>  date     2021-08-16                  
+#> ─ Session info ─────────────────────────────────────────────────────
+#>  setting  value
+#>  version  R version 4.2.1 (2022-06-23)
+#>  os       macOS Big Sur ... 10.16
+#>  system   x86_64, darwin17.0
+#>  ui       X11
+#>  language (EN)
+#>  collate  en_US.UTF-8
+#>  ctype    en_US.UTF-8
+#>  tz       America/Los_Angeles
+#>  date     2022-12-07
+#>  pandoc   2.19.2 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/tools/ (via rmarkdown)
 #> 
-#> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package      * version date       lib source        
-#>  broom        * 0.7.9   2021-07-27 [1] CRAN (R 4.1.0)
-#>  dials        * 0.0.9   2020-09-16 [1] CRAN (R 4.1.0)
-#>  dplyr        * 1.0.7   2021-06-18 [1] CRAN (R 4.1.0)
-#>  ggplot2      * 3.3.5   2021-06-25 [1] CRAN (R 4.1.0)
-#>  infer        * 0.5.4   2021-01-13 [1] CRAN (R 4.1.0)
-#>  nycflights13 * 1.0.2   2021-04-12 [1] CRAN (R 4.1.0)
-#>  parsnip      * 0.1.7   2021-07-21 [1] CRAN (R 4.1.0)
-#>  purrr        * 0.3.4   2020-04-17 [1] CRAN (R 4.1.0)
-#>  recipes      * 0.1.16  2021-04-16 [1] CRAN (R 4.1.0)
-#>  rlang          0.4.11  2021-04-30 [1] CRAN (R 4.1.0)
-#>  rsample      * 0.1.0   2021-05-08 [1] CRAN (R 4.1.1)
-#>  skimr        * 2.1.3   2021-03-07 [1] CRAN (R 4.1.0)
-#>  tibble       * 3.1.3   2021-07-23 [1] CRAN (R 4.1.0)
-#>  tidymodels   * 0.1.3   2021-04-19 [1] CRAN (R 4.1.0)
-#>  tune         * 0.1.6   2021-07-21 [1] CRAN (R 4.1.0)
-#>  workflows    * 0.2.3   2021-07-16 [1] CRAN (R 4.1.0)
-#>  yardstick    * 0.0.8   2021-03-28 [1] CRAN (R 4.1.0)
+#> ─ Packages ─────────────────────────────────────────────────────────
+#>  package      * version date (UTC) lib source
+#>  broom        * 1.0.1   2022-08-29 [1] CRAN (R 4.2.0)
+#>  dials        * 1.1.0   2022-11-04 [1] CRAN (R 4.2.0)
+#>  dplyr        * 1.0.10  2022-09-01 [1] CRAN (R 4.2.0)
+#>  ggplot2      * 3.4.0   2022-11-04 [1] CRAN (R 4.2.0)
+#>  infer        * 1.0.4   2022-12-02 [1] CRAN (R 4.2.1)
+#>  nycflights13 * 1.0.2   2021-04-12 [1] CRAN (R 4.2.0)
+#>  parsnip      * 1.0.3   2022-11-11 [1] CRAN (R 4.2.0)
+#>  purrr        * 0.3.5   2022-10-06 [1] CRAN (R 4.2.0)
+#>  recipes      * 1.0.3   2022-11-09 [1] CRAN (R 4.2.0)
+#>  rlang          1.0.6   2022-09-24 [1] CRAN (R 4.2.0)
+#>  rsample      * 1.1.1   2022-12-07 [1] CRAN (R 4.2.1)
+#>  skimr        * 2.1.4   2022-04-15 [1] CRAN (R 4.2.0)
+#>  tibble       * 3.1.8   2022-07-22 [1] CRAN (R 4.2.0)
+#>  tidymodels   * 1.0.0   2022-07-13 [1] CRAN (R 4.2.0)
+#>  tune         * 1.0.1   2022-10-09 [1] CRAN (R 4.2.0)
+#>  workflows    * 1.1.2   2022-11-16 [1] CRAN (R 4.2.0)
+#>  yardstick    * 1.1.0   2022-09-07 [1] CRAN (R 4.2.0)
 #> 
-#> [1] /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/library
+#>  [1] /Library/Frameworks/R.framework/Versions/4.2/Resources/library
+#> 
+#> ────────────────────────────────────────────────────────────────────
 ```

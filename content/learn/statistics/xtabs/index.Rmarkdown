@@ -17,6 +17,7 @@ library(tidymodels)
 library(sessioninfo)
 pkgs <- c("tidymodels")
 theme_set(theme_bw() + theme(legend.position = "top"))
+set.seed(1234)
 ```
 
 
@@ -177,7 +178,7 @@ The observed statistic is `r observed_gof_statistic`. Now, generating a null dis
 null_distribution_gof <- ad_data %>%
   specify(response = Genotype) %>%
   hypothesize(null = "point", p = meta_rates) %>%
-  generate(reps = 5000, type = "simulate") %>%
+  generate(reps = 5000, type = "draw") %>%
   calculate(stat = "Chisq")
 ```
 

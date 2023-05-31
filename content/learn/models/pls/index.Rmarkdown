@@ -71,7 +71,7 @@ Before we can finalize the PLS model, the number of PLS components to retain mus
 
 Since the data set isn't large, let's use resampling to measure these proportions. With ten repeats of 10-fold cross-validation, we build the PLS model on 90% of the data and evaluate on the heldout 10%. For each of the 100 models, we extract and save the proportions. 
 
-The folds can be created using the [rsample](https://tidymodels.github.io/rsample/) package and the recipe can be estimated for each resample using the [`prepper()`](https://tidymodels.github.io/rsample/reference/prepper.html) function: 
+The folds can be created using the [rsample](https://rsample.tidymodels.org/) package and the recipe can be estimated for each resample using the [`prepper()`](https://rsample.tidymodels.org/reference/prepper.html) function: 
 
 ```{r cv}
 set.seed(57343)
@@ -125,7 +125,10 @@ get_var_explained <- function(recipe, ...) {
   # To do the same for the outcome, it is more complex. This code 
   # was extracted from pls:::summary.mvr. 
   explained <- 
-    drop(pls::R2(mod, estimate = "train", intercept = FALSE)$val) %>% 
+    pls::R2(mod, estimate = "train", intercept = FALSE)$val %>%
+    # subset array to matrix. abind::adrop() prevents turning it into a
+    # vector if dim()[2] == 1
+    abind::adrop(drop = 1) %>%
     # transpose so that components are in rows
     t() %>% 
     as_tibble() %>%
@@ -164,7 +167,7 @@ The plot below shows that, if the protein measurement is important, you might re
 
 ```{r plot, fig.width=6, fig.height=4.25,  out.width = '100%'}
 ggplot(variance_data, aes(x = components, y = proportion, col = source)) + 
-  geom_line(alpha = 0.5, size = 1.2) + 
+  geom_line(alpha = 0.5, linewidth = 1.2) + 
   geom_point() 
 ```
 

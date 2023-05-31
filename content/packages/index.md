@@ -96,7 +96,7 @@ The tidymodels framework also includes many other packages designed for speciali
 
 ### [Perform statistical analysis](/learn/statistics/)
 
-* [infer](https://infer.netlify.com/) is a high-level API for tidyverse-friendly statistical inference.
+* [infer](https://infer.tidymodels.org/) is a high-level API for tidyverse-friendly statistical inference.
 
 * The [corrr](https://corrr.tidymodels.org/) package has tidy interfaces for working with correlation matrices.
 
@@ -104,7 +104,7 @@ The tidymodels framework also includes many other packages designed for speciali
 
 * The [spatialsample](http://spatialsample.tidymodels.org/) package provides resampling functions and classes like rsample, but specialized for spatial data.
 
-* parsnip also has additional packages that contain more model definitions. [discrim](https://discrim.tidymodels.org/) contains definitions for discriminant analysis models, [poissonreg](https://poissonreg.tidymodels.org/) provides definitions for Poisson regression models, [plsmod](https://plsmod.tidymodels.org/) enables linear projection models, and [rules](https://rules.tidymodels.org/) does the same for rule-based classification and regression models. [baguette](https://baguette.tidymodels.org/) creates ensemble models via bagging. 
+* parsnip also has additional packages that contain more model definitions. [discrim](https://discrim.tidymodels.org/) contains definitions for discriminant analysis models, [poissonreg](https://poissonreg.tidymodels.org/) provides definitions for Poisson regression models, [plsmod](https://plsmod.tidymodels.org/) enables linear projection models, and [rules](https://rules.tidymodels.org/) does the same for rule-based classification and regression models. [baguette](https://baguette.tidymodels.org/) creates ensemble models via bagging, and [multilevelmod](https://multilevelmod.tidymodels.org/) provides support for multilevel models (otherwise known as mixed models or hierarchical models). 
 
 * There are several add-on packages for creating recipes. [embed](https://embed.tidymodels.org/) contains steps to create embeddings or projections of predictors. [textrecipes](https://textrecipes.tidymodels.org/) has extra steps for text processing, and [themis](https://themis.tidymodels.org/) can help alleviate class imbalance using sampling methods. 
 
@@ -112,7 +112,11 @@ The tidymodels framework also includes many other packages designed for speciali
 
 ### [Tune, compare, and work with your models](/learn/work/)
 
+* To try out multiple different workflows (i.e. bundles of pre-processor and model) at once, [workflowsets](https://workflowsets.tidymodels.org/) lets you create sets of workflow objects for tuning and resampling.
+
 * To integrate predictions from many models, the [stacks](https://stacks.tidymodels.org/) package provides tools for stacked ensemble modeling.
+
+* The [finetune](https://finetune.tidymodels.org/) package extends the tune package with more approaches such as racing and simulated annealing.
 
 * The [usemodels](https://usemodels.tidymodels.org/) package creates templates and automatically generates code to fit and tune models.
 
@@ -123,6 +127,8 @@ The tidymodels framework also includes many other packages designed for speciali
 * Some R objects become inconveniently large when saved to disk. The [butcher](https://butcher.tidymodels.org/) package can reduce the size of those objects by removing the sub-components. 
 
 * To know whether the data that you are predicting are _extrapolations_ from the training set, [applicable](https://applicable.tidymodels.org/) can produce metrics that measure extrapolation. 
+
+* [shinymodels](https://shinymodels.tidymodels.org/) lets you explore tuning or resampling results via a Shiny app.
 
 ### [Develop custom modeling tools](/learn/develop/)
 

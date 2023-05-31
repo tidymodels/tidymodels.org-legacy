@@ -55,7 +55,6 @@ lm_fit <- fit(lm_spec, ridership ~ ., data = Chicago)
 lm_fit
 #> parsnip model object
 #> 
-#> Fit time:  3ms 
 #> 
 #> Call:
 #> stats::lm(formula = ridership ~ ., data = data)
@@ -130,13 +129,13 @@ lm_res
 #> # Resampling results
 #> # Bootstrap sampling 
 #> # A tibble: 5 × 5
-#>   splits              id         .metrics         .notes           .extracts    
-#>   <list>              <chr>      <list>           <list>           <list>       
-#> 1 <split [5698/2076]> Bootstrap1 <tibble [2 × 4]> <tibble [0 × 1]> <tibble [1 ×…
-#> 2 <split [5698/2098]> Bootstrap2 <tibble [2 × 4]> <tibble [0 × 1]> <tibble [1 ×…
-#> 3 <split [5698/2064]> Bootstrap3 <tibble [2 × 4]> <tibble [0 × 1]> <tibble [1 ×…
-#> 4 <split [5698/2082]> Bootstrap4 <tibble [2 × 4]> <tibble [0 × 1]> <tibble [1 ×…
-#> 5 <split [5698/2088]> Bootstrap5 <tibble [2 × 4]> <tibble [0 × 1]> <tibble [1 ×…
+#>   splits              id         .metrics         .notes           .extracts
+#>   <list>              <chr>      <list>           <list>           <list>   
+#> 1 <split [5698/2076]> Bootstrap1 <tibble [2 × 4]> <tibble [0 × 3]> <tibble> 
+#> 2 <split [5698/2098]> Bootstrap2 <tibble [2 × 4]> <tibble [0 × 3]> <tibble> 
+#> 3 <split [5698/2064]> Bootstrap3 <tibble [2 × 4]> <tibble [0 × 3]> <tibble> 
+#> 4 <split [5698/2082]> Bootstrap4 <tibble [2 × 4]> <tibble [0 × 3]> <tibble> 
+#> 5 <split [5698/2088]> Bootstrap5 <tibble [2 × 4]> <tibble [0 × 3]> <tibble>
 ```
 
 Note that there is a `.extracts` column in our resampling results. This object contains the output of our `get_lm_coefs()` function for each resample. The structure of the elements of this column is a little complex. Let's start by looking at the first element (which corresponds to the first resample): 
@@ -165,7 +164,7 @@ lm_res$.extracts[[1]]$.extracts[[1]]
 #> 4 Harlem        -0.637    0.163      -3.92 9.01e-  5
 ```
 
-These nested columns can be flattened via the purrr `unnest()` function: 
+These nested columns can be flattened via the tidyr `unnest()` function: 
 
 
 ```r
@@ -226,7 +225,7 @@ lm_coefs %>%
   filter(term != "(Intercept)") %>% 
   ggplot(aes(x = term, y = estimate, group = id, col = id)) +  
   geom_hline(yintercept = 0, lty = 3) + 
-  geom_line(alpha = 0.3, lwd = 1.2) + 
+  geom_line(alpha = 0.3, linewidth = 1.2) + 
   labs(y = "Coefficient", x = NULL) +
   theme(legend.position = "top")
 ```
@@ -454,13 +453,13 @@ glmnet_res
 #> # Tuning results
 #> # Bootstrap sampling 
 #> # A tibble: 5 × 5
-#>   splits              id         .metrics          .notes           .extracts   
-#>   <list>              <chr>      <list>            <list>           <list>      
-#> 1 <split [5698/2076]> Bootstrap1 <tibble [40 × 6]> <tibble [0 × 1]> <tibble [20…
-#> 2 <split [5698/2098]> Bootstrap2 <tibble [40 × 6]> <tibble [0 × 1]> <tibble [20…
-#> 3 <split [5698/2064]> Bootstrap3 <tibble [40 × 6]> <tibble [0 × 1]> <tibble [20…
-#> 4 <split [5698/2082]> Bootstrap4 <tibble [40 × 6]> <tibble [0 × 1]> <tibble [20…
-#> 5 <split [5698/2088]> Bootstrap5 <tibble [40 × 6]> <tibble [0 × 1]> <tibble [20…
+#>   splits              id         .metrics          .notes           .extracts
+#>   <list>              <chr>      <list>            <list>           <list>   
+#> 1 <split [5698/2076]> Bootstrap1 <tibble [40 × 6]> <tibble [0 × 3]> <tibble> 
+#> 2 <split [5698/2098]> Bootstrap2 <tibble [40 × 6]> <tibble [0 × 3]> <tibble> 
+#> 3 <split [5698/2064]> Bootstrap3 <tibble [40 × 6]> <tibble [0 × 3]> <tibble> 
+#> 4 <split [5698/2082]> Bootstrap4 <tibble [40 × 6]> <tibble [0 × 3]> <tibble> 
+#> 5 <split [5698/2088]> Bootstrap5 <tibble [40 × 6]> <tibble [0 × 3]> <tibble>
 ```
 
 As noted before, the elements of the main `.extracts` column have an embedded list column with the results of `get_glmnet_coefs()`:  
@@ -477,6 +476,7 @@ glmnet_res$.extracts[[1]] %>% head()
 #> 4       1     0.1 <tibble [40 × 5]> Preprocessor1_Model04
 #> 5       1     0.1 <tibble [40 × 5]> Preprocessor1_Model05
 #> 6       1     0.1 <tibble [40 × 5]> Preprocessor1_Model06
+
 glmnet_res$.extracts[[1]]$.extracts[[1]] %>% head()
 #> # A tibble: 6 × 5
 #>   term         step estimate penalty dev.ratio
@@ -555,7 +555,7 @@ glmnet_coefs %>%
   mutate(mixture = format(mixture)) %>% 
   ggplot(aes(x = penalty, y = estimate, col = mixture, groups = id)) + 
   geom_hline(yintercept = 0, lty = 3) +
-  geom_line(alpha = 0.5, lwd = 1.2) + 
+  geom_line(alpha = 0.5, linewidth = 1.2) + 
   facet_wrap(~ term) + 
   scale_x_log10() +
   scale_color_brewer(palette = "Accent") +
@@ -575,36 +575,39 @@ Notice a couple of things:
 
 
 ```
-#> ─ Session info ───────────────────────────────────────────────────────────────
-#>  setting  value                       
-#>  version  R version 4.1.1 (2021-08-10)
-#>  os       macOS Big Sur 11.5.2        
-#>  system   aarch64, darwin20           
-#>  ui       X11                         
-#>  language (EN)                        
-#>  collate  en_US.UTF-8                 
-#>  ctype    en_US.UTF-8                 
-#>  tz       America/Denver              
-#>  date     2021-09-13                  
+#> ─ Session info ─────────────────────────────────────────────────────
+#>  setting  value
+#>  version  R version 4.2.1 (2022-06-23)
+#>  os       macOS Big Sur ... 10.16
+#>  system   x86_64, darwin17.0
+#>  ui       X11
+#>  language (EN)
+#>  collate  en_US.UTF-8
+#>  ctype    en_US.UTF-8
+#>  tz       America/Los_Angeles
+#>  date     2022-12-07
+#>  pandoc   2.19.2 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/tools/ (via rmarkdown)
 #> 
-#> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package    * version date       lib source        
-#>  broom      * 0.7.9   2021-07-27 [1] CRAN (R 4.1.0)
-#>  dials      * 0.0.10  2021-09-10 [1] CRAN (R 4.1.1)
-#>  dplyr      * 1.0.7   2021-06-18 [1] CRAN (R 4.1.0)
-#>  ggplot2    * 3.3.5   2021-06-25 [1] CRAN (R 4.1.0)
-#>  glmnet     * 4.1-2   2021-06-24 [1] CRAN (R 4.1.0)
-#>  infer      * 1.0.0   2021-08-13 [1] CRAN (R 4.1.1)
-#>  parsnip    * 0.1.7   2021-07-21 [1] CRAN (R 4.1.0)
-#>  purrr      * 0.3.4   2020-04-17 [1] CRAN (R 4.1.0)
-#>  recipes    * 0.1.16  2021-04-16 [1] CRAN (R 4.1.0)
-#>  rlang      * 0.4.11  2021-04-30 [1] CRAN (R 4.1.0)
-#>  rsample    * 0.1.0   2021-05-08 [1] CRAN (R 4.1.1)
-#>  tibble     * 3.1.4   2021-08-25 [1] CRAN (R 4.1.1)
-#>  tidymodels * 0.1.3   2021-04-19 [1] CRAN (R 4.1.0)
-#>  tune       * 0.1.6   2021-07-21 [1] CRAN (R 4.1.0)
-#>  workflows  * 0.2.3   2021-07-16 [1] CRAN (R 4.1.0)
-#>  yardstick  * 0.0.8   2021-03-28 [1] CRAN (R 4.1.0)
+#> ─ Packages ─────────────────────────────────────────────────────────
+#>  package    * version date (UTC) lib source
+#>  broom      * 1.0.1   2022-08-29 [1] CRAN (R 4.2.0)
+#>  dials      * 1.1.0   2022-11-04 [1] CRAN (R 4.2.0)
+#>  dplyr      * 1.0.10  2022-09-01 [1] CRAN (R 4.2.0)
+#>  ggplot2    * 3.4.0   2022-11-04 [1] CRAN (R 4.2.0)
+#>  glmnet     * 4.1-6   2022-11-27 [1] CRAN (R 4.2.0)
+#>  infer      * 1.0.4   2022-12-02 [1] CRAN (R 4.2.1)
+#>  parsnip    * 1.0.3   2022-11-11 [1] CRAN (R 4.2.0)
+#>  purrr      * 0.3.5   2022-10-06 [1] CRAN (R 4.2.0)
+#>  recipes    * 1.0.3   2022-11-09 [1] CRAN (R 4.2.0)
+#>  rlang        1.0.6   2022-09-24 [1] CRAN (R 4.2.0)
+#>  rsample    * 1.1.1   2022-12-07 [1] CRAN (R 4.2.1)
+#>  tibble     * 3.1.8   2022-07-22 [1] CRAN (R 4.2.0)
+#>  tidymodels * 1.0.0   2022-07-13 [1] CRAN (R 4.2.0)
+#>  tune       * 1.0.1   2022-10-09 [1] CRAN (R 4.2.0)
+#>  workflows  * 1.1.2   2022-11-16 [1] CRAN (R 4.2.0)
+#>  yardstick  * 1.1.0   2022-09-07 [1] CRAN (R 4.2.0)
 #> 
-#> [1] /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/library
+#>  [1] /Library/Frameworks/R.framework/Versions/4.2/Resources/library
+#> 
+#> ────────────────────────────────────────────────────────────────────
 ```
