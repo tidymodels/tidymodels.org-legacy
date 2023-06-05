@@ -1,0 +1,328 @@
+/*-- scss:defaults --*/
+$theme-cranberry: #CA225E;
+$theme-blue: #4758AB;
+$theme-white: #FFFFFF;
+$theme-grey: #DDDDDD;
+$theme-black: #1a162d;
+
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;1,400&family=Source+Code+Pro&display=swap');
+
+// Colors ----------------------------------------------------------------------
+$link-color: $theme-cranberry;
+
+// Fonts -----------------------------------------------------------------------
+$font-family-sans-serif: 'Lato', sans-serif;
+$font-family-monospace: 'Source Code Pro', monospace;
+
+$h1-font-size: 2.4em;
+
+// Code ------------------------------------------------------------------------
+
+$code-color: $theme-blue;
+
+// Navigation ------------------------------------------------------------------
+$navbar-bg: $theme-white;
+
+$footer-bg: rgba($theme-cranberry, 0.2);
+$footer-fg: $theme-cranberry;
+
+/*-- scss:rules --*/
+
+// General ---------------------------------------------------------------------
+
+a {
+  text-decoration: none;
+}
+
+// Headers ---------------------------------------------------------------------
+
+#title-block-header.quarto-title-block.default .quarto-title .title {
+  margin-bottom: 0.5em;
+}
+
+h1 {
+  color: $theme-cranberry;
+  font-weight: 400;
+
+  &.title {
+    padding-top: 20px;
+  }
+}
+
+h2 {
+  text-transform: uppercase;
+  font-size: 1.3em;
+  letter-spacing: 1.5pt;
+  color: $theme-black;
+  font-weight: 400;
+}
+
+// Navigation ------------------------------------------------------------------
+
+.navbar {
+  border-bottom: 1px solid;
+  border-color: $theme-grey;
+  text-transform: uppercase;
+  letter-spacing: 2pt;
+  font-size: 12.8px;
+
+  .navbar-brand {
+    color: $theme-cranberry;
+    font-family: monospace;
+    text-transform: lowercase;
+  }
+
+  .navbar-nav {
+    align-items: center;
+  }
+
+  .navbar-nav .nav-link:hover,.navbar-dark .navbar-nav .nav-link:focus {
+    color: $theme-cranberry;
+  }
+}
+
+.nav-footer {
+  height: 92px;
+  line-height: 20px;
+  font-size: 17px;
+  padding: 30px 5%;
+  align-items: center;
+}
+
+// sidebar ---------------------------------------------------------------------
+
+.sidebar-item .sidebar-item-container {
+  padding-bottom: 10px;
+}
+
+.quarto-listing-category-title {
+  color: $theme-cranberry;
+}
+
+.quarto-listing-category .category {
+  padding-bottom: 5px;
+
+  &:hover {
+    color: rgba($theme-cranberry, 0.8);
+  }
+
+  &.active {
+    color: rgba($theme-cranberry, 1);
+  }
+}
+
+// Bracketed TOC for get started pages -----------------------------------------
+
+// :not(.toc-active) makes it so only get-started pages are selected
+#TOC:not(.toc-active) {
+  padding: 1em;
+  position: relative;
+
+  a {
+    text-transform: uppercase;
+    letter-spacing: 2pt;
+    font-size: 0.8rem !important;
+    font-weight: bold;
+    color: rgba($theme-cranberry, 0.8);
+  }
+
+  ul {
+    margin-bottom: 0px;
+
+    li {
+      padding-bottom: 0.5em;
+
+      &::marker {
+      color: $theme-cranberry;
+      }
+    }
+  }
+
+  &:after, &:before {
+    border: 1pt solid rgba($theme-cranberry, 0.2);
+    bottom: 0;
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 2.5%;
+  }
+
+  &:after, &:after {
+      border-left: none;
+      right: 0;
+  }
+
+  &:before, &:before {
+      border-right: none;
+      left: 0;
+  }
+}
+
+// session information ---------------------------------------------------------
+
+#session-info div pre code {
+  color: #5E5E5E;
+  background-color: rgba(233,236,239,.65);
+  border: 1px solid rgba(233,236,239,.65);
+  border-radius: 0.25rem;
+}
+
+// tables as output ------------------------------------------------------------
+
+.cell-output-display table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-weight: inherit;
+  width: 100%;
+  text-align: left;
+  font-size: .87rem;
+  max-width: 70%;
+
+  thead {
+    font-weight: 600;
+    background-color: rgba($theme-cranberry, 0.15);
+
+    tr th {
+      padding: 15px 13px;
+    }
+
+    tr th:last-child {
+      padding: 15px 0;
+      padding-right: 15px;
+    }
+  }
+
+  tbody {
+    tr:nth-of-type(even) > * {
+      background-color: rgba($theme-cranberry, 0.03);
+      --bs-table-accent-bg: rgba($theme-cranberry, 0.03);
+    }
+
+    tr:nth-of-type(odd) > * {
+      background-color: $theme-white;
+      --bs-table-accent-bg:  $theme-white;
+    }
+
+    tr:last-of-type {
+      border-bottom: 1px solid #edf1f8;
+    }
+
+    tr td {
+      padding: 15px;
+    }
+
+    tr td:last-child{
+      padding: 15px 0;
+      padding-right: 15px;
+    }
+  }
+}
+
+// categories ------------------------------------------------------------------
+
+.quarto-title .quarto-categories .quarto-category:hover {
+  border-color: rgba($theme-cranberry, 0.5);
+
+  a {
+    color: $theme-cranberry;
+  }
+}
+
+.quarto-grid-item .listing-categories .listing-category:hover {
+  border-color: rgba($theme-cranberry, 0.5);
+  color: $theme-cranberry;
+}
+
+// packages --------------------------------------------------------------------
+
+.package-section .packages .package {
+  position: relative;
+  height: 200px;
+  overflow-y: hidden;
+  background-size: 190px 215px;
+  background-repeat: no-repeat;
+  background-position: left top;
+  background-image: url(images/tidy-packages-back-01.svg); }
+  .package-section .packages .package:first-of-type {
+    background-image: url(images/tidy-packages-back-02.svg); }
+  .package-section .packages .package:last-of-type {
+    background-image: url(images/tidy-packages-back-03.svg); }
+  .package-section .packages .package .package-image {
+    position: absolute;
+    top: 6px;
+    left: 62px;
+    width: 120px;
+    height: 139px;
+    border: none;
+  }
+  .package-section .packages .package .package-info {
+    margin: 20px 0 0 210px;
+  }
+
+.package-info h3 {
+	padding-top: 72px;
+	margin-top: -72px;
+}
+
+@media screen and (max-width: 767px) {
+  .package-section .package-section-info {
+    margin-bottom: 20px;
+  }
+  .package-section .packages .package, .package-section .packages .package:first-of-type, .package-section .packages .package:last-of-type {
+    background-image: none;
+  }
+  .package-section .packages .package {
+    height: auto;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    .package-image {
+      position: static;
+      float: left;
+      margin-right: 20px;
+    }
+    .package-info {
+      margin: 0;
+    }
+  }
+}
+
+// Sidebar resources -----------------------------------------------------------
+
+
+.section.resources {
+  margin-top: 30px;
+
+  .resourcesTitle {
+    color: $theme-cranberry;
+    text-transform: uppercase;
+    letter-spacing: 2pt;
+    font-size: 0.8rem !important;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  .event {
+    border-top: 7pt solid #a19ea936;
+    background-color: #eab0c41a;
+    margin-top: 0px;
+    margin-bottom: 30px;
+    background-image: none;
+    background-size: 40px 40px;
+    padding: 10px 20px 20px 20px;
+    font-size: 20px;
+    font-weight: 300;
+    line-height: 25px;
+
+    a {
+      color: $theme-black;
+    }
+
+    .eventDetails {
+      font-size: 13px;
+      line-height: 18px;
+    }
+  }
+}
+
+
+

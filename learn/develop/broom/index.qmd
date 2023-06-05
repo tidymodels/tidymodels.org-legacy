@@ -1,0 +1,408 @@
+---
+title: "Create your own broom tidier methods"
+categories:
+  - developer tools
+type: learn-subsection
+weight: 5
+description: | 
+  Write tidy(), glance(), and augment() methods for new model objects.
+toc: true
+toc-depth: 2
+include-after-body: ../../../resources.html
+---
+
+```{r}
+#| label: "setup"
+#| include: false
+#| message: false
+#| warning: false
+source(here::here("common.R"))
+```
+
+```{r}
+#| label: "load"
+#| include: false
+#| message: false
+#| warning: false
+library(tidymodels)
+library(tidyverse)
+library(generics)
+library(DT)
+pkgs <- c("tidymodels", "tidyverse", "generics", "usethis")
+```
+
+## Introduction
+
+`r article_req_pkgs(pkgs)`
+
+The broom package provides tools to summarize key information about models in tidy `tibble()`s. The package provides three verbs, or "tidiers," to help make model objects easier to work with:
+
+* `tidy()` summarizes information about model components
+* `glance()` reports information about the entire model
+* `augment()` adds information about observations to a dataset
+
+Each of the three verbs above are _generic_, in that they do not define a procedure to tidy a given model object, but instead redirect to the relevant _method_ implemented to tidy a specific type of model object. The broom package provides methods for model objects from over 100 modeling packages along with nearly all of the model objects in the stats package that comes with base R. However, for maintainability purposes, the broom package authors now ask that requests for new methods be first directed to the parent package (i.e. the package that supplies the model object) rather than to broom. New methods will generally only be integrated into broom in the case that the requester has already asked the maintainers of the model-owning package to implement tidier methods in the parent package.
+
+We'd like to make implementing external tidier methods as painless as possible. The general process for doing so is:
+
+* re-export the tidier generics
+* implement tidying methods
+* document the new methods
+
+In this article, we'll walk through each of the above steps in detail, giving examples and pointing out helpful functions when possible.
+
+## Re-export the tidier generics
+
+The first step is to re-export the generic functions for `tidy()`, `glance()`, and/or `augment()`. You could do so from `broom` itself, but we've provided an alternative, much lighter dependency called `generics`.
+
+First you'll need to add the [generics](https://github.com/r-lib/generics) package to `Imports`. We recommend using the [usethis](https://github.com/r-lib/usethis) package for this:
+
+```{r}
+#| eval: false
+usethis::use_package("generics", "Imports")
+```
+
+Next, you'll need to re-export the appropriate tidying methods. If you plan to implement a `glance()` method, for example, you can re-export the `glance()` generic by adding the following somewhere inside the `/R` folder of your package:
+
+```{r}
+#| eval: false
+#' @importFrom generics glance
+#' @export
+generics::glance
+```
+
+Oftentimes it doesn't make sense to define one or more of these methods for a particular model. In this case, only implement the methods that do make sense.
+
+::: {.callout-warning}
+ Please do not define `tidy()`, `glance()`, or `augment()` generics in your package. This will result in namespace conflicts whenever your package is used along other packages that also export tidying methods. 
+:::
+
+## Implement tidying methods
+
+You'll now need to implement specific tidying methods for each of the generics you've re-exported in the above step. For each of `tidy()`, `glance()`, and `augment()`, we'll walk through the big picture, an example, and helpful resources.
+
+In this article, we'll use the base R dataset `trees`, giving the tree girth (in inches), height (in feet), and volume (in cubic feet), to fit an example linear model using the base R `lm()` function. 
+
+```{r}
+# load in the trees dataset
+data(trees)
+
+# take a look!
+str(trees)
+
+# fit the timber volume as a function of girth and height
+trees_model <- lm(Volume ~ Girth + Height, data = trees)
+```
+
+Let's take a look at the `summary()` of our `trees_model` fit.
+
+```{r}
+summary(trees_model)
+```
+
+This output gives some summary statistics on the residuals (which would be described more fully in an `augment()` output), model coefficients (which, in this case, make up the `tidy()` output), and some model-level summarizations such as RSE, $R^2$, etc. (which make up the `glance()` output.)
+
+### Implementing the `tidy()` method
+
+The `tidy(x, ...)` method will return a tibble where each row contains information about a component of the model. The `x` input is a model object, and the dots (`...`) are an optional argument to supply additional information to any calls inside your method. New `tidy()` methods can take additional arguments, but _must_ include the `x` and `...` arguments to be compatible with the generic function. (For a glossary of currently acceptable additional arguments, see [the end of this article](#glossary).)  Examples of model components include regression coefficients (for regression models), clusters (for classification/clustering models), etc. These `tidy()` methods are useful for inspecting model details and creating custom model visualizations.
+
+Returning to the example of our linear model on timber volume, we'd like to extract information on the model components. In this example, the components are the regression coefficients. After taking a look at the model object and its `summary()`, you might notice that you can extract the regression coefficients as follows:
+
+```{r}
+summary(trees_model)$coefficients
+```
+
+This object contains the model coefficients as a table, where the information giving which coefficient is being described in each row is given in the row names. Converting to a tibble where the row names are contained in a column, you might write:
+
+```{r}
+trees_model_tidy <- summary(trees_model)$coefficients %>% 
+  as_tibble(rownames = "term")
+
+trees_model_tidy
+```
+
+The broom package standardizes common column names used to describe coefficients. In this case, the column names are:
+
+```{r}
+colnames(trees_model_tidy) <- c("term", "estimate", "std.error", "statistic", "p.value")
+```
+
+A glossary giving the currently acceptable column names outputted by `tidy()` methods can be found [at the end of this article](#glossary). As a rule of thumb, column names resulting from `tidy()` methods should be all lowercase and contain only alphanumerics or periods (though there are plenty of exceptions).
+
+Finally, it is common for `tidy()` methods to include an option to calculate confidence/credible intervals for each component based on the model, when possible. In this example, the `confint()` function can be used to calculate confidence intervals from a model object resulting from `lm()`:
+
+```{r}
+confint(trees_model)
+```
+
+With these considerations in mind, a reasonable `tidy()` method for `lm()` might look something like:
+
+```{r}
+#| eval: false
+tidy.lm <- function(x, conf.int = FALSE, conf.level = 0.95, ...) {
+  
+  result <- summary(x)$coefficients %>%
+    tibble::as_tibble(rownames = "term") %>%
+    dplyr::rename(estimate = Estimate,
+                  std.error = `Std. Error`,
+                  statistic = `t value`,
+                  p.value = `Pr(>|t|)`)
+  
+  if (conf.int) {
+    ci <- confint(x, level = conf.level)
+    result <- dplyr::left_join(result, ci, by = "term")
+  }
+  
+  result
+}
+```
+
+::: {.callout-note}
+ If you're interested, the actual `tidy.lm()` source can be found [here](https://github.com/tidymodels/broom/blob/master/R/stats-lm-tidiers.R)! It's not too different from the version above except for some argument checking and additional columns. 
+:::
+
+With this method exported, then, if a user calls `tidy(fit)`, where `fit` is an output from `lm()`, the `tidy()` generic would "redirect" the call to the `tidy.lm()` function above.
+
+Some things to keep in mind while writing your `tidy()` method:
+
+* Sometimes a model will have several different types of components. For example, in mixed models, there is different information associated with fixed effects and random effects. Since this information doesn't have the same interpretation, it doesn't make sense to summarize the fixed and random effects in the same table. In cases like this you should add an argument that allows the user to specify which type of information they want. For example, you might implement an interface along the lines of:
+
+```{r}
+#| eval: false
+model <- mixed_model(...)
+tidy(model, effects = "fixed")
+tidy(model, effects = "random")
+```
+
+* How are missing values encoded in the model object and its `summary()`? Ensure that rows are included even when the associated model component is missing or rank deficient.
+* Are there other measures specific to each component that could reasonably be expected to be included in their summarizations? Some common arguments to `tidy()` methods include:
+  - `conf.int`: A logical indicating whether or not to calculate confidence/credible intervals. This should default to `FALSE`.
+  - `conf.level`: The confidence level to use for the interval when `conf.int = TRUE`. Typically defaults to `.95`.
+  - `exponentiate`: A logical indicating whether or not model terms should be presented on an exponential scale (typical for logistic regression).
+
+### Implementing the `glance()` method
+
+`glance()` returns a one-row tibble providing model-level summarizations (e.g. goodness of fit measures and related statistics). This is useful to check for model misspecification and to compare many models. Again, the `x` input is a model object, and the `...` is an optional argument to supply additional information to any calls inside your method. New `glance()` methods can also take additional arguments and _must_ include the `x` and `...` arguments. (For a glossary of currently acceptable additional arguments, see [the end of this article](#glossary).)
+
+Returning to the `trees_model` example, we could pull out the $R^2$ value with the following code:
+
+```{r}
+summary(trees_model)$r.squared
+```
+
+Similarly, for the adjusted $R^2$:
+
+```{r}
+summary(trees_model)$adj.r.squared
+```
+
+Unfortunately, for many model objects, the extraction of model-level information is largely a manual process. You will likely need to build a `tibble()` element-by-element by subsetting the `summary()` object repeatedly. The `with()` function, however, can help make this process a bit less tedious by evaluating expressions inside of the `summary(trees_model)` environment. To grab those those same two model elements from above using `with()`:
+
+```{r}
+with(summary(trees_model),
+     tibble::tibble(r.squared = r.squared,
+                    adj.r.squared = adj.r.squared))
+```
+
+A reasonable `glance()` method for `lm()`, then, might look something like:
+
+```{r}
+#| eval: false
+glance.lm <- function(x, ...) {
+  with(
+    summary(x),
+    tibble::tibble(
+      r.squared = r.squared,
+      adj.r.squared = adj.r.squared,
+      sigma = sigma,
+      statistic = fstatistic["value"],
+      p.value = pf(
+        fstatistic["value"],
+        fstatistic["numdf"],
+        fstatistic["dendf"],
+        lower.tail = FALSE
+      ),
+      df = fstatistic["numdf"],
+      logLik = as.numeric(stats::logLik(x)),
+      AIC = stats::AIC(x),
+      BIC = stats::BIC(x),
+      deviance = stats::deviance(x),
+      df.residual = df.residual(x),
+      nobs = stats::nobs(x)
+    )
+  )
+}
+```
+
+::: {.callout-note}
+This is the actual definition of `glance.lm()` provided by broom! 
+:::
+
+Some things to keep in mind while writing `glance()` methods:
+* Output should not include the name of the modeling function or any arguments given to the modeling function.
+* In some cases, you may wish to provide model-level diagnostics not returned by the original object. For example, the above `glance.lm()` calculates `AIC` and `BIC` from the model fit. If these are easy to compute, feel free to add them. However, tidier methods are generally not an appropriate place to implement complex or time consuming calculations.
+* The `glance` method should always return the same columns in the same order when given an object of a given model class. If a summary metric (such as `AIC`) is not defined in certain circumstances, use `NA`.
+
+### Implementing the `augment()` method
+
+`augment()` methods add columns to a dataset containing information such as fitted values, residuals or cluster assignments. All columns added to a dataset have a `.` prefix to prevent existing columns from being overwritten. (Currently acceptable column names are given in [the glossary](#glossary).) The `x` and `...` arguments share their meaning with the two functions described above. `augment` methods also optionally accept a `data` argument that is a `data.frame` (or `tibble`) to add observation-level information to, returning a `tibble` object with the same number of rows as `data`. Many `augment()` methods also accept a `newdata` argument, following the same conventions as the `data` argument, except with the underlying assumption that the model has not "seen" the data yet. As a result, `newdata` arguments need not contain the response columns in `data`. Only one of `data` or `newdata` should be supplied. A full glossary of acceptable arguments to `augment()` methods can be found at [the end of this article](#glossary).
+
+If a `data` argument is not specified, `augment()` should try to reconstruct the original data as much as possible from the model object. This may not always be possible, and often it will not be possible to recover columns not used by the model.
+
+With this is mind, we can look back to our `trees_model` example. For one, the `model` element inside of the `trees_model` object will allow us to recover the original data:
+
+```{r}
+#| rows.print = 5
+trees_model$model
+```
+
+Similarly, the fitted values and residuals can be accessed with the following code:
+
+```{r}
+head(trees_model$fitted.values)
+head(trees_model$residuals)
+```
+
+As with `glance()` methods, it's fine (and encouraged!) to include common metrics associated with observations if they are not computationally intensive to compute. A common metric associated with linear models, for example, is the standard error of fitted values:
+
+```{r}
+se.fit <- predict(trees_model, newdata = trees, se.fit = TRUE)$se.fit %>%
+  unname()
+
+head(se.fit)
+```
+
+Thus, a reasonable `augment()` method for `lm` might look something like this:
+
+```{r}
+augment.lm <- function(x, data = x$model, newdata = NULL, ...) {
+  if (is.null(newdata)) {
+    dplyr::bind_cols(tibble::as_tibble(data),
+                     tibble::tibble(.fitted = x$fitted.values,
+                                    .se.fit = predict(x, 
+                                                      newdata = data, 
+                                                      se.fit = TRUE)$se.fit,
+                                   .resid =  x$residuals))
+  } else {
+    predictions <- predict(x, newdata = newdata, se.fit = TRUE)
+    dplyr::bind_cols(tibble::as_tibble(newdata),
+                     tibble::tibble(.fitted = predictions$fit,
+                                    .se.fit = predictions$se.fit))
+  }
+}
+```
+
+Some other things to keep in mind while writing `augment()` methods:
+* The `newdata` argument should default to `NULL`. Users should only ever specify one of `data` or `newdata`. Providing both `data` and `newdata` should result in an error. The `newdata` argument should accept both `data.frame`s and `tibble`s.
+* Data given to the `data` argument must have both the original predictors and the original response. Data given to the `newdata` argument only needs to have the original predictors. This is important because there may be important information associated with training data that is not associated with test data. This means that the `original_data` object in `augment(model, data = original_data)` should provide `.fitted` and `.resid` columns (in most cases), whereas `test_data` in `augment(model, data = test_data)` only needs a `.fitted` column, even if the response is present in `test_data`.
+* If the `data` or `newdata` is specified as a `data.frame` with rownames, `augment` should return them in a column called `.rownames`.
+* For observations where no fitted values or summaries are available (where there's missing data, for example), return `NA`.
+* *The `augment()` method should always return as many rows as were in `data` or `newdata`*, depending on which is supplied
+
+::: {.callout-note}
+The recommended interface and functionality for `augment()` methods may change soon. 
+:::
+
+## Document the new methods
+
+The only remaining step is to integrate the new methods into the parent package! To do so, just drop the methods into a `.R` file inside of the `/R` folder and document them using roxygen2. If you're unfamiliar with the process of documenting objects, you can read more about it [here](http://r-pkgs.had.co.nz/man.html). Here's an example of how our `tidy.lm()` method might be documented:
+
+```{r}
+#| eval: false
+#' Tidy a(n) lm object
+#'
+#' @param x A `lm` object.
+#' @param conf.int Logical indicating whether or not to include 
+#'   a confidence interval in the tidied output. Defaults to FALSE.
+#' @param conf.level The confidence level to use for the confidence 
+#'   interval if conf.int = TRUE. Must be strictly greater than 0 
+#'   and less than 1. Defaults to 0.95, which corresponds to a 
+#'   95 percent confidence interval.
+#' @param ... Unused, included for generic consistency only.
+#' @return A tidy [tibble::tibble()] summarizing component-level
+#'   information about the model
+#'
+#' @examples
+#' # load the trees dataset
+#' data(trees)
+#' 
+#' # fit a linear model on timber volume
+#' trees_model <- lm(Volume ~ Girth + Height, data = trees)
+#'
+#' # summarize model coefficients in a tidy tibble!
+#' tidy(trees_model)
+#'
+#' @export
+tidy.lm <- function(x, conf.int = FALSE, conf.level = 0.95, ...) {
+
+  # ... the rest of the function definition goes here!
+```
+
+Once you've documented each of your new methods and executed `devtools::document()`, you're done! Congrats on implementing your own broom tidier methods for a new model object!
+
+## Glossaries
+
+
+```{r}
+#| include: false
+# grab the argument glossary: make a temporary file, write the
+# data to it, load it, and then delete it
+args_url <- "https://github.com/alexpghayes/modeltests/blob/master/data/argument_glossary.rda?raw=true"
+args_file <- tempfile()
+args_get <- httr::GET(args_url)
+httr::stop_for_status(args_get)
+writeBin(httr::content(args_get, type = "raw"), args_file)
+load(args_file)
+unlink(args_file)
+
+# do the same thing for the columns
+cols_url <- "https://github.com/alexpghayes/modeltests/blob/master/data/column_glossary.rda?raw=true"
+cols_file <- tempfile()
+cols_get <- httr::GET(cols_url)
+httr::stop_for_status(cols_get)
+writeBin(httr::content(cols_get, type = "raw"), cols_file)
+load(cols_file)
+unlink(cols_file)
+```
+
+### Arguments
+
+Tidier methods have a standardized set of acceptable argument and output column names. The currently acceptable argument names by tidier method are:
+
+```{r}
+#| echo: false
+argument_glossary %>%
+  select(Method = method, Argument = argument) %>% 
+  mutate(Method = as.factor(Method)) %>% 
+  datatable(rownames = FALSE,
+            class = 'cell-border stripe',
+            filter = 'top',
+            escape = FALSE,
+            options = list(pageLength = 5))
+```
+
+### Column Names
+
+The currently acceptable column names by tidier method are:
+
+```{r}
+#| echo: false
+column_glossary %>%
+  select(Method = method, Column = column)  %>% 
+  mutate(Method = as.factor(Method)) %>% 
+  datatable(rownames = FALSE,
+            class = 'cell-border stripe',
+            filter = 'top',
+            escape = FALSE,
+            options = list(pageLength = 5))
+```
+
+The [alexpghayes/modeltests](https://github.com/alexpghayes/modeltests) package provides unit testing infrastructure to check your new tidier methods. Please file an issue there to request new arguments/columns to be added to the glossaries!
+
+## Session information {#session-info}
+
+```{r}
+#| label: "si"
+#| echo: false
+small_session(pkgs)
+```

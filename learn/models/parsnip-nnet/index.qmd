@@ -1,0 +1,150 @@
+---
+title: "Classification models using a neural network"
+categories:
+  - model fitting
+  - torch
+  - neural networks
+type: learn-subsection
+weight: 2
+description: | 
+  Train a classification model and evaluate its performance.
+toc: true
+toc-depth: 2
+include-after-body: ../../../resources.html
+---
+
+```{r}
+#| label: "setup"
+#| include: false
+#| message: false
+#| warning: false
+source(here::here("common.R"))
+```
+  
+```{r}
+#| label: "load"
+#| include: false
+library(tidymodels)
+pkgs <- c("tidymodels", "brulee", "AppliedPredictiveModeling")
+
+theme_set(theme_bw() + theme(legend.position = "top"))
+```
+
+
+## Introduction
+
+`r article_req_pkgs(pkgs)` You will also need the python torch library installed (see `?torch::install_torch()`).
+
+We can create classification models with the tidymodels package [parsnip](https://parsnip.tidymodels.org/) to predict categorical quantities or class labels. Here, let's fit a single classification model using a neural network and evaluate using a validation set. While the [tune](https://tune.tidymodels.org/) package has functionality to also do this, the parsnip package is the center of attention in this article so that we can better understand its usage. 
+
+## Fitting a neural network
+
+
+Let's fit a model to a small, two predictor classification data set. The data are in the modeldata package (part of tidymodels) and have been split into training, validation, and test data sets. In this analysis, the test set is left untouched; this article tries to emulate a good data usage methodology where the test set would only be evaluated once at the end after a variety of models have been considered. 
+
+
+```{r}
+#| label: "biv--split"
+library(AppliedPredictiveModeling)
+
+set.seed(321)
+cls_train <- quadBoundaryFunc(2000) %>% select(A = X1, B = X2, class)
+cls_val   <- quadBoundaryFunc( 500) %>% select(A = X1, B = X2, class)
+cls_test  <- quadBoundaryFunc( 500) %>% select(A = X1, B = X2, class)
+```
+
+A plot of the data shows two right-skewed predictors: 
+
+```{r}
+#| label: "biv-plot"
+#| fig-width:  6
+#| fig-height:  6.1
+ggplot(cls_train, aes(x = A, y = B, col = class)) + 
+  geom_point(alpha = 1 / 4, cex = 3) + 
+  coord_fixed()
+```
+
+Let's use a single hidden layer neural network to predict the outcome. To do this, we transform the predictor columns to be more symmetric (via the `step_BoxCox()` function) and on a common scale (using `step_normalize()`). We can use [recipes](https://recipes.tidymodels.org/) to do so:
+
+```{r}
+#| label: "biv--proc"
+biv_rec <- 
+  recipe(class ~ ., data = cls_train) %>%
+  step_normalize(all_predictors())
+```
+
+This recipe is not directly executed; the steps will be estimated when the model is fit. 
+
+We can use the brulee package to fit a model with 5 hidden units and a 10% dropout rate, to regularize the model:
+
+```{r}
+#| label: "biv-nnet"
+nnet_spec <- 
+  mlp(epochs = 1000, hidden_units = 10, penalty = 0.01, learn_rate = 0.1) %>% 
+  set_engine("brulee", validation = 0) %>% 
+  set_mode("classification")
+
+nnet_wflow <- 
+  biv_rec %>% 
+  workflow(nnet_spec)
+
+set.seed(987)
+nnet_fit <- fit(nnet_wflow, cls_train)
+nnet_fit %>% extract_fit_engine()
+```
+
+## Model performance
+
+In parsnip, the `predict()` function can be used to characterize performance on the validation set. Since parsnip always produces tibble outputs, these can just be column bound to the original data: 
+
+```{r}
+#| label: "biv--perf"
+val_results <- 
+  cls_val %>%
+  bind_cols(
+    predict(nnet_fit, new_data = cls_val),
+    predict(nnet_fit, new_data = cls_val, type = "prob")
+  )
+val_results %>% slice(1:5)
+
+val_results %>% roc_auc(truth = class, .pred_Class1)
+
+val_results %>% accuracy(truth = class, .pred_class)
+
+val_results %>% conf_mat(truth = class, .pred_class)
+```
+
+Let's also create a grid to get a visual sense of the class boundary for the test set.
+
+```{r}
+#| label: "biv-boundary"
+#| fig-width:  6
+#| fig-height:  6.1
+a_rng <- range(cls_train$A)
+b_rng <- range(cls_train$B)
+x_grid <-
+  expand.grid(A = seq(a_rng[1], a_rng[2], length.out = 100),
+              B = seq(b_rng[1], b_rng[2], length.out = 100))
+
+
+# Make predictions using the transformed predictors but 
+# attach them to the predictors in the original units: 
+x_grid <- 
+  x_grid %>% 
+  bind_cols(predict(nnet_fit, x_grid, type = "prob"))
+
+ggplot(x_grid, aes(x = A, y = B)) + 
+  geom_point(data = cls_test, aes(col = class), alpha = 1 / 2, cex = 3) +
+  geom_contour(aes(z = .pred_Class1), breaks = .5, col = "black", linewidth = 1) + 
+  coord_fixed()
+```
+
+
+
+## Session information {#session-info}
+
+```{r}
+#| label: "si"
+#| echo: false
+small_session(pkgs)
+```

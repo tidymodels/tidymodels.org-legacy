@@ -1,0 +1,31 @@
+---
+title: Search parsnip models
+weight: 2
+description: | 
+  Find model types, engines, and arguments to fit and predict in the tidymodels framework.
+toc: true
+toc-depth: 0
+include-after-body: ../../resources.html
+---
+
+To learn about the parsnip package, see [*Get Started: Build a Model*](/start/models/). Use the tables below to find [model types and engines](#models).
+
+```{r}
+#| include: false
+
+library(tidymodels)
+library(DT)
+tidymodels_prefer()
+load("parsnip_models.RData")
+```
+
+```{r}
+#| label: table-display
+#| echo: false
+parsnip_models %>% 
+  datatable(rownames = FALSE,
+            class = 'cell-border stripe',
+            filter = 'top',
+            escape = FALSE,
+            options = list(pageLength = 25))
+```

@@ -1,0 +1,140 @@
+{
+  "about/davis/index.qmd": {
+    "index.html": "5f45f46a"
+  },
+  "about/index.qmd": {
+    "index.html": "dda515d4"
+  },
+  "about/max/index.qmd": {
+    "index.html": "95382162"
+  },
+  "books/fes/index.qmd": {
+    "index.html": "43a00ced"
+  },
+  "books/index.qmd": {
+    "index.html": "54df745b"
+  },
+  "books/moderndive/index.qmd": {
+    "index.html": "2efb7f01"
+  },
+  "books/smltar/index.qmd": {
+    "index.html": "38db11f5"
+  },
+  "books/tidytext/index.qmd": {
+    "index.html": "f0fca32c"
+  },
+  "books/tmwr/index.qmd": {
+    "index.html": "b307cd5a"
+  },
+  "contribute/index.qmd": {
+    "index.html": "2b579da6"
+  },
+  "find/all/index.qmd": {
+    "index.html": "46ee07cc"
+  },
+  "find/broom/index.qmd": {
+    "index.html": "9c7fc66b"
+  },
+  "find/index.qmd": {
+    "index.html": "034f56ee"
+  },
+  "find/parsnip/index.qmd": {
+    "index.html": "cecba1e5"
+  },
+  "find/recipes/index.qmd": {
+    "index.html": "02476cb8"
+  },
+  "help/index.qmd": {
+    "index.html": "9b0c8d96"
+  },
+  "index.qmd": {
+    "index.html": "62b184de"
+  },
+  "learn/develop/broom/index.qmd": {
+    "index.html": "c43ce151"
+  },
+  "learn/develop/metrics/index.qmd": {
+    "index.html": "db2a99f8"
+  },
+  "learn/develop/models/index.qmd": {
+    "index.html": "58bbc235"
+  },
+  "learn/develop/parameters/index.qmd": {
+    "index.html": "5de328d5"
+  },
+  "learn/develop/recipes/index.qmd": {
+    "index.html": "1ffffadf"
+  },
+  "learn/index.qmd": {
+    "index.html": "b7a06e62"
+  },
+  "learn/models/coefficients/index.qmd": {
+    "index.html": "7732aaab"
+  },
+  "learn/models/parsnip-nnet/index.qmd": {
+    "index.html": "a842be7c"
+  },
+  "learn/models/parsnip-ranger-glmnet/index.qmd": {
+    "index.html": "ab559fdd"
+  },
+  "learn/models/pls/index.qmd": {
+    "index.html": "ac075621"
+  },
+  "learn/models/sub-sampling/index.qmd": {
+    "index.html": "c7932bc5"
+  },
+  "learn/models/time-series/index.qmd": {
+    "index.html": "3d42fd62"
+  },
+  "learn/statistics/bootstrap/index.qmd": {
+    "index.html": "ed21da6f"
+  },
+  "learn/statistics/infer/index.qmd": {
+    "index.html": "a7c4cb7a"
+  },
+  "learn/statistics/k-means/index.qmd": {
+    "index.html": "38455488"
+  },
+  "learn/statistics/tidy-analysis/index.qmd": {
+    "index.html": "f8a3c266"
+  },
+  "learn/statistics/xtabs/index.qmd": {
+    "index.html": "3ed825bc"
+  },
+  "learn/work/bayes-opt/index.qmd": {
+    "index.html": "bd22a73c"
+  },
+  "learn/work/case-weights/index.qmd": {
+    "index.html": "ba333c2e"
+  },
+  "learn/work/nested-resampling/index.qmd": {
+    "index.html": "ac395285"
+  },
+  "learn/work/tune-svm/index.qmd": {
+    "index.html": "cdaecce1"
+  },
+  "learn/work/tune-text/index.qmd": {
+    "index.html": "ac429b7b"
+  },
+  "packages/index.qmd": {
+    "index.html": "83748eba"
+  },
+  "start/case-study/index.qmd": {
+    "index.html": "cccb19fd"
+  },
+  "start/index.qmd": {
+    "index.html": "ca807105"
+  },
+  "start/models/index.qmd": {
+    "index.html": "c43b39dc"
+  },
+  "start/recipes/index.qmd": {
+    "index.html": "156f35b7"
+  },
+  "start/resampling/index.qmd": {
+    "index.html": "ead09a15"
+  },
+  "start/tuning/index.qmd": {
+    "index.html": "b1825ac5"
+  }
+}
