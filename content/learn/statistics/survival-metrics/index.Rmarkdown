@@ -27,6 +27,7 @@ options(pillar.advice = FALSE, pillar.min_title_chars = Inf)
 
 pak::pak(c("tidymodels/censored", "tidymodels/parsnip"))
 ```
+
 ## Introduction
 
 One trend in modern survival analysis is to compute time-dependent measures of performance. These are primarily driven by an increased focus on predictions for the probability of survival at a given time (as opposed to the predictions of event times or linear predictors). Since these are conditional on the time of evaluation, we call them dynamic performance metrics. 
