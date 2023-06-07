@@ -219,72 +219,9 @@ When we not only turn the event time data into a binary representation but also 
 - Sensitivity: How well do we predict the events? This is analogous to the true positive rate.
 - Specificity: How well do we predict the non-events? One minus specificity is the false positive rate. 
 
-Let's take a look at our example data and use an evaluation time of 5.00!
+These depend on the threshold used to turn predicted probabilities into predicted events/non-events. Let's take a look at the distribution of the survival probabilities for our example data at an evaluation time of 5.00. The distributions are separated by the observed class and weighted by the censoring weights. Details of both aspects are the same as for the Brier score and can be found in the [Accounting for Censoring in Performance Metrics for Event Time Data](FIXME) article.
 
 
-```r
-time_as_binary_event <- function(surv, eval_time) {
-  event_time <- parsnip:::.extract_surv_time(surv) # TODO we should export these
-  status <- parsnip:::.extract_surv_status(surv)
-  is_event_before_t <- event_time <= eval_time & status == 1
-
-  # Three possible contributions to the statistic from Graf 1999
-  # Censoring time before eval_time, no contribution (Graf category 3)
-  binary_res <- rep(NA_character_, length(event_time))
-
-  # A real event prior to eval_time (Graf category 1)
-  binary_res <- if_else(is_event_before_t, "event", binary_res)
-
-  # Observed time greater than eval_time (Graf category 2)
-  binary_res <- if_else(event_time > eval_time, "non-event", binary_res)
-  factor(binary_res, levels = c("event", "non-event"))
-}
-
-# Unnest the list columns and convert the event time data to binary format 
-binary_encoding <- 
-  val_pred %>% 
-  select(.pred, event_time) %>% 
-  add_rowindex() %>% 
-  unnest(.pred) %>% 
-  mutate(
-    obs_class = time_as_binary_event(event_time, .eval_time),
-    pred_class = if_else(.pred_survival >= 1 / 2, "non-event", "event"),
-    pred_class = factor(pred_class, levels = c("event", "non-event"))
-  )
-
-data_at_5 <- 
-  binary_encoding %>% 
-  filter(.eval_time == 5.00 & !is.na(.weight_censored)) %>% 
-  select(.eval_time, .pred_survival, .weight_censored, obs_class, pred_class, event_time)
-data_at_5
-#> # A tibble: 391 × 6
-#>    .eval_time .pred_survival .weight_censored obs_class pred_class event_time
-#>         <dbl>          <dbl>            <dbl> <fct>     <fct>          <Surv>
-#>  1          5          0.662             1.27 event     non-event       4.83 
-#>  2          5          0.662             1.29 non-event non-event       6.11 
-#>  3          5          0.731             1.29 non-event non-event       6.60+
-#>  4          5          0.213             1.07 event     event           2.72 
-#>  5          5          0.499             1.29 non-event event           8.70 
-#>  6          5          0.711             1.29 non-event non-event      10.82 
-#>  7          5          0.668             1.29 non-event non-event       6.89 
-#>  8          5          0.901             1.29 non-event non-event       8.23+
-#>  9          5          0.469             1.20 event     event           4.20 
-#> 10          5          0.886             1.29 non-event non-event       7.27+
-#> # ℹ 381 more rows
-```
-
-What does the distribution of the survival probabilities for each of the actual classes look like?
-
-
-```r
-data_at_5 %>% 
-  ggplot(aes(x = .pred_survival, weight = .weight_censored)) + 
-  geom_vline(xintercept = 1 / 2, col = "blue", lty = 2) +
-  geom_histogram(col = "white", bins = 30) + 
-  facet_wrap(~obs_class, ncol = 1) +
-  lims(x = 0:1) +
-  labs(x = "probability of survival", y = "sum of weights")
-```
 
 <img src="figs/surv-hist-05-1.svg" width="70%" />
 

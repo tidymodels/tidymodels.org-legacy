@@ -178,10 +178,11 @@ When we not only turn the event time data into a binary representation but also 
 - Sensitivity: How well do we predict the events? This is analogous to the true positive rate.
 - Specificity: How well do we predict the non-events? One minus specificity is the false positive rate. 
 
-Let's take a look at our example data and use an evaluation time of 5.00!
+These depend on the threshold used to turn predicted probabilities into predicted events/non-events. Let's take a look at the distribution of the survival probabilities for our example data at an evaluation time of 5.00. The distributions are separated by the observed class and weighted by the censoring weights. Details of both aspects are the same as for the Brier score and can be found in the [Accounting for Censoring in Performance Metrics for Event Time Data](FIXME) article.
 
 ```{r}
 #| label: data-at-5
+#| include: false 
 
 time_as_binary_event <- function(surv, eval_time) {
   event_time <- parsnip:::.extract_surv_time(surv) # TODO we should export these
@@ -216,13 +217,12 @@ data_at_5 <-
   binary_encoding %>% 
   filter(.eval_time == 5.00 & !is.na(.weight_censored)) %>% 
   select(.eval_time, .pred_survival, .weight_censored, obs_class, pred_class, event_time)
-data_at_5
-```
 
-What does the distribution of the survival probabilities for each of the actual classes look like?
+```
 
 ```{r}
 #| label: surv-hist-05
+#| echo: false
 #| warning: false
 #| out-width: 70%
 #| fig-width: 7
