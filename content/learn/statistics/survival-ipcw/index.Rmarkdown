@@ -251,10 +251,9 @@ To illustrate how these two tools for accounting for censoring are used in calcu
 First, let's turn the observed event time data and the predictions into their binary versions.
 
 ```{r}
-# TODO I'm going to add this to parsnip
 time_as_binary_event <- function(surv, eval_time) {
-  event_time <- parsnip:::.extract_surv_time(surv) # TODO we should export these
-  status <- parsnip:::.extract_surv_status(surv)
+  event_time <- .extract_surv_time(surv)
+  status <- .extract_surv_status(surv)
   is_event_before_t <- event_time <= eval_time & status == 1
   
   # Three possible contributions to the statistic from Graf 1999

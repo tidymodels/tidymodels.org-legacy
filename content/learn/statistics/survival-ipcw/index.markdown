@@ -198,10 +198,9 @@ First, let's turn the observed event time data and the predictions into their bi
 
 
 ```r
-# TODO I'm going to add this to parsnip
 time_as_binary_event <- function(surv, eval_time) {
-  event_time <- parsnip:::.extract_surv_time(surv) # TODO we should export these
-  status <- parsnip:::.extract_surv_status(surv)
+  event_time <- .extract_surv_time(surv)
+  status <- .extract_surv_status(surv)
   is_event_before_t <- event_time <= eval_time & status == 1
   
   # Three possible contributions to the statistic from Graf 1999
@@ -333,7 +332,7 @@ When accounting for censoring in dynamic performance metrics, the main points to
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       Europe/London
-#>  date     2023-06-05
+#>  date     2023-06-09
 #>  pandoc   2.19.2 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/ (via rmarkdown)
 #> 
 #> ─ Packages ─────────────────────────────────────────────────────────
@@ -344,7 +343,7 @@ When accounting for censoring in dynamic performance metrics, the main points to
 #>  dplyr      * 1.1.2      2023-04-20 [1] CRAN (R 4.2.0)
 #>  ggplot2    * 3.4.2      2023-04-03 [1] CRAN (R 4.2.0)
 #>  infer      * 1.0.4      2022-12-02 [1] CRAN (R 4.2.0)
-#>  parsnip    * 1.1.0.9002 2023-06-05 [1] local
+#>  parsnip    * 1.1.0.9003 2023-06-08 [1] Github (tidymodels/parsnip@a85e508)
 #>  prodlim    * 2023.03.31 2023-04-02 [1] CRAN (R 4.2.0)
 #>  purrr      * 1.0.1      2023-01-10 [1] CRAN (R 4.2.0)
 #>  recipes    * 1.0.6.9000 2023-05-17 [1] local
