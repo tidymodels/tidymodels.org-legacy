@@ -1,0 +1,43 @@
+[
+  {
+    "listing": "/books/index.html",
+    "items": [
+      "/books/fes/index.html",
+      "/books/moderndive/index.html",
+      "/books/smltar/index.html",
+      "/books/tidytext/index.html",
+      "/books/tmwr/index.html"
+    ]
+  },
+  {
+    "listing": "/learn/index.html",
+    "items": [
+      "/start/case-study/index.html",
+      "/learn/statistics/bootstrap/index.html",
+      "/start/models/index.html",
+      "/learn/models/parsnip-nnet/index.html",
+      "/learn/statistics/tidy-analysis/index.html",
+      "/learn/develop/broom/index.html",
+      "/learn/develop/recipes/index.html",
+      "/learn/work/case-weights/index.html",
+      "/learn/develop/metrics/index.html",
+      "/start/resampling/index.html",
+      "/learn/develop/models/index.html",
+      "/learn/develop/parameters/index.html",
+      "/learn/statistics/infer/index.html",
+      "/learn/work/bayes-opt/index.html",
+      "/learn/statistics/k-means/index.html",
+      "/learn/work/tune-svm/index.html",
+      "/learn/models/time-series/index.html",
+      "/learn/models/pls/index.html",
+      "/learn/work/nested-resampling/index.html",
+      "/start/recipes/index.html",
+      "/learn/models/parsnip-ranger-glmnet/index.html",
+      "/learn/statistics/xtabs/index.html",
+      "/learn/models/sub-sampling/index.html",
+      "/start/tuning/index.html",
+      "/learn/work/tune-text/index.html",
+      "/learn/models/coefficients/index.html"
+    ]
+  }
+]

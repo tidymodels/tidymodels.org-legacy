@@ -1,0 +1,34 @@
+---
+subtitle: Recipes
+title: Search recipe steps
+weight: 3
+description: | 
+  Find recipe steps in the tidymodels framework to help you prep your data for modeling.
+toc: true
+toc-depth: 0
+include-after-body: ../../resources.html
+---
+
+
+To learn about the recipes package, see [*Get Started: Preprocess your data with recipes*](/start/recipes/). The table below allows you to search for recipe steps across tidymodels packages.
+
+
+```{r}
+#| include: false
+
+library(tidymodels)
+library(DT)
+tidymodels_prefer()
+load("recipe_functions.RData")
+```
+
+```{r}
+#| label: table-display
+#| echo: false
+recipe_functions %>% 
+  datatable(rownames = FALSE,
+            class = 'cell-border stripe',
+            filter = 'top',
+            escape = FALSE,
+            options = list(pageLength = 25))
+```

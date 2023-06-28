@@ -1,0 +1,15 @@
+{
+  "listingMap": {
+    "books/index.qmd": [
+      "*.qmd"
+    ],
+    "learn/index.qmd": [
+      "*.qmd",
+      "../start/models/index.qmd",
+      "../start/recipes/index.qmd",
+      "../start/resampling/index.qmd",
+      "../start/tuning/index.qmd",
+      "../start/case-study/index.qmd"
+    ]
+  }
+}

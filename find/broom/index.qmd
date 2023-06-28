@@ -1,0 +1,34 @@
+---
+subtitle: Broom
+title: Search broom methods
+weight: 3
+description: | 
+  Find `tidy()`, `augment()`, and `glance()` methods for different objects.
+toc: true
+toc-depth: 0
+include-after-body: ../../resources.html
+---
+
+Here are all the broom functions available across CRAN packages. Click on the link in the topic column to find more information.
+
+
+
+```{r}
+#| include: false
+
+library(tidymodels)
+library(DT)
+tidymodels_prefer()
+load("broom_functions.RData")
+```
+
+```{r}
+#| label: table-display
+#| echo: false
+broom_functions %>% 
+  datatable(rownames = FALSE,
+            class = 'cell-border stripe',
+            filter = 'top',
+            escape = FALSE,
+            options = list(pageLength = 25))
+```

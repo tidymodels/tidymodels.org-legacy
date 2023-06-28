@@ -1,0 +1,29 @@
+---
+title: "Search all of tidymodels"
+toc: true
+toc-depth: 0
+include-after-body: ../../resources.html
+---
+
+
+Here are all the functions available across all of the tidymodels packages. Click on the link in the topic column to find the relevant reference documentation.
+
+```{r}
+#| include: false
+
+library(tidymodels)
+library(DT)
+tidymodels_prefer()
+load("tidymodels_functions.RData")
+```
+
+```{r}
+#| label: table-display
+#| echo: false
+tidymodels_functions %>% 
+  datatable(rownames = FALSE,
+            class = 'cell-border stripe',
+            filter = 'top',
+            escape = FALSE,
+            options = list(pageLength = 25))
+```

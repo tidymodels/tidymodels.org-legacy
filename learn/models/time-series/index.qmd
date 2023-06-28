@@ -1,0 +1,227 @@
+---
+title: "Modeling time series with tidy resampling"
+categories:
+  - model fitting
+  - time series
+type: learn-subsection
+weight: 4
+description: | 
+  Calculate performance estimates for time series forecasts using resampling.
+toc: true
+toc-depth: 2
+include-after-body: ../../../resources.html
+---
+
+```{r}
+#| label: "setup"
+#| include: false
+#| message: false
+#| warning: false
+source(here::here("common.R"))
+```
+
+```{r}
+#| label: "load"
+#| include: false
+#| message: false
+#| warning: false
+library(timetk)
+library(forecast)
+library(tidymodels)
+library(sweep)
+library(zoo)
+pkgs <- c("tidymodels", "timetk", "forecast", "sweep", "zoo")
+
+theme_set(theme_bw() + theme(legend.position = "top"))
+```
+
+
+## Introduction
+
+`r article_req_pkgs(pkgs)`
+
+"[Demo Week: Tidy Forecasting with sweep](https://www.business-science.io/code-tools/2017/10/25/demo_week_sweep.html)" is an excellent article that uses tidy methods with time series. This article uses their analysis with rsample to find performance estimates for future observations using [rolling forecast origin resampling](https://robjhyndman.com/hyndsight/crossvalidation/). 
+
+## Example data
+
+The data for this article are sales of alcoholic beverages originally from [the Federal Reserve Bank of St. Louis website](https://fred.stlouisfed.org/series/S4248SM144NCEN).
+
+```{r}
+#| label: "read-data"
+library(tidymodels)
+library(modeldata)
+data("drinks")
+glimpse(drinks)
+```
+
+Each row represents one month of sales (in millions of US dollars). 
+
+## Time series resampling
+
+Suppose that we need predictions for one year ahead and our model should use the most recent data from the last 20 years. To set up this resampling scheme:
+
+```{r}
+#| label: "rof"
+roll_rs <- rolling_origin(
+  drinks, 
+  initial = 12 * 20, 
+  assess = 12,
+  cumulative = FALSE
+  )
+
+nrow(roll_rs)
+
+roll_rs
+```
+
+Each `split` element contains the information about that resample:
+
+```{r}
+#| label: "split"
+roll_rs$splits[[1]]
+```
+
+For plotting, let's index each split by the first day of the assessment set:
+
+```{r}
+#| label: "labels"
+get_date <- function(x) {
+  min(assessment(x)$date)
+}
+
+start_date <- map(roll_rs$splits, get_date)
+roll_rs$start_date <- do.call("c", start_date)
+head(roll_rs$start_date)
+```
+
+This resampling scheme has `r nrow(roll_rs)` splits of the data so that there will be `r nrow(roll_rs)` ARIMA models that are fit. To create the models, we use the `auto.arima()` function from the forecast package. The rsample functions `analysis()` and `assessment()` return a data frame, so another step converts the data to a `ts` object called `mod_dat` using a function in the timetk package.
+
+```{r}
+#| label: "model-fun"
+library(forecast)  # for `auto.arima`
+library(timetk)    # for `tk_ts`
+library(zoo)       # for `as.yearmon`
+
+fit_model <- function(x, ...) {
+  # suggested by Matt Dancho:
+  x %>%
+    analysis() %>%
+    # Since the first day changes over resamples, adjust it
+    # based on the first date value in the data frame 
+    tk_ts(start = .$date[[1]] %>% as.yearmon(), 
+          frequency = 12, 
+          silent = TRUE) %>%
+    auto.arima(...)
+}
+```
+
+Save each model in a new column:
+
+```{r}
+#| label: "model-fit"
+#| warning: false
+#| message: false
+roll_rs$arima <- map(roll_rs$splits, fit_model)
+
+# For example:
+roll_rs$arima[[1]]
+```
+
+(There are some warnings produced by these regarding extra columns in the data that can be ignored.)
+
+## Model performance
+
+Using the model fits, let's measure performance in two ways:
+
+ * _Interpolation_ error will measure how well the model fits to the data that were used to create the model. This is most likely optimistic since no holdout method is used. 
+ * _Extrapolation_ or _forecast_ error evaluates the performance of the model on the data from the following year (that were not used in the model fit).
+ 
+In each case, the mean absolute percent error (MAPE) is the statistic used to characterize the model fits. The interpolation error can be computed from the `Arima` object. To make things easy, let's use the sweep package's `sw_glance()` function:
+
+```{r}
+#| label: "interp"
+library(sweep)
+
+roll_rs$interpolation <- map_dbl(
+  roll_rs$arima,
+  function(x) 
+    sw_glance(x)[["MAPE"]]
+  )
+
+summary(roll_rs$interpolation)
+```
+
+For the extrapolation error, the model and split objects are required. Using these:
+
+```{r}
+#| label: "extrap"
+get_extrap <- function(split, mod) {
+  n <- nrow(assessment(split))
+  # Get assessment data
+  pred_dat <- assessment(split) %>%
+    mutate(
+      pred = as.vector(forecast(mod, h = n)$mean),
+      pct_error = ( S4248SM144NCEN - pred ) / S4248SM144NCEN * 100
+    )
+  mean(abs(pred_dat$pct_error))
+}
+
+roll_rs$extrapolation <- 
+  map2_dbl(roll_rs$splits, roll_rs$arima, get_extrap)
+
+summary(roll_rs$extrapolation)
+```
+
+What do these error estimates look like over time?
+
+```{r}
+#| label: "plot"
+roll_rs %>%
+  select(interpolation, extrapolation, start_date) %>%
+  pivot_longer(cols = matches("ation"), names_to = "error", values_to = "MAPE") %>%
+  ggplot(aes(x = start_date, y = MAPE, col = error)) + 
+  geom_point() + 
+  geom_line()
+```
+
+It is likely that the interpolation error is an underestimate to some degree, as mentioned above. 
+
+It is also worth noting that `rolling_origin()` can be used over calendar periods, rather than just over a fixed window size. This is especially useful for irregular series where a fixed window size might not make sense because of missing data points, or because of calendar features like different months having a different number of days.
+
+The example below demonstrates this idea by splitting `drinks` into a nested set of 26 years, and rolling over years rather than months. Note that the end result accomplishes a different task than the original example; in this new case, each slice moves forward an entire year, rather than just one month.
+
+```{r}
+#| label: "rof-annual"
+# The idea is to nest by the period to roll over,
+# which in this case is the year.
+roll_rs_annual <- drinks %>%
+  mutate(year = as.POSIXlt(date)$year + 1900) %>%
+  nest(data = c(date, S4248SM144NCEN)) %>%
+  rolling_origin(
+    initial = 20, 
+    assess = 1, 
+    cumulative = FALSE
+  )
+
+analysis(roll_rs_annual$splits[[1]])
+```
+
+The workflow to access these calendar slices is to use `bind_rows()` to join
+each analysis set together.
+
+```{r}
+mutate(
+  roll_rs_annual,
+  extracted_slice = map(splits, ~ bind_rows(analysis(.x)$data))
+)
+```
+
+
+## Session information {#session-info}
+
+```{r}
+#| label: "si"
+#| echo: false
+small_session(pkgs)
+```
+ 
